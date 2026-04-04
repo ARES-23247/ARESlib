@@ -22,3 +22,4 @@ test*.txt
 test*.gradle
 tmp_pedro/
 tmp_pedro_core/
+*.wpilog
