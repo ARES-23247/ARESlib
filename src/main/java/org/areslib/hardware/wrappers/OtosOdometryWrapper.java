@@ -1,11 +1,9 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import org.areslib.hardware.interfaces.AresOdometry;
-import org.areslib.math.geometry.Pose2d;
-import org.areslib.math.geometry.Rotation2d;
+import org.areslib.hardware.interfaces.OdometryIO;
 
-public class OtosOdometryWrapper implements AresOdometry {
+public class OtosOdometryWrapper implements OdometryIO {
     
     private final SparkFunOTOS otos;
 
@@ -14,13 +12,17 @@ public class OtosOdometryWrapper implements AresOdometry {
     }
 
     @Override
-    public Pose2d getPoseMeters() {
+    public void updateInputs(OdometryInputs inputs) {
         SparkFunOTOS.Pose2D otosPose = otos.getPosition();
+        SparkFunOTOS.Pose2D otosVel = otos.getVelocity();
+
         // OTOS natively uses inches and degrees. Convert to meters and radians.
-        double xMeters = otosPose.x * 0.0254;
-        double yMeters = otosPose.y * 0.0254;
-        double headingRads = Math.toRadians(otosPose.h);
-        
-        return new Pose2d(xMeters, yMeters, new Rotation2d(headingRads));
+        inputs.xMeters = otosPose.x * 0.0254;
+        inputs.yMeters = otosPose.y * 0.0254;
+        inputs.headingRadians = Math.toRadians(otosPose.h);
+
+        inputs.xVelocityMetersPerSecond = otosVel.x * 0.0254;
+        inputs.yVelocityMetersPerSecond = otosVel.y * 0.0254;
+        inputs.angularVelocityRadiansPerSecond = Math.toRadians(otosVel.h);
     }
 }

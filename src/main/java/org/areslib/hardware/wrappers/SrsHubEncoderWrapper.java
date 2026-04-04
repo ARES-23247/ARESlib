@@ -1,13 +1,13 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.interfaces.AresEncoder;
+import org.areslib.hardware.sensors.AresAbsoluteEncoder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.lang.reflect.Method;
 
 /**
  * Optional Wrapper for the SRSHub driver using reflection.
  */
-public class SrsHubEncoderWrapper implements AresEncoder {
+public class SrsHubEncoderWrapper implements AresAbsoluteEncoder {
 
     private final Object srsHubDevice;
     private final int channelIndex;
@@ -27,6 +27,9 @@ public class SrsHubEncoderWrapper implements AresEncoder {
     }
 
     @Override
+    public void setDistancePerPulse(double distance) {}
+
+    @Override
     public double getPosition() {
         try {
             return ((Number) getEncoderPositionMethod.invoke(srsHubDevice, channelIndex)).doubleValue();
@@ -42,5 +45,18 @@ public class SrsHubEncoderWrapper implements AresEncoder {
         } catch (Exception e) {
             throw new RuntimeException("ARESlib: SRSHub getEncoderVelocity failed.", e);
         }
+    }
+    
+    private double offset = 0.0;
+    
+    @Override
+    public void setOffset(double offset) {
+        this.offset = offset;
+    }
+    
+    @Override
+    public double getAbsolutePositionRad() {
+        // SRS Hub returns degrees usually, adapt to radians. If units are raw, this will need scaling tuning.
+        return Math.toRadians(getPosition()) - offset;
     }
 }

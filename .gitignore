@@ -16,3 +16,9 @@ build/
 
 # Log files
 *.log
+
+# Temporary debugging and testing files
+test*.txt
+test*.gradle
+tmp_pedro/
+tmp_pedro_core/

@@ -1,7 +1,7 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
+import org.areslib.hardware.sensors.AresAbsoluteEncoder;
 
 public class AnalogAbsoluteEncoderWrapper implements AresAbsoluteEncoder {
     
@@ -17,15 +17,26 @@ public class AnalogAbsoluteEncoderWrapper implements AresAbsoluteEncoder {
         this.maxVoltage = maxVoltage;
     }
 
+    private double offset = 0.0;
+
     @Override
-    public double getAbsolutePosition() {
-        // Returns normalized absolute position from 0.0 to 1.0
-        return analogInput.getVoltage() / maxVoltage;
+    public void setOffset(double offsetRadians) {
+        this.offset = offsetRadians;
+    }
+
+    @Override
+    public void setDistancePerPulse(double distance) {}
+
+    @Override
+    public double getAbsolutePositionRad() {
+        // Returns normalized absolute position from 0.0 to 1.0 scaled to rads
+        double rads = (analogInput.getVoltage() / maxVoltage) * 2 * Math.PI;
+        return (rads - offset) % (2 * Math.PI);
     }
 
     @Override
     public double getPosition() {
-        return getAbsolutePosition() * 2 * Math.PI; // Standard mapped position in radians
+        return getAbsolutePositionRad();
     }
 
     @Override

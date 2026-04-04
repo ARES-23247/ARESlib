@@ -1,7 +1,9 @@
 package org.areslib.hardware;
 
+import org.areslib.telemetry.AresLoggableInputs;
+
 public interface MecanumDriveIO {
-    class MecanumDriveInputs {
+    class MecanumDriveInputs implements AresLoggableInputs {
         public double frontLeftPositionMeters = 0.0;
         public double frontLeftVelocityMps = 0.0;
         public double frontRightPositionMeters = 0.0;

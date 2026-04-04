@@ -1,0 +1,10 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
+
+> Task :runSim
+Initializing ARES Simulator Environment...
+Sim Started! Connect AdvantageScope to 127.0.0.1

@@ -1,0 +1,45 @@
+
+> Task :compileJava FAILED
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:4: error: package com.arcrobotics.ftclib.command does not exist
+import com.arcrobotics.ftclib.command.CommandBase;
+                                     ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:8: error: cannot find symbol
+public class FollowPathCommand extends CommandBase {
+                                       ^
+  symbol: class CommandBase
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:23: error: cannot find symbol
+        addRequirements(follower);
+        ^
+  symbol:   method addRequirements(org.areslib.core.localization.AresFollower)
+  location: class org.areslib.command.FollowPathCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:34: error: cannot find symbol
+        addRequirements(follower);
+        ^
+  symbol:   method addRequirements(org.areslib.core.localization.AresFollower)
+  location: class org.areslib.command.FollowPathCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:37: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:46: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:52: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\FollowPathCommand.java:57: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+8 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1s
+1 actionable task: 1 executed

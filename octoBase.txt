@@ -1,0 +1,28 @@
+Compiled from "OctoQuadBase.java"
+public interface com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase {
+  public static final byte OCTOQUAD_CHIP_ID;
+  public static final int SUPPORTED_FW_VERSION_MAJ;
+  public static final int ENCODER_FIRST;
+  public static final int ENCODER_LAST;
+  public static final int NUM_ENCODERS;
+  public static final int MIN_VELOCITY_MEASUREMENT_INTERVAL_MS;
+  public static final int MAX_VELOCITY_MEASUREMENT_INTERVAL_MS;
+  public static final int MIN_PULSE_WIDTH_US;
+  public static final int MAX_PULSE_WIDTH_US;
+  public abstract byte getChipId();
+  public abstract java.lang.String getFirmwareVersionString();
+  public abstract void resetSinglePosition(int);
+  public abstract void resetAllPositions();
+  public abstract void setSingleEncoderDirection(int, com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase$EncoderDirection);
+  public abstract com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase$EncoderDirection getSingleEncoderDirection(int);
+  public abstract void setSingleVelocitySampleInterval(int, int);
+  public abstract void setAllVelocitySampleIntervals(int);
+  public abstract int getSingleVelocitySampleInterval(int);
+  public abstract void setSingleChannelPulseWidthParams(int, int, int);
+  public abstract void resetEverything();
+  public abstract void setChannelBankConfig(com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase$ChannelBankConfig);
+  public abstract com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase$ChannelBankConfig getChannelBankConfig();
+  public abstract void setI2cRecoveryMode(com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase$I2cRecoveryMode);
+  public abstract com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase$I2cRecoveryMode getI2cRecoveryMode();
+  public abstract void saveParametersToFlash();
+}

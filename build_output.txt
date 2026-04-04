@@ -1,14 +1,38 @@
-> Task :compileJava UP-TO-DATE
-> Task :processResources NO-SOURCE
-> Task :classes UP-TO-DATE
-> Task :jar UP-TO-DATE
-> Task :assemble UP-TO-DATE
-> Task :compileTestJava UP-TO-DATE
-> Task :processTestResources NO-SOURCE
-> Task :testClasses UP-TO-DATE
-> Task :test UP-TO-DATE
-> Task :check UP-TO-DATE
-> Task :build UP-TO-DATE
 
-BUILD SUCCESSFUL in 1s
-4 actionable tasks: 4 up-to-date
+> Task :compileJava FAILED
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\telemetry\AndroidDashboardBackend.java:4: error: cannot find symbol
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+                                           ^
+  symbol:   class TelemetryPacket
+  location: package com.acmerobotics.dashboard.telemetry
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\telemetry\AndroidDashboardBackend.java:8: error: cannot find symbol
+    private TelemetryPacket currentPacket;
+            ^
+  symbol:   class TelemetryPacket
+  location: class org.areslib.telemetry.AndroidDashboardBackend
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\telemetry\AndroidDashboardBackend.java:12: error: cannot find symbol
+        currentPacket = new TelemetryPacket();
+                            ^
+  symbol:   class TelemetryPacket
+  location: class org.areslib.telemetry.AndroidDashboardBackend
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\telemetry\AndroidDashboardBackend.java:35: error: cannot find symbol
+        currentPacket = new TelemetryPacket();
+                            ^
+  symbol:   class TelemetryPacket
+  location: class org.areslib.telemetry.AndroidDashboardBackend
+Note: C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+4 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 2s
+1 actionable task: 1 executed

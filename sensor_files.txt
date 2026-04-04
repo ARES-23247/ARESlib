@@ -1,0 +1,2 @@
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresColorSensor.java
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\RevColorSensorWrapper.java

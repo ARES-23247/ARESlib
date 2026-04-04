@@ -1,0 +1,25 @@
+
+> Task :compileJava FAILED
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\localization\AresPedroConstants.java:26: error: non-static variable mass cannot be referenced from a static context
+        FollowerConstants.mass = mass;
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\localization\AresPedroDrivetrain.java:7: error: org.areslib.core.localization.AresPedroDrivetrain is not abstract and does not override abstract method runDrive(double[]) in com.pedropathing.drivetrain.Drivetrain
+public class AresPedroDrivetrain extends Drivetrain {
+       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\localization\AresPedroDrivetrain.java:21: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+3 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1s
+1 actionable task: 1 executed

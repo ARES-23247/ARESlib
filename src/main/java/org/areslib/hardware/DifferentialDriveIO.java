@@ -1,7 +1,9 @@
 package org.areslib.hardware;
 
+import org.areslib.telemetry.AresLoggableInputs;
+
 public interface DifferentialDriveIO {
-    class DifferentialDriveInputs {
+    class DifferentialDriveInputs implements AresLoggableInputs {
         public double leftPositionMeters = 0.0;
         public double leftVelocityMps = 0.0;
         public double rightPositionMeters = 0.0;

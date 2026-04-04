@@ -1,0 +1,85 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :compileTestJava FAILED
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:15: error: cannot find symbol
+import com.pedropathing.paths.BezierLine;
+                             ^
+  symbol:   class BezierLine
+  location: package com.pedropathing.paths
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:16: error: cannot find symbol
+import com.pedropathing.paths.Point;
+                             ^
+  symbol:   class Point
+  location: package com.pedropathing.paths
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:3: error: package com.acmerobotics.dashboard does not exist
+import com.acmerobotics.dashboard.DashboardCore;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:4: error: package com.acmerobotics.dashboard.telemetry does not exist
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+                                           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:7: error: cannot find symbol
+    private final DashboardCore dashboard;
+                  ^
+  symbol:   class DashboardCore
+  location: class org.areslib.telemetry.DesktopLiveBackend
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:8: error: cannot find symbol
+    private TelemetryPacket currentPacket;
+            ^
+  symbol:   class TelemetryPacket
+  location: class org.areslib.telemetry.DesktopLiveBackend
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:44: error: cannot find symbol
+        Path testPath = new Path(new BezierLine(
+                                     ^
+  symbol:   class BezierLine
+  location: class org.areslib.sim.DesktopSimLauncher
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:45: error: cannot find symbol
+            new Point(0, 0, Point.CARTESIAN), 
+                ^
+  symbol:   class Point
+  location: class org.areslib.sim.DesktopSimLauncher
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:45: error: cannot find symbol
+            new Point(0, 0, Point.CARTESIAN), 
+                            ^
+  symbol:   variable Point
+  location: class org.areslib.sim.DesktopSimLauncher
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:46: error: cannot find symbol
+            new Point(20, 20, Point.CARTESIAN)
+                ^
+  symbol:   class Point
+  location: class org.areslib.sim.DesktopSimLauncher
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:46: error: cannot find symbol
+            new Point(20, 20, Point.CARTESIAN)
+                              ^
+2 actionable tasks: 1 executed, 1 up-to-date
+  symbol:   variable Point
+  location: class org.areslib.sim.DesktopSimLauncher
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:12: error: cannot find symbol
+        dashboard = new DashboardCore();
+                        ^
+  symbol:   class DashboardCore
+  location: class org.areslib.telemetry.DesktopLiveBackend
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:13: error: cannot find symbol
+        currentPacket = new TelemetryPacket();
+                            ^
+  symbol:   class TelemetryPacket
+  location: class org.areslib.telemetry.DesktopLiveBackend
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\telemetry\DesktopLiveBackend.java:36: error: cannot find symbol
+        currentPacket = new TelemetryPacket();
+                            ^
+  symbol:   class TelemetryPacket
+  location: class org.areslib.telemetry.DesktopLiveBackend
+14 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileTestJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1s

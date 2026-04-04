@@ -5,7 +5,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 
 import org.areslib.command.CommandScheduler;
 import org.areslib.hardware.AresHardwareManager;
-import org.areslib.telemetry.AresLogger;
+import org.areslib.telemetry.AresTelemetry;
 
 import java.util.List;
 
@@ -25,6 +25,13 @@ public abstract class AresCommandOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // Enable extensions automatically
         // pre-flight hooks go here.
+        // Enable locally-vendored SolversLib PhotonCore for extreme I2C loop bypass efficiency
+        try {
+            org.areslib.hardware.coprocessors.photon.PhotonCore.experimental.setMaximumParallelCommands(8);
+            org.areslib.hardware.coprocessors.photon.PhotonCore.experimental.setSinglethreadedOptimized(false);
+            org.areslib.hardware.coprocessors.photon.PhotonCore.PARALLELIZE_SERVOS = true;
+            org.areslib.hardware.coprocessors.photon.PhotonCore.enable();
+        } catch (Exception ignored) {}
         
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
@@ -42,14 +49,17 @@ public abstract class AresCommandOpMode extends LinearOpMode {
                 hub.clearBulkCache();
             }
 
-            // 2. Hardware Coprocessors (Odometry pods, IMU updates)
-            AresHardwareManager.updateCoprocessors();
+            // 2. Clear Hardware Coprocessors (OctoQuad, SRS Hub) cache dynamically
+            AresHardwareManager.clearCoprocessorCaches();
 
-            // 3. Command Scheduler Loop
+            // 3. Update Dual-Axis Governor for Voltage Comp & Load Shedding
+            AresHardwareManager.updatePowerStatus();
+
+            // 4. Command Scheduler Loop
             CommandScheduler.getInstance().run();
 
-            // 4. Fire Telemetry
-            AresLogger.update();
+            // 5. Fire Telemetry
+            AresTelemetry.update();
         }
 
         // OpMode finished, reset scheduler state for next run

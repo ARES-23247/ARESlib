@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.interfaces.AresEncoder;
+import org.areslib.hardware.sensors.AresEncoder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.lang.reflect.Method;
 
@@ -25,6 +25,9 @@ public class OctoQuadEncoderWrapper implements AresEncoder {
             throw new RuntimeException("ARESlib: Failed to bind to OctoQuad driver. Make sure the driver is installed.", e);
         }
     }
+
+    @Override
+    public void setDistancePerPulse(double distance) {}
 
     @Override
     public double getPosition() {

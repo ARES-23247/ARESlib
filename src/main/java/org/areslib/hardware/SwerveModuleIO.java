@@ -1,7 +1,9 @@
 package org.areslib.hardware;
 
+import org.areslib.telemetry.AresLoggableInputs;
+
 public interface SwerveModuleIO {
-    class SwerveModuleInputs {
+    class SwerveModuleInputs implements AresLoggableInputs {
         public double drivePositionMeters = 0.0;
         public double driveVelocityMps = 0.0;
         public double turnAbsolutePositionRad = 0.0;

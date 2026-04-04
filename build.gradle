@@ -9,6 +9,7 @@ repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.brott.dev/' }
+    maven { url 'https://mymaven.bylazar.com/releases' }
 }
 
 configurations {
@@ -18,6 +19,13 @@ configurations {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    compileOnly 'com.acmerobotics.dashboard:core:0.4.16'
+    testImplementation 'com.acmerobotics.dashboard:core:0.4.16'
+    
+    // Android Context Stub
+    compileOnly 'com.google.android:android:4.1.1.4'
+    testImplementation 'com.google.android:android:4.1.1.4'
+
     // Dashboard AAR
     ftcAars 'com.acmerobotics.dashboard:dashboard:0.4.16@aar'
     
@@ -26,12 +34,14 @@ dependencies {
     ftcAars 'org.firstinspires.ftc:Hardware:10.1.1@aar'
     ftcAars 'org.firstinspires.ftc:FtcCommon:10.1.1@aar'
     
-    // No PhotonCore right now
+    // Pedro Pathing (FTC classes need AAR extraction, core classes can be imported natively)
+    ftcAars 'com.pedropathing:ftc:2.1.1@aar'
+    implementation 'com.pedropathing:core:2.1.1'
 }
 
 // Automatically unpack AARs at configuration time so the IDE Language Server
 // sees the JAR files instantly without needing an external build task.
-configurations.ftcAars.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+configurations.ftcAars.resolvedConfiguration.lenientConfiguration.getArtifacts().each { artifact ->
     def aarFile = artifact.file
     def outDir = file("${project.projectDir}/.gradle/ftc-jars")
     outDir.mkdirs()
@@ -49,8 +59,11 @@ configurations.ftcAars.resolvedConfiguration.resolvedArtifacts.each { artifact -
     
     // Inject the extracted JAR directly back into the compile classpath
     dependencies.add('compileOnly', files(jarFile))
+    dependencies.add('testImplementation', files(jarFile))
 }
 
 test {
     useJUnitPlatform()
 }
+task runSim(type: JavaExec) { mainClass = 'org.areslib.sim.DesktopSimLauncher'; classpath = sourceSets.test.runtimeClasspath; standardInput = System.in }
+dependencies { testImplementation 'com.google.code.gson:gson:2.10.1' }

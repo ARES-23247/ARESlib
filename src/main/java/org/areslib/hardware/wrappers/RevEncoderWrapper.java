@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
+import org.areslib.hardware.sensors.AresAbsoluteEncoder;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -55,12 +55,18 @@ public class RevEncoderWrapper implements AresAbsoluteEncoder {
      * Sets the zero offset for the encoder.
      * @param offsetRadians The offset in radians.
      */
+    @Override
     public void setOffset(double offsetRadians) {
         this.offset = offsetRadians;
     }
 
     @Override
-    public double getAbsolutePosition() {
+    public void setDistancePerPulse(double distance) {
+        // Absolute encoders generally don't use this as output is already radians
+    }
+
+    @Override
+    public double getAbsolutePositionRad() {
         // Fetch raw pulse width in microseconds
         double rawPulseUs = pulseWidthSubmicrosecondSupplier.getAsDouble();
         
@@ -90,7 +96,7 @@ public class RevEncoderWrapper implements AresAbsoluteEncoder {
 
     @Override
     public double getPosition() {
-        return getAbsolutePosition();
+        return getAbsolutePositionRad();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.areslib.hardware;
 
-import org.areslib.hardware.interfaces.AresEncoder;
+import org.areslib.hardware.sensors.AresEncoder;
+import org.areslib.hardware.sensors.AresAbsoluteEncoder;
 import org.areslib.hardware.interfaces.AresMotor;
 
 public class SwerveModuleIOReal implements SwerveModuleIO {
@@ -8,35 +9,28 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final AresMotor driveMotor;
     private final AresMotor turnMotor;
     private final AresEncoder driveEncoder;
-    private final AresEncoder turnEncoder;
-
-    private final double driveDistancePerTick;
-    private final double turnRadsPerTick;
+    private final AresAbsoluteEncoder turnEncoder;
 
     public SwerveModuleIOReal(
             AresMotor driveMotor, 
             AresMotor turnMotor, 
             AresEncoder driveEncoder, 
-            AresEncoder turnEncoder,
-            double driveDistancePerTick,
-            double turnRadsPerTick) {
+            AresAbsoluteEncoder turnEncoder) {
         this.driveMotor = driveMotor;
         this.turnMotor = turnMotor;
         this.driveEncoder = driveEncoder;
         this.turnEncoder = turnEncoder;
-        this.driveDistancePerTick = driveDistancePerTick;
-        this.turnRadsPerTick = turnRadsPerTick;
     }
 
     @Override
     public void updateInputs(SwerveModuleInputs inputs) {
         // Direct, zero-latency reads from the abstracted cache. 
         // Handles transparent expansion hub bulk caching or native OctoQuad arrays equally.
-        inputs.drivePositionMeters = driveEncoder.getPosition() * driveDistancePerTick;
-        inputs.driveVelocityMps = driveEncoder.getVelocity() * driveDistancePerTick;
+        inputs.drivePositionMeters = driveEncoder.getPosition();
+        inputs.driveVelocityMps = driveEncoder.getVelocity();
         
-        inputs.turnAbsolutePositionRad = turnEncoder.getPosition() * turnRadsPerTick;
-        inputs.turnVelocityRadPerSec = turnEncoder.getVelocity() * turnRadsPerTick;
+        inputs.turnAbsolutePositionRad = turnEncoder.getAbsolutePositionRad();
+        inputs.turnVelocityRadPerSec = turnEncoder.getVelocity();
     }
 
     @Override

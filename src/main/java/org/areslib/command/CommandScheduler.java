@@ -25,7 +25,14 @@ public final class CommandScheduler {
     // Subsystems required by currently executing commands
     private final Map<Subsystem, Command> m_requirements = new LinkedHashMap<>();
 
+    // Button bindings loops
+    private final java.util.List<Runnable> m_buttons = new java.util.ArrayList<>();
+
     private CommandScheduler() {}
+
+    public void addButton(Runnable button) {
+        m_buttons.add(button);
+    }
 
     /**
      * Returns the Singleton instance of the scheduler.
@@ -142,7 +149,12 @@ public final class CommandScheduler {
             }
         }
 
-        // 3. Execute commands
+            // 3. Execute button loops
+        for (Runnable button : m_buttons) {
+            button.run();
+        }
+
+        // 4. Execute commands
         Set<Command> commandsToRemove = new LinkedHashSet<>();
         for (Command command : m_scheduledCommands) {
             command.execute();

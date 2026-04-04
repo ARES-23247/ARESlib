@@ -5,7 +5,8 @@ import org.areslib.hardware.interfaces.AresMotor;
 
 public class CRServoWrapper implements AresMotor {
     private final CRServo servo;
-    // CR Servos generally operate on a -1.0 to 1.0 power scale, equivalent to 12V voltage range.
+    private double lastSentPower = Double.NaN;
+    private static final double CACHE_THRESHOLD = 0.005;
 
     public CRServoWrapper(CRServo servo) {
         this.servo = servo;
@@ -13,14 +14,25 @@ public class CRServoWrapper implements AresMotor {
 
     @Override
     public void setVoltage(double volts) {
-        // Map voltage (-12 to 12) down to CR Servo power (-1.0 to 1.0)
-        double power = volts / 12.0;
+        // Map voltage (-Battery to +Battery) down to CR Servo power (-1.0 to 1.0)
+        double currentBattery = org.areslib.hardware.AresHardwareManager.getBatteryVoltage();
+        double power = volts / currentBattery;
         power = Math.max(-1.0, Math.min(1.0, power));
-        servo.setPower(power);
+        
+        if (Double.isNaN(lastSentPower) || Math.abs(power - lastSentPower) > CACHE_THRESHOLD) {
+            servo.setPower(power);
+            lastSentPower = power;
+        }
     }
 
     @Override
     public double getVoltage() {
-        return servo.getPower() * 12.0;
+        return (Double.isNaN(lastSentPower) ? 0.0 : lastSentPower) * org.areslib.hardware.AresHardwareManager.getBatteryVoltage();
     }
+
+    @Override
+    public void setCurrentPolling(boolean enabled) {}
+
+    @Override
+    public double getCurrentAmps() { return 0.0; }
 }
