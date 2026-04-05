@@ -30,6 +30,11 @@ public final class CommandScheduler {
 
     private CommandScheduler() {}
 
+    /**
+     * Registers a button binding loop to be executed periodically by the scheduler.
+     *
+     * @param button a Runnable representing the button's polling loop.
+     */
     public void addButton(Runnable button) {
         m_buttons.add(button);
     }

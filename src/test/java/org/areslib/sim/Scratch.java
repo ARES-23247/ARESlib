@@ -1,3 +1,5 @@
+package org.areslib.sim;
+
 import org.dyn4j.world.World;
 import java.lang.reflect.Method;
 public class Scratch {

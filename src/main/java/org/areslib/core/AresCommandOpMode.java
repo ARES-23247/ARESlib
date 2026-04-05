@@ -10,18 +10,45 @@ import org.areslib.telemetry.AresTelemetry;
 import java.util.List;
 
 /**
- * Base high-performance OpMode class.
- * Integrates PhotonCore for thread lock bypassing and enables manual bulk caching.
+ * Base high-performance OpMode class for the ARESLib framework.
+ * 
+ * <p>This class extends the standard FTC {@link LinearOpMode} to provide a highly optimized,
+ * pre-configured loop environment for command-based programming. It handles critical performance
+ * optimizations automatically, including:
+ * <ul>
+ *   <li>Manual bulk caching for identical I2C sensor reads across a single loop cycle.</li>
+ *   <li>Integration with the locally-vendored SolversLib PhotonCore extension for extreme I2C loop bypass efficiency.</li>
+ *   <li>Automatic hardware coprocessor cache clearing (OctoQuad, SRS Hub).</li>
+ *   <li>Execution of the {@link CommandScheduler} run cycle.</li>
+ *   <li>Automated updating of the {@link AresTelemetry} backend systems.</li>
+ * </ul>
+ * 
+ * Users should extend this class and implement the {@link #robotInit()} method to set up
+ * their robot hardware, subsystems, and default commands.
  */
 public abstract class AresCommandOpMode extends LinearOpMode {
 
     private List<LynxModule> allHubs;
 
     /**
-     * Subclasses must override this to initialize their robots (subsystems, default commands).
+     * Initialization routine for the robot.
+     * <p>
+     * Subclasses must override this method to perform initialization logic. This is where you should
+     * instantiate subsystems, configure hardware wrappers, and bind commands to gamepad triggers.
+     * This runs exactly once when the 'INIT' button is pressed on the Driver Station.
      */
     public abstract void robotInit();
 
+    /**
+     * The core execution method of the OpMode.
+     * <p>
+     * This method is marked final or controlled internally to ensure the high-performance loop
+     * executes correctly. Do not attempt to override the primary execution loop; build behavior
+     * using the {@link org.areslib.command.Command} architecture instead.
+     * 
+     * @throws InterruptedException if the thread is interrupted while waiting for start.
+     */
+    @Override
     public void runOpMode() throws InterruptedException {
         // Enable extensions automatically
         // pre-flight hooks go here.

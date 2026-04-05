@@ -17,10 +17,10 @@ public class DriveSimTests {
         // run 1 loop (0.02s)
         sim.updateInputs(inputs);
 
-        // Drive velocity = 10V * 3.0 = 30.0 m/s
-        assertEquals(30.0, inputs.driveVelocityMps, 0.001);
-        // Drive pos = 30.0 * 0.02 = 0.6 m
-        assertEquals(0.6, inputs.drivePositionMeters, 0.001);
+        // Drive velocity = 10V * 0.4 = 4.0 m/s
+        assertEquals(4.0, inputs.driveVelocityMps, 0.001);
+        // Drive pos = 4.0 * 0.02 = 0.08 m
+        assertEquals(0.08, inputs.drivePositionMeters, 0.001);
 
         // Turn velocity = 5V * 5.0 = 25.0 rad/s
         assertEquals(25.0, inputs.turnVelocityRadPerSec, 0.001);

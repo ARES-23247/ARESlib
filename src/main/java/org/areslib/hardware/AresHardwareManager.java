@@ -10,7 +10,12 @@ import org.areslib.telemetry.AresLoggableInputs;
 import org.areslib.telemetry.AresAutoLogger;
 
 /**
- * Manages physical and simulated external hardware configurations.
+ * Global manager for physical and simulated hardware environments in ARESLib.
+ * <p>
+ * This class abstracts the initialization and persistent state of advanced FTC coprocessors
+ * such as the OctoQuad (V1/V2) and custom SRS Hubs. It also manages system-level power 
+ * inputs like battery voltage and floodgate (current) sensors, computing a safe dynamic
+ * power scaling factor to prevent robot brownouts.
  */
 public class AresHardwareManager {
 
@@ -19,10 +24,14 @@ public class AresHardwareManager {
     private static VoltageSensor batteryVoltageSensor;
     private static org.areslib.hardware.sensors.AresAnalogSensor floodgateSensor;
 
+    /** The last measured system battery voltage. */
     public static double batteryVoltage = 12.0;
+    /** The last measured total chassis current in Amps. */
     public static double totalCurrentAmps = 0.0;
+    /** The computed master power multiplier (0.0 to 1.0) applied to chassis actuators. */
     public static double masterPowerScale = 1.0;
 
+    /** Loggable structured representation of the global power status. */
     public static class AresPowerInputs implements AresLoggableInputs {
         public double batteryVoltage = 12.0;
         public double totalCurrentAmps = 0.0;
@@ -30,14 +39,31 @@ public class AresHardwareManager {
     }
     private static final AresPowerInputs powerInputs = new AresPowerInputs();
 
+    /**
+     * Retrieves the currently active SRS Coprocessor Hub, if configured.
+     *
+     * @return The active {@link org.areslib.hardware.coprocessors.SRSHub}, or null if absent.
+     */
     public static org.areslib.hardware.coprocessors.SRSHub getActiveSrsHub() {
         return activeSrsHub;
     }
 
+    /**
+     * Retrieves the currently active OctoQuad Encoder interface, if configured.
+     *
+     * @return The active {@link AresOctoQuadDriver}, or null if absent.
+     */
     public static AresOctoQuadDriver getActiveOctoQuad() {
         return activeOctoQuad;
     }
 
+    /**
+     * Initializes the static hardware dependencies required for the ARESLib environment.
+     * This method automatically attempts to detect high-performance coprocessors and sets up
+     * the system power monitoring.
+     *
+     * @param hardwareMap The active robot {@link HardwareMap} provided by the current OpMode.
+     */
     public static void initHardware(HardwareMap hardwareMap) {
         try {
             // Auto-detect OctoQuad V1
@@ -90,10 +116,19 @@ public class AresHardwareManager {
         }
     }
 
+    /**
+     * Gets the current, globally cached battery voltage.
+     *
+     * @return Battery voltage in volts.
+     */
     public static double getBatteryVoltage() {
         return batteryVoltage;
     }
 
+    /**
+     * Calculates and updates the dynamic power scaling metrics based on current power draw
+     * and system voltage. Updates the underlying logging inputs to telemetry.
+     */
     public static void updatePowerStatus() {
         if (batteryVoltageSensor != null) {
             batteryVoltage = batteryVoltageSensor.getVoltage();
@@ -133,7 +168,10 @@ public class AresHardwareManager {
     }
 
     /**
-     * Gets one of the 3 nested I2C buses on the SRS Hub.
+     * Gets one of the nested I2C buses on the SRS Hub.
+     *
+     * @param bus The integer ID of the bus to access.
+     * @return The bus object, currently always null due to unresolved ARES dependencies.
      */
     public static Object getSrsI2cBus(int bus) {
         // Obsolete functionality, we don't bind embedded i2c inside the srs hub wrapper for simplicity currently.
@@ -151,7 +189,7 @@ public class AresHardwareManager {
     }
 
     /**
-     * Forces standard I2C cache refreshes for the bulk reads natively provided by hardware vendros.
+     * Forces standard I2C cache refreshes for the bulk reads natively provided by hardware vendors.
      */
     public static void clearCoprocessorCaches() {
         if (activeOctoQuad != null) {

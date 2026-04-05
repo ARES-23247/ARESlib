@@ -4,6 +4,11 @@ import org.areslib.hardware.sensors.AresEncoder;
 import org.areslib.hardware.sensors.AresAbsoluteEncoder;
 import org.areslib.hardware.interfaces.AresMotor;
 
+/**
+ * Concrete implementation of {@link SwerveModuleIO} for physical robot hardware.
+ * <p>
+ * This class maps the logical swerve module commands to actual FTC motors and encoders.
+ */
 public class SwerveModuleIOReal implements SwerveModuleIO {
     
     private final AresMotor driveMotor;
@@ -11,6 +16,14 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final AresEncoder driveEncoder;
     private final AresAbsoluteEncoder turnEncoder;
 
+    /**
+     * Constructs a physical Swerve Module IO layer.
+     *
+     * @param driveMotor   The hardware wrapper for the driving motor.
+     * @param turnMotor    The hardware wrapper for the steering/turning motor.
+     * @param driveEncoder The hardware wrapper for the driving encoder.
+     * @param turnEncoder  The hardware wrapper for the absolute steering encoder.
+     */
     public SwerveModuleIOReal(
             AresMotor driveMotor, 
             AresMotor turnMotor, 

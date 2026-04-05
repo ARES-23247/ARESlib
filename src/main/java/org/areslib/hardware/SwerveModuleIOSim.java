@@ -1,5 +1,12 @@
 package org.areslib.hardware;
 
+/**
+ * Simulated implementation of {@link SwerveModuleIO} for offline physics testing.
+ * <p>
+ * This class uses a simple first-order kinematic model to approximate motor velocities
+ * based on commanded voltages, integrating those velocities to track simulated positional state.
+ * Heading wrap-around is automatically handled.
+ */
 public class SwerveModuleIOSim implements SwerveModuleIO {
     // Basic physics constants (Kv)
     private static final double DRIVE_KV = 0.4; // meters per sec per volt (1.0 / 2.5 FF)

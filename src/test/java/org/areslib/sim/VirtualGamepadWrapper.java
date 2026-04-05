@@ -1,7 +1,6 @@
 package org.areslib.sim;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.studiohartman.jamepad.ControllerIndex;
 import com.studiohartman.jamepad.ControllerManager;
 import com.studiohartman.jamepad.ControllerState;
 

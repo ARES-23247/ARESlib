@@ -3,6 +3,10 @@ package org.areslib.subsystems.drive;
 import org.areslib.command.SubsystemBase;
 import org.areslib.hardware.SwerveModuleIO;
 
+/**
+ * AdvantageKit-style Swerve Drive Subsystem.
+ * Acts as the structural controller for handling physics logic across four modules.
+ */
 public class DriveSubsystem extends SubsystemBase {
 
     private final SwerveModuleIO frontLeft;
@@ -31,6 +35,13 @@ public class DriveSubsystem extends SubsystemBase {
     private final org.areslib.math.controller.PIDController[] turnPids = new org.areslib.math.controller.PIDController[4];
     private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(0.1, 2.5);
 
+    /**
+     * Constructs the DriveSubsystem.
+     * @param frontLeft The front left module IO.
+     * @param frontRight The front right module IO.
+     * @param backLeft The back left module IO.
+     * @param backRight The back right module IO.
+     */
     public DriveSubsystem(
             SwerveModuleIO frontLeft, 
             SwerveModuleIO frontRight, 
@@ -69,10 +80,27 @@ public class DriveSubsystem extends SubsystemBase {
         org.areslib.telemetry.AresTelemetry.logSwerveStates("Robot/SwerveActual", actualStates);
     }
 
+    /**
+     * @return The commanded X velocity in m/s.
+     */
     public double getCommandedVx() { return commandedVx; }
+
+    /**
+     * @return The commanded Y velocity in m/s.
+     */
     public double getCommandedVy() { return commandedVy; }
+
+    /**
+     * @return The commanded angular velocity in rad/s.
+     */
     public double getCommandedOmega() { return commandedOmega; }
 
+    /**
+     * Commands the swerve drive to move.
+     * @param forwardMetersPerSec The forward velocity in m/s (X axis).
+     * @param strafeMetersPerSec The strafe velocity in m/s (Y axis).
+     * @param turnRadPerSec The angular velocity in rad/s.
+     */
     public void drive(double forwardMetersPerSec, double strafeMetersPerSec, double turnRadPerSec) {
         this.commandedVx = forwardMetersPerSec;
         this.commandedVy = strafeMetersPerSec;

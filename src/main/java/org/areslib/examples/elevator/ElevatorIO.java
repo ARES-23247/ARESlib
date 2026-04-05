@@ -2,11 +2,21 @@ package org.areslib.examples.elevator;
 
 import org.areslib.telemetry.AresLoggableInputs;
 
+/**
+ * Example hardware abstraction interface for an Elevator subsystem.
+ */
 public interface ElevatorIO {
+    /**
+     * Data class containing all incoming sensor data from the elevator.
+     */
     class ElevatorInputs implements AresLoggableInputs {
+        /** The elevator's linear position in meters. */
         public double positionMeters = 0.0;
+        /** The elevator's linear velocity in meters per second. */
         public double velocityMps = 0.0;
+        /** The voltage currently applied to the motor. */
         public double appliedVolts = 0.0;
+        /** The electrical current drawn by the motor in amps. */
         public double currentAmps = 0.0;
     }
 

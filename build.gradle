@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'eclipse'
 }
 
 group = 'org.areslib'
@@ -19,12 +20,10 @@ configurations {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    compileOnly 'com.acmerobotics.dashboard:core:0.4.16'
-    testImplementation 'com.acmerobotics.dashboard:core:0.4.16'
+    implementation 'com.acmerobotics.dashboard:core:0.4.16'
     
     // Android Context Stub
-    compileOnly 'com.google.android:android:4.1.1.4'
-    testImplementation 'com.google.android:android:4.1.1.4'
+    implementation 'com.google.android:android:4.1.1.4'
 
     // Dashboard AAR
     ftcAars 'com.acmerobotics.dashboard:dashboard:0.4.16@aar'
@@ -58,8 +57,7 @@ configurations.ftcAars.resolvedConfiguration.lenientConfiguration.getArtifacts()
     }
     
     // Inject the extracted JAR directly back into the compile classpath
-    dependencies.add('compileOnly', files(jarFile))
-    dependencies.add('testImplementation', files(jarFile))
+    dependencies.add('implementation', files(jarFile))
 }
 
 test {

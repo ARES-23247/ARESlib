@@ -25,3 +25,7 @@ tmp_pedro_core/
 *.wpilog
 
 *.class
+
+# Added for template
+.gemini/
+tmp/

@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Socket-based real-time telemetry streaming backend.
+ * Streams AdvantageScope compatible packets over a TCP socket for remote viewing.
+ */
 public class RlogServerBackend implements AresLoggerBackend {
     private final Map<String, Integer> keyToId = new HashMap<>();
     private final List<byte[]> startRecordsCache = new ArrayList<>();
@@ -42,6 +46,10 @@ public class RlogServerBackend implements AresLoggerBackend {
         }
     }
 
+    /**
+     * Initializes an Rlog socket server.
+     * @param port The TCP port to listen on.
+     */
     public RlogServerBackend(int port) {
         startTimeMicrosec = System.nanoTime() / 1000L;
         cycleBuffer = ByteBuffer.allocate(1024 * 512).order(ByteOrder.BIG_ENDIAN);

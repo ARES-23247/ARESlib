@@ -7,6 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.areslib.hardware.wrappers.DcMotorExWrapper;
 import org.areslib.hardware.wrappers.ServoWrapper;
 
+/**
+ * Real hardware implementation of the ElevatorIO interface.
+ * Uses Ares wrappers for cached execution.
+ */
 public class ElevatorIOReal implements ElevatorIO {
     
     // We instantiate native Ares wrappers locally. Write-Caching happens completely transparently!
@@ -15,6 +19,10 @@ public class ElevatorIOReal implements ElevatorIO {
 
     private static final double METERS_PER_TICK = 0.001; // Example scale
 
+    /**
+     * Constructs a real elevator hardware IO instance.
+     * @param hardwareMap The hardware map to retrieve devices from.
+     */
     public ElevatorIOReal(HardwareMap hardwareMap) {
         // Automatically injects hardware directly into our caching wrappers
         this.motor = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "elevator_motor"));

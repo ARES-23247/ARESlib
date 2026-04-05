@@ -8,7 +8,11 @@ import org.areslib.telemetry.AresLoggableInputs;
  */
 public interface VisionIO {
     
-    public static class VisionInputs implements AresLoggableInputs {
+    /**
+     * Loggable data object containing vision processing state, including
+     * target offsets and 3D pose estimates.
+     */
+    class VisionInputs implements AresLoggableInputs {
         /** True if the vision processor currently sees a valid target. */
         public boolean hasTarget = false;
         
@@ -49,6 +53,8 @@ public interface VisionIO {
     
     /**
      * Changes the active vision pipeline execution index.
+     *
+     * @param index The index of the pipeline to switch to.
      */
     default void setPipeline(int index) {}
 }

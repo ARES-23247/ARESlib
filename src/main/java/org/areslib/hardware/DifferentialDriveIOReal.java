@@ -3,6 +3,11 @@ package org.areslib.hardware;
 import org.areslib.hardware.sensors.AresEncoder;
 import org.areslib.hardware.interfaces.AresMotor;
 
+/**
+ * Concrete implementation of {@link DifferentialDriveIO} for physical robot hardware.
+ * <p>
+ * This class maps the logical tank drive commands to actual FTC motors and encoders.
+ */
 public class DifferentialDriveIOReal implements DifferentialDriveIO {
 
     private final AresMotor leftMotor;
@@ -13,6 +18,15 @@ public class DifferentialDriveIOReal implements DifferentialDriveIO {
     
     private final double distancePerTick;
 
+    /**
+     * Constructs a physical DifferentialDrive IO layer.
+     *
+     * @param leftMotor       The hardware wrapper for the left driveline motor(s).
+     * @param rightMotor      The hardware wrapper for the right driveline motor(s).
+     * @param leftEncoder     The hardware wrapper for the left driveline encoder.
+     * @param rightEncoder    The hardware wrapper for the right driveline encoder.
+     * @param distancePerTick A scalar converting raw encoder ticks into meters of linear travel.
+     */
     public DifferentialDriveIOReal(
             AresMotor leftMotor, AresMotor rightMotor, 
             AresEncoder leftEncoder, AresEncoder rightEncoder, 

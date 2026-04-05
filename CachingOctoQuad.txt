@@ -1,7 +1,0 @@
-Compiled from "CachingOctoQuad.java"
-public interface com.qualcomm.hardware.digitalchickenlabs.CachingOctoQuad extends com.qualcomm.hardware.digitalchickenlabs.OctoQuadBase {
-  public abstract void setCachingMode(com.qualcomm.hardware.digitalchickenlabs.CachingOctoQuad$CachingMode);
-  public abstract void refreshCache();
-  public abstract int readSinglePosition_Caching(int);
-  public abstract short readSingleVelocity_Caching(int);
-}

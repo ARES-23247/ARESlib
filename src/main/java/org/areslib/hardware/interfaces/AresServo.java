@@ -1,5 +1,9 @@
 package org.areslib.hardware.interfaces;
 
+/**
+ * Hardware-agnostic interface for a standard PWM Servo.
+ * Used for manipulating robot appendages and linear actuators.
+ */
 public interface AresServo {
     /**
      * Sets the position of the servo.

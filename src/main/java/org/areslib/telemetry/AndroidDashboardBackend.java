@@ -3,10 +3,17 @@ package org.areslib.telemetry;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
+/**
+ * Telemetry backend for logging data to FTC Dashboard via network packets.
+ * For use strictly when deployed to Android-based FTC control systems.
+ */
 public class AndroidDashboardBackend implements AresLoggerBackend {
     private final FtcDashboard dashboard;
     private TelemetryPacket currentPacket;
 
+    /**
+     * Initializes the Android FTC Dashboard backend connection.
+     */
     public AndroidDashboardBackend() {
         dashboard = FtcDashboard.getInstance();
         currentPacket = new TelemetryPacket();

@@ -1,14 +1,15 @@
 package org.areslib.examples.elevator;
 
+/**
+ * Simulated implementation of the ElevatorIO interface.
+ * Incorporates basic physical modeling for testing without hardware.
+ */
 public class ElevatorIOSim implements ElevatorIO {
     
     // Sim State
     private double positionMeters = 0.0;
     private double velocityMps = 0.0;
     private double appliedVolts = 0.0;
-
-    // Optional: Sim Servo State
-    private double position = 0.0;
 
     // Simple physical constants
     private static final double KV = 0.2; // roughly 0.2 meters/second per volt
@@ -39,6 +40,6 @@ public class ElevatorIOSim implements ElevatorIO {
 
     @Override
     public void setGrabberServo(double position) {
-        this.position = position; // Servo moves instantly in sim
+        // Servo moves instantly in sim
     }
 }

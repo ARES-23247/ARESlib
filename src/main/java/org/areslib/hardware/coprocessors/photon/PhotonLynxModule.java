@@ -10,7 +10,7 @@ import com.qualcomm.hardware.lynx.commands.LynxRespondable;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class PhotonLynxModule extends LynxModule {
     private ArrayList<LynxMessage> skippedAcquire = new ArrayList<>();
 

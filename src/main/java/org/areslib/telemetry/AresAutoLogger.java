@@ -7,11 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * AdvantageKit-Style AutoLogger.
  * Uses a static HashSet mapped to the class structural bytes to read fields natively exactly ONCE.
- * Sub-zero loop latency compared to standard reflection!
+ * Sub-zero loop latency compared to standard reflection, effectively flattening nested objects.
  */
 public class AresAutoLogger {
 
-    // High performance cache so that getFields() is only ever called ONCE per data class.
+    /** High performance cache so that getFields() is only ever called ONCE per data class. */
     private static final Map<Class<?>, Field[]> fieldCache = new ConcurrentHashMap<>();
 
     /**
@@ -59,17 +59,29 @@ public class AresAutoLogger {
         }
     }
 
-    /** Manually track an arbitrary double. */
+    /** 
+     * Manually track an arbitrary double. 
+     * @param key Telemetry key
+     * @param value The value to log
+     */
     public static void recordOutput(String key, double value) {
         AresTelemetry.putNumber(key, value);
     }
 
-    /** Manually track an arbitrary String. */
+    /** 
+     * Manually track an arbitrary String. 
+     * @param key Telemetry key
+     * @param value The string to log
+     */
     public static void recordOutput(String key, String value) {
         AresTelemetry.putString(key, value);
     }
 
-    /** Manually track an arbitrary double array (like Swerve states!). */
+    /** 
+     * Manually track an arbitrary double array (like Swerve states or arbitrary vectors). 
+     * @param key Telemetry key
+     * @param value The double parameters to log
+     */
     public static void recordOutput(String key, double... value) {
         AresTelemetry.putNumberArray(key, value);
     }

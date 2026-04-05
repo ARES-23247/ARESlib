@@ -2,10 +2,18 @@ package org.areslib.examples.elevator;
 
 import org.areslib.command.Command;
 
+/**
+ * Example command demonstrating how to automatically home an elevator using current sensing.
+ * Moves the elevator down until a current spike indicates stalling against the physical hardstop.
+ */
 public class AutoHomeElevatorCommand extends Command {
 
     private final ElevatorSubsystem elevator;
 
+    /**
+     * Constructs an AutoHomeElevatorCommand.
+     * @param elevator The elevator subsystem to home.
+     */
     public AutoHomeElevatorCommand(ElevatorSubsystem elevator) {
         this.elevator = elevator;
         addRequirements(elevator);

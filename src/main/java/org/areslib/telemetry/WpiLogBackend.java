@@ -10,6 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Backend for logging telemetry directly to a .wpilog file.
+ * Creates AdvantageScope compatible on-disk logs.
+ */
 public class WpiLogBackend implements AresLoggerBackend {
     private final Map<String, Integer> keyToId = new HashMap<>();
     private int nextEntryId = 1; // ID 0 is reserved for controls
@@ -18,6 +22,10 @@ public class WpiLogBackend implements AresLoggerBackend {
     private ByteBuffer encodeBuffer;
     private FileOutputStream fileOutputStream;
 
+    /**
+     * Initializes the WPILog backend and creates the initial log file.
+     * @param directoryPath The directory path to store the .wpilog file.
+     */
     public WpiLogBackend(String directoryPath) {
         startTimeMicrosec = System.nanoTime() / 1000L;
         encodeBuffer = ByteBuffer.allocate(1024 * 64).order(ByteOrder.LITTLE_ENDIAN);

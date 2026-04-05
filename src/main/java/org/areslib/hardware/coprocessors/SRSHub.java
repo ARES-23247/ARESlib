@@ -752,6 +752,7 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
 
         protected final Encoder[] encoders = new Encoder[6];
 
+        @SuppressWarnings("unchecked")
         protected final ArrayList<I2CDevice>[] i2cBuses = new ArrayList[]{
             new ArrayList<I2CDevice>(),
             new ArrayList<I2CDevice>(),
