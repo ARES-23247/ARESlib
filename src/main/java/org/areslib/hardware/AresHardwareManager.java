@@ -22,7 +22,7 @@ public class AresHardwareManager {
     private static org.areslib.hardware.coprocessors.AresOctoQuadDriver activeOctoQuad;
     private static org.areslib.hardware.coprocessors.SRSHub activeSrsHub;
     private static VoltageSensor batteryVoltageSensor;
-    private static org.areslib.hardware.sensors.AresAnalogSensor floodgateSensor;
+    private static org.areslib.hardware.interfaces.AresAnalogSensor floodgateSensor;
 
     /** The last measured system battery voltage. */
     public static double batteryVoltage = 12.0;

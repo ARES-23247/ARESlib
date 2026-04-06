@@ -1,4 +1,4 @@
-package org.areslib.hardware;
+package org.areslib.subsystems.drive;
 
 import org.areslib.telemetry.AresLoggableInputs;
 

@@ -1,4 +1,4 @@
-package org.areslib.hardware;
+package org.areslib.subsystems.drive;
 
 /**
  * Simulated implementation of {@link MecanumDriveIO} for offline physics testing.

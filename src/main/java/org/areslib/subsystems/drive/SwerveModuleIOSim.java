@@ -1,4 +1,4 @@
-package org.areslib.hardware;
+package org.areslib.subsystems.drive;
 
 /**
  * Simulated implementation of {@link SwerveModuleIO} for offline physics testing.

@@ -1,8 +1,8 @@
 package org.areslib;
 
 import org.areslib.core.AresCommandOpMode;
-import org.areslib.hardware.SwerveModuleIOReal;
-import org.areslib.hardware.sensors.AresEncoder;
+import org.areslib.subsystems.drive.SwerveModuleIOReal;
+import org.areslib.hardware.interfaces.AresEncoder;
 import org.areslib.hardware.interfaces.AresMotor;
 import org.areslib.subsystems.drive.DriveSubsystem;
 import org.areslib.telemetry.AndroidDashboardBackend;
@@ -34,7 +34,7 @@ public class RobotAresOpMode extends AresCommandOpMode {
             @Override public double getPosition() { return 0.0; }
             @Override public double getVelocity() { return 0.0; }
         };
-        org.areslib.hardware.sensors.AresAbsoluteEncoder placeholderAbsolute = new org.areslib.hardware.sensors.AresAbsoluteEncoder() {
+        org.areslib.hardware.interfaces.AresAbsoluteEncoder placeholderAbsolute = new org.areslib.hardware.interfaces.AresAbsoluteEncoder() {
             @Override public void setDistancePerPulse(double distance) {}
             @Override public double getPosition() { return 0.0; }
             @Override public double getVelocity() { return 0.0; }

@@ -1,7 +1,7 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import org.areslib.hardware.sensors.AresColorSensor;
+import org.areslib.hardware.interfaces.AresColorSensor;
 
 public class AresRevColorSensor implements AresColorSensor {
     private final ColorSensor colorSensor;

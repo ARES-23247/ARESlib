@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.ArrayLidarIO;
+import org.areslib.hardware.interfaces.ArrayLidarIO;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;

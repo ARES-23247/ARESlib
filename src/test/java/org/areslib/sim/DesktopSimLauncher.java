@@ -3,7 +3,7 @@ package org.areslib.sim;
 import java.util.ArrayList;
 import java.util.List;
 import org.areslib.command.CommandScheduler;
-import org.areslib.hardware.SwerveModuleIOSim;
+import org.areslib.subsystems.drive.SwerveModuleIOSim;
 import org.areslib.hardware.wrappers.ArrayLidarIOSim;
 import org.areslib.subsystems.drive.DriveSubsystem;
 import org.areslib.telemetry.AresTelemetry;
@@ -51,7 +51,7 @@ public class DesktopSimLauncher {
         world.setGravity(World.ZERO_GRAVITY);
 
         ArrayLidarIOSim lidarSim = new ArrayLidarIOSim(() -> odometryInputs, world); 
-        org.areslib.hardware.sensors.ArrayLidarIO.ArrayLidarInputs lidarInputs = new org.areslib.hardware.sensors.ArrayLidarIO.ArrayLidarInputs();
+        org.areslib.hardware.interfaces.ArrayLidarIO.ArrayLidarInputs lidarInputs = new org.areslib.hardware.interfaces.ArrayLidarIO.ArrayLidarInputs();
 
         // Add 4 static walls representing the 144x144" FTC field.
         // AdvantageScope expects (0,0) at the center. X/Y span [-1.8288, 1.8288]

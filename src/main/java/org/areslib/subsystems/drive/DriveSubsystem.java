@@ -1,7 +1,7 @@
 package org.areslib.subsystems.drive;
 
 import org.areslib.command.SubsystemBase;
-import org.areslib.hardware.SwerveModuleIO;
+import org.areslib.subsystems.drive.SwerveModuleIO;
 
 /**
  * AdvantageKit-style Swerve Drive Subsystem.

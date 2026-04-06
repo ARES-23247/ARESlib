@@ -1,4 +1,4 @@
-package org.areslib.hardware.sensors;
+package org.areslib.hardware.interfaces;
 
 /**
  * Hardware-agnostic interface for an RGB-A color sensor (e.g., REV Color Sensor v3).

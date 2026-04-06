@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.AresAbsoluteEncoder;
+import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
 import org.areslib.hardware.AresHardwareManager;
 import org.areslib.hardware.coprocessors.AresOctoQuadDriver;
 import org.areslib.hardware.coprocessors.OctoMode;

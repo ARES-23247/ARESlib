@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.AresColorSensor;
+import org.areslib.hardware.interfaces.AresColorSensor;
 import org.areslib.hardware.AresHardwareManager;
 import java.lang.reflect.Method;
 

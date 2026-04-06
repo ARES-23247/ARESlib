@@ -7,7 +7,7 @@ import org.areslib.core.AresCommandOpMode;
 import org.areslib.command.CommandScheduler;
 import org.areslib.command.Command;
 import org.areslib.hardware.AresHardwareManager;
-import org.areslib.hardware.SwerveModuleIOReal;
+import org.areslib.subsystems.drive.SwerveModuleIOReal;
 import org.areslib.hardware.wrappers.AresGamepad;
 import org.areslib.hardware.wrappers.DcMotorExWrapper;
 import org.areslib.subsystems.drive.DriveSubsystem;

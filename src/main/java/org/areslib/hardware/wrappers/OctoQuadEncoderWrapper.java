@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.AresEncoder;
+import org.areslib.hardware.interfaces.AresEncoder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.lang.reflect.Method;
 

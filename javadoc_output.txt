@@ -1,0 +1,72 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :javadoc
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:259: error: bad HTML entity
+     * This has basically the same effect as negating pos & vel in user
+                                                          ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:1495: warning: no @param for <T>
+    public <T extends I2CDevice> T getI2CDevice(int bus, Class<T> deviceClass) {
+                                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:1530: warning: no @param for command
+    public void runCommand(Command command) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:449: warning: no @param for xPosition
+            public SetPositionCommand(int bus, float xPosition, float yPosition, float hOrientation) {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:449: warning: no @param for yPosition
+            public SetPositionCommand(int bus, float xPosition, float yPosition, float hOrientation) {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:449: warning: no @param for hOrientation
+            public SetPositionCommand(int bus, float xPosition, float yPosition, float hOrientation) {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\elevator\ElevatorIO.java:42: warning: no @param for enabled
+    default void setCurrentPolling(boolean enabled) {}
+                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ArrayLidarIOSim.java:18: warning: no @param for resolution
+    public ArrayLidarIOSim(int resolution, java.util.function.Supplier<org.areslib.hardware.interfaces.OdometryIO.OdometryInputs> odometrySupplier, World<Body> world) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ArrayLidarIOSim.java:18: warning: no @param for odometrySupplier
+    public ArrayLidarIOSim(int resolution, java.util.function.Supplier<org.areslib.hardware.interfaces.OdometryIO.OdometryInputs> odometrySupplier, World<Body> world) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ArrayLidarIOSim.java:18: warning: no @param for world
+    public ArrayLidarIOSim(int resolution, java.util.function.Supplier<org.areslib.hardware.interfaces.OdometryIO.OdometryInputs> odometrySupplier, World<Body> world) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ArrayLidarIOSim.java:25: warning: no @param for odometrySupplier
+    public ArrayLidarIOSim(java.util.function.Supplier<org.areslib.hardware.interfaces.OdometryIO.OdometryInputs> odometrySupplier, World<Body> world) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ArrayLidarIOSim.java:25: warning: no @param for world
+    public ArrayLidarIOSim(java.util.function.Supplier<org.areslib.hardware.interfaces.OdometryIO.OdometryInputs> odometrySupplier, World<Body> world) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\LimelightVisionWrapper.java:87: warning: no @return
+    public Limelight3A getRawDriver() {
+                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\RevIMUWrapper.java:22: warning: no @param for hardwareMap
+    public RevIMUWrapper(HardwareMap hardwareMap, String deviceName, IMU.Parameters parameters) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\RevIMUWrapper.java:22: warning: no @param for deviceName
+    public RevIMUWrapper(HardwareMap hardwareMap, String deviceName, IMU.Parameters parameters) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\RevIMUWrapper.java:22: warning: no @param for parameters
+    public RevIMUWrapper(HardwareMap hardwareMap, String deviceName, IMU.Parameters parameters) {
+           ^
+1 error
+15 warnings
+
+
+> Task :javadoc FAILED
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':javadoc'.
+> Javadoc generation failed. Generated Javadoc options file (useful for troubleshooting): 'C:\Users\david\dev\robotics\ftc\ARESLib2\build\tmp\javadoc\javadoc.options'
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 3s
+2 actionable tasks: 1 executed, 1 up-to-date

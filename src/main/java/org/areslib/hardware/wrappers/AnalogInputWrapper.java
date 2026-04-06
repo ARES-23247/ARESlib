@@ -1,7 +1,7 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import org.areslib.hardware.sensors.AresAnalogSensor;
+import org.areslib.hardware.interfaces.AresAnalogSensor;
 
 public class AnalogInputWrapper implements AresAnalogSensor {
     private final AnalogInput input;

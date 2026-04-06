@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.AresAbsoluteEncoder;
+import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
 import java.util.function.DoubleSupplier;
 
 /**

@@ -1,8 +1,8 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.AresAbsoluteEncoder;
-import org.areslib.hardware.sensors.AresAnalogSensor;
-import org.areslib.hardware.sensors.AresDigitalSensor;
+import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
+import org.areslib.hardware.interfaces.AresAnalogSensor;
+import org.areslib.hardware.interfaces.AresDigitalSensor;
 import org.areslib.hardware.AresHardwareManager;
 
 

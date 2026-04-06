@@ -1,4 +1,4 @@
-package org.areslib.hardware.sensors;
+package org.areslib.hardware.interfaces;
 
 /**
  * Extension of {@link AresEncoder} that adds support for absolute positioning.

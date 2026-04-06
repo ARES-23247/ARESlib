@@ -2,6 +2,7 @@ package org.areslib.hardware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+import org.areslib.subsystems.drive.*;
 
 public class DriveSimTests {
 

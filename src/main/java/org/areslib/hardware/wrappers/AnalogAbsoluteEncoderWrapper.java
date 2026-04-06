@@ -1,7 +1,7 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import org.areslib.hardware.sensors.AresAbsoluteEncoder;
+import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
 
 public class AnalogAbsoluteEncoderWrapper implements AresAbsoluteEncoder {
     

@@ -1,6 +1,6 @@
 package org.areslib.hardware.wrappers;
 
-import org.areslib.hardware.sensors.ArrayLidarIO;
+import org.areslib.hardware.interfaces.ArrayLidarIO;
 import org.areslib.hardware.AresHardwareManager;
 
 import java.lang.reflect.Method;

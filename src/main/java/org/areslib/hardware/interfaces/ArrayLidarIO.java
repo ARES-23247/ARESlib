@@ -1,4 +1,4 @@
-package org.areslib.hardware.sensors;
+package org.areslib.hardware.interfaces;
 
 import org.areslib.telemetry.AresLoggableInputs;
 

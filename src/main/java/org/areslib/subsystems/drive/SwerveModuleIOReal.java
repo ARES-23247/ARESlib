@@ -1,7 +1,7 @@
-package org.areslib.hardware;
+package org.areslib.subsystems.drive;
 
-import org.areslib.hardware.sensors.AresEncoder;
-import org.areslib.hardware.sensors.AresAbsoluteEncoder;
+import org.areslib.hardware.interfaces.AresEncoder;
+import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
 import org.areslib.hardware.interfaces.AresMotor;
 
 /**
