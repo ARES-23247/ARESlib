@@ -81,10 +81,16 @@ public class AresVisionSubsystem extends SubsystemBase {
             return null;
         }
 
+        double w = inputs.botPose3d[3];
+        double qX = inputs.botPose3d[4];
+        double qY = inputs.botPose3d[5];
+        double qZ = inputs.botPose3d[6];
+        double yawRadians = Math.atan2(2.0 * (w * qZ + qX * qY), 1.0 - 2.0 * (qY * qY + qZ * qZ));
+
         return new com.pedropathing.geometry.Pose(
             xMeters, 
             yMeters, 
-            inputs.botPose3d[5] // Yaw
+            yawRadians // Extracted Yaw from Quaternion
         );
     }
     

@@ -41,10 +41,10 @@ public class AresSensorFusionSubsystem extends SubsystemBase {
 
         Pose currentPose = odometry.getPose();
 
-        // CRITICAL: Vision outputs meters, but Pedro Pathing operates in inches.
-        // Convert vision coordinates to inches before blending.
-        double visionXInches = visionPose.getX() / 0.0254;
-        double visionYInches = visionPose.getY() / 0.0254;
+        // CRITICAL: Vision outputs meters (Center Origin), but Pedro Pathing operates in inches (Bottom-Left Origin).
+        // Convert vision coordinates to inches, and shift to Bottom-Left origin before blending.
+        double visionXInches = (visionPose.getX() / 0.0254) + 72.0;
+        double visionYInches = (visionPose.getY() / 0.0254) + 72.0;
         double visionHeading = visionPose.getHeading(); // Radians are unit-agnostic
 
         // Calculate dynamic interpolation weight based on camera confidence

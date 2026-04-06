@@ -27,12 +27,12 @@ public interface VisionIO {
         
         /** 
          * Struct array for the primary Robot Pose calculation (if computing AprilTags).
-         * Format matches AdvantageScope 3D Poses (Euler): [x, y, z, roll, pitch, yaw] in meters and radians.
+         * Format matches AdvantageScope 3D Poses (Quaternion): [x, y, z, w, i, j, k] in meters and quaternions.
          */
-        public double[] botPose3d = new double[6];
+        public double[] botPose3d = new double[7];
         
-        /** Optional secondary Pose structure (e.g. Megatag2). [x, y, z, roll, pitch, yaw] */
-        public double[] botPoseMegaTag2 = new double[6];
+        /** Optional secondary Pose structure (e.g. Megatag2). [x, y, z, w, i, j, k] */
+        public double[] botPoseMegaTag2 = new double[7];
 
         /** Network or pipeline latency overhead in milliseconds. */
         public double latencyMs = 0.0;

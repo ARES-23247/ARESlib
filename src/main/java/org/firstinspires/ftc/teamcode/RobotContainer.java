@@ -56,7 +56,8 @@ public class RobotContainer {
     
     // Hardware Integrations
     private final PinpointOdometryWrapper pinpoint;
-    private final OdometryIO.OdometryInputs pinpointInputs = new OdometryIO.OdometryInputs();
+    public final OdometryIO.OdometryInputs pinpointInputs = new OdometryIO.OdometryInputs();
+    public final org.areslib.hardware.interfaces.VisionIO.VisionInputs visionInputs = new org.areslib.hardware.interfaces.VisionIO.VisionInputs();
 
     // Input Devices
     private final AresGamepad driver;
@@ -133,7 +134,7 @@ public class RobotContainer {
             );
         } else {
             vision = new AresVisionSubsystem(
-                new org.areslib.hardware.interfaces.VisionIO() {}, // Null/Empty Sim for now
+                new org.areslib.hardware.wrappers.ArrayVisionIOSim(() -> getOdometryInputs()),
                 MIN_TARGET_AREA_PERCENT,
                 MAX_TRUST_AREA_PERCENT
             );
@@ -252,5 +253,12 @@ public class RobotContainer {
      */
     public OdometryIO.OdometryInputs getOdometryInputs() {
         return pinpointInputs;
+    }
+
+    /**
+     * Exposes the simulated Vision inputs for external manipulation.
+     */
+    public org.areslib.hardware.interfaces.VisionIO.VisionInputs getVisionInputs() {
+        return visionInputs;
     }
 }
