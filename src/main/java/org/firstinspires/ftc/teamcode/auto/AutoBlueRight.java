@@ -7,8 +7,8 @@ import org.areslib.telemetry.AresTelemetry;
 import org.areslib.telemetry.AndroidDashboardBackend;
 import org.firstinspires.ftc.teamcode.RobotContainer;
 
-@Autonomous(name = "Team Template: Pedro Path Auto", group = "Teamcode")
-public class MainAuto extends AresCommandOpMode {
+@Autonomous(name = "Auto: Blue Right", group = "Competition")
+public class AutoBlueRight extends AresCommandOpMode {
 
     private RobotContainer robot;
 
@@ -28,12 +28,12 @@ public class MainAuto extends AresCommandOpMode {
 
             AresTelemetry.putString("Match Info", "Waiting for match start...");
             AresTelemetry.putString("Vision Locked", String.valueOf(robot.getVision().hasTarget()));
-            AresTelemetry.putString("Auto Selection", "TeamAutoCommand");
+            AresTelemetry.putString("Auto Selection", "Blue Right Trajectories");
             AresTelemetry.update();
             sleep(20);
         }
 
-        // 4. Match Started: Schedule the autonomous routine!
-        CommandScheduler.getInstance().schedule(robot.getAutonomousCommand());
+        // 4. Match Started: Schedule the specific Blue Right autonomous routine!
+        CommandScheduler.getInstance().schedule(robot.getBlueRightAutoCommand());
     }
 }

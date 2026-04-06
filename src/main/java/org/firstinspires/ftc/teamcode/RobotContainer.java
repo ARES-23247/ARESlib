@@ -176,12 +176,17 @@ public class RobotContainer {
     }
 
     /**
-     * Use this to pass the autonomous command to the main {@code MainAuto} class.
-     *
-     * @return the command to run in autonomous
+     * Dispatcher for the Red Left Starting Position
      */
-    public Command getAutonomousCommand() {
-        // You can substitute this with any other chain via a smart dashboard selector!
+    public Command getRedLeftAutoCommand() {
+        return new TeamAutoCommand(follower, elevator);
+    }
+    
+    /**
+     * Dispatcher for the Blue Right Starting Position
+     */
+    public Command getBlueRightAutoCommand() {
+        // Here you would substitute `TeamAutoCommand` with your Blue Right specific trajectory chain!
         return new TeamAutoCommand(follower, elevator);
     }
     
