@@ -18,6 +18,11 @@ import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 import com.pedropathing.geometry.Pose;
+
+import org.areslib.sim.games.GameSimulation;
+import org.areslib.sim.games.IntoTheDeepSim;
+import org.areslib.sim.games.RobotSimState;
+
 public class DesktopSimLauncher {
 
     public static void main(String[] args) {
@@ -53,37 +58,11 @@ public class DesktopSimLauncher {
         ArrayLidarIOSim lidarSim = new ArrayLidarIOSim(() -> odometryInputs, world); 
         org.areslib.hardware.interfaces.ArrayLidarIO.ArrayLidarInputs lidarInputs = new org.areslib.hardware.interfaces.ArrayLidarIO.ArrayLidarInputs();
 
-        // Add 4 static walls representing the 144x144" FTC field.
-        // AdvantageScope expects (0,0) at the center. X/Y span [-1.8288, 1.8288]
-        double fieldSize = 3.6576;
-        double halfField = fieldSize / 2.0;
-        double wallThick = 0.1;
+        // Target active game state logic! Easily interchangeable for Centerstage, Into The Deep, etc.
+        GameSimulation gameSim = new IntoTheDeepSim();
+        gameSim.initField(world);
 
-        Body leftWall = new Body();
-        leftWall.addFixture(Geometry.createRectangle(wallThick, fieldSize + wallThick*2));
-        leftWall.translate(-halfField - wallThick/2.0, 0);
-        leftWall.setMass(MassType.INFINITE);
-        world.addBody(leftWall);
-
-        Body rightWall = new Body();
-        rightWall.addFixture(Geometry.createRectangle(wallThick, fieldSize + wallThick*2));
-        rightWall.translate(halfField + wallThick/2.0, 0);
-        rightWall.setMass(MassType.INFINITE);
-        world.addBody(rightWall);
-
-        Body bottomWall = new Body();
-        bottomWall.addFixture(Geometry.createRectangle(fieldSize + wallThick*2, wallThick));
-        bottomWall.translate(0, -halfField - wallThick/2.0);
-        bottomWall.setMass(MassType.INFINITE);
-        world.addBody(bottomWall);
-
-        Body topWall = new Body();
-        topWall.addFixture(Geometry.createRectangle(fieldSize + wallThick*2, wallThick));
-        topWall.translate(0, halfField + wallThick/2.0);
-        topWall.setMass(MassType.INFINITE);
-        world.addBody(topWall);
-
-        // Create Robot Rigid Body (18x18 inches = 0.4572m square)
+        // Create Primary Robot Rigid Body (18x18 inches = 0.4572m square)
         Body robotBody = new Body();
         robotBody.addFixture(Geometry.createRectangle(0.4572, 0.4572));
         robotBody.setMass(MassType.NORMAL);
@@ -91,28 +70,17 @@ public class DesktopSimLauncher {
         robotBody.getTransform().setRotation(startPose.getHeading());
         world.addBody(robotBody);
 
-        // Spawn interactive Game Pieces (Samples)
-        List<Body> gamePieces = new ArrayList<>();
-        double[][] sampleSpawns = {
-            {0.5, 0.5}, {0.5, 0.0}, {0.5, -0.5}
-        };
-        for (double[] spawn : sampleSpawns) {
-            Body sample = new Body();
-            sample.addFixture(Geometry.createRectangle(0.0889, 0.0381)); // 3.5" x 1.5"
-            sample.setMass(MassType.NORMAL);
-            sample.translate(spawn[0], spawn[1]);
-            world.addBody(sample);
-            gamePieces.add(sample);
-        }
-
         // Driver Station GUI Init
         AresDriverStationApp dsApp = new AresDriverStationApp();
         AresGamepad driverGamepad = new AresGamepad(dsApp.getGamepadWrapper().gamepad);
+        
+        // Form standard list array of active robots for the simulator context
+        List<RobotSimState> activeRobots = new ArrayList<>();
+        activeRobots.add(new RobotSimState(robotBody, dsApp.getGamepadWrapper().gamepad));
 
         System.out.println("Sim Started! Connect AdvantageScope to 127.0.0.1");
 
         // 3. Application Math Core
-        int heldSamples = 0;
         try {
             while (true) {
                 long startTime = System.currentTimeMillis();
@@ -135,46 +103,9 @@ public class DesktopSimLauncher {
                     gamepad.x,
                     gamepad.y
                 );
-
-                boolean intakeBtn = gamepad.right_bumper;
-                boolean outtakeBtn = gamepad.left_bumper;
                 
-                double rx = robotBody.getTransform().getTranslationX();
-                double ry = robotBody.getTransform().getTranslationY();
-                double theta = robotBody.getTransform().getRotationAngle();
-                
-                double intakePointX = rx + Math.cos(theta) * 0.25;
-                double intakePointY = ry + Math.sin(theta) * 0.25;
-                
-                if (intakeBtn) {
-                    Body toRemove = null;
-                    for (Body piece : gamePieces) {
-                        double dx = piece.getTransform().getTranslationX() - intakePointX;
-                        double dy = piece.getTransform().getTranslationY() - intakePointY;
-                        if (Math.sqrt(dx*dx + dy*dy) <= 0.15) {
-                            toRemove = piece;
-                            break;
-                        }
-                    }
-                    if (toRemove != null) {
-                        gamePieces.remove(toRemove);
-                        world.removeBody(toRemove);
-                        heldSamples++;
-                    }
-                }
-                
-                if (outtakeBtn && heldSamples > 0) {
-                    Body newPiece = new Body();
-                    newPiece.addFixture(Geometry.createRectangle(0.0889, 0.0381));
-                    newPiece.setMass(MassType.NORMAL);
-                    newPiece.translate(intakePointX, intakePointY);
-                    newPiece.getTransform().setRotation(theta);
-                    world.addBody(newPiece);
-                    gamePieces.add(newPiece);
-                    heldSamples--;
-                }
-                
-                AresTelemetry.putNumber("Robot/HeldSamples", heldSamples);
+                // Process physical game piece interactions natively through the decoupled season class
+                gameSim.updateField(world, activeRobots);
 
                 // 2. Fake TeleOp Control Mapping
                 double driveY = driverGamepad.getLeftY() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedForward;
@@ -193,7 +124,7 @@ public class DesktopSimLauncher {
                 // Scheduler Tick
                 CommandScheduler.getInstance().run();
 
-                // Fake Physics Integration (20ms loop)
+                // Fake Physics Integration (20ms)
                 double loopSecs = 0.02;
                 double vx = driveSubsystem.getCommandedVx();      // Robot-centric forward (m/s)
                 double vy = driveSubsystem.getCommandedVy();      // Robot-centric left (m/s)
@@ -222,33 +153,19 @@ public class DesktopSimLauncher {
                 org.areslib.telemetry.AresAutoLogger.processInputs("Sensors/LiDAR", lidarInputs);
                 org.areslib.telemetry.AresAutoLogger.processInputs("Pedro/Odometry", odometryInputs);
                 
-                // Publish Pose2d using the modern struct format to avoid deprecation warnings
+                // Publish Pose2d
                 AresTelemetry.putPose2d("Robot/Pose", 
                     odometryInputs.xMeters, 
                     odometryInputs.yMeters, 
                     odometryInputs.headingRadians 
                 );
 
-                // Fetch Game Piece Coordinates
-                double[] gamePieceArray = new double[gamePieces.size() * 7];
-                for (int i = 0; i < gamePieces.size(); i++) {
-                    Body piece = gamePieces.get(i);
-                    gamePieceArray[i * 7] = piece.getTransform().getTranslationX();
-                    gamePieceArray[i * 7 + 1] = piece.getTransform().getTranslationY();
-                    gamePieceArray[i * 7 + 2] = 0.019; // 0.75 inches up (half height of 1.5in block)
-                    
-                    double t = piece.getTransform().getRotationAngle();
-                    gamePieceArray[i * 7 + 3] = Math.cos(t / 2.0); // qw
-                    gamePieceArray[i * 7 + 4] = 0; // qx
-                    gamePieceArray[i * 7 + 5] = 0; // qy
-                    gamePieceArray[i * 7 + 6] = Math.sin(t / 2.0); // qz
-                }
-                AresTelemetry.putNumberArray("Field/Samples", gamePieceArray);
-                AresTelemetry.putNumberArray("Debug/IntakePoint", new double[]{intakePointX, intakePointY, 0.0, 1.0, 0, 0, 0});
+                // Push Field States
+                gameSim.telemetryUpdate();
 
                 // Telemetry Event Push
                 AresTelemetry.update();
-                dsApp.updateHud(odometryInputs.xMeters, odometryInputs.yMeters, odometryInputs.headingRadians, heldSamples);
+                dsApp.updateHud(odometryInputs.xMeters, odometryInputs.yMeters, odometryInputs.headingRadians, 0); // Removed heldSamples from core HUD payload, its game-specific
 
                 // Precise 50Hz sleep
                 long loopTime = System.currentTimeMillis() - startTime;
