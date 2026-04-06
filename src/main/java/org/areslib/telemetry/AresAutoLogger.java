@@ -25,7 +25,13 @@ public class AresAutoLogger {
         Class<?> clazz = inputs.getClass();
         
         // Cache read lock: Instantly pulls the pre-allocated Field layout array
-        Field[] fields = fieldCache.computeIfAbsent(clazz, Class::getFields);
+        Field[] fields = fieldCache.computeIfAbsent(clazz, c -> {
+            Field[] flds = c.getDeclaredFields();
+            for (Field f : flds) {
+                f.setAccessible(true);
+            }
+            return flds;
+        });
 
         // Raw loop: Directly invokes final array indices over memory
         for (Field field : fields) {
@@ -47,6 +53,14 @@ public class AresAutoLogger {
                     AresTelemetry.putString(key, (String) value);
                 } else if (type == double[].class) {
                     AresTelemetry.putNumberArray(key, (double[]) value);
+                } else if (type == org.areslib.math.kinematics.SwerveModuleState[].class) {
+                    org.areslib.math.kinematics.SwerveModuleState[] states = (org.areslib.math.kinematics.SwerveModuleState[]) value;
+                    double[] arr = new double[states.length * 2];
+                    for (int i = 0; i < states.length; i++) {
+                        arr[i * 2] = states[i].angle.getRadians();
+                        arr[i * 2 + 1] = states[i].speedMetersPerSecond; // AdvantageScope maps [angle, speed, angle, speed...]
+                    }
+                    AresTelemetry.putNumberArray(key, arr);
                 }
                 
                 // Note: Complex objects not explicitly supported above are ignored safely 

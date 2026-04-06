@@ -25,8 +25,15 @@ public final class CommandScheduler {
     // Subsystems required by currently executing commands
     private final Map<Subsystem, Command> m_requirements = new LinkedHashMap<>();
 
+    // Buffer for commands scheduled during iteration
+    private final java.util.List<Command> m_toSchedule = new java.util.ArrayList<>();
+    private boolean m_isIterating = false;
+
+    // Loop boundary diagnostics
+    private static final org.areslib.faults.AresAlert loopTimeAlert = new org.areslib.faults.AresAlert("Loop execution exceeding 10ms deadline!", org.areslib.faults.AresAlert.AlertType.WARNING);
+
     // Button bindings loops
-    private final java.util.List<Runnable> m_buttons = new java.util.ArrayList<>();
+    private final java.util.List<Runnable> m_buttons = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     private CommandScheduler() {}
 
@@ -73,6 +80,14 @@ public final class CommandScheduler {
     }
 
     /**
+     * Returns an unmodifiable set of all registered subsystems.
+     * Useful for external backend enumerators like physical simulators.
+     */
+    public java.util.Set<Subsystem> getSubsystems() {
+        return java.util.Collections.unmodifiableSet(m_subsystems);
+    }
+
+    /**
      * Sets the default command for a subsystem. The default command will run whenever there is no
      * other command currently scheduled that requires the subsystem.
      *
@@ -92,6 +107,11 @@ public final class CommandScheduler {
      * @param command the command to schedule
      */
     public void schedule(Command command) {
+        if (m_isIterating) {
+            m_toSchedule.add(command);
+            return;
+        }
+
         if (m_scheduledCommands.contains(command)) {
             return; // Already scheduled
         }
@@ -156,12 +176,11 @@ public final class CommandScheduler {
      * <p>5. Commands that have finished their run are removed, and their end() methods are called.
      */
     public void run() {
+        long loopStart = System.nanoTime();
+
         // 1. Run subsystem periodics
         for (Subsystem subsystem : m_subsystems) {
             subsystem.periodic();
-            if (org.areslib.core.AresRobot.isSimulation()) {
-                subsystem.simulationPeriodic();
-            }
         }
 
         // 2. Schedule default commands
@@ -177,6 +196,7 @@ public final class CommandScheduler {
         }
 
         // 4. Execute commands
+        m_isIterating = true;
         Set<Command> commandsToRemove = new LinkedHashSet<>();
         for (Command command : m_scheduledCommands) {
             command.execute();
@@ -185,6 +205,7 @@ public final class CommandScheduler {
                 commandsToRemove.add(command);
             }
         }
+        m_isIterating = false;
 
         // 5. Clean up finished commands
         for (Command command : commandsToRemove) {
@@ -193,6 +214,17 @@ public final class CommandScheduler {
                 m_requirements.remove(req);
             }
         }
+
+        // 6. Schedule buffered commands
+        for (Command command : m_toSchedule) {
+            schedule(command);
+        }
+        m_toSchedule.clear();
+
+        // 7. Loop Timing Diagnostics
+        double loopTimeMs = (System.nanoTime() - loopStart) / 1_000_000.0;
+        org.areslib.telemetry.AresAutoLogger.recordOutput("Ares/LoopTime_ms", loopTimeMs);
+        loopTimeAlert.set(loopTimeMs > 10.0);
     }
 
     /**
