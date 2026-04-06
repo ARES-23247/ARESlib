@@ -10,8 +10,6 @@ public class ElevatorSubsystem implements Subsystem {
 
     // Standard PID gains for demonstration (teams should tune these)
     private static final double kP = 50.0;
-    private static final double kI = 0.0;
-    private static final double kD = 0.5;
     private static final double kG = 0.2; // Gravity feedforward
     
     private double targetPositionMeters = 0.0;

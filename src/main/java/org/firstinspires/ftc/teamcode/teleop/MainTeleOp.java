@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.RobotContainer;
  */
 @TeleOp(name = "Team Template: Advanced Command TeleOp", group = "Teamcode")
 public class MainTeleOp extends AresCommandOpMode {
-
+    @SuppressWarnings("unused")
     private RobotContainer robot;
 
     @Override
