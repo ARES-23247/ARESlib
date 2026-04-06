@@ -1,7 +1,7 @@
 package org.areslib.subsystems.drive;
 
 import org.areslib.command.SubsystemBase;
-
+import org.firstinspires.ftc.teamcode.subsystems.drive.SwerveConfig;
 /**
  * AdvantageKit-style Swerve Drive Subsystem.
  * Acts as the structural controller for handling physics logic across four modules.

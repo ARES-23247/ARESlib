@@ -1,6 +1,7 @@
 package org.areslib.subsystems.drive;
 
 import org.areslib.command.SubsystemBase;
+import org.firstinspires.ftc.teamcode.subsystems.drive.DifferentialConfig;
 
 /**
  * AdvantageKit-style Differential Drive Subsystem.

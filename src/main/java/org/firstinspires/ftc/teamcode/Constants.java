@@ -54,7 +54,7 @@ public final class Constants {
         public static final double MAX_ROT_SPEED = 2.5;
 
         // Swerve Physical Configuration
-        public static final org.areslib.subsystems.drive.SwerveConfig SWERVE_CONFIG = new org.areslib.subsystems.drive.SwerveConfig();
+        public static final org.firstinspires.ftc.teamcode.subsystems.drive.SwerveConfig SWERVE_CONFIG = new org.firstinspires.ftc.teamcode.subsystems.drive.SwerveConfig();
         static {
             SWERVE_CONFIG.trackWidthXMeters = 0.3;
             SWERVE_CONFIG.trackWidthYMeters = 0.3;
@@ -79,7 +79,7 @@ public final class Constants {
             SWERVE_CONFIG.maxAccelerationMps2 = 4.0; // 4 m/s^2 slew rate limit
         }
 
-        public static final org.areslib.subsystems.drive.MecanumConfig MECANUM_CONFIG = new org.areslib.subsystems.drive.MecanumConfig();
+        public static final org.firstinspires.ftc.teamcode.subsystems.drive.MecanumConfig MECANUM_CONFIG = new org.firstinspires.ftc.teamcode.subsystems.drive.MecanumConfig();
         static {
             MECANUM_CONFIG.maxAccelerationMps2 = 4.0; // 4 m/s^2 slew rate limit
             MECANUM_CONFIG.trackwidthMeters = 0.35; // 35cm
@@ -95,7 +95,7 @@ public final class Constants {
             MECANUM_CONFIG.driveKs = 0.1;
         }
 
-        public static final org.areslib.subsystems.drive.DifferentialConfig DIFFERENTIAL_CONFIG = new org.areslib.subsystems.drive.DifferentialConfig();
+        public static final org.firstinspires.ftc.teamcode.subsystems.drive.DifferentialConfig DIFFERENTIAL_CONFIG = new org.firstinspires.ftc.teamcode.subsystems.drive.DifferentialConfig();
         static {
             DIFFERENTIAL_CONFIG.maxAccelerationMps2 = 4.0; // 4 m/s^2 slew rate limit
             DIFFERENTIAL_CONFIG.trackwidthMeters = 0.40; // 40cm

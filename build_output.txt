@@ -1,0 +1,31 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar UP-TO-DATE
+> Task :assemble UP-TO-DATE
+
+> Task :compileTestJava FAILED
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:37: error: cannot find symbol
+        org.firstinspires.ftc.teamcode.SwerveConfig config = new org.firstinspires.ftc.teamcode.SwerveConfig();
+                                      ^
+  symbol:   class SwerveConfig
+  location: package org.firstinspires.ftc.teamcode
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:37: error: cannot find symbol
+        org.firstinspires.ftc.teamcode.SwerveConfig config = new org.firstinspires.ftc.teamcode.SwerveConfig();
+                                                                                               ^
+  symbol:   class SwerveConfig
+  location: package org.firstinspires.ftc.teamcode
+2 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileTestJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1s
+3 actionable tasks: 1 executed, 2 up-to-date

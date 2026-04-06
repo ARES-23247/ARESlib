@@ -64,7 +64,7 @@ public class SwerveRevOctoQuadTeleOp extends AresCommandOpMode {
         // Map the goBILDA floodgate switch (Physically connected to SRS Hub digital port 0)
         floodgateSwitch = new AresSrsSensor(0, SrsMode.DIGITAL);
 
-        org.areslib.subsystems.drive.SwerveConfig config = new org.areslib.subsystems.drive.SwerveConfig();
+        org.firstinspires.ftc.teamcode.subsystems.drive.SwerveConfig config = new org.firstinspires.ftc.teamcode.subsystems.drive.SwerveConfig();
         
         // 3. Initialize Swerve Drive Subsystem wrapping mixed hardware seamlessly
         driveSubsystem = new SwerveDriveSubsystem(

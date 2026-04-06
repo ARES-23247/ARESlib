@@ -1,4 +1,4 @@
-package org.areslib.subsystems.drive;
+package org.firstinspires.ftc.teamcode.subsystems.drive;
 
 /**
  * Configuration data class for the SwerveDriveSubsystem.
