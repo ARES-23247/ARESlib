@@ -317,7 +317,6 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
         for(LynxModule m : replacements.keySet()){
             usbDevice.removeConfiguredModule(m);
             try {
-                // TODO: check new code
                 ConcurrentHashMap<Integer, LynxModule> knownModules = (ConcurrentHashMap<Integer, LynxModule>) ReflectionUtils.getField(usbDevice.getClass(), "knownModules").get(usbDevice);
                 synchronized (knownModules) {
                     PhotonLynxModule photonLynxModule = replacements.get(m);
