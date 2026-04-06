@@ -49,13 +49,30 @@ public class VisionSubsystem implements Subsystem {
     }
 
     /**
-     * @return Field-centric 2D pose estimated by the vision system. Null if no target.
+     * @return Field-centric 2D pose estimated by the vision system. Null if target isn't trustworthy.
      */
     public com.pedropathing.geometry.Pose getEstimatedGlobalPose() {
         if (!inputs.hasTarget) return null;
+
+        // Sanity Check 1: Is the robot floating? 
+        // If the vision system thinks the robot's center is floating > 0.5 meters in the air
+        // or buried deep underground, it is a ghost reflection.
+        double zElevationMeters = inputs.botPose3d[2];
+        if (zElevationMeters > 0.5 || zElevationMeters < -0.5) return null;
+
+        // Sanity Check 2: Are we physically outside the FTC Field?
+        // An FTC field is 12x12 ft (approx 3.65 x 3.65 meters).
+        // Assuming Limelight uses center-field (0,0), boundaries are -1.82 to 1.82 meters.
+        // We afford a generous 2.5-meter radius buffer before rejecting cleanly.
+        double xMeters = inputs.botPose3d[0];
+        double yMeters = inputs.botPose3d[1];
+        if (Math.abs(xMeters) > 2.5 || Math.abs(yMeters) > 2.5) {
+            return null;
+        }
+
         return new com.pedropathing.geometry.Pose(
-            inputs.botPose3d[0], 
-            inputs.botPose3d[1], 
+            xMeters, 
+            yMeters, 
             inputs.botPose3d[5] // Yaw
         );
     }
@@ -67,6 +84,10 @@ public class VisionSubsystem implements Subsystem {
     public double getPoseConfidence() {
         if (!inputs.hasTarget) return 0.0;
         
+        // Sanity Check 3: Is it way too small/ambiguous?
+        // If the target consumes less than 0.1% of the image, we don't trust it enough to blend.
+        if (inputs.ta < 0.1) return 0.0;
+
         // Simple heuristic: larger area = higher confidence. Cap at 1.0.
         // A single tag taking up > 1.5% of the screen is very clear and close.
         double confidence = inputs.ta / 1.5; 
