@@ -19,6 +19,12 @@ import org.areslib.telemetry.AresTelemetry;
 import org.areslib.telemetry.AndroidDashboardBackend;
 import org.areslib.telemetry.WpiLogBackend;
 
+import org.areslib.hardware.wrappers.PinpointOdometryWrapper;
+import org.areslib.hardware.wrappers.DigitalSensorWrapper;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import org.areslib.hardware.interfaces.OdometryIO;
+import org.areslib.telemetry.AresAutoLogger;
+
 import java.util.Arrays;
 
 /**
@@ -36,6 +42,10 @@ public class SwerveRevOctoQuadTeleOp extends AresCommandOpMode {
     private SwerveDriveSubsystem driveSubsystem;
     private AresGamepad pilot;
 
+    private PinpointOdometryWrapper pinpoint;
+    private OdometryIO.OdometryInputs pinpointInputs = new OdometryIO.OdometryInputs();
+    private DigitalSensorWrapper floodgateSwitch;
+
     @Override
     public void robotInit() {
         // 1. Initialize Telemetry Backends
@@ -45,6 +55,12 @@ public class SwerveRevOctoQuadTeleOp extends AresCommandOpMode {
         // 2. Hardware Bulk Caching & Global Hardware Manager Initialization
         // This will automatically find and instantiate the "octoquad" from the FTC Hardware Map
         AresHardwareManager.initHardware(hardwareMap);
+
+        // Map the goBILDA pinpoint hardware
+        pinpoint = new PinpointOdometryWrapper(hardwareMap, "pinpoint");
+        
+        // Map the goBILDA floodgate switch
+        floodgateSwitch = new DigitalSensorWrapper(hardwareMap.get(DigitalChannel.class, "floodgate"));
 
         // 3. Initialize Swerve Drive Subsystem wrapping mixed hardware seamlessly
         driveSubsystem = new SwerveDriveSubsystem(
@@ -88,6 +104,11 @@ public class SwerveRevOctoQuadTeleOp extends AresCommandOpMode {
         CommandScheduler.getInstance().setDefaultCommand(driveSubsystem, new Command() {
             @Override
             public void execute() {
+                // Update and log additional hardware state
+                pinpoint.updateInputs(pinpointInputs);
+                AresAutoLogger.processInputs("PinpointOdometry", pinpointInputs);
+                AresAutoLogger.recordOutput("Hardware/FloodgateSwitch", floodgateSwitch.getState() ? 1.0 : 0.0);
+
                 driveSubsystem.drive(
                     pilot.getLeftY() * 3.0,   // Forward Velocity (m/s)
                     pilot.getLeftX() * 3.0,   // Strafe Velocity (m/s)

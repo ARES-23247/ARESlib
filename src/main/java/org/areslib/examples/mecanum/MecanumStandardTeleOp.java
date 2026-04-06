@@ -15,6 +15,12 @@ import org.areslib.subsystems.drive.MecanumDriveIOReal;
 import org.areslib.telemetry.AresTelemetry;
 import org.areslib.telemetry.AndroidDashboardBackend;
 
+import org.areslib.hardware.wrappers.PinpointOdometryWrapper;
+import org.areslib.hardware.wrappers.DigitalSensorWrapper;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import org.areslib.hardware.interfaces.OdometryIO;
+import org.areslib.telemetry.AresAutoLogger;
+
 import java.util.Arrays;
 
 /**
@@ -31,6 +37,10 @@ public class MecanumStandardTeleOp extends AresCommandOpMode {
     private MecanumDriveSubsystem driveSubsystem;
     private AresGamepad pilot;
 
+    private PinpointOdometryWrapper pinpoint;
+    private OdometryIO.OdometryInputs pinpointInputs = new OdometryIO.OdometryInputs();
+    private DigitalSensorWrapper floodgateSwitch;
+
     @Override
     public void robotInit() {
         // 1. Initialize Telemetry Backends
@@ -38,6 +48,12 @@ public class MecanumStandardTeleOp extends AresCommandOpMode {
 
         // 2. Hardware Bulk Caching Initialization
         AresHardwareManager.initHardware(hardwareMap);
+
+        // Map the goBILDA pinpoint hardware
+        pinpoint = new PinpointOdometryWrapper(hardwareMap, "pinpoint");
+        
+        // Map the goBILDA floodgate switch
+        floodgateSwitch = new DigitalSensorWrapper(hardwareMap.get(DigitalChannel.class, "floodgate"));
 
         // 3. Initialize Mecanum Drive Subsystem
         DcMotorExWrapper fl = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "flDrive"));
@@ -62,6 +78,11 @@ public class MecanumStandardTeleOp extends AresCommandOpMode {
         CommandScheduler.getInstance().setDefaultCommand(driveSubsystem, new Command() {
             @Override
             public void execute() {
+                // Update and log additional hardware state
+                pinpoint.updateInputs(pinpointInputs);
+                AresAutoLogger.processInputs("PinpointOdometry", pinpointInputs);
+                AresAutoLogger.recordOutput("Hardware/FloodgateSwitch", floodgateSwitch.getState() ? 1.0 : 0.0);
+
                 driveSubsystem.drive(
                     pilot.getLeftY() * 2.5,   // Forward Velocity (m/s)
                     pilot.getLeftX() * 2.5,   // Strafe Velocity (m/s)
