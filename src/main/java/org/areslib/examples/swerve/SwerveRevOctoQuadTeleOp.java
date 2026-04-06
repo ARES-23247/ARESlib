@@ -110,10 +110,11 @@ public class SwerveRevOctoQuadTeleOp extends AresCommandOpMode {
                 AresAutoLogger.processInputs("PinpointOdometry", pinpointInputs);
                 AresAutoLogger.recordOutput("Hardware/FloodgateSwitch", floodgateSwitch.getState() ? 1.0 : 0.0);
 
-                driveSubsystem.drive(
+                driveSubsystem.driveFieldCentric(
                     pilot.getLeftY() * 3.0,   // Forward Velocity (m/s)
                     pilot.getLeftX() * 3.0,   // Strafe Velocity (m/s)
-                    pilot.getRightX() * 2.0   // Angular Velocity (rad/s)
+                    pilot.getRightX() * 3.0,  // Angular Velocity (rad/s)
+                    new org.areslib.math.geometry.Rotation2d(pinpointInputs.headingRadians)
                 );
             }
 

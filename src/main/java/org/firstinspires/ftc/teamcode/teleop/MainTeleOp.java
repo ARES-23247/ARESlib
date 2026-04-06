@@ -24,13 +24,12 @@ public class MainTeleOp extends AresCommandOpMode {
         robot = new RobotContainer(hardwareMap, gamepad1, gamepad2);
 
         // 3. Loop until play is clicked via the DS
-        while (!isStarted() && !isStopRequested()) {
-            AresTelemetry.putString("Match Info", "Waiting for TeleOp to commence...");
+        while (opModeInInit()) {
+            AresTelemetry.putString("Match Info", "Waiting for TeleOp start...");
             AresTelemetry.update();
             sleep(20);
         }
 
         // 4. Match commenced: Signal LEDs / Reset Gyros
-        robot.getFollower().setPose(new com.pedropathing.geometry.Pose(0.0, 0.0, 0.0)); // Optional teleop origin lock
     }
 }

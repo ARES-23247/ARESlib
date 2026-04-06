@@ -59,6 +59,20 @@ public class MecanumDriveSubsystem extends SubsystemBase {
     public double getCommandedOmega() { return commandedOmega; }
 
     /**
+     * Commands the mecanum drive to move in a field-centric manner.
+     * @param vxMetersPerSec The X velocity (field relative) in m/s.
+     * @param vyMetersPerSec The Y velocity (field relative) in m/s.
+     * @param omegaRadPerSec The angular velocity in rad/s.
+     * @param robotHeading The current robot heading.
+     */
+    public void driveFieldCentric(double vxMetersPerSec, double vyMetersPerSec, double omegaRadPerSec, org.areslib.math.geometry.Rotation2d robotHeading) {
+        org.areslib.math.kinematics.ChassisSpeeds speeds = org.areslib.math.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(
+            vxMetersPerSec, vyMetersPerSec, omegaRadPerSec, robotHeading
+        );
+        drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+    }
+
+    /**
      * Commands the mecanum drive to move.
      * @param forwardMetersPerSec The forward velocity in m/s (X axis).
      * @param strafeMetersPerSec The strafe velocity in m/s (Y axis).

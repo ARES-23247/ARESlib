@@ -150,10 +150,11 @@ public class RobotContainer {
             }
             @Override
             public void execute() {
-                drive.drive(
+                drive.driveFieldCentric(
                     driver.getLeftY() * 3.0,
                     driver.getLeftX() * 3.0,
-                    driver.getRightX() * 2.5
+                    driver.getRightX() * 2.5,
+                    new org.areslib.math.geometry.Rotation2d(follower.getPose().getHeading())
                 );
             }
         }.init());
