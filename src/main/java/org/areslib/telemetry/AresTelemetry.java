@@ -131,8 +131,8 @@ public class AresTelemetry {
         if (states.length != 4) return;
         double[] array = new double[8];
         for (int i = 0; i < 4; i++) {
-            array[i * 2] = states[i].speedMetersPerSecond;
-            array[i * 2 + 1] = states[i].angle.getRadians();
+            array[i * 2] = states[i].angle.getRadians(); // Angle first for AdvantageScope
+            array[i * 2 + 1] = states[i].speedMetersPerSecond;
         }
         putNumberArray(key, array);
     }

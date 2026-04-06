@@ -68,8 +68,8 @@ public class DesktopSimLauncher {
         robotBody.setMass(MassType.NORMAL);
         
         // Setup synthetic floor carpet friction metrics
-        robotBody.setLinearDamping(8.0);
-        robotBody.setAngularDamping(8.0);
+        robotBody.setLinearDamping(1.0);
+        robotBody.setAngularDamping(1.0);
         robotBody.translate(0.0, 0.0);
         robotBody.getTransform().setRotation(0.0);
         world.addBody(robotBody);
@@ -125,9 +125,9 @@ public class DesktopSimLauncher {
 
                 // 2. Fake TeleOp Control Mapping
                 if (!isAutoEnabled) {
-                    double driveY = driverGamepad.getLeftY() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedForward;
-                    double driveX = driverGamepad.getLeftX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedStrafe;
-                    double driveTurn = driverGamepad.getRightX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxTurnRads;
+                    double driveY = driverGamepad.getLeftY() * org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedForward; // +X is Forward
+                    double driveX = driverGamepad.getLeftX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedStrafe; // +Y is Left
+                    double driveTurn = driverGamepad.getRightX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxTurnRads; // +Theta is CCW
                     
                     // If triggers are pulled, boost speed
                     if (dsApp.getGamepadWrapper().gamepad.right_trigger > 0.5) {

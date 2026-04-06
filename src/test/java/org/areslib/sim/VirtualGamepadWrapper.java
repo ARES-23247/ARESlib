@@ -51,9 +51,9 @@ public class VirtualGamepadWrapper {
                 ControllerState state = controllerManager.getState(0);
                 if (state.isConnected) {
                     gamepad.left_stick_x = (float) state.leftStickX;
-                    gamepad.left_stick_y = (float) state.leftStickY;
+                    gamepad.left_stick_y = -(float) state.leftStickY; // Invert to match FTC (UP is negative)
+                    gamepad.right_stick_y = -(float) state.rightStickY; // Invert to match FTC
                     gamepad.right_stick_x = (float) state.rightStickX;
-                    gamepad.right_stick_y = (float) state.rightStickY;
                     gamepad.left_trigger = (float) state.leftTrigger;
                     gamepad.right_trigger = (float) state.rightTrigger;
 
@@ -70,9 +70,7 @@ public class VirtualGamepadWrapper {
                     gamepad.dpad_left = state.dpadLeft;
                     gamepad.dpad_right = state.dpadRight;
 
-                    // Handle generic rumble requests (e.g. if the FTC code sets it, we capture it via polling if FTC Gamepad API allowed it).
-                    // FTC SDK Gamepad class does not natively expose readable rumble queues easily to external wrappers.
-                    // For now, if rumble happens, you'd hook the physical controller here.
+                    // Handle generic rumble requests
                 }
             } catch (Exception e) {
                 // Controller 0 disconnected
@@ -83,15 +81,15 @@ public class VirtualGamepadWrapper {
             float ly = 0;
             if (keyboardListener.isKeyDown('a')) lx -= 1.0f;
             if (keyboardListener.isKeyDown('d')) lx += 1.0f;
-            if (keyboardListener.isKeyDown('w')) ly += 1.0f; // Remember to invert downstream if necessary
-            if (keyboardListener.isKeyDown('s')) ly -= 1.0f;
+            if (keyboardListener.isKeyDown('w')) ly -= 1.0f; // FTC Standard: Up is negative
+            if (keyboardListener.isKeyDown('s')) ly += 1.0f;
 
             float rx = 0;
             float ry = 0;
             if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_LEFT)) rx -= 1.0f;
             if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_RIGHT)) rx += 1.0f;
-            if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_UP)) ry += 1.0f;
-            if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_DOWN)) ry -= 1.0f;
+            if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_UP)) ry -= 1.0f; // FTC Standard: Up is negative
+            if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_DOWN)) ry += 1.0f;
 
             gamepad.left_stick_x = lx;
             gamepad.left_stick_y = ly;
