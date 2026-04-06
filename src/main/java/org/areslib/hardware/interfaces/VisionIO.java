@@ -42,6 +42,12 @@ public interface VisionIO {
         
         /** Number of active fiducial markers (AprilTags) in frame. */
         public int fiducialCount = 0;
+        
+        /** 
+         * Raw packed array of all individual camera 3D poses (if using multiple cameras). 
+         * Layout: [x,y,z,w,i,j,k] stacked sequentially. Length will be N * 7.
+         */
+        public double[] rawCameraPoses = new double[0];
     }
 
     /**

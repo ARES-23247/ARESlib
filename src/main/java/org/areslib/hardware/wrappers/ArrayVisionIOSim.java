@@ -105,10 +105,14 @@ public class ArrayVisionIOSim implements VisionIO {
             inputs.botPose3d[5] = cr * sp * cy + sr * cp * sy; // Y
             inputs.botPose3d[6] = cr * cp * sy - sr * sp * cy; // Z
             
+            inputs.rawCameraPoses = new double[7];
+            System.arraycopy(inputs.botPose3d, 0, inputs.rawCameraPoses, 0, 7);
+            
             inputs.ta = Math.max(0.1, 10.0 - (closestDist * 2.0)); // Larger area when closer
             inputs.fiducialCount = 1;
             inputs.latencyMs = 12.5; // Simulate pipeline latency
         } else {
+            inputs.rawCameraPoses = new double[0];
             inputs.fiducialCount = 0;
             inputs.ta = 0;
             inputs.latencyMs = 0;

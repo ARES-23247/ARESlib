@@ -128,7 +128,7 @@ public class RobotContainer {
         
         if (!AresRobot.isSimulation()) {
             vision = new AresVisionSubsystem(
-                new LimelightVisionWrapper(hardwareMap, "limelight"),
+                new LimelightVisionWrapper(hardwareMap, "limelightFront", "limelightRear"),
                 MIN_TARGET_AREA_PERCENT,
                 MAX_TRUST_AREA_PERCENT
             );
