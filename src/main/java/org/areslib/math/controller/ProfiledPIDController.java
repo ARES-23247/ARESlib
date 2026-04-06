@@ -21,8 +21,9 @@ public class ProfiledPIDController {
      * @param maxVelocity The maximum allowable velocity.
      * @param maxAcceleration The maximum allowable acceleration.
      */
-    public ProfiledPIDController(double kp, double ki, double kd, double maxVelocity, double maxAcceleration) {
-        this(kp, ki, kd, maxVelocity, maxAcceleration, 0.02);
+    public ProfiledPIDController(
+            double kp, double ki, double kd, double maxVelocity, double maxAcceleration) {
+        this(kp, ki, kd, maxVelocity, maxAcceleration, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
     }
     
     /**

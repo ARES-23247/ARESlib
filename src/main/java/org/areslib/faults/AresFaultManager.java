@@ -32,6 +32,7 @@ public class AresFaultManager {
     public static void reset() {
         driverGamepad = null;
         wasError = false;
+        alerts.clear();
     }
 
     /**

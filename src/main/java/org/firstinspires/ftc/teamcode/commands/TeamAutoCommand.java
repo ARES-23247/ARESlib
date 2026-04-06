@@ -6,7 +6,7 @@ import org.areslib.core.localization.AresFollower;
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorSubsystem;
 import static org.firstinspires.ftc.teamcode.Constants.ElevatorConstants.HIGH_POSITION_METERS;
 
-import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
@@ -31,24 +31,24 @@ public class TeamAutoCommand extends Command {
         Pose scorePose = new Pose(24, 0, Math.toRadians(0)); 
         Pose parkPose = new Pose(24, 24, Math.toRadians(90)); 
         
-        // Build path chains using Bezier Curves (2 points = straight line)
+        // Build path chains using BezierLine for straight-line segments
         toScore = follower.getFollower().pathBuilder()
-            .addPath(new BezierCurve(startPose, scorePose))
+            .addPath(new BezierLine(startPose, scorePose))
             .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
             .build();
             
         toPark = follower.getFollower().pathBuilder()
-            .addPath(new BezierCurve(scorePose, parkPose))
+            .addPath(new BezierLine(scorePose, parkPose))
             .setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading())
             .build();
-            
-        follower.getFollower().setStartingPose(startPose);
     }
 
     @Override
     public void initialize() {
         state = 0;
         elevatorScheduled = false;
+        // Set the starting pose when the command actually runs, not when constructed
+        follower.getFollower().setStartingPose(new Pose(0, 0, Math.toRadians(0)));
     }
 
     @Override

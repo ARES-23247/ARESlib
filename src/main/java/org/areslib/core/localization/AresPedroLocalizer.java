@@ -37,8 +37,11 @@ public class AresPedroLocalizer implements Localizer {
      */
     @Override
     public Pose getPose() {
-        double rawXInches = inputs.xMeters / 0.0254;
-        double rawYInches = inputs.yMeters / 0.0254;
+        // ARESLib tracks odometry in SI meters with (0,0) at the physical center of the field.
+        // Pedro Pathing tracks odometry in Imperial inches with (0,0) at the bottom-left corner of the field.
+        // We must map Center-Origin to Bottom-Left Origin by adding exactly 72 inches (half an FTC field).
+        double rawXInches = (inputs.xMeters / 0.0254) + 72.0;
+        double rawYInches = (inputs.yMeters / 0.0254) + 72.0;
         
         double rotatedX = rawXInches * Math.cos(offsetHeadingRadians) - rawYInches * Math.sin(offsetHeadingRadians);
         double rotatedY = rawXInches * Math.sin(offsetHeadingRadians) + rawYInches * Math.cos(offsetHeadingRadians);
@@ -100,8 +103,8 @@ public class AresPedroLocalizer implements Localizer {
      */
     @Override
     public void setPose(Pose setPose) {
-        double currentRawX = inputs.xMeters / 0.0254;
-        double currentRawY = inputs.yMeters / 0.0254;
+        double currentRawX = (inputs.xMeters / 0.0254) + 72.0;
+        double currentRawY = (inputs.yMeters / 0.0254) + 72.0;
         
         offsetHeadingRadians = setPose.getHeading() - inputs.headingRadians;
         

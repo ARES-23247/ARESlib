@@ -123,32 +123,12 @@ public class AresFollower extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        // Crucial: Update the follower logic every schedule loop
-        this.follower.update();
-
-        // Pinpoint Glitch Protection (Hardware I2C Fault Tolerance)
-        // Uses centralized field constants for consistent bounds across the codebase.
-        com.pedropathing.geometry.Pose pose = this.follower.getPose();
-        boolean outOfBounds = false;
-        double clampedX = pose.getX();
-        double clampedY = pose.getY();
-
-        if (clampedX < org.areslib.core.FieldConstants.MIN_POSITION_INCHES) { 
-            clampedX = org.areslib.core.FieldConstants.MIN_POSITION_INCHES; outOfBounds = true; 
-        } else if (clampedX > org.areslib.core.FieldConstants.MAX_POSITION_INCHES) { 
-            clampedX = org.areslib.core.FieldConstants.MAX_POSITION_INCHES; outOfBounds = true; 
-        }
-
-        if (clampedY < org.areslib.core.FieldConstants.MIN_POSITION_INCHES) { 
-            clampedY = org.areslib.core.FieldConstants.MIN_POSITION_INCHES; outOfBounds = true; 
-        } else if (clampedY > org.areslib.core.FieldConstants.MAX_POSITION_INCHES) { 
-            clampedY = org.areslib.core.FieldConstants.MAX_POSITION_INCHES; outOfBounds = true; 
-        }
-
-        // If I2C hardware noise spiked the position out of bounds, forcefully clamp it 
-        // to prevent autonomous trajectories from generating impossible vectors.
-        if (outOfBounds) {
-            this.follower.setPose(new com.pedropathing.geometry.Pose(clampedX, clampedY, pose.getHeading()));
+        try {
+            // Crucial: Update the follower logic every schedule loop
+            this.follower.update();
+        } catch (Exception e) {
+            System.err.println("CRASH IN ARES FOLLOWER PERIODIC: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

@@ -6,12 +6,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * AdvantageKit-Style AutoLogger.
- * Uses a static HashSet mapped to the class structural bytes to read fields natively exactly ONCE.
- * Sub-zero loop latency compared to standard reflection, effectively flattening nested objects.
+ * Caches reflected field layouts per class so {@code getFields()} is only called once,
+ * then iterates over the cached array for subsequent calls. Supports primitive types,
+ * Strings, double arrays, and SwerveModuleState arrays.
  */
 public class AresAutoLogger {
 
-    /** High performance cache so that getFields() is only ever called ONCE per data class. */
+    /** Per-class field layout cache — avoids repeated reflection after first access. */
     private static final Map<Class<?>, Field[]> fieldCache = new ConcurrentHashMap<>();
 
     /**
@@ -24,7 +25,7 @@ public class AresAutoLogger {
 
         Class<?> clazz = inputs.getClass();
         
-        // Cache read lock: Instantly pulls the pre-allocated Field layout array
+        // Lazily cache the declared fields on first access for this class
         Field[] fields = fieldCache.computeIfAbsent(clazz, c -> {
             Field[] flds = c.getDeclaredFields();
             for (Field f : flds) {
@@ -33,7 +34,6 @@ public class AresAutoLogger {
             return flds;
         });
 
-        // Raw loop: Directly invokes final array indices over memory
         for (Field field : fields) {
             try {
                 Object value = field.get(inputs);
@@ -57,18 +57,17 @@ public class AresAutoLogger {
                     org.areslib.math.kinematics.SwerveModuleState[] states = (org.areslib.math.kinematics.SwerveModuleState[]) value;
                     double[] arr = new double[states.length * 2];
                     for (int i = 0; i < states.length; i++) {
-                        arr[i * 2] = states[i].angle.getRadians();
-                        arr[i * 2 + 1] = states[i].speedMetersPerSecond; // AdvantageScope maps [angle, speed, angle, speed...]
+                        // AdvantageScope Swerve format: [speed, angle, speed, angle, ...]
+                        arr[i * 2] = states[i].speedMetersPerSecond;
+                        arr[i * 2 + 1] = states[i].angle.getRadians();
                     }
                     AresTelemetry.putNumberArray(key, arr);
                 }
                 
-                // Note: Complex objects not explicitly supported above are ignored safely 
-                // pursuant to flat-reflection physics structure.
+                // Unsupported types are silently skipped.
 
             } catch (IllegalAccessException e) {
-                // Highly performant silent catch block: 
-                // Any private/protected field is ignored without crashing the robot's main loop.
+                // Inaccessible fields are skipped without crashing the robot loop.
             }
         }
     }
@@ -94,9 +93,9 @@ public class AresAutoLogger {
     /** 
      * Manually track an arbitrary double array (like Swerve states or arbitrary vectors). 
      * @param key Telemetry key
-     * @param value The double parameters to log
+     * @param values The double array to log
      */
-    public static void recordOutput(String key, double... value) {
-        AresTelemetry.putNumberArray(key, value);
+    public static void recordOutputArray(String key, double... values) {
+        AresTelemetry.putNumberArray(key, values);
     }
 }

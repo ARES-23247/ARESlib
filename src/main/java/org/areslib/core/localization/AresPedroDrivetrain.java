@@ -14,12 +14,6 @@ import org.areslib.subsystems.drive.SwerveDriveSubsystem;
 public class AresPedroDrivetrain extends Drivetrain {
 
     private final SwerveDriveSubsystem driveSubsystem;
-    
-    // Internal state cache for logging/telemetry
-    private double currentForward = 0.0;
-    private double currentStrafe = 0.0;
-    private double currentTurn = 0.0;
-
     /**
      * Constructs a new AresPedroDrivetrain.
      *
@@ -44,27 +38,47 @@ public class AresPedroDrivetrain extends Drivetrain {
      * @return Dummy zero-power array since hardware application happens asynchronously via the ARES framework.
      */
     @Override
-    public double[] calculateDrive(Vector driveError, Vector headingError, Vector driveVector, double headingVector) {
-        // Pedro Pathing calculates error vectors based on inches natively.
-        // We will convert these into reasonable inputs for Swerve Drive kinematics.
-        // ARESlib SwerveDriveSubsystem takes (forwardMetersPerSec, strafeMetersPerSec, turnRadPerSec)
-        
-        // Pedro Pathing calculates PID outputs internally and passes them via driveVector and headingVector.
-        // driveError and headingError are the true geometric errors, NOT the control inputs.
-        // We only want the control inputs (PID outputs).
-        double forwardInput = driveVector.getXComponent();
-        double strafeInput = driveVector.getYComponent();
-        double turnInput = headingVector; 
+    public double[] calculateDrive(Vector correctivePower, Vector headingPower, Vector pathingPower, double robotHeading) {
+        try {
+            double currentForward = 0.0;
+            double currentStrafe = 0.0;
+            double currentTurn = 0.0;
 
-        // Note: Pedro typically outputs motor powers natively, but since we are simulating field-centric chassis speeds:
-        // We will scale these raw PID outputs into approximate physical velocities for the simulator.
-        currentForward = forwardInput * 2.0; // Scaled up to represent roughly 2 m/s max
-        currentStrafe = strafeInput * 2.0;
-        currentTurn = turnInput * 2.0; // Scaled up to represent roughly 2 rad/s max
+            if (driveSubsystem == null) {
+                return new double[]{0, 0, 0, 0};
+            }
 
-        driveSubsystem.drive(currentForward, currentStrafe, currentTurn);
+            Vector combinedMovement = new Vector();
+            if (correctivePower != null) combinedMovement = combinedMovement.plus(correctivePower);
+            if (pathingPower != null) combinedMovement = combinedMovement.plus(pathingPower);
+            
+            // These are FIELD-CENTRIC outputs from Pedro.
+            double forwardInput = combinedMovement.getXComponent();
+            double strafeInput = combinedMovement.getYComponent();
+            
+            // To get turn power, we do the Pedro dot product trick used in CustomDrivetrain:
+            double turnInput = 0.0;
+            if (headingPower != null) {
+                turnInput = headingPower.dot(new Vector(1, robotHeading));
+            }
 
+            // Rotate the field-centric drive vector by -heading to get robot-centric components
+            double robotCentricX = forwardInput * Math.cos(-robotHeading) - strafeInput * Math.sin(-robotHeading);
+            double robotCentricY = forwardInput * Math.sin(-robotHeading) + strafeInput * Math.cos(-robotHeading);
+            
+            // Note: Pedro typically outputs motor powers natively, but since we are simulating field-centric chassis speeds:
+            // We will scale these raw PID outputs into approximate physical velocities for the simulator.
+            currentForward = robotCentricX * 3.0; // Scaled up to represent roughly 3 m/s max
+            currentStrafe = robotCentricY * 3.0;
+            currentTurn = turnInput * 3.0; // Scaled up to represent roughly 3 rad/s max
+
+            driveSubsystem.drive(currentForward, currentStrafe, currentTurn);
+        } catch (Exception e) {
+            System.err.println("CRASH IN ARES PEDRO DRIVETRAIN: " + e.getMessage());
+            e.printStackTrace();
+        }
         return new double[]{0, 0, 0, 0}; // Return unused power array
+
     }
 
     /** Unused in ARES configuration. Teleop handled by Commands. */

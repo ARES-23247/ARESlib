@@ -1,20 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive;
 
 import org.areslib.hardware.devices.AresMotorModel;
+import org.areslib.subsystems.drive.DifferentialDriveSubsystem;
 
-public class DifferentialConfig {
-
-    // --- PID and Feedforward ---
-    public double driveKp = 1.0;
-    public double driveKi = 0.0;
-    public double driveKd = 0.0;
-
-    public double driveKs = 0.1;
-    public double driveKv = 2.5;
-
-    // --- Physics Definitions ---
-    /** Trackwidth (distance between left and right wheels) in meters */
-    public double trackwidthMeters = 0.6; // ~24 inches
+/**
+ * Team-specific differential configuration that extends the library's base config.
+ * <p>
+ * This class adds hardware-specific parameters (wheel diameter, encoder model, gear ratios)
+ * on top of the tuning and physics parameters inherited from {@link DifferentialDriveSubsystem.Config}.
+ */
+public class DifferentialConfig extends DifferentialDriveSubsystem.Config {
 
     // --- Hardware Conversions ---
     /** Diameter of the drive wheel in millimeters. */
@@ -28,10 +23,6 @@ public class DifferentialConfig {
 
     /** External gear reduction from the encoder output to the wheel (e.g. 2.0 if the wheel spins twice as slow). */
     public double driveExternalGearRatio = 1.0;
-    
-    // --- Control Parameters ---
-    /** The maximum linear acceleration of the robot in meters per second squared. 0.0 disables slew rate limiters. */
-    public double maxAccelerationMps2 = 0.0;
     
     /** 
      * Calculates the physical distance traveled per encoder tick.

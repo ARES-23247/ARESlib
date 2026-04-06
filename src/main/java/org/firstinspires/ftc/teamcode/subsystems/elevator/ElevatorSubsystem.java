@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems.elevator;
 
-import org.areslib.command.Subsystem;
+import org.areslib.command.SubsystemBase;
 import org.areslib.telemetry.AresAutoLogger;
 import static org.firstinspires.ftc.teamcode.Constants.ElevatorConstants.*;
 
-public class ElevatorSubsystem implements Subsystem {
+public class ElevatorSubsystem extends SubsystemBase {
 
     private final ElevatorIO io;
     private final ElevatorIO.ElevatorIOInputs inputs = new ElevatorIO.ElevatorIOInputs();
@@ -27,9 +27,11 @@ public class ElevatorSubsystem implements Subsystem {
         // Simple Proportional Control with Gravity Feedforward
         double volts = (error * kP) + kG;
 
-        if (inputs.positionMeters >= MAX_POSITION_METERS && volts > kG) { // Mock upper soft limit
+        if (inputs.positionMeters >= MAX_POSITION_METERS && volts > kG) {
+             // At upper limit: only apply gravity hold, don't push higher
              volts = kG;
-        } else if (inputs.positionMeters <= MIN_POSITION_METERS && volts < 0.0) { // Mock lower soft limit
+        } else if (inputs.positionMeters <= MIN_POSITION_METERS && error <= 0.0) {
+             // At floor with no upward demand: zero output to prevent grinding into hard stop
              volts = 0.0;
         }
 

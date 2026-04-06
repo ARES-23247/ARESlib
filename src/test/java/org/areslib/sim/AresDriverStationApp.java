@@ -11,6 +11,7 @@ public class AresDriverStationApp extends JFrame {
 
     private JRadioButton keyboardBtn;
     private JRadioButton gamepadBtn;
+    private JToggleButton autoBtn;
     
     // HUD Data
     private double robotX = 0;
@@ -75,6 +76,25 @@ public class AresDriverStationApp extends JFrame {
         topPanel.add(keyboardBtn);
         topPanel.add(gamepadBtn);
 
+        autoBtn = new JToggleButton("Run Auto Mode");
+        autoBtn.setFocusPainted(false);
+        autoBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        autoBtn.setForeground(new Color(255, 100, 100));
+        autoBtn.setBackground(new Color(30, 30, 30));
+        topPanel.add(autoBtn);
+
+        JButton stopAutoBtn = new JButton("Stop Auto");
+        stopAutoBtn.setFocusPainted(false);
+        stopAutoBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        stopAutoBtn.setForeground(new Color(100, 200, 100));
+        stopAutoBtn.setBackground(new Color(30, 30, 30));
+        stopAutoBtn.addActionListener(e -> {
+            if (autoBtn.isSelected()) {
+                autoBtn.setSelected(false);
+            }
+        });
+        topPanel.add(stopAutoBtn);
+
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
         hudPanel = new HudPanel();
@@ -124,6 +144,10 @@ public class AresDriverStationApp extends JFrame {
         return gamepadWrapper;
     }
 
+    public boolean isAutoModeEnabled() {
+        return autoBtn != null && autoBtn.isSelected();
+    }
+
     private class HudPanel extends JPanel {
         public HudPanel() {
             setOpaque(false);
@@ -170,8 +194,13 @@ public class AresDriverStationApp extends JFrame {
                     g2d.drawString("No USB Gamepad [WARN]", panelMargin + 25, startTextY + 170);
                 }
             } else {
-                g2d.setColor(new Color(100, 150, 255));
-                g2d.drawString("Keyboard Input [ACTIVE]", panelMargin + 25, startTextY + 170);
+                if (isAutoModeEnabled()) {
+                    g2d.setColor(new Color(255, 100, 100));
+                    g2d.drawString("AUTO RUNNING [LOCKOUT]", panelMargin + 25, startTextY + 170);
+                } else {
+                    g2d.setColor(new Color(100, 150, 255));
+                    g2d.drawString("Keyboard Input [ACTIVE]", panelMargin + 25, startTextY + 170);
+                }
                 
                 g2d.setColor(new Color(150, 150, 160));
                 g2d.setFont(new Font("Consolas", Font.PLAIN, 13));

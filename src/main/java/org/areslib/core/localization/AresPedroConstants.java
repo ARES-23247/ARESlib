@@ -55,8 +55,14 @@ public class AresPedroConstants {
     public static FollowerConstants createConstants() {
         FollowerConstants constants = new FollowerConstants();
         constants.mass = mass;
-        // Optional: Map array coefficients cleanly into FollowerConstants if needed here
-        // Pedro will use these values natively for path calculation.
+        
+        // For simulation, inject reasonable baseline values so the robot tracks visually
+        // These can be overridden natively by teams, but we must populate them here
+        // so the `SquareAutoCommand` behaves correctly out of the box.
+        constants.coefficientsHeadingPIDF.setCoefficients(1.0, 0, 0, 0.01);
+        constants.coefficientsTranslationalPIDF.setCoefficients(0.1, 0, 0, 0.015);
+        constants.coefficientsDrivePIDF.setCoefficients(0.025, 0, 0.00001, 0.6, 0.01);
+
         return constants;
     }
 }

@@ -27,6 +27,8 @@ public final class CommandScheduler {
 
     // Buffer for commands scheduled during iteration
     private final java.util.List<Command> m_toSchedule = new java.util.ArrayList<>();
+    // Buffer for commands cancelled during iteration
+    private final java.util.List<Command> m_toCancel = new java.util.ArrayList<>();
     private boolean m_isIterating = false;
 
     // Loop boundary diagnostics
@@ -142,6 +144,11 @@ public final class CommandScheduler {
      * @param command the command to cancel
      */
     public void cancel(Command command) {
+        if (m_isIterating) {
+            m_toCancel.add(command);
+            return;
+        }
+
         if (!m_scheduledCommands.contains(command)) {
             return;
         }
@@ -221,7 +228,13 @@ public final class CommandScheduler {
         }
         m_toSchedule.clear();
 
-        // 7. Loop Timing Diagnostics
+        // 7. Cancel buffered commands
+        for (Command command : m_toCancel) {
+            cancel(command);
+        }
+        m_toCancel.clear();
+
+        // 8. Loop Timing Diagnostics
         double loopTimeMs = (System.nanoTime() - loopStart) / 1_000_000.0;
         org.areslib.telemetry.AresAutoLogger.recordOutput("Ares/LoopTime_ms", loopTimeMs);
         loopTimeAlert.set(loopTimeMs > 10.0);
@@ -248,5 +261,7 @@ public final class CommandScheduler {
         m_subsystems.clear();
         m_defaultCommands.clear();
         m_buttons.clear();
+        m_toSchedule.clear();
+        m_toCancel.clear();
     }
 }

@@ -19,7 +19,7 @@ public class PIDController {
      * @param kD Derivative gain
      */
     public PIDController(double kP, double kI, double kD) {
-        this(kP, kI, kD, 0.02);
+        this(kP, kI, kD, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
     }
     
     /**

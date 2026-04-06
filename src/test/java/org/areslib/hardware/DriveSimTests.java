@@ -3,6 +3,7 @@ package org.areslib.hardware;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.areslib.subsystems.drive.*;
+import org.areslib.core.AresRobot;
 
 public class DriveSimTests {
 
@@ -15,18 +16,18 @@ public class DriveSimTests {
         sim.setDriveVoltage(10.0);
         sim.setTurnVoltage(5.0);
 
-        // run 1 loop (0.02s)
+        // run 1 loop (AresRobot.LOOP_PERIOD_SECS)
         sim.updateInputs(inputs);
 
         // Drive velocity = 10V * 0.4 = 4.0 m/s
         assertEquals(4.0, inputs.driveVelocityMps, 0.001);
-        // Drive pos = 4.0 * 0.02 = 0.08 m
-        assertEquals(0.08, inputs.drivePositionMeters, 0.001);
+        // Drive pos = 4.0 * AresRobot.LOOP_PERIOD_SECS = 0.08 m
+        assertEquals(4.0 * AresRobot.LOOP_PERIOD_SECS, inputs.drivePositionMeters, 0.001);
 
         // Turn velocity = 5V * 5.0 = 25.0 rad/s
         assertEquals(25.0, inputs.turnVelocityRadPerSec, 0.001);
-        // Turn pos = (25.0 * 0.02) = 0.5 rad (or wrapped, but 0.5 < PI)
-        assertEquals(0.5, inputs.turnAbsolutePositionRad, 0.001);
+        // Turn pos = (25.0 * AresRobot.LOOP_PERIOD_SECS) = 0.5 rad (or wrapped, but 0.5 < PI)
+        assertEquals(25.0 * AresRobot.LOOP_PERIOD_SECS, inputs.turnAbsolutePositionRad, 0.001);
     }
 
     @Test

@@ -77,7 +77,7 @@ public final class MathUtil {
         double modulus = angleRadians % (2.0 * Math.PI);
         if (modulus < -Math.PI) {
             modulus += 2.0 * Math.PI;
-        } else if (modulus > Math.PI) {
+        } else if (modulus >= Math.PI) {
             modulus -= 2.0 * Math.PI;
         }
         return modulus;

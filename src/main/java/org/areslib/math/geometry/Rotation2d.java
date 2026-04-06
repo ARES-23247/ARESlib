@@ -100,6 +100,9 @@ public class Rotation2d implements Interpolatable<Rotation2d> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_value);
+        // Round to match the 1e-9 epsilon tolerance used in equals()
+        long cosHash = Math.round(m_cos * 1e8);
+        long sinHash = Math.round(m_sin * 1e8);
+        return Objects.hash(cosHash, sinHash);
     }
 }

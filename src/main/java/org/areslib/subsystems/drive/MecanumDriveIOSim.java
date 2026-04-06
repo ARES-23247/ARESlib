@@ -8,7 +8,6 @@ package org.areslib.subsystems.drive;
  */
 public class MecanumDriveIOSim implements MecanumDriveIO {
     private static final double DRIVE_KV = 3.0; // meters per sec per volt
-    private static final double LOOP_PERIOD_SECS = 0.02; // 20ms
 
     private double flAppliedVolts = 0.0;
     private double frAppliedVolts = 0.0;
@@ -24,16 +23,16 @@ public class MecanumDriveIOSim implements MecanumDriveIO {
     public void updateInputs(MecanumDriveInputs inputs) {
         // Integrate physics
         flVel = flAppliedVolts * DRIVE_KV;
-        flPos += flVel * LOOP_PERIOD_SECS;
+        flPos += flVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
 
         frVel = frAppliedVolts * DRIVE_KV;
-        frPos += frVel * LOOP_PERIOD_SECS;
+        frPos += frVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
 
         rlVel = rlAppliedVolts * DRIVE_KV;
-        rlPos += rlVel * LOOP_PERIOD_SECS;
+        rlPos += rlVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
 
         rrVel = rrAppliedVolts * DRIVE_KV;
-        rrPos += rrVel * LOOP_PERIOD_SECS;
+        rrPos += rrVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
 
         // Populate inputs
         inputs.frontLeftPositionMeters = flPos;

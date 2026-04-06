@@ -8,7 +8,6 @@ package org.areslib.subsystems.drive;
  */
 public class DifferentialDriveIOSim implements DifferentialDriveIO {
     private static final double DRIVE_KV = 3.0; // meters per sec per volt
-    private static final double LOOP_PERIOD_SECS = 0.02; // 20ms
 
     private double leftAppliedVolts = 0.0;
     private double rightAppliedVolts = 0.0;
@@ -22,10 +21,10 @@ public class DifferentialDriveIOSim implements DifferentialDriveIO {
     public void updateInputs(DifferentialDriveInputs inputs) {
         // Integrate physics
         leftVelocityMps = leftAppliedVolts * DRIVE_KV;
-        leftPositionMeters += leftVelocityMps * LOOP_PERIOD_SECS;
+        leftPositionMeters += leftVelocityMps * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
 
         rightVelocityMps = rightAppliedVolts * DRIVE_KV;
-        rightPositionMeters += rightVelocityMps * LOOP_PERIOD_SECS;
+        rightPositionMeters += rightVelocityMps * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
 
         // Populate inputs
         inputs.leftPositionMeters = leftPositionMeters;

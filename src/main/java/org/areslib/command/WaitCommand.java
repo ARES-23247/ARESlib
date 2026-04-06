@@ -23,7 +23,7 @@ public class WaitCommand extends Command {
 
     @Override
     public void execute() {
-        m_elapsedSeconds += 0.02; // deterministic 50Hz base loop period
+        m_elapsedSeconds += org.areslib.core.AresRobot.LOOP_PERIOD_SECS; // deterministic 50Hz base loop period
     }
 
     @Override

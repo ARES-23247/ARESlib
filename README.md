@@ -11,12 +11,16 @@ Welcome to the ARESLib2 Quickstart! This template provides a full Command-Based 
 
 ## Project Structure
 
-This project uses a standard FtcRobotController-style structure, but heavily emphasizes clean encapsulation of logic away from the raw Android SDK context.
+This project uses a standard FRC Command-Based structure, relying heavily on encapsulation using Hardware IO Abstraction.
 
-*   `src/main/java/org/areslib/` – The core framework wrappers, mathematical kinematics, and subsystem templates.
-*   `src/main/java/org/areslib/examples/` – Demonstrations and example code representing what you would normally put in your `TeamCode` folder. 
-    *   `auto/` - Example PedroPathing autonomous routines (e.g. `DynamicAvoidanceAuto.java`).
-    *   `elevator/` - Example subsystem simulating an elevator.
+*   `src/main/java/org/areslib/` – The core framework wrappers, physical kinematics, and telemetry trackers.
+*   `src/main/java/org/firstinspires/ftc/teamcode/` – Your actual highly-customizable robot code.
+    *   `RobotContainer.java` - The central hub where hardware implementations of subsystems are swapped dynamically via `AresRobot.isSimulation()`.
+    *   `Constants.java` - Centralized team logic.
+
+## FRC-Style Hardware Abstraction
+
+ARESLib2 leverages FRC AdvantageKit's IO paradigm. `RobotContainer.java` automatically decides whether to instantiate subsystems using Real Hardware Wrappers (like `SwerveModuleIOReal`) or Sim Physics Layers (like `SwerveModuleIOSim`) based on the active simulation flag. This allows you to completely isolate logic code from hardware code!
 
 ## Running the Simulator Locally
 

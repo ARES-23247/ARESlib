@@ -1,0 +1,3 @@
+C:\Users\david\.gradle\caches\modules-2\files-2.1\com.pedropathing\core\2.1.1\5b70dfd77ae0c26da40479a9751bb839ee95d23a\core-2.1.1-javadoc.jar
+C:\Users\david\.gradle\caches\modules-2\files-2.1\com.pedropathing\core\2.1.1\e5fcfb9494f12b71031b79b3d7a69ef0a3426296\core-2.1.1.jar
+C:\Users\david\.gradle\caches\modules-2\files-2.1\com.pedropathing\core\2.1.1\e80c29f33823f4c1c2ddd27999b26c8820af3c5d\core-2.1.1-sources.jar

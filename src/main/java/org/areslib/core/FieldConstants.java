@@ -23,11 +23,11 @@ public final class FieldConstants {
     /** Tolerance padding in inches for robot overhang beyond field walls. */
     public static final double WALL_PADDING_INCHES = 12.0;
 
-    /** Minimum valid X/Y in Pedro coordinates (center-origin). */
-    public static final double MIN_POSITION_INCHES = -HALF_FIELD_INCHES - WALL_PADDING_INCHES;
+    /** Minimum valid X/Y in Pedro coordinates (bottom-left origin 0). */
+    public static final double MIN_POSITION_INCHES = -WALL_PADDING_INCHES;
 
-    /** Maximum valid X/Y in Pedro coordinates (center-origin). */
-    public static final double MAX_POSITION_INCHES = HALF_FIELD_INCHES + WALL_PADDING_INCHES;
+    /** Maximum valid X/Y in Pedro coordinates (bottom-left origin 0). */
+    public static final double MAX_POSITION_INCHES = FIELD_SIZE_INCHES + WALL_PADDING_INCHES;
 
     // ========== Vision Coordinates (meters, origin = field center) ==========
 

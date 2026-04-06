@@ -16,11 +16,11 @@ import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
-import com.pedropathing.geometry.Pose;
 
 import org.areslib.sim.games.GameSimulation;
 import org.areslib.sim.games.IntoTheDeepSim;
 import org.areslib.sim.games.RobotSimState;
+import org.firstinspires.ftc.teamcode.commands.SquareAutoCommand;
 
 public class DesktopSimLauncher {
 
@@ -38,13 +38,12 @@ public class DesktopSimLauncher {
         RobotContainer robotContainer = new RobotContainer(null, null, null);
         AresDrivetrain driveSubsystem = robotContainer.getDrivetrain();
 
-        // Define Custom Spawn Point (Hook into Pedro Paths here)
-        Pose startPose = new Pose(0.0, 0.0, 0);
-
+        // Define Custom Spawn Point
+        // Physical origin is standard (0,0) in dyn4j/AdvantageScope
         OdometryIO.OdometryInputs odometryInputs = robotContainer.getOdometryInputs();
-        odometryInputs.xMeters = startPose.getX();
-        odometryInputs.yMeters = startPose.getY();
-        odometryInputs.headingRadians = startPose.getHeading();
+        odometryInputs.xMeters = 0.0;
+        odometryInputs.yMeters = 0.0;
+        odometryInputs.headingRadians = 0.0;
 
         // Initialize dyn4j Physics World
         World<Body> world = new World<>();
@@ -71,8 +70,8 @@ public class DesktopSimLauncher {
         // Setup synthetic floor carpet friction metrics
         robotBody.setLinearDamping(8.0);
         robotBody.setAngularDamping(8.0);
-        robotBody.translate(startPose.getX(), startPose.getY());
-        robotBody.getTransform().setRotation(startPose.getHeading());
+        robotBody.translate(0.0, 0.0);
+        robotBody.getTransform().setRotation(0.0);
         world.addBody(robotBody);
 
 
@@ -86,6 +85,8 @@ public class DesktopSimLauncher {
         activeRobots.add(new RobotSimState(robotBody, dsApp.getGamepadWrapper().gamepad));
 
         System.out.println("Sim Started! Connect AdvantageScope to 127.0.0.1");
+
+        boolean wasAutoEnabled = false;
 
         // 3. Application Math Core
         try {
@@ -114,33 +115,42 @@ public class DesktopSimLauncher {
                 // Process physical game piece interactions natively through the decoupled season class
                 gameSim.updateField(world, activeRobots);
 
-                // 2. Fake TeleOp Control Mapping
-                double driveY = driverGamepad.getLeftY() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedForward;
-                double driveX = driverGamepad.getLeftX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedStrafe;
-                double driveTurn = driverGamepad.getRightX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxTurnRads;
-                
-                // If triggers are pulled, boost speed
-                if (dsApp.getGamepadWrapper().gamepad.right_trigger > 0.5) {
-                    driveY *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier; 
-                    driveX *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier;
-                    driveTurn *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier;
+                boolean isAutoEnabled = dsApp.isAutoModeEnabled();
+                if (isAutoEnabled && !wasAutoEnabled) {
+                    CommandScheduler.getInstance().schedule(new SquareAutoCommand(robotContainer.getFollower()));
+                } else if (!isAutoEnabled && wasAutoEnabled) {
+                    CommandScheduler.getInstance().cancelAll();
                 }
-                
-                org.areslib.math.geometry.Rotation2d currentHeading = new org.areslib.math.geometry.Rotation2d(odometryInputs.headingRadians);
-                org.areslib.math.geometry.Rotation2d standardAllianceHeading = currentHeading.rotateBy(new org.areslib.math.geometry.Rotation2d(Math.PI)); // Offset by 180 degrees mapping to match driver station POV
-                if (driveSubsystem instanceof org.areslib.subsystems.drive.SwerveDriveSubsystem) {
-                    ((org.areslib.subsystems.drive.SwerveDriveSubsystem) driveSubsystem).driveFieldCentric(driveY, driveX, driveTurn, standardAllianceHeading);
-                } else if (driveSubsystem instanceof org.areslib.subsystems.drive.MecanumDriveSubsystem) {
-                    ((org.areslib.subsystems.drive.MecanumDriveSubsystem) driveSubsystem).driveFieldCentric(driveY, driveX, driveTurn, standardAllianceHeading);
-                } else if (driveSubsystem instanceof org.areslib.subsystems.drive.DifferentialDriveSubsystem) {
-                    ((org.areslib.subsystems.drive.DifferentialDriveSubsystem) driveSubsystem).drive(driveY, driveTurn);
+                wasAutoEnabled = isAutoEnabled;
+
+                // 2. Fake TeleOp Control Mapping
+                if (!isAutoEnabled) {
+                    double driveY = driverGamepad.getLeftY() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedForward;
+                    double driveX = driverGamepad.getLeftX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedStrafe;
+                    double driveTurn = driverGamepad.getRightX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxTurnRads;
+                    
+                    // If triggers are pulled, boost speed
+                    if (dsApp.getGamepadWrapper().gamepad.right_trigger > 0.5) {
+                        driveY *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier; 
+                        driveX *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier;
+                        driveTurn *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier;
+                    }
+                    
+                    org.areslib.math.geometry.Rotation2d currentHeading = new org.areslib.math.geometry.Rotation2d(odometryInputs.headingRadians);
+                    org.areslib.math.geometry.Rotation2d standardAllianceHeading = currentHeading.rotateBy(new org.areslib.math.geometry.Rotation2d(Math.PI)); // Offset by 180 degrees mapping to match driver station POV
+                    if (driveSubsystem instanceof org.areslib.subsystems.drive.SwerveDriveSubsystem) {
+                        ((org.areslib.subsystems.drive.SwerveDriveSubsystem) driveSubsystem).driveFieldCentric(driveY, driveX, driveTurn, standardAllianceHeading);
+                    } else if (driveSubsystem instanceof org.areslib.subsystems.drive.MecanumDriveSubsystem) {
+                        ((org.areslib.subsystems.drive.MecanumDriveSubsystem) driveSubsystem).driveFieldCentric(driveY, driveX, driveTurn, standardAllianceHeading);
+                    } else if (driveSubsystem instanceof org.areslib.subsystems.drive.DifferentialDriveSubsystem) {
+                        ((org.areslib.subsystems.drive.DifferentialDriveSubsystem) driveSubsystem).drive(driveY, driveTurn);
+                    }
                 }
 
                 // Scheduler Tick
                 CommandScheduler.getInstance().run();
 
-                // Fake Physics Integration (20ms)
-                double loopSecs = 0.02;
+                double loopSecs = org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
                 double vx = driveSubsystem.getCommandedVx();      // Robot-centric forward (m/s)
                 double vy = driveSubsystem.getCommandedVy();      // Robot-centric left (m/s)
                 double omega = driveSubsystem.getCommandedOmega(); // rad/s
@@ -176,6 +186,11 @@ public class DesktopSimLauncher {
                 odometryInputs.xMeters = robotBody.getTransform().getTranslationX();
                 odometryInputs.yMeters = robotBody.getTransform().getTranslationY();
                 odometryInputs.headingRadians = robotBody.getTransform().getRotationAngle();
+                
+                // Inject velocities so Pedro Pathing's Kalman filter and Feedforwards function properly
+                odometryInputs.xVelocityMetersPerSecond = robotBody.getLinearVelocity().x;
+                odometryInputs.yVelocityMetersPerSecond = robotBody.getLinearVelocity().y;
+                odometryInputs.angularVelocityRadiansPerSecond = robotBody.getAngularVelocity();
 
                 // Lidar Update
                 lidarSim.updateInputs(lidarInputs);
@@ -190,11 +205,12 @@ public class DesktopSimLauncher {
                 );
 
                 // Publish Pedro's internally tracked odometry estimate (for divergence testing)
-                // Pedro Pathing inherently operates mathematically in INCHES, but AdvantageScope expects METERS.
+                // Pedro Pathing inherently operates mathematically in INCHES and bottom-left origin.
+                // AdvantageScope expects METERS and center origin.
                 com.pedropathing.geometry.Pose estimatedPose = robotContainer.getFollower().getPose();
                 AresTelemetry.putPose2d("Pedro/EstimatedPose", 
-                    estimatedPose.getX() * 0.0254, 
-                    estimatedPose.getY() * 0.0254, 
+                    (estimatedPose.getX() - 72.0) * 0.0254, 
+                    (estimatedPose.getY() - 72.0) * 0.0254, 
                     estimatedPose.getHeading()
                 );
 

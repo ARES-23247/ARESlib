@@ -1,10 +1,10 @@
 package org.areslib.subsystems.vision;
 
-import org.areslib.command.Subsystem;
+import org.areslib.command.SubsystemBase;
 import org.areslib.telemetry.AresAutoLogger;
 import org.areslib.hardware.interfaces.VisionIO;
 
-public class AresVisionSubsystem implements Subsystem {
+public class AresVisionSubsystem extends SubsystemBase {
     
     private final VisionIO io;
     private final VisionIO.VisionInputs inputs = new VisionIO.VisionInputs();

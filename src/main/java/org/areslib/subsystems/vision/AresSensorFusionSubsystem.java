@@ -1,6 +1,6 @@
 package org.areslib.subsystems.vision;
 
-import org.areslib.command.Subsystem;
+import org.areslib.command.SubsystemBase;
 import org.areslib.core.localization.AresFollower;
 import com.pedropathing.geometry.Pose;
 
@@ -8,7 +8,7 @@ import com.pedropathing.geometry.Pose;
  * Sensor Fusion Subsystem orchestrates the mathematical blending of the underlying 
  * Pedro Pathing dead-wheel odometry with absolute global Vision coordinates.
  */
-public class AresSensorFusionSubsystem implements Subsystem {
+public class AresSensorFusionSubsystem extends SubsystemBase {
 
     private final AresFollower odometry;
     private final AresVisionSubsystem vision;
