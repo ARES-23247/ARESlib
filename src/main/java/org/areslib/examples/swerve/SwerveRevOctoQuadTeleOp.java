@@ -64,40 +64,50 @@ public class SwerveRevOctoQuadTeleOp extends AresCommandOpMode {
         // Map the goBILDA floodgate switch (Physically connected to SRS Hub digital port 0)
         floodgateSwitch = new AresSrsSensor(0, SrsMode.DIGITAL);
 
+        org.areslib.subsystems.drive.SwerveConfig config = new org.areslib.subsystems.drive.SwerveConfig();
+        
         // 3. Initialize Swerve Drive Subsystem wrapping mixed hardware seamlessly
         driveSubsystem = new SwerveDriveSubsystem(
+            config,
             // Front Left Module
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "flDrive")), // Main Hub Motor
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "flTurn")),      // Main Hub CR Servo
                 new AresOctoQuadSensor(0, OctoMode.ENCODER),                       // OctoQuad Port 0 (Relative)
-                new AresOctoQuadSensor(4, OctoMode.ABSOLUTE)                       // OctoQuad Port 4 (Absolute PWM)
+                new AresOctoQuadSensor(4, OctoMode.ABSOLUTE),                      // OctoQuad Port 4 (Absolute PWM)
+                config.getDriveMetersPerTick()
             ),
             // Front Right Module
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "frDrive")), // Main Hub Motor
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "frTurn")),      // Main Hub CR Servo
                 new AresOctoQuadSensor(1, OctoMode.ENCODER),                       // OctoQuad Port 1 (Relative)
-                new AresOctoQuadSensor(5, OctoMode.ABSOLUTE)                       // OctoQuad Port 5 (Absolute PWM)
+                new AresOctoQuadSensor(5, OctoMode.ABSOLUTE),                      // OctoQuad Port 5 (Absolute PWM)
+                config.getDriveMetersPerTick()
             ),
             // Back Left Module
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "blDrive")), // Main Hub Motor
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "blTurn")),      // Main Hub CR Servo
                 new AresOctoQuadSensor(2, OctoMode.ENCODER),                       // OctoQuad Port 2 (Relative)
-                new AresOctoQuadSensor(6, OctoMode.ABSOLUTE)                       // OctoQuad Port 6 (Absolute PWM)
+                new AresOctoQuadSensor(6, OctoMode.ABSOLUTE),                      // OctoQuad Port 6 (Absolute PWM)
+                config.getDriveMetersPerTick()
             ),
             // Back Right Module
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "brDrive")), // Main Hub Motor
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "brTurn")),      // Main Hub CR Servo
                 new AresOctoQuadSensor(3, OctoMode.ENCODER),                       // OctoQuad Port 3 (Relative)
-                new AresOctoQuadSensor(7, OctoMode.ABSOLUTE)                       // OctoQuad Port 7 (Absolute PWM)
+                new AresOctoQuadSensor(7, OctoMode.ABSOLUTE),                      // OctoQuad Port 7 (Absolute PWM)
+                config.getDriveMetersPerTick()
             )
         );
 
         // Register the subsystem so its periodic() functions run in the CommandScheduler
         CommandScheduler.getInstance().registerSubsystem(driveSubsystem);
+
+        // 4. Input Bindings
+        pilot = new AresGamepad(gamepad1);
 
         pilot.y().onTrue(new Command() {
             @Override

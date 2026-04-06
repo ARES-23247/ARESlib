@@ -15,18 +15,36 @@ public class DifferentialDriveSubsystem extends SubsystemBase {
     private double commandedOmega = 0.0;
 
     // Ported WPILib kinematics (0.6 meters track width)
-    private final org.areslib.math.kinematics.DifferentialDriveKinematics kinematics = new org.areslib.math.kinematics.DifferentialDriveKinematics(0.6);
+    private final org.areslib.math.kinematics.DifferentialDriveKinematics kinematics;
 
-    private final org.areslib.math.controller.PIDController leftPid = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-    private final org.areslib.math.controller.PIDController rightPid = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-    private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(0.1, 2.5);
+    private final org.areslib.math.controller.PIDController leftPid;
+    private final org.areslib.math.controller.PIDController rightPid;
+    private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward;
+
+    private final org.areslib.math.filter.SlewRateLimiter fwdLimiter;
+    private final org.areslib.math.filter.SlewRateLimiter rotLimiter;
 
     /**
      * Constructs the DifferentialDriveSubsystem.
      * @param io The unified Differential Hardware interface.
+     * @param config The structural parameters mapping physics to motor outputs.
      */
-    public DifferentialDriveSubsystem(DifferentialDriveIO io) {
+    public DifferentialDriveSubsystem(DifferentialDriveIO io, DifferentialConfig config) {
         this.io = io;
+        this.kinematics = new org.areslib.math.kinematics.DifferentialDriveKinematics(config.trackwidthMeters);
+        
+        this.leftPid = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+        this.rightPid = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+        
+        this.driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(config.driveKs, config.driveKv);
+
+        if (config.maxAccelerationMps2 > 0.0) {
+            this.fwdLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2);
+            this.rotLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2 * 2.0); // Allow faster rotational accel
+        } else {
+            this.fwdLimiter = null;
+            this.rotLimiter = null;
+        }
     }
 
     @Override
@@ -46,11 +64,33 @@ public class DifferentialDriveSubsystem extends SubsystemBase {
     public double getCommandedOmega() { return commandedOmega; }
 
     /**
+     * Commands the differential drive to move in a field-centric manner.
+     * Note: Differential drives cannot strafe, so the Y component is discarded.
+     * The heading rotation is used to transform the forward command relative to the field.
+     * @param vxMetersPerSec The X velocity (field relative) in m/s.
+     * @param vyMetersPerSec The Y velocity (field relative) in m/s — ignored for differential.
+     * @param omegaRadPerSec The angular velocity in rad/s.
+     * @param robotHeading The current robot heading.
+     */
+    public void driveFieldCentric(double vxMetersPerSec, double vyMetersPerSec, double omegaRadPerSec, org.areslib.math.geometry.Rotation2d robotHeading) {
+        org.areslib.math.kinematics.ChassisSpeeds speeds = org.areslib.math.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(
+            vxMetersPerSec, vyMetersPerSec, omegaRadPerSec, robotHeading
+        );
+        // Differential drives can only use forward (vx) and turn (omega); strafe (vy) is dropped
+        drive(speeds.vxMetersPerSecond, speeds.omegaRadiansPerSecond);
+    }
+
+    /**
      * Commands the differential drive to move.
      * @param forwardMetersPerSec The forward velocity in m/s (X axis).
      * @param turnRadPerSec The angular velocity in rad/s.
      */
     public void drive(double forwardMetersPerSec, double turnRadPerSec) {
+        if (fwdLimiter != null) {
+            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
+            turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
+        }
+
         this.commandedVx = forwardMetersPerSec;
         this.commandedOmega = turnRadPerSec;
         

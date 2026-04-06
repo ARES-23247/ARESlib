@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import org.areslib.command.Command;
+import org.areslib.command.CommandScheduler;
 import org.areslib.core.localization.AresFollower;
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorSubsystem;
+import static org.firstinspires.ftc.teamcode.Constants.ElevatorConstants.HIGH_POSITION_METERS;
 
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.Pose;
@@ -16,12 +18,13 @@ public class TeamAutoCommand extends Command {
     private final PathChain toScore;
     private final PathChain toPark;
     
-    private ElevatorToPositionCommand elevatorScore;
+    private ElevatorToPositionCommand elevatorCommand;
+    private boolean elevatorScheduled = false;
 
     public TeamAutoCommand(AresFollower follower, ElevatorSubsystem elevator) {
         this.follower = follower;
         this.elevator = elevator;
-        addRequirements(follower, elevator); // Claim ownership of subsystems
+        addRequirements(follower); // Only claim follower — elevator is scheduled separately
         
         // Define poses (X, Y, Heading radians)
         Pose startPose = new Pose(0, 0, Math.toRadians(0));
@@ -45,6 +48,7 @@ public class TeamAutoCommand extends Command {
     @Override
     public void initialize() {
         state = 0;
+        elevatorScheduled = false;
     }
 
     @Override
@@ -56,16 +60,19 @@ public class TeamAutoCommand extends Command {
                 break;
             case 1:
                 if (!follower.isBusy()) {
-                    // Reached target, run elevator to 0.8 meters
-                    elevatorScore = new ElevatorToPositionCommand(elevator, 0.8);
-                    elevatorScore.initialize();
+                    // Reached scoring position — schedule the elevator via the CommandScheduler
+                    elevatorCommand = new ElevatorToPositionCommand(elevator, HIGH_POSITION_METERS);
+                    CommandScheduler.getInstance().schedule(elevatorCommand);
+                    elevatorScheduled = true;
                     state = 2;
                 }
                 break;
             case 2:
-                elevatorScore.execute();
-                if (elevatorScore.isFinished()) {
-                    elevatorScore.end(false);
+                // Wait for the elevator command to be removed from the scheduler (finished naturally)
+                // Using isScheduled() instead of isFinished() to avoid a one-cycle race
+                // where the scheduler removes the command in the same tick we check.
+                if (elevatorScheduled && !CommandScheduler.getInstance().isScheduled(elevatorCommand)) {
+                    elevatorScheduled = false;
                     // Elevator is up, move to park
                     follower.followPath(toPark, false);
                     state = 3;
@@ -89,6 +96,10 @@ public class TeamAutoCommand extends Command {
     public void end(boolean interrupted) {
         if (interrupted) {
             follower.breakFollowing();
+            // Cancel the elevator if it's still running
+            if (elevatorScheduled && elevatorCommand != null) {
+                CommandScheduler.getInstance().cancel(elevatorCommand);
+            }
         }
     }
 }

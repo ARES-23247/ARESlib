@@ -16,25 +16,51 @@ public class MecanumDriveSubsystem extends SubsystemBase {
     private double commandedOmega = 0.0;
 
     // Ported WPILib kinematics
-    private final org.areslib.math.kinematics.MecanumDriveKinematics kinematics = new org.areslib.math.kinematics.MecanumDriveKinematics(
-            new org.areslib.math.geometry.Translation2d(0.3, 0.3),   // FL
-            new org.areslib.math.geometry.Translation2d(0.3, -0.3),  // FR
-            new org.areslib.math.geometry.Translation2d(-0.3, 0.3),  // RL
-            new org.areslib.math.geometry.Translation2d(-0.3, -0.3)  // RR
-    );
+    private final org.areslib.math.kinematics.MecanumDriveKinematics kinematics;
 
-    private final org.areslib.math.controller.PIDController frontLeftPid = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-    private final org.areslib.math.controller.PIDController frontRightPid = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-    private final org.areslib.math.controller.PIDController rearLeftPid = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-    private final org.areslib.math.controller.PIDController rearRightPid = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-    private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(0.1, 2.5);
+    private final org.areslib.math.controller.PIDController frontLeftPid;
+    private final org.areslib.math.controller.PIDController frontRightPid;
+    private final org.areslib.math.controller.PIDController rearLeftPid;
+    private final org.areslib.math.controller.PIDController rearRightPid;
+    private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward;
+
+    private final org.areslib.math.filter.SlewRateLimiter fwdLimiter;
+    private final org.areslib.math.filter.SlewRateLimiter strLimiter;
+    private final org.areslib.math.filter.SlewRateLimiter rotLimiter;
 
     /**
      * Constructs the MecanumDriveSubsystem.
      * @param io The unified Mecanum Hardware interface.
+     * @param config The structural parameters mapping physics to motor outputs.
      */
-    public MecanumDriveSubsystem(MecanumDriveIO io) {
+    public MecanumDriveSubsystem(MecanumDriveIO io, MecanumConfig config) {
         this.io = io;
+        
+        double halfWidth = config.trackwidthMeters / 2.0;
+        double halfBase = config.wheelbaseMeters / 2.0;
+        this.kinematics = new org.areslib.math.kinematics.MecanumDriveKinematics(
+            new org.areslib.math.geometry.Translation2d(halfBase, halfWidth),   // FL
+            new org.areslib.math.geometry.Translation2d(halfBase, -halfWidth),  // FR
+            new org.areslib.math.geometry.Translation2d(-halfBase, halfWidth),  // RL
+            new org.areslib.math.geometry.Translation2d(-halfBase, -halfWidth)  // RR
+        );
+
+        this.frontLeftPid = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+        this.frontRightPid = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+        this.rearLeftPid = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+        this.rearRightPid = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+        
+        this.driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(config.driveKs, config.driveKv);
+
+        if (config.maxAccelerationMps2 > 0.0) {
+            this.fwdLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2);
+            this.strLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2);
+            this.rotLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2 * 2.0); // Allow faster rotational accel
+        } else {
+            this.fwdLimiter = null;
+            this.strLimiter = null;
+            this.rotLimiter = null;
+        }
     }
 
     @Override
@@ -79,6 +105,12 @@ public class MecanumDriveSubsystem extends SubsystemBase {
      * @param turnRadPerSec The angular velocity in rad/s.
      */
     public void drive(double forwardMetersPerSec, double strafeMetersPerSec, double turnRadPerSec) {
+        if (fwdLimiter != null) {
+            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
+            strafeMetersPerSec = strLimiter.calculate(strafeMetersPerSec);
+            turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
+        }
+
         this.commandedVx = forwardMetersPerSec;
         this.commandedVy = strafeMetersPerSec;
         this.commandedOmega = turnRadPerSec;

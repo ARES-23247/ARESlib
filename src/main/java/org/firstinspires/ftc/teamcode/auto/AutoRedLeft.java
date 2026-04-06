@@ -18,7 +18,8 @@ public class AutoRedLeft extends AresCommandOpMode {
         AresTelemetry.registerBackend(new AndroidDashboardBackend());
 
         // 2. Initialize Hardware map state via the core architectural container
-        robot = new RobotContainer(hardwareMap, gamepad1, gamepad2);
+        // Pass null gamepads — this is Auto-only, no TeleOp bindings needed
+        robot = new RobotContainer(hardwareMap, null, null);
 
         // 3. Pre-Match Initialization Loop
         // Commonly used for identifying randomized game elements via computer vision

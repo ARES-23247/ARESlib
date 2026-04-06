@@ -16,12 +16,22 @@ public class AresTelemetry {
 
     /**
      * Registers a new telemetry backend to receive data.
+     * Uses class-based deduplication so that re-registering the same backend type
+     * (e.g., across OpMode transitions) replaces the old instance instead of duplicating.
      * @param backend The backend implementation to register.
      */
     public static void registerBackend(AresLoggerBackend backend) {
-        if (!backends.contains(backend)) {
-            backends.add(backend);
-        }
+        // Remove any existing backend of the same class to prevent accumulation
+        backends.removeIf(existing -> existing.getClass().equals(backend.getClass()));
+        backends.add(backend);
+    }
+
+    /**
+     * Removes all registered backends. Should be called during scheduler reset
+     * to prevent stale backend accumulation across OpMode transitions.
+     */
+    public static void clearBackends() {
+        backends.clear();
     }
 
     /**
@@ -54,6 +64,39 @@ public class AresTelemetry {
     public static void putString(String key, String value) {
         for (AresLoggerBackend backend : backends) {
             backend.putString(key, value);
+        }
+    }
+
+    /**
+     * Puts a boolean value into telemetry.
+     * @param key The telemetry key.
+     * @param value The value.
+     */
+    public static void putBoolean(String key, boolean value) {
+        for (AresLoggerBackend backend : backends) {
+            backend.putBoolean(key, value);
+        }
+    }
+
+    /**
+     * Puts an array of booleans into telemetry.
+     * @param key The telemetry key.
+     * @param values The values array.
+     */
+    public static void putBooleanArray(String key, boolean[] values) {
+        for (AresLoggerBackend backend : backends) {
+            backend.putBooleanArray(key, values);
+        }
+    }
+
+    /**
+     * Puts an array of strings into telemetry.
+     * @param key The telemetry key.
+     * @param values The values array.
+     */
+    public static void putStringArray(String key, String[] values) {
+        for (AresLoggerBackend backend : backends) {
+            backend.putStringArray(key, values);
         }
     }
 

@@ -12,6 +12,7 @@ import org.areslib.hardware.wrappers.DcMotorExWrapper;
 
 import org.areslib.subsystems.drive.DifferentialDriveSubsystem;
 import org.areslib.subsystems.drive.DifferentialDriveIOReal;
+import org.firstinspires.ftc.teamcode.Constants;
 import org.areslib.telemetry.AresTelemetry;
 import org.areslib.telemetry.AndroidDashboardBackend;
 import org.areslib.telemetry.WpiLogBackend;
@@ -61,15 +62,15 @@ public class DifferentialAdvancedTeleOp extends AresCommandOpMode {
         DcMotorExWrapper left = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "leftDrive"));
         DcMotorExWrapper right = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "rightDrive"));
         
-        driveSubsystem = new DifferentialDriveSubsystem(
-            new DifferentialDriveIOReal(
-                left,
-                right,
-                left,  
-                right, 
-                0.001 // distance Per Tick
-            )
+        // Get the IO and pass in configuration
+        DifferentialDriveIOReal io = new DifferentialDriveIOReal(
+            left, right, 
+            left, right, 
+            Constants.DriveConstants.DIFFERENTIAL_CONFIG.getDriveMetersPerTick()
         );
+
+        // Instantiate Subsystem with IO and Configuration
+        driveSubsystem = new DifferentialDriveSubsystem(io, Constants.DriveConstants.DIFFERENTIAL_CONFIG);
 
         CommandScheduler.getInstance().registerSubsystem(driveSubsystem);
 

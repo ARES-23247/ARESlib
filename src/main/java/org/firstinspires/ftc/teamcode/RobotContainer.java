@@ -21,7 +21,12 @@ import org.areslib.subsystems.drive.SwerveModuleIOReal;
 
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorIOReal;
-import org.firstinspires.ftc.teamcode.subsystems.vision.VisionSubsystem;
+import org.areslib.subsystems.vision.AresVisionSubsystem;
+import org.areslib.subsystems.vision.AresSensorFusionSubsystem;
+
+import static org.firstinspires.ftc.teamcode.Constants.ElevatorConstants.*;
+import static org.firstinspires.ftc.teamcode.Constants.DriveConstants.*;
+import static org.firstinspires.ftc.teamcode.Constants.VisionConstants.*;
 
 import org.areslib.core.localization.AresFollower;
 import org.areslib.hardware.wrappers.PinpointOdometryWrapper;
@@ -42,7 +47,7 @@ public class RobotContainer {
     // Subsystems
     private final SwerveDriveSubsystem drive;
     private final ElevatorSubsystem elevator;
-    private final VisionSubsystem vision;
+    private final AresVisionSubsystem vision;
     private final AresFollower follower;
     
     // Hardware Integrations
@@ -62,29 +67,34 @@ public class RobotContainer {
 
         // 1. Instantiate Subsystems
         drive = new SwerveDriveSubsystem(
+            SWERVE_CONFIG,
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "flDrive")), 
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "flTurn")),      
                 new AresOctoQuadSensor(0, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(4, OctoMode.ABSOLUTE)                       
+                new AresOctoQuadSensor(4, OctoMode.ABSOLUTE),
+                SWERVE_CONFIG.getDriveMetersPerTick()
             ),
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "frDrive")), 
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "frTurn")),      
                 new AresOctoQuadSensor(1, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(5, OctoMode.ABSOLUTE)                       
+                new AresOctoQuadSensor(5, OctoMode.ABSOLUTE),
+                SWERVE_CONFIG.getDriveMetersPerTick()                       
             ),
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "blDrive")), 
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "blTurn")),      
                 new AresOctoQuadSensor(2, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(6, OctoMode.ABSOLUTE)                       
+                new AresOctoQuadSensor(6, OctoMode.ABSOLUTE),
+                SWERVE_CONFIG.getDriveMetersPerTick()                       
             ),
             new SwerveModuleIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "brDrive")), 
                 new CRServoWrapper(hardwareMap.get(CRServo.class, "brTurn")),      
                 new AresOctoQuadSensor(3, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(7, OctoMode.ABSOLUTE)                       
+                new AresOctoQuadSensor(7, OctoMode.ABSOLUTE),
+                SWERVE_CONFIG.getDriveMetersPerTick()                       
             )
         );
         CommandScheduler.getInstance().registerSubsystem(drive);
@@ -92,13 +102,15 @@ public class RobotContainer {
         elevator = new ElevatorSubsystem(
             new ElevatorIOReal(
                 new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "elevatorMotor")),
-                0.005 // Configuration scalar for distance
+                ELEVATOR_CONFIG.getMetersPerTick() // Configuration scalar for distance
             )
         );
         CommandScheduler.getInstance().registerSubsystem(elevator);
         
-        vision = new VisionSubsystem(
-            new LimelightVisionWrapper(hardwareMap, "limelight")
+        vision = new AresVisionSubsystem(
+            new LimelightVisionWrapper(hardwareMap, "limelight"),
+            MIN_TARGET_AREA_PERCENT,
+            MAX_TRUST_AREA_PERCENT
         );
         CommandScheduler.getInstance().registerSubsystem(vision);
 
@@ -116,7 +128,7 @@ public class RobotContainer {
 
         // Register the background asynchronous sensor fusion algorithms
         CommandScheduler.getInstance().registerSubsystem(
-            new org.firstinspires.ftc.teamcode.subsystems.SensorFusionSubsystem(follower, vision)
+            new AresSensorFusionSubsystem(follower, vision, MAX_VISION_TRUST_FACTOR)
         );
 
         // 2. Map Gamepads (OpModes pass real gamepads or null context)
@@ -136,7 +148,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver Align to Tag explicitly overrides manual driving while Held
-        driver.a().whileTrue(new AlignToTagCommand(drive, vision, 5.0));
+        driver.a().whileTrue(new AlignToTagCommand(drive, vision, ALIGN_TARGET_AREA_PERCENT));
         
         // Reset field-centric yaw
         driver.y().onTrue(new Command() {
@@ -149,8 +161,8 @@ public class RobotContainer {
         });
         
         // Operator Elevator Dispatch (onTrue ensures single fire execution)
-        operator.dpadUp().onTrue(new ElevatorToPositionCommand(elevator, 0.8));
-        operator.dpadDown().onTrue(new ElevatorToPositionCommand(elevator, 0.0));
+        operator.dpadUp().onTrue(new ElevatorToPositionCommand(elevator, HIGH_POSITION_METERS));
+        operator.dpadDown().onTrue(new ElevatorToPositionCommand(elevator, LOW_POSITION_METERS));
     }
 
     /**
@@ -166,9 +178,9 @@ public class RobotContainer {
             @Override
             public void execute() {
                 drive.driveFieldCentric(
-                    driver.getLeftY() * 3.0,
-                    driver.getLeftX() * 3.0,
-                    driver.getRightX() * 2.5,
+                    driver.getLeftY() * MAX_FWD_SPEED,
+                    driver.getLeftX() * MAX_STR_SPEED,
+                    driver.getRightX() * MAX_ROT_SPEED,
                     new org.areslib.math.geometry.Rotation2d(follower.getPose().getHeading())
                 );
             }
@@ -200,7 +212,7 @@ public class RobotContainer {
     /**
      * Expose vision interface for pre-match target locking.
      */
-    public VisionSubsystem getVision() {
+    public AresVisionSubsystem getVision() {
         return vision;
     }
 }

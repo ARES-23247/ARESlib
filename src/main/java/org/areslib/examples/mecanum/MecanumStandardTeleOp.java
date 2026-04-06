@@ -12,6 +12,7 @@ import org.areslib.hardware.wrappers.DcMotorExWrapper;
 
 import org.areslib.subsystems.drive.MecanumDriveSubsystem;
 import org.areslib.subsystems.drive.MecanumDriveIOReal;
+import org.firstinspires.ftc.teamcode.Constants;
 import org.areslib.telemetry.AresTelemetry;
 import org.areslib.telemetry.AndroidDashboardBackend;
 
@@ -62,15 +63,20 @@ public class MecanumStandardTeleOp extends AresCommandOpMode {
         DcMotorExWrapper bl = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "blDrive"));
         DcMotorExWrapper br = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "brDrive"));
 
-        driveSubsystem = new MecanumDriveSubsystem(
-            new MecanumDriveIOReal(
-                fl, fr, bl, br,
-                fl, fr, bl, br,
-                0.001 // example distancePerTick scalar to convert raw ticks to meters
-            )
+        // Get the IO and pass in configuration
+        MecanumDriveIOReal io = new MecanumDriveIOReal(
+            fl, fr, bl, br,
+            fl, fr, bl, br,
+            Constants.DriveConstants.MECANUM_CONFIG.getDriveMetersPerTick()
         );
 
+        // Instantiate Subsystem with IO and Configuration
+        driveSubsystem = new MecanumDriveSubsystem(io, Constants.DriveConstants.MECANUM_CONFIG);
+
         CommandScheduler.getInstance().registerSubsystem(driveSubsystem);
+
+        // 4. Input Bindings
+        pilot = new AresGamepad(gamepad1);
 
         pilot.y().onTrue(new Command() {
             @Override

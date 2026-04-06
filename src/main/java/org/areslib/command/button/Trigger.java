@@ -14,7 +14,6 @@ import java.util.function.BooleanSupplier;
 public class Trigger {
 
     private final BooleanSupplier condition;
-    private boolean previousState = false;
 
     /**
      * Constructs a new Trigger based on a boolean condition.
@@ -43,12 +42,14 @@ public class Trigger {
      * @return This trigger, for builder-style method chaining.
      */
     public Trigger onTrue(Command command) {
+        // Each binding gets its own isolated state tracker to prevent cross-contamination
+        final boolean[] prev = {false};
         CommandScheduler.getInstance().addButton(() -> {
             boolean currentState = getAsBoolean();
-            if (currentState && !previousState) {
+            if (currentState && !prev[0]) {
                 CommandScheduler.getInstance().schedule(command);
             }
-            previousState = currentState;
+            prev[0] = currentState;
         });
         return this;
     }
@@ -62,15 +63,91 @@ public class Trigger {
      * @return This trigger, for builder-style method chaining.
      */
     public Trigger whileTrue(Command command) {
+        final boolean[] prev = {false};
         CommandScheduler.getInstance().addButton(() -> {
             boolean currentState = getAsBoolean();
-            if (currentState && !previousState) {
+            if (currentState && !prev[0]) {
                 CommandScheduler.getInstance().schedule(command);
-            } else if (!currentState && previousState) {
+            } else if (!currentState && prev[0]) {
                 CommandScheduler.getInstance().cancel(command);
             }
-            previousState = currentState;
+            prev[0] = currentState;
         });
         return this;
+    }
+
+    /**
+     * Starts the given command whenever the trigger just becomes inactive.
+     * <p>
+     * The command is scheduled on the falling edge of the condition (i.e. changing from true to false).
+     *
+     * @param command The command to start.
+     * @return This trigger, for builder-style method chaining.
+     */
+    public Trigger onFalse(Command command) {
+        final boolean[] prev = {false};
+        CommandScheduler.getInstance().addButton(() -> {
+            boolean currentState = getAsBoolean();
+            if (!currentState && prev[0]) {
+                CommandScheduler.getInstance().schedule(command);
+            }
+            prev[0] = currentState;
+        });
+        return this;
+    }
+
+    /**
+     * Toggles a command on and off each time the trigger becomes active.
+     * <p>
+     * On the first rising edge the command is scheduled. On the next rising edge it is cancelled.
+     * This is commonly used for toggle mechanisms like grippers or intakes.
+     *
+     * @param command The command to toggle.
+     * @return This trigger, for builder-style method chaining.
+     */
+    public Trigger toggleOnTrue(Command command) {
+        final boolean[] prev = {false};
+        final boolean[] toggled = {false};
+        CommandScheduler.getInstance().addButton(() -> {
+            boolean currentState = getAsBoolean();
+            if (currentState && !prev[0]) {
+                if (toggled[0]) {
+                    CommandScheduler.getInstance().cancel(command);
+                } else {
+                    CommandScheduler.getInstance().schedule(command);
+                }
+                toggled[0] = !toggled[0];
+            }
+            prev[0] = currentState;
+        });
+        return this;
+    }
+    /**
+     * Composes two triggers with logical AND.
+     *
+     * @param trigger the condition to compose with
+     * @return the composed trigger
+     */
+    public Trigger and(BooleanSupplier trigger) {
+        return new Trigger(() -> condition.getAsBoolean() && trigger.getAsBoolean());
+    }
+
+    /**
+     * Composes two triggers with logical OR.
+     *
+     * @param trigger the condition to compose with
+     * @return the composed trigger
+     */
+    public Trigger or(BooleanSupplier trigger) {
+        return new Trigger(() -> condition.getAsBoolean() || trigger.getAsBoolean());
+    }
+
+    /**
+     * Creates a new trigger that is active when this trigger is inactive.
+     *
+     * @return the negated trigger
+     */
+    public Trigger negate() {
+        return new Trigger(() -> !condition.getAsBoolean());
     }
 }

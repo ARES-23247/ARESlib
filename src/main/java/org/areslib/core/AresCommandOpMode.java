@@ -5,6 +5,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 
 import org.areslib.command.CommandScheduler;
 import org.areslib.hardware.AresHardwareManager;
+import org.areslib.core.async.AresAsyncExecutor;
 import org.areslib.telemetry.AresTelemetry;
 
 import java.util.List;
@@ -65,8 +66,16 @@ public abstract class AresCommandOpMode extends LinearOpMode {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
+        // Reset scheduler and telemetry state from any previous OpMode run
+        CommandScheduler.getInstance().reset();
+        AresTelemetry.clearBackends();
+        org.areslib.faults.AresFaultManager.reset();
+
         // Run user-provided initialization code
         robotInit();
+        
+        // Start any registered background calculating threads
+        AresAsyncExecutor.start();
 
         waitForStart();
 
@@ -82,14 +91,19 @@ public abstract class AresCommandOpMode extends LinearOpMode {
             // 3. Update Dual-Axis Governor for Voltage Comp & Load Shedding
             AresHardwareManager.updatePowerStatus();
 
-            // 4. Command Scheduler Loop
+            // 4. Fault Management updates
+            org.areslib.faults.AresFaultManager.update();
+
+            // 5. Command Scheduler Loop
             CommandScheduler.getInstance().run();
 
-            // 5. Fire Telemetry
+            // 6. Fire Telemetry
             AresTelemetry.update();
         }
 
-        // OpMode finished, reset scheduler state for next run
-        CommandScheduler.getInstance().cancelAll();
+        // OpMode finished, cleanly shutdown threads & reset scheduler state for next run
+        AresAsyncExecutor.stop();
+        CommandScheduler.getInstance().reset();
+        org.areslib.faults.AresFaultManager.reset();
     }
 }

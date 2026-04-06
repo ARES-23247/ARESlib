@@ -15,6 +15,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
     private final AresMotor turnMotor;
     private final AresEncoder driveEncoder;
     private final AresAbsoluteEncoder turnEncoder;
+    private final double driveMetersPerTick;
 
     /**
      * Constructs a physical Swerve Module IO layer.
@@ -28,22 +29,24 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
             AresMotor driveMotor, 
             AresMotor turnMotor, 
             AresEncoder driveEncoder, 
-            AresAbsoluteEncoder turnEncoder) {
+            AresAbsoluteEncoder turnEncoder,
+            double driveMetersPerTick) {
         this.driveMotor = driveMotor;
         this.turnMotor = turnMotor;
         this.driveEncoder = driveEncoder;
         this.turnEncoder = turnEncoder;
+        this.driveMetersPerTick = driveMetersPerTick;
     }
 
     @Override
     public void updateInputs(SwerveModuleInputs inputs) {
         // Direct, zero-latency reads from the abstracted cache. 
-        // Handles transparent expansion hub bulk caching or native OctoQuad arrays equally.
-        inputs.drivePositionMeters = driveEncoder.getPosition();
-        inputs.driveVelocityMps = driveEncoder.getVelocity();
+        // Convert to physical units immediately.
+        inputs.drivePositionMeters = driveEncoder.getPosition() * driveMetersPerTick;
+        inputs.driveVelocityMps = driveEncoder.getVelocity() * driveMetersPerTick;
         
         inputs.turnAbsolutePositionRad = turnEncoder.getAbsolutePositionRad();
-        inputs.turnVelocityRadPerSec = turnEncoder.getVelocity();
+        inputs.turnVelocityRadPerSec = turnEncoder.getVelocity(); // Assuming it returns natively what it's set to, or that turn is just position controlled
     }
 
     @Override

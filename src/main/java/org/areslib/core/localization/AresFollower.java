@@ -127,18 +127,23 @@ public class AresFollower extends SubsystemBase {
         this.follower.update();
 
         // Pinpoint Glitch Protection (Hardware I2C Fault Tolerance)
-        // The FTC field is exactly 144x144 inches. Pedro Pathing maps 0,0 to the bottom left.
-        // We grant a 12-inch tolerance padding in case part of the robot hangs over the wall.
+        // Uses centralized field constants for consistent bounds across the codebase.
         com.pedropathing.geometry.Pose pose = this.follower.getPose();
         boolean outOfBounds = false;
         double clampedX = pose.getX();
         double clampedY = pose.getY();
 
-        if (clampedX < -12.0) { clampedX = -12.0; outOfBounds = true; }
-        else if (clampedX > 156.0) { clampedX = 156.0; outOfBounds = true; }
+        if (clampedX < org.areslib.core.FieldConstants.MIN_POSITION_INCHES) { 
+            clampedX = org.areslib.core.FieldConstants.MIN_POSITION_INCHES; outOfBounds = true; 
+        } else if (clampedX > org.areslib.core.FieldConstants.MAX_POSITION_INCHES) { 
+            clampedX = org.areslib.core.FieldConstants.MAX_POSITION_INCHES; outOfBounds = true; 
+        }
 
-        if (clampedY < -12.0) { clampedY = -12.0; outOfBounds = true; }
-        else if (clampedY > 156.0) { clampedY = 156.0; outOfBounds = true; }
+        if (clampedY < org.areslib.core.FieldConstants.MIN_POSITION_INCHES) { 
+            clampedY = org.areslib.core.FieldConstants.MIN_POSITION_INCHES; outOfBounds = true; 
+        } else if (clampedY > org.areslib.core.FieldConstants.MAX_POSITION_INCHES) { 
+            clampedY = org.areslib.core.FieldConstants.MAX_POSITION_INCHES; outOfBounds = true; 
+        }
 
         // If I2C hardware noise spiked the position out of bounds, forcefully clamp it 
         // to prevent autonomous trajectories from generating impossible vectors.

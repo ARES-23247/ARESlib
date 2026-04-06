@@ -23,25 +23,28 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     private double commandedOmega = 0.0;
 
     // Ported WPILib kinematics
-    private final org.areslib.math.kinematics.SwerveDriveKinematics kinematics = new org.areslib.math.kinematics.SwerveDriveKinematics(
-            new org.areslib.math.geometry.Translation2d(0.3, 0.3),   // FL
-            new org.areslib.math.geometry.Translation2d(0.3, -0.3),  // FR
-            new org.areslib.math.geometry.Translation2d(-0.3, 0.3),  // BL
-            new org.areslib.math.geometry.Translation2d(-0.3, -0.3)  // BR
-    );
+    private final org.areslib.math.kinematics.SwerveDriveKinematics kinematics;
 
     private final org.areslib.math.controller.PIDController[] drivePids = new org.areslib.math.controller.PIDController[4];
     private final org.areslib.math.controller.PIDController[] turnPids = new org.areslib.math.controller.PIDController[4];
-    private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(0.1, 2.5);
+    private final org.areslib.math.controller.SimpleMotorFeedforward driveFeedforward;
+    private final double maxSpeedMps;
+    private final double turnKs;
+
+    private final org.areslib.math.filter.SlewRateLimiter fwdLimiter;
+    private final org.areslib.math.filter.SlewRateLimiter strLimiter;
+    private final org.areslib.math.filter.SlewRateLimiter rotLimiter;
 
     /**
      * Constructs the SwerveDriveSubsystem.
+     * @param config The robot-specific physical tuning constants and constraints.
      * @param frontLeft The front left module IO.
      * @param frontRight The front right module IO.
      * @param backLeft The back left module IO.
      * @param backRight The back right module IO.
      */
     public SwerveDriveSubsystem(
+            SwerveConfig config,
             SwerveModuleIO frontLeft, 
             SwerveModuleIO frontRight, 
             SwerveModuleIO backLeft, 
@@ -51,10 +54,32 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         this.backLeft = backLeft;
         this.backRight = backRight;
 
+        this.maxSpeedMps = config.maxModuleSpeedMps;
+        this.turnKs = config.turnKs;
+
+        this.kinematics = new org.areslib.math.kinematics.SwerveDriveKinematics(
+            new org.areslib.math.geometry.Translation2d(config.trackWidthXMeters, config.trackWidthYMeters),   // FL
+            new org.areslib.math.geometry.Translation2d(config.trackWidthXMeters, -config.trackWidthYMeters),  // FR
+            new org.areslib.math.geometry.Translation2d(-config.trackWidthXMeters, config.trackWidthYMeters),  // BL
+            new org.areslib.math.geometry.Translation2d(-config.trackWidthXMeters, -config.trackWidthYMeters)  // BR
+        );
+
+        this.driveFeedforward = new org.areslib.math.controller.SimpleMotorFeedforward(config.driveKs, config.driveKv);
+
         for (int i = 0; i < 4; i++) {
-            drivePids[i] = new org.areslib.math.controller.PIDController(1.0, 0.0, 0.0);
-            turnPids[i] = new org.areslib.math.controller.PIDController(3.0, 0.0, 0.0);
+            drivePids[i] = new org.areslib.math.controller.PIDController(config.driveKp, config.driveKi, config.driveKd);
+            turnPids[i] = new org.areslib.math.controller.PIDController(config.turnKp, config.turnKi, config.turnKd);
             turnPids[i].enableContinuousInput(-Math.PI, Math.PI);
+        }
+
+        if (config.maxAccelerationMps2 > 0.0) {
+            this.fwdLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2);
+            this.strLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2);
+            this.rotLimiter = new org.areslib.math.filter.SlewRateLimiter(config.maxAccelerationMps2 * 2.0); // Allow faster rotational accel
+        } else {
+            this.fwdLimiter = null;
+            this.strLimiter = null;
+            this.rotLimiter = null;
         }
     }
 
@@ -115,6 +140,12 @@ public class SwerveDriveSubsystem extends SubsystemBase {
      * @param turnRadPerSec The angular velocity in rad/s.
      */
     public void drive(double forwardMetersPerSec, double strafeMetersPerSec, double turnRadPerSec) {
+        if (fwdLimiter != null) {
+            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
+            strafeMetersPerSec = strLimiter.calculate(strafeMetersPerSec);
+            turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
+        }
+
         this.commandedVx = forwardMetersPerSec;
         this.commandedVy = strafeMetersPerSec;
         this.commandedOmega = turnRadPerSec;
@@ -123,6 +154,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
             forwardMetersPerSec, strafeMetersPerSec, turnRadPerSec
         );
         org.areslib.math.kinematics.SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+        org.areslib.math.kinematics.SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeedMps);
 
         org.areslib.telemetry.AresTelemetry.logSwerveStates("Robot/SwerveTarget", states);
 
@@ -148,9 +180,15 @@ public class SwerveDriveSubsystem extends SubsystemBase {
             double drivePidOut = drivePids[i].calculate(inputs[i].driveVelocityMps, targetSpeedMps);
             
             double turnPidOut = turnPids[i].calculate(inputs[i].turnAbsolutePositionRad, targetAngleRad);
+            
+            // Apply static friction feedforward (Ks) in the direction of the PID output
+            double turnFFOut = 0.0;
+            if (Math.abs(turnPidOut) > 0.001) {
+                turnFFOut = Math.signum(turnPidOut) * turnKs;
+            }
 
             modules[i].setDriveVoltage(feedforwardVolts + drivePidOut);
-            modules[i].setTurnVoltage(turnPidOut);
+            modules[i].setTurnVoltage(turnPidOut + turnFFOut);
         }
     }
 }

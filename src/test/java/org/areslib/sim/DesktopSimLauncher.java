@@ -33,8 +33,11 @@ public class DesktopSimLauncher {
         AresTelemetry.registerBackend(new WpiLogBackend("logs/sim"));
         AresTelemetry.registerBackend(new org.areslib.telemetry.RlogServerBackend(5800));
 
+        org.areslib.subsystems.drive.SwerveConfig config = new org.areslib.subsystems.drive.SwerveConfig();
+
         // 2. Mock Hardware Layer
         SwerveDriveSubsystem driveSubsystem = new SwerveDriveSubsystem(
+            config,
             new SwerveModuleIOSim(),
             new SwerveModuleIOSim(),
             new SwerveModuleIOSim(),

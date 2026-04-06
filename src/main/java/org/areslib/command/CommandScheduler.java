@@ -134,12 +134,26 @@ public final class CommandScheduler {
     }
 
     /**
+     * Checks whether a specific command is currently scheduled and running.
+     * <p>This is the safe way to test if a separately-scheduled command has completed,
+     * as opposed to calling {@code command.isFinished()} directly, which can race
+     * with the scheduler's own removal logic.
+     *
+     * @param command The command to query.
+     * @return True if the command is currently in the scheduled commands set.
+     */
+    public boolean isScheduled(Command command) {
+        return m_scheduledCommands.contains(command);
+    }
+
+    /**
      * Runs a single iteration of the scheduler. The execution occurs in the following order:
      *
      * <p>1. Subsystem periodic methods are called.
-     * <p>2. Default commands are scheduled for subsystems that have no acting command and a default command assigned.
-     * <p>3. Newly-scheduled commands' execute() methods are called.
-     * <p>4. Commands that have finished their run are removed, and their end() methods are called.
+     * <p>2. Default commands are scheduled for subsystems that have no acting command.
+     * <p>3. Button binding loops are polled.
+     * <p>4. Scheduled commands' execute() methods are called.
+     * <p>5. Commands that have finished their run are removed, and their end() methods are called.
      */
     public void run() {
         // 1. Run subsystem periodics
@@ -154,7 +168,7 @@ public final class CommandScheduler {
             }
         }
 
-            // 3. Execute button loops
+        // 3. Execute button loops
         for (Runnable button : m_buttons) {
             button.run();
         }
@@ -169,7 +183,7 @@ public final class CommandScheduler {
             }
         }
 
-        // 4. Clean up finished commands
+        // 5. Clean up finished commands
         for (Command command : commandsToRemove) {
             m_scheduledCommands.remove(command);
             for (Subsystem req : command.getRequirements()) {
@@ -187,5 +201,17 @@ public final class CommandScheduler {
         }
         m_scheduledCommands.clear();
         m_requirements.clear();
+    }
+
+    /**
+     * Fully resets the scheduler, clearing ALL registered subsystems, default commands,
+     * button bindings, and scheduled commands. This MUST be called between OpMode transitions
+     * (e.g., Auto → TeleOp) to prevent duplicate subsystem registrations and stale bindings.
+     */
+    public void reset() {
+        cancelAll();
+        m_subsystems.clear();
+        m_defaultCommands.clear();
+        m_buttons.clear();
     }
 }

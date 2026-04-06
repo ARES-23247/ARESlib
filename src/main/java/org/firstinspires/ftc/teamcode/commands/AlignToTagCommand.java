@@ -2,19 +2,17 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import org.areslib.command.Command;
 import org.areslib.subsystems.drive.SwerveDriveSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.vision.VisionSubsystem;
+import org.areslib.subsystems.vision.AresVisionSubsystem;
+import static org.firstinspires.ftc.teamcode.Constants.AlignConstants.*;
 
 public class AlignToTagCommand extends Command {
     private final SwerveDriveSubsystem drive;
-    private final VisionSubsystem vision;
+    private final AresVisionSubsystem vision;
     
     // Proportional Gains (Teams should tune these real-world limits)
-    private static final double kPx = 0.05; // Tunes Strafe to zero out Tx error
-    private static final double kPy = 0.15; // Tunes Forward to zero out Ty area error
-    
     private final double targetArea;
 
-    public AlignToTagCommand(SwerveDriveSubsystem drive, VisionSubsystem vision, double targetAreaPercent) {
+    public AlignToTagCommand(SwerveDriveSubsystem drive, AresVisionSubsystem vision, double targetAreaPercent) {
         this.drive = drive;
         this.vision = vision;
         this.targetArea = targetAreaPercent;
@@ -28,10 +26,10 @@ public class AlignToTagCommand extends Command {
             double ta = vision.getTargetArea();
             
             // X offset correlates to Strafe (Left/Right)
-            double strafeCmd = -tx * kPx;
+            double strafeCmd = -tx * ALIGN_kPx;
             
             // Area discrepancy correlates to Forward/Back
-            double forwardCmd = (targetArea - ta) * kPy;
+            double forwardCmd = (targetArea - ta) * ALIGN_kPy;
             
             // Send autonomous velocities to drive base, zero rotation
             drive.drive(forwardCmd, strafeCmd, 0.0);

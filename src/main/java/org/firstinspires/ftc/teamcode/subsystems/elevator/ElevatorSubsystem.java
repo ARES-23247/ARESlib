@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.elevator;
 
 import org.areslib.command.Subsystem;
 import org.areslib.telemetry.AresAutoLogger;
+import static org.firstinspires.ftc.teamcode.Constants.ElevatorConstants.*;
 
 public class ElevatorSubsystem implements Subsystem {
 
@@ -9,9 +10,6 @@ public class ElevatorSubsystem implements Subsystem {
     private final ElevatorIO.ElevatorIOInputs inputs = new ElevatorIO.ElevatorIOInputs();
 
     // Standard PID gains for demonstration (teams should tune these)
-    private static final double kP = 50.0;
-    private static final double kG = 0.2; // Gravity feedforward
-    
     private double targetPositionMeters = 0.0;
 
     public ElevatorSubsystem(ElevatorIO io) {
@@ -29,9 +27,9 @@ public class ElevatorSubsystem implements Subsystem {
         // Simple Proportional Control with Gravity Feedforward
         double volts = (error * kP) + kG;
 
-        if (inputs.positionMeters >= 1.0 && volts > kG) { // Mock upper soft limit
+        if (inputs.positionMeters >= MAX_POSITION_METERS && volts > kG) { // Mock upper soft limit
              volts = kG;
-        } else if (inputs.positionMeters <= 0.0 && volts < 0.0) { // Mock lower soft limit
+        } else if (inputs.positionMeters <= MIN_POSITION_METERS && volts < 0.0) { // Mock lower soft limit
              volts = 0.0;
         }
 
@@ -42,7 +40,7 @@ public class ElevatorSubsystem implements Subsystem {
     }
 
     public void setTargetPosition(double positionMeters) {
-        this.targetPositionMeters = Math.max(0.0, Math.min(positionMeters, 1.0)); // Clamp between 0 and 1 meter
+        this.targetPositionMeters = Math.max(MIN_POSITION_METERS, Math.min(positionMeters, MAX_POSITION_METERS)); // Clamp
     }
 
     public double getPositionMeters() {

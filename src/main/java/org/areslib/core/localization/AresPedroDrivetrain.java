@@ -111,11 +111,11 @@ public class AresPedroDrivetrain extends Drivetrain {
     public void setYVelocity(double yV) {}
 
     /** 
-     * Hardcoded default return for voltage compensation inside Pedro.
-     * <p>ARESlib relies on hardware-level cached expansion hub voltage readings instead.
+     * Returns the live battery voltage for Pedro's internal voltage compensation.
+     * <p>Reads from the {@link org.areslib.hardware.AresHardwareManager} brownout system.
      */
     @Override
-    public double getVoltage() { return 12.0; }
+    public double getVoltage() { return org.areslib.hardware.AresHardwareManager.getBatteryVoltage(); }
 
     /** Used by FTC Dashboard for graphical logging. */
     @Override

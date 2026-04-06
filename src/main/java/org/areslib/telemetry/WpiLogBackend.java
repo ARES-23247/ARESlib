@@ -153,6 +153,70 @@ public class WpiLogBackend implements AresLoggerBackend {
     }
 
     @Override
+    public void putBoolean(String key, boolean value) {
+        if (channel == null) return;
+        int id = getOrCreateEntry(key, "boolean");
+        try {
+            writeRecordHeader(id, 1, getTimestamp());
+            encodeBuffer.put(value ? (byte) 1 : (byte) 0);
+            encodeBuffer.flip();
+            channel.write(encodeBuffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void putBooleanArray(String key, boolean[] values) {
+        if (channel == null) return;
+        int id = getOrCreateEntry(key, "boolean[]");
+        int payloadSize = values.length;
+        try {
+            if (encodeBuffer.capacity() < 17 + payloadSize) {
+                encodeBuffer = ByteBuffer.allocate(Math.max(encodeBuffer.capacity() * 2, 17 + payloadSize)).order(ByteOrder.LITTLE_ENDIAN);
+            }
+            writeRecordHeader(id, payloadSize, getTimestamp());
+            for (boolean val : values) {
+                encodeBuffer.put(val ? (byte) 1 : (byte) 0);
+            }
+            encodeBuffer.flip();
+            channel.write(encodeBuffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void putStringArray(String key, String[] values) {
+        if (channel == null) return;
+        int id = getOrCreateEntry(key, "string[]");
+        
+        // Calculate payload size: 4 bytes for array length + (4 bytes length + utf8 length) per string
+        int payloadSize = 4;
+        byte[][] utf8Strings = new byte[values.length][];
+        for (int i = 0; i < values.length; i++) {
+            utf8Strings[i] = values[i].getBytes(StandardCharsets.UTF_8);
+            payloadSize += 4 + utf8Strings[i].length;
+        }
+
+        try {
+            if (encodeBuffer.capacity() < 17 + payloadSize) {
+                encodeBuffer = ByteBuffer.allocate(Math.max(encodeBuffer.capacity() * 2, 17 + payloadSize)).order(ByteOrder.LITTLE_ENDIAN);
+            }
+            writeRecordHeader(id, payloadSize, getTimestamp());
+            encodeBuffer.putInt(values.length);
+            for (byte[] strBytes : utf8Strings) {
+                encodeBuffer.putInt(strBytes.length);
+                encodeBuffer.put(strBytes);
+            }
+            encodeBuffer.flip();
+            channel.write(encodeBuffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void putStruct(String key, String typeString, byte[] data) {
         if (channel == null) return;
         int id = getOrCreateEntry(key, typeString);

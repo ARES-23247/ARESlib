@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * A rotation in a 2D coordinate frame represented a point on the unit circle (cosine and sine).
  */
-public class Rotation2d {
+public class Rotation2d implements Interpolatable<Rotation2d> {
     private final double m_value;
     private final double m_cos;
     private final double m_sin;
@@ -75,6 +75,14 @@ public class Rotation2d {
             m_cos * other.m_cos - m_sin * other.m_sin,
             m_cos * other.m_sin + m_sin * other.m_cos
         );
+    }
+
+    @Override
+    public Rotation2d interpolate(Rotation2d endValue, double t) {
+        if (t <= 0) return this;
+        if (t >= 1) return endValue;
+        double diff = endValue.minus(this).getRadians();
+        return this.plus(new Rotation2d(diff * t));
     }
 
     @Override

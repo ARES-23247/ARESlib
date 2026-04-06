@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Represents a 2D pose containing translational and rotational elements.
  */
-public class Pose2d {
+public class Pose2d implements Interpolatable<Pose2d> {
     private final Translation2d m_translation;
     private final Rotation2d m_rotation;
 
@@ -58,6 +58,20 @@ public class Pose2d {
     }
 
     @Override
+    public Pose2d interpolate(Pose2d endValue, double t) {
+        if (t <= 0) return this;
+        if (t >= 1) return endValue;
+        
+        // This is a simple linear interpolation. 
+        // For mathematically rigorous spline interpolation (like the pose exponential), 
+        // a Twist2d is usually generated natively, but this is sufficient for vision latency compensations.
+        return new Pose2d(
+            m_translation.interpolate(endValue.getTranslation(), t),
+            m_rotation.interpolate(endValue.getRotation(), t)
+        );
+    }
+
+    @Override
     public String toString() {
         return String.format("Pose2d(%s, %s)", m_translation.toString(), m_rotation.toString());
     }
@@ -73,5 +87,68 @@ public class Pose2d {
     @Override
     public int hashCode() {
         return Objects.hash(m_translation, m_rotation);
+    }
+    /**
+     * Obtain a new Pose2d from a (constant curvature) velocity.
+     * <p>
+     * See <a href="https://file.tavsys.net/control/controls-engineering-in-frc.pdf">
+     * Controls Engineering in the FIRST Robotics Competition</a>
+     * section 10.2 "Pose exponential" for a derivation.
+     *
+     * @param twist The twist to map to a Pose2d.
+     * @return The new Pose2d.
+     */
+    public Pose2d exp(Twist2d twist) {
+        double dx = twist.dx;
+        double dy = twist.dy;
+        double dtheta = twist.dtheta;
+
+        double sinTheta = Math.sin(dtheta);
+        double cosTheta = Math.cos(dtheta);
+
+        double s, c;
+        if (Math.abs(dtheta) < 1E-9) {
+            s = 1.0 - 1.0 / 6.0 * dtheta * dtheta;
+            c = 0.5 * dtheta;
+        } else {
+            s = sinTheta / dtheta;
+            c = (1.0 - cosTheta) / dtheta;
+        }
+
+        Transform2d transform = new Transform2d(
+            new Translation2d(dx * s - dy * c, dx * c + dy * s),
+            new Rotation2d(cosTheta, sinTheta)
+        );
+
+        return this.plus(new Pose2d(transform.getTranslation(), transform.getRotation()));
+    }
+
+    /**
+     * Returns a Twist2d that maps this pose to the end pose.
+     * <p>
+     * If c is the cosine of dtheta and s is the sine of dtheta, and
+     * the transformation is given by (x, y, theta), then the velocity vector
+     * (dx, dy, dtheta) can be computed.
+     *
+     * @param end The end pose.
+     * @return The twist that maps this pose to the end pose.
+     */
+    public Twist2d log(Pose2d end) {
+        Pose2d transform = end.relativeTo(this);
+        double dtheta = transform.getRotation().getRadians();
+        double halfDtheta = 0.5 * dtheta;
+        double cosMinusOne = transform.getRotation().getCos() - 1.0;
+
+        double halfThetaByTanOfHalfDtheta;
+        if (Math.abs(cosMinusOne) < 1E-9) {
+            halfThetaByTanOfHalfDtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
+        } else {
+            halfThetaByTanOfHalfDtheta = -(halfDtheta * transform.getRotation().getSin()) / cosMinusOne;
+        }
+
+        Translation2d translationPart = transform.getTranslation()
+            .rotateBy(new Rotation2d(halfThetaByTanOfHalfDtheta, -halfDtheta));
+
+        return new Twist2d(translationPart.getX(), translationPart.getY(), dtheta);
     }
 }

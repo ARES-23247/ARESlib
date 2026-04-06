@@ -32,4 +32,34 @@ public class AresGamepad {
     public Trigger dpadDown() { return new Trigger(() -> gamepad.dpad_down); }
     public Trigger dpadLeft() { return new Trigger(() -> gamepad.dpad_left); }
     public Trigger dpadRight() { return new Trigger(() -> gamepad.dpad_right); }
+
+    /**
+     * Returns the raw underlying FTC Gamepad object.
+     */
+    public Gamepad getGamepad() {
+        return gamepad;
+    }
+
+    /**
+     * Rumbles the controller.
+     * @param durationMs Duration in milliseconds.
+     */
+    public void rumble(int durationMs) {
+        if (gamepad != null) {
+            gamepad.rumble(durationMs);
+        }
+    }
+
+    /**
+     * Sets the LED color of the controller (PS4/PS5 compatibility).
+     * @param r Red (0.0 to 1.0)
+     * @param g Green (0.0 to 1.0)
+     * @param b Blue (0.0 to 1.0)
+     * @param durationMs Duration in ms.
+     */
+    public void setLedColor(double r, double g, double b, int durationMs) {
+        if (gamepad != null) {
+            gamepad.setLedColor(r, g, b, durationMs);
+        }
+    }
 }

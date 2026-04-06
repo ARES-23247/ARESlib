@@ -9,7 +9,7 @@ import java.util.Objects;
  * This assumes that you are using standard FTC coordinate systems 
  * (x is forward, y is left).
  */
-public class Translation2d {
+public class Translation2d implements Interpolatable<Translation2d> {
     private final double m_x;
     private final double m_y;
 
@@ -64,6 +64,16 @@ public class Translation2d {
 
     public Translation2d div(double scalar) {
         return new Translation2d(m_x / scalar, m_y / scalar);
+    }
+
+    @Override
+    public Translation2d interpolate(Translation2d endValue, double t) {
+        if (t <= 0) return this;
+        if (t >= 1) return endValue;
+        return new Translation2d(
+            m_x + (endValue.m_x - m_x) * t,
+            m_y + (endValue.m_y - m_y) * t
+        );
     }
 
     @Override

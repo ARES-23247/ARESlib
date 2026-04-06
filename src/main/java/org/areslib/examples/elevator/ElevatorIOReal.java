@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.areslib.hardware.wrappers.DcMotorExWrapper;
 import org.areslib.hardware.wrappers.ServoWrapper;
+import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorConfig;
 
 /**
  * Real hardware implementation of the ElevatorIO interface.
@@ -16,14 +17,16 @@ public class ElevatorIOReal implements ElevatorIO {
     // We instantiate native Ares wrappers locally. Write-Caching happens completely transparently!
     private final DcMotorExWrapper motor;
     private final ServoWrapper grabberServo;
-
-    private static final double METERS_PER_TICK = 0.001; // Example scale
+    
+    private final ElevatorConfig config;
 
     /**
      * Constructs a real elevator hardware IO instance.
      * @param hardwareMap The hardware map to retrieve devices from.
+     * @param config The hardware configuration.
      */
-    public ElevatorIOReal(HardwareMap hardwareMap) {
+    public ElevatorIOReal(HardwareMap hardwareMap, ElevatorConfig config) {
+        this.config = config;
         // Automatically injects hardware directly into our caching wrappers
         this.motor = new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "elevator_motor"));
         this.grabberServo = new ServoWrapper(hardwareMap.get(Servo.class, "grabber_servo"));
@@ -31,8 +34,8 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorInputs inputs) {
-        inputs.positionMeters = motor.getPosition() * METERS_PER_TICK;
-        inputs.velocityMps = motor.getVelocity() * METERS_PER_TICK;
+        inputs.positionMeters = motor.getPosition() * config.getMetersPerTick();
+        inputs.velocityMps = motor.getVelocity() * config.getMetersPerTick();
         inputs.appliedVolts = motor.getVoltage();
         inputs.currentAmps = motor.getCurrentAmps();
     }

@@ -34,6 +34,27 @@ public interface AresLoggerBackend {
     default void putStruct(String key, String typeString, byte[] data) {}
 
     /**
+     * Logs a boolean value.
+     * @param key The telemetry key.
+     * @param value The value.
+     */
+    void putBoolean(String key, boolean value);
+
+    /**
+     * Logs an array of booleans.
+     * @param key The telemetry key.
+     * @param values The value array.
+     */
+    void putBooleanArray(String key, boolean[] values);
+
+    /**
+     * Logs an array of strings.
+     * @param key The telemetry key.
+     * @param values The value array.
+     */
+    void putStringArray(String key, String[] values);
+
+    /**
      * Triggers the backend to flush/send current packets.
      */
     void update();

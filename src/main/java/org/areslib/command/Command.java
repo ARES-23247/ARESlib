@@ -59,4 +59,79 @@ public abstract class Command {
     public Set<Subsystem> getRequirements() {
         return m_requirements;
     }
+
+    /**
+     * Decorates this command with a timeout. If the specified timeout is exceeded before the command
+     * finishes normally, the command will be interrupted and un-scheduled.
+     *
+     * @param seconds the timeout in seconds
+     * @return the decorated command
+     */
+    public Command withTimeout(double seconds) {
+        return new ParallelRaceGroup(this, new WaitCommand(seconds));
+    }
+
+    /**
+     * Decorates this command with a set of commands to run after it in sequence. Often more
+     * convenient/less-verbose than constructing a new {@link SequentialCommandGroup} explicitly.
+     *
+     * @param next the commands to run next
+     * @return the decorated command
+     */
+    public Command andThen(Command... next) {
+        SequentialCommandGroup group = new SequentialCommandGroup(this);
+        group.addCommands(next);
+        return group;
+    }
+
+    /**
+     * Decorates this command with a set of commands to run before it in sequence.
+     *
+     * @param before the commands to run before
+     * @return the decorated command
+     */
+    public Command beforeStarting(Command... before) {
+        SequentialCommandGroup group = new SequentialCommandGroup(before);
+        group.addCommands(this);
+        return group;
+    }
+
+    /**
+     * Decorates this command with a set of commands to run concurrently with it, ending when all
+     * commands have finished.
+     *
+     * @param parallel the commands to run in parallel
+     * @return the decorated command
+     */
+    public Command alongWith(Command... parallel) {
+        ParallelCommandGroup group = new ParallelCommandGroup(this);
+        group.addCommands(parallel);
+        return group;
+    }
+
+    /**
+     * Decorates this command with a set of commands to run concurrently with it, ending when any
+     * command finishes.
+     *
+     * @param parallel the commands to run in parallel
+     * @return the decorated command
+     */
+    public Command raceWith(Command... parallel) {
+        ParallelRaceGroup group = new ParallelRaceGroup(this);
+        group.addCommands(parallel);
+        return group;
+    }
+
+    /**
+     * Decorates this command with a set of commands to run concurrently with it, ending when this
+     * command finishes.
+     *
+     * @param parallel the commands to run in parallel
+     * @return the decorated command
+     */
+    public Command deadlineWith(Command... parallel) {
+        ParallelDeadlineGroup group = new ParallelDeadlineGroup(this);
+        group.addCommands(parallel);
+        return group;
+    }
 }

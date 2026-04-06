@@ -217,6 +217,52 @@ public class RlogServerBackend implements AresLoggerBackend {
     }
 
     @Override
+    public void putBoolean(String key, boolean value) {
+        int id = getOrCreateEntry(key, "boolean");
+        ensureCapacity(1 + 2 + 2 + 1);
+        cycleBuffer.put((byte) 2);
+        cycleBuffer.putShort((short) id);
+        cycleBuffer.putShort((short) 1);
+        cycleBuffer.put(value ? (byte) 1 : (byte) 0);
+    }
+
+    @Override
+    public void putBooleanArray(String key, boolean[] values) {
+        int id = getOrCreateEntry(key, "boolean[]");
+        int payloadSize = values.length;
+        ensureCapacity(1 + 2 + 2 + payloadSize);
+        
+        cycleBuffer.put((byte) 2);
+        cycleBuffer.putShort((short) id);
+        cycleBuffer.putShort((short) payloadSize);
+        for (boolean val : values) {
+            cycleBuffer.put(val ? (byte) 1 : (byte) 0);
+        }
+    }
+
+    @Override
+    public void putStringArray(String key, String[] values) {
+        int id = getOrCreateEntry(key, "string[]");
+        
+        int payloadSize = 4;
+        byte[][] utf8Strings = new byte[values.length][];
+        for (int i = 0; i < values.length; i++) {
+            utf8Strings[i] = values[i].getBytes(StandardCharsets.UTF_8);
+            payloadSize += 4 + utf8Strings[i].length;
+        }
+
+        ensureCapacity(1 + 2 + 2 + payloadSize);
+        cycleBuffer.put((byte) 2);
+        cycleBuffer.putShort((short) id);
+        cycleBuffer.putShort((short) payloadSize);
+        cycleBuffer.putInt(values.length);
+        for (byte[] strBytes : utf8Strings) {
+            cycleBuffer.putInt(strBytes.length);
+            cycleBuffer.put(strBytes);
+        }
+    }
+
+    @Override
     public void putStruct(String key, String typeString, byte[] structBytes) {
         int id = getOrCreateEntry(key, typeString);
         

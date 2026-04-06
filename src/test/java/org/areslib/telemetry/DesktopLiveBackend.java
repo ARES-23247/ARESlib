@@ -29,6 +29,21 @@ public class DesktopLiveBackend implements AresLoggerBackend {
     }
 
     @Override
+    public void putBoolean(String key, boolean value) {
+        currentPacket.put(key, value);
+    }
+
+    @Override
+    public void putBooleanArray(String key, boolean[] values) {
+        currentPacket.put(key, values);
+    }
+
+    @Override
+    public void putStringArray(String key, String[] values) {
+        currentPacket.put(key, values);
+    }
+
+    @Override
     public void update() {
         if (dashboard != null) {
             dashboard.sendTelemetryPacket(currentPacket);
