@@ -124,4 +124,9 @@ public class IntoTheDeepSim implements GameSimulation {
         }
         AresTelemetry.putNumberArray("Field/Samples", gamePieceArray);
     }
+
+    @Override
+    public int getHeldSamples(RobotSimState robot) {
+        return robotHeldSamples.getOrDefault(robot, 0);
+    }
 }

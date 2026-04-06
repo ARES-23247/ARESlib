@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.DifferentialConfig;
  * AdvantageKit-style Differential Drive Subsystem.
  * Acts as the structural controller for handling physics logic across left and right sides.
  */
-public class DifferentialDriveSubsystem extends SubsystemBase {
+public class DifferentialDriveSubsystem extends SubsystemBase implements AresDrivetrain {
 
     private final DifferentialDriveIO io;
     private final DifferentialDriveIO.DifferentialDriveInputs inputs = new DifferentialDriveIO.DifferentialDriveInputs();
@@ -57,12 +57,20 @@ public class DifferentialDriveSubsystem extends SubsystemBase {
     /**
      * @return The commanded X velocity in m/s.
      */
-    public double getCommandedVx() { return commandedVx; }
+    @Override
+    public double getCommandedVx() {
+        return commandedVx;
+    }
 
-    /**
-     * @return The commanded angular velocity in rad/s.
-     */
-    public double getCommandedOmega() { return commandedOmega; }
+    @Override
+    public double getCommandedVy() {
+        return 0.0; // Differential drive cannot strafe
+    }
+
+    @Override
+    public double getCommandedOmega() {
+        return commandedOmega;
+    }
 
     /**
      * Commands the differential drive to move in a field-centric manner.

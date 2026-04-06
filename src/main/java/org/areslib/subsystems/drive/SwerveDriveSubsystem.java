@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.SwerveConfig;
  * AdvantageKit-style Swerve Drive Subsystem.
  * Acts as the structural controller for handling physics logic across four modules.
  */
-public class SwerveDriveSubsystem extends SubsystemBase {
+public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrain {
 
     private final SwerveModuleIO frontLeft;
     private final SwerveModuleIO frontRight;
@@ -107,17 +107,20 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     /**
      * @return The commanded X velocity in m/s.
      */
-    public double getCommandedVx() { return commandedVx; }
+    @Override
+    public double getCommandedVx() {
+        return commandedVx;
+    }
 
-    /**
-     * @return The commanded Y velocity in m/s.
-     */
-    public double getCommandedVy() { return commandedVy; }
+    @Override
+    public double getCommandedVy() {
+        return commandedVy;
+    }
 
-    /**
-     * @return The commanded angular velocity in rad/s.
-     */
-    public double getCommandedOmega() { return commandedOmega; }
+    @Override
+    public double getCommandedOmega() {
+        return commandedOmega;
+    }
 
     /**
      * Commands the swerve drive to move in a field-centric manner.

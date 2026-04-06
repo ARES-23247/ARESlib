@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.MecanumConfig;
  * AdvantageKit-style Mecanum Drive Subsystem.
  * Acts as the structural controller for handling physics logic across all four wheels.
  */
-public class MecanumDriveSubsystem extends SubsystemBase {
+public class MecanumDriveSubsystem extends SubsystemBase implements AresDrivetrain {
 
     private final MecanumDriveIO io;
     private final MecanumDriveIO.MecanumDriveInputs inputs = new MecanumDriveIO.MecanumDriveInputs();
@@ -73,17 +73,26 @@ public class MecanumDriveSubsystem extends SubsystemBase {
     /**
      * @return The commanded X velocity in m/s.
      */
-    public double getCommandedVx() { return commandedVx; }
+    @Override
+    public double getCommandedVx() {
+        return commandedVx;
+    }
 
     /**
      * @return The commanded Y velocity in m/s.
      */
-    public double getCommandedVy() { return commandedVy; }
+    @Override
+    public double getCommandedVy() {
+        return commandedVy;
+    }
 
     /**
      * @return The commanded angular velocity in rad/s.
      */
-    public double getCommandedOmega() { return commandedOmega; }
+    @Override
+    public double getCommandedOmega() {
+        return commandedOmega;
+    }
 
     /**
      * Commands the mecanum drive to move in a field-centric manner.

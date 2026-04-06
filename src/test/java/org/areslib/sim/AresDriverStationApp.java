@@ -179,14 +179,14 @@ public class AresDriverStationApp extends JFrame {
                 g2d.drawString("KEYBINDINGS:", panelMargin + 25, kbY);
                 g2d.drawString("Left Stick  : W / A / S / D", panelMargin + 25, kbY + 20);
                 g2d.drawString("Right Stick : Arrow Keys", panelMargin + 25, kbY + 40);
-                g2d.drawString("A Button    : Z", panelMargin + 25, kbY + 60);
-                g2d.drawString("B Button    : X", panelMargin + 25, kbY + 80);
-                g2d.drawString("X Button    : C", panelMargin + 25, kbY + 100);
-                g2d.drawString("Y Button    : V", panelMargin + 25, kbY + 120);
-                g2d.drawString("L Bumper    : Q", panelMargin + 25, kbY + 140);
-                g2d.drawString("R Bumper    : E", panelMargin + 25, kbY + 160);
-                g2d.drawString("L Trigger   : Space", panelMargin + 25, kbY + 180);
-                g2d.drawString("R Trigger   : Shift", panelMargin + 25, kbY + 200);
+                g2d.drawString("A Button    : J", panelMargin + 25, kbY + 60);
+                g2d.drawString("B Button    : L", panelMargin + 25, kbY + 80);
+                g2d.drawString("X Button    : U", panelMargin + 25, kbY + 100);
+                g2d.drawString("Y Button    : I", panelMargin + 25, kbY + 120);
+                g2d.drawString("L Bumper (Outtake) : Q", panelMargin + 25, kbY + 140);
+                g2d.drawString("R Bumper (Intake)  : E", panelMargin + 25, kbY + 160);
+                g2d.drawString("L Trigger          : Space", panelMargin + 25, kbY + 180);
+                g2d.drawString("R Trigger (Boost)  : Shift", panelMargin + 25, kbY + 200);
             }
 
             // Gamepad Glassmorphism Panel

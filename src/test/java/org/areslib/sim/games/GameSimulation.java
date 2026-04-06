@@ -25,4 +25,9 @@ public interface GameSimulation {
      * Pushes the states of all static/movable game pieces to the AdvantageScope telemetry backend.
      */
     void telemetryUpdate();
+
+    /**
+     * Gets the number of held game pieces for a specific robot.
+     */
+    int getHeldSamples(RobotSimState robot);
 }

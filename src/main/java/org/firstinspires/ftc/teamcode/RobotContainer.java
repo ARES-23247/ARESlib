@@ -18,9 +18,13 @@ import org.areslib.hardware.coprocessors.OctoMode;
 
 import org.areslib.subsystems.drive.SwerveDriveSubsystem;
 import org.areslib.subsystems.drive.SwerveModuleIOReal;
+import org.areslib.subsystems.drive.SwerveModuleIOSim;
+import org.areslib.subsystems.drive.AresDrivetrain;
+import org.areslib.core.AresRobot;
 
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorIOReal;
+import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorIOSim;
 import org.areslib.subsystems.vision.AresVisionSubsystem;
 import org.areslib.subsystems.vision.AresSensorFusionSubsystem;
 
@@ -63,65 +67,91 @@ public class RobotContainer {
      */
     public RobotContainer(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         // Bulk caching initialization - vital for extreme performance loops
-        AresHardwareManager.initHardware(hardwareMap);
+        if (!AresRobot.isSimulation()) {
+            AresHardwareManager.initHardware(hardwareMap);
+        }
 
         // 1. Instantiate Subsystems
-        drive = new SwerveDriveSubsystem(
-            SWERVE_CONFIG,
-            new SwerveModuleIOReal(
-                new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "flDrive")), 
-                new CRServoWrapper(hardwareMap.get(CRServo.class, "flTurn")),      
-                new AresOctoQuadSensor(0, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(4, OctoMode.ABSOLUTE),
-                SWERVE_CONFIG.getDriveMetersPerTick()
-            ),
-            new SwerveModuleIOReal(
-                new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "frDrive")), 
-                new CRServoWrapper(hardwareMap.get(CRServo.class, "frTurn")),      
-                new AresOctoQuadSensor(1, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(5, OctoMode.ABSOLUTE),
-                SWERVE_CONFIG.getDriveMetersPerTick()                       
-            ),
-            new SwerveModuleIOReal(
-                new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "blDrive")), 
-                new CRServoWrapper(hardwareMap.get(CRServo.class, "blTurn")),      
-                new AresOctoQuadSensor(2, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(6, OctoMode.ABSOLUTE),
-                SWERVE_CONFIG.getDriveMetersPerTick()                       
-            ),
-            new SwerveModuleIOReal(
-                new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "brDrive")), 
-                new CRServoWrapper(hardwareMap.get(CRServo.class, "brTurn")),      
-                new AresOctoQuadSensor(3, OctoMode.ENCODER),                       
-                new AresOctoQuadSensor(7, OctoMode.ABSOLUTE),
-                SWERVE_CONFIG.getDriveMetersPerTick()                       
-            )
-        );
-        CommandScheduler.getInstance().registerSubsystem(drive);
+        if (AresRobot.isSimulation()) {
+            drive = new SwerveDriveSubsystem(
+                SWERVE_CONFIG,
+                new SwerveModuleIOSim(),
+                new SwerveModuleIOSim(),
+                new SwerveModuleIOSim(),
+                new SwerveModuleIOSim()
+            );
+            elevator = new ElevatorSubsystem(new ElevatorIOSim());
+        } else {
+            drive = new SwerveDriveSubsystem(
+                SWERVE_CONFIG,
+                new SwerveModuleIOReal(
+                    new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "flDrive")), 
+                    new CRServoWrapper(hardwareMap.get(CRServo.class, "flTurn")),      
+                    new AresOctoQuadSensor(0, OctoMode.ENCODER),                       
+                    new AresOctoQuadSensor(4, OctoMode.ABSOLUTE),
+                    SWERVE_CONFIG.getDriveMetersPerTick()
+                ),
+                new SwerveModuleIOReal(
+                    new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "frDrive")), 
+                    new CRServoWrapper(hardwareMap.get(CRServo.class, "frTurn")),      
+                    new AresOctoQuadSensor(1, OctoMode.ENCODER),                       
+                    new AresOctoQuadSensor(5, OctoMode.ABSOLUTE),
+                    SWERVE_CONFIG.getDriveMetersPerTick()                       
+                ),
+                new SwerveModuleIOReal(
+                    new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "blDrive")), 
+                    new CRServoWrapper(hardwareMap.get(CRServo.class, "blTurn")),      
+                    new AresOctoQuadSensor(2, OctoMode.ENCODER),                       
+                    new AresOctoQuadSensor(6, OctoMode.ABSOLUTE),
+                    SWERVE_CONFIG.getDriveMetersPerTick()                       
+                ),
+                new SwerveModuleIOReal(
+                    new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "brDrive")), 
+                    new CRServoWrapper(hardwareMap.get(CRServo.class, "brTurn")),      
+                    new AresOctoQuadSensor(3, OctoMode.ENCODER),                       
+                    new AresOctoQuadSensor(7, OctoMode.ABSOLUTE),
+                    SWERVE_CONFIG.getDriveMetersPerTick()                       
+                )
+            );
+            
+            elevator = new ElevatorSubsystem(
+                new ElevatorIOReal(
+                    new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "elevatorMotor")),
+                    ELEVATOR_CONFIG.getMetersPerTick() // Configuration scalar for distance
+                )
+            );
+        }
         
-        elevator = new ElevatorSubsystem(
-            new ElevatorIOReal(
-                new DcMotorExWrapper(hardwareMap.get(DcMotorEx.class, "elevatorMotor")),
-                ELEVATOR_CONFIG.getMetersPerTick() // Configuration scalar for distance
-            )
-        );
+        CommandScheduler.getInstance().registerSubsystem(drive);
         CommandScheduler.getInstance().registerSubsystem(elevator);
         
-        vision = new AresVisionSubsystem(
-            new LimelightVisionWrapper(hardwareMap, "limelight"),
-            MIN_TARGET_AREA_PERCENT,
-            MAX_TRUST_AREA_PERCENT
-        );
+        if (!AresRobot.isSimulation()) {
+            vision = new AresVisionSubsystem(
+                new LimelightVisionWrapper(hardwareMap, "limelight"),
+                MIN_TARGET_AREA_PERCENT,
+                MAX_TRUST_AREA_PERCENT
+            );
+        } else {
+            vision = new AresVisionSubsystem(
+                new org.areslib.hardware.interfaces.VisionIO() {}, // Null/Empty Sim for now
+                MIN_TARGET_AREA_PERCENT,
+                MAX_TRUST_AREA_PERCENT
+            );
+        }
         CommandScheduler.getInstance().registerSubsystem(vision);
 
         // Odometry Tracking Loop Integration
-        pinpoint = new PinpointOdometryWrapper(hardwareMap, "pinpoint");
-        CommandScheduler.getInstance().registerSubsystem(new Subsystem() {
-            @Override
-            public void periodic() {
-                pinpoint.updateInputs(pinpointInputs);
-            }
-        });
+        if (!AresRobot.isSimulation()) {
+            pinpoint = new PinpointOdometryWrapper(hardwareMap, "pinpoint");
+            CommandScheduler.getInstance().registerSubsystem(new Subsystem() {
+                @Override
+                public void periodic() {
+                    pinpoint.updateInputs(pinpointInputs);
+                }
+            });
+        } else {
+            pinpoint = null;
+        }
 
         follower = new AresFollower(drive, pinpointInputs);
         CommandScheduler.getInstance().registerSubsystem(follower);
@@ -187,8 +217,12 @@ public class RobotContainer {
         }.init());
     }
 
+    public AresDrivetrain getDrivetrain() {
+        return drive;
+    }
+
     /**
-     * Dispatcher for the Red Left Starting Position
+     * Re-binds buttons. Useful for switching drivers/operator controls mid-match.
      */
     public Command getRedLeftAutoCommand() {
         return new TeamAutoCommand(follower, elevator);
@@ -209,10 +243,14 @@ public class RobotContainer {
         return follower;
     }
 
-    /**
-     * Expose vision interface for pre-match target locking.
-     */
     public AresVisionSubsystem getVision() {
         return vision;
+    }
+
+    /**
+     * Exposes the simulated/real Odometry inputs for external manipulation.
+     */
+    public OdometryIO.OdometryInputs getOdometryInputs() {
+        return pinpointInputs;
     }
 }

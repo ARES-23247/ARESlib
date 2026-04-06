@@ -29,13 +29,19 @@ public class AresPedroConstants {
 
     // TeleOp Telemetry & Sim Tuning Variables
     /** Maximum forward/backward speed limit for teleop execution in m/s. */
-    public static double teleOpMaxSpeedForward = 2.0; 
+    public static double teleOpMaxSpeedForward = 4.0; 
     /** Maximum strafing speed limit for teleop execution in m/s. */
-    public static double teleOpMaxSpeedStrafe = 2.0;  
+    public static double teleOpMaxSpeedStrafe = 4.0;  
     /** Maximum turning speed limit for teleop execution in rad/s. */
-    public static double teleOpMaxTurnRads = 2.0;     
+    public static double teleOpMaxTurnRads = 6.0;     
     /** A speed multiplier applied to input axes when the 'boost' button is engaged. */
     public static double teleOpBoostMultiplier = 1.5; 
+
+    // Simulation Physics Tuning
+    /** Synthetic traction coefficient for the drive axes during simulation. */
+    public static double simDriveTractionGrip = 50.0;
+    /** Synthetic traction coefficient for the rotational axis during simulation. */
+    public static double simTurnTractionGrip = 100.0;
 
     /**
      * Instantiates and configures a standard Pedro {@link FollowerConstants} object

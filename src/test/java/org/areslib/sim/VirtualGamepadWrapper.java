@@ -99,10 +99,10 @@ public class VirtualGamepadWrapper {
             gamepad.right_stick_y = ry;
 
             // Face Buttons
-            gamepad.a = keyboardListener.isKeyDown('z');
-            gamepad.b = keyboardListener.isKeyDown('x');
-            gamepad.x = keyboardListener.isKeyDown('c');
-            gamepad.y = keyboardListener.isKeyDown('v');
+            gamepad.a = keyboardListener.isKeyDown('j');
+            gamepad.b = keyboardListener.isKeyDown('l');
+            gamepad.x = keyboardListener.isKeyDown('u');
+            gamepad.y = keyboardListener.isKeyDown('i');
 
             // Bumpers & Triggers
             gamepad.left_bumper = keyboardListener.isKeyDown('q');
