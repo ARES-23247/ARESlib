@@ -15,8 +15,10 @@ import com.pedropathing.math.Vector;
 public class AresPedroLocalizer implements Localizer {
     private final OdometryIO.OdometryInputs inputs;
     
-    // Internal state to handle Pedro's tracking of custom starting offsets 
-    private Pose userPoseOffset = new Pose(0, 0, 0);
+    // Internal state to handle Pedro's tracking of custom starting offsets
+    private double offsetXInches = 0.0;
+    private double offsetYInches = 0.0;
+    private double offsetHeadingRadians = 0.0;
 
     /**
      * Constructs a new AresPedroLocalizer bound to a specific hardware odometry source.
@@ -35,15 +37,16 @@ public class AresPedroLocalizer implements Localizer {
      */
     @Override
     public Pose getPose() {
-        // Apply the offset to the literal hardware inputs (converted to Pedro's units, which is inches and radians)
-        // ARESlib reads inputs natively in meters.
-        double xInches = inputs.xMeters / 0.0254;
-        double yInches = inputs.yMeters / 0.0254;
+        double rawXInches = inputs.xMeters / 0.0254;
+        double rawYInches = inputs.yMeters / 0.0254;
+        
+        double rotatedX = rawXInches * Math.cos(offsetHeadingRadians) - rawYInches * Math.sin(offsetHeadingRadians);
+        double rotatedY = rawXInches * Math.sin(offsetHeadingRadians) + rawYInches * Math.cos(offsetHeadingRadians);
         
         return new Pose(
-            xInches + userPoseOffset.getX(),
-            yInches + userPoseOffset.getY(),
-            inputs.headingRadians + userPoseOffset.getHeading()
+            rotatedX + offsetXInches,
+            rotatedY + offsetYInches,
+            inputs.headingRadians + offsetHeadingRadians
         );
     }
 
@@ -55,10 +58,15 @@ public class AresPedroLocalizer implements Localizer {
      */
     @Override
     public Pose getVelocity() {
-        // Converted from m/s to in/s
+        double rawVx = inputs.xVelocityMetersPerSecond / 0.0254;
+        double rawVy = inputs.yVelocityMetersPerSecond / 0.0254;
+        
+        double rotatedVx = rawVx * Math.cos(offsetHeadingRadians) - rawVy * Math.sin(offsetHeadingRadians);
+        double rotatedVy = rawVx * Math.sin(offsetHeadingRadians) + rawVy * Math.cos(offsetHeadingRadians);
+
         return new Pose(
-            inputs.xVelocityMetersPerSecond / 0.0254,
-            inputs.yVelocityMetersPerSecond / 0.0254,
+            rotatedVx,
+            rotatedVy,
             inputs.angularVelocityRadiansPerSecond
         );
     }
@@ -92,15 +100,18 @@ public class AresPedroLocalizer implements Localizer {
      */
     @Override
     public void setPose(Pose setPose) {
-        // Calculate what the offset needs to be to make getPose() equal to setPose
         double currentRawX = inputs.xMeters / 0.0254;
         double currentRawY = inputs.yMeters / 0.0254;
         
-        userPoseOffset = new Pose(
-            setPose.getX() - currentRawX,
-            setPose.getY() - currentRawY,
-            setPose.getHeading() - inputs.headingRadians
-        );
+        offsetHeadingRadians = setPose.getHeading() - inputs.headingRadians;
+        
+        // We need to rotate the current raw coordinates into the new global frame
+        double rotatedRawX = currentRawX * Math.cos(offsetHeadingRadians) - currentRawY * Math.sin(offsetHeadingRadians);
+        double rotatedRawY = currentRawX * Math.sin(offsetHeadingRadians) + currentRawY * Math.cos(offsetHeadingRadians);
+        
+        // The offset is the difference between the requested pose and the rotated raw position
+        offsetXInches = setPose.getX() - rotatedRawX;
+        offsetYInches = setPose.getY() - rotatedRawY;
     }
 
     /**
@@ -118,7 +129,7 @@ public class AresPedroLocalizer implements Localizer {
      */
     @Override
     public double getTotalHeading() {
-        return inputs.headingRadians + userPoseOffset.getHeading();
+        return inputs.headingRadians + offsetHeadingRadians;
     }
 
     /** Tracking wheel functional variable. Unused. */

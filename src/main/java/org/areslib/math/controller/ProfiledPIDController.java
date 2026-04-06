@@ -8,12 +8,11 @@ public class ProfiledPIDController {
     private final PIDController m_controller;
     private double m_maxVelocity;
     private double m_maxAcceleration;
+    private double m_period;
 
     private double m_goalPosition;
     private double m_setpointPosition;
     private double m_setpointVelocity;
-
-    private long m_lastTimeMillis;
 
     /**
      * @param kp The proportional coefficient.
@@ -23,10 +22,22 @@ public class ProfiledPIDController {
      * @param maxAcceleration The maximum allowable acceleration.
      */
     public ProfiledPIDController(double kp, double ki, double kd, double maxVelocity, double maxAcceleration) {
-        m_controller = new PIDController(kp, ki, kd);
+        this(kp, ki, kd, maxVelocity, maxAcceleration, 0.02);
+    }
+    
+    /**
+     * @param kp The proportional coefficient.
+     * @param ki The integral coefficient.
+     * @param kd The derivative coefficient.
+     * @param maxVelocity The maximum allowable velocity.
+     * @param maxAcceleration The maximum allowable acceleration.
+     * @param period The exact control loop period in seconds (vital for determinism).
+     */
+    public ProfiledPIDController(double kp, double ki, double kd, double maxVelocity, double maxAcceleration, double period) {
+        m_controller = new PIDController(kp, ki, kd, period);
         m_maxVelocity = maxVelocity;
         m_maxAcceleration = maxAcceleration;
-        m_lastTimeMillis = System.currentTimeMillis();
+        m_period = period;
     }
 
     /**
@@ -45,19 +56,16 @@ public class ProfiledPIDController {
     public void reset(double currentPosition, double currentVelocity) {
         m_setpointPosition = currentPosition;
         m_setpointVelocity = currentVelocity;
-        m_lastTimeMillis = System.currentTimeMillis();
         m_controller.reset();
     }
 
     /**
-     * Calculates the next output of the controller.
+     * Calculates the next output of the controller using deterministic simulation time.
      * @param currentMeasurement The current position measurement.
      * @return The control effort to apply.
      */
     public double calculate(double currentMeasurement) {
-        long currentMillis = System.currentTimeMillis();
-        double dt = (currentMillis - m_lastTimeMillis) / 1000.0;
-        m_lastTimeMillis = currentMillis;
+        double dt = m_period;
 
         if (dt <= 0.0) return 0.0; // Prevent divide by zero
 

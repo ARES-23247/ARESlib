@@ -66,17 +66,22 @@ public class AresPoseEstimator {
         // "estimated historical pose".
         Pose2d estimatedHistoricalPose = historicalOdometryPose.plus(m_visionOffset);
 
-        // Find the error between the Vision's answer and our Estimated answer at that time
-        Pose2d error = visionPose.relativeTo(estimatedHistoricalPose);
+        // Find the GLOBAL Cartesian error between the Vision's answer and our Estimated answer at that time
+        double globalXError = visionPose.getX() - estimatedHistoricalPose.getX();
+        double globalYError = visionPose.getY() - estimatedHistoricalPose.getY();
+        double thetaError = visionPose.getRotation().minus(estimatedHistoricalPose.getRotation()).getRadians();
 
-        // Apply a trust factor to the error (e.g. only move 10% of the way towards the vision target to filter noise)
-        Pose2d scaledError = new Pose2d(
-            error.getTranslation().times(trustFactor),
-            new Rotation2d(error.getRotation().getRadians() * trustFactor)
+        // Apply trust factor to scale the magnitude of the global shift
+        double scaledX = globalXError * trustFactor;
+        double scaledY = globalYError * trustFactor;
+        double scaledTheta = thetaError * trustFactor;
+
+        // Permanently add this global shift to our global vision offset
+        m_visionOffset = new Pose2d(
+            m_visionOffset.getX() + scaledX,
+            m_visionOffset.getY() + scaledY,
+            new Rotation2d(m_visionOffset.getRotation().getRadians() + scaledTheta)
         );
-
-        // Permanently add this scaled error to our global vision offset
-        m_visionOffset = m_visionOffset.plus(scaledError);
     }
 
     /**

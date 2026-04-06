@@ -36,6 +36,15 @@ public class Twist2d {
         this(0.0, 0.0, 0.0);
     }
 
+    /**
+     * Scale this twist by a scalar.
+     * @param scalar The scalar.
+     * @return The scaled twist.
+     */
+    public Twist2d scaled(double scalar) {
+        return new Twist2d(dx * scalar, dy * scalar, dtheta * scalar);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

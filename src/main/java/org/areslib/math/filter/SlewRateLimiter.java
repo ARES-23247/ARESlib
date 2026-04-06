@@ -10,7 +10,6 @@ public class SlewRateLimiter {
     private final double positiveRateLimit;
     private final double negativeRateLimit;
     private double prevVal;
-    private double prevTime;
 
     /**
      * Creates a new SlewRateLimiter with the given positive and negative rate limits and initial
@@ -24,7 +23,6 @@ public class SlewRateLimiter {
         this.positiveRateLimit = positiveRateLimit;
         this.negativeRateLimit = negativeRateLimit;
         this.prevVal = initialValue;
-        this.prevTime = System.nanoTime() * 1e-9;
     }
 
     /**
@@ -48,23 +46,21 @@ public class SlewRateLimiter {
     }
 
     /**
-     * Filters the input to limit its slew rate.
+     * Filters the input to limit its slew rate using a deterministic period.
      *
      * @param input The input value whose slew rate is to be limited.
+     * @param periodSeconds The time (in seconds) since the last update.
      * @return The filtered value, which will not change faster than the slew rate.
      */
-    public double calculate(double input) {
-        double currentTime = System.nanoTime() * 1e-9;
-        double elapsedTime = currentTime - prevTime;
+    public double calculate(double input, double periodSeconds) {
         double delta = input - prevVal;
         
         if (delta > 0) {
-            prevVal += Math.min(delta, positiveRateLimit * elapsedTime);
+            prevVal += Math.min(delta, positiveRateLimit * periodSeconds);
         } else {
-            prevVal += Math.max(delta, negativeRateLimit * elapsedTime);
+            prevVal += Math.max(delta, negativeRateLimit * periodSeconds);
         }
         
-        prevTime = currentTime;
         return prevVal;
     }
 
@@ -75,6 +71,5 @@ public class SlewRateLimiter {
      */
     public void reset(double value) {
         prevVal = value;
-        prevTime = System.nanoTime() * 1e-9;
     }
 }

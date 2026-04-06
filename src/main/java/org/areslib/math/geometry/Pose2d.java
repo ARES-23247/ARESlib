@@ -62,13 +62,8 @@ public class Pose2d implements Interpolatable<Pose2d> {
         if (t <= 0) return this;
         if (t >= 1) return endValue;
         
-        // This is a simple linear interpolation. 
-        // For mathematically rigorous spline interpolation (like the pose exponential), 
-        // a Twist2d is usually generated natively, but this is sufficient for vision latency compensations.
-        return new Pose2d(
-            m_translation.interpolate(endValue.getTranslation(), t),
-            m_rotation.interpolate(endValue.getRotation(), t)
-        );
+        Twist2d twist = this.log(endValue);
+        return this.exp(twist.scaled(t));
     }
 
     @Override

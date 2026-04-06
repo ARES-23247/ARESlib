@@ -10,17 +10,30 @@ public class PIDController {
     private double integral;
     private boolean continuous;
     private double minimumInput, maximumInput;
+    private double m_period;
 
     /**
-     * Constructs a PIDController with the given constants.
+     * Constructs a PIDController with the given constants. Default period is 0.02s (20ms).
      * @param kP Proportional gain
      * @param kI Integral gain
      * @param kD Derivative gain
      */
     public PIDController(double kP, double kI, double kD) {
+        this(kP, kI, kD, 0.02);
+    }
+    
+    /**
+     * Constructs a PIDController with the given constants and deterministic loop period.
+     * @param kP Proportional gain
+     * @param kI Integral gain
+     * @param kD Derivative gain
+     * @param period The deterministic period in seconds between loop tracks
+     */
+    public PIDController(double kP, double kI, double kD, double period) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+        this.m_period = period;
     }
 
     /**
@@ -44,6 +57,7 @@ public class PIDController {
 
     /**
      * Calculates the control output given a measured value and a setpoint.
+     * Uses the initialized deterministic loop period.
      * @param measurement The current measurement.
      * @param setpoint The desired setpoint.
      * @return The control output.
@@ -55,6 +69,7 @@ public class PIDController {
 
     /**
      * Calculates the control output given a measured value based on the previously set setpoint.
+     * Uses the initialized deterministic loop period.
      * @param measurement The current measurement.
      * @return The control output.
      */
@@ -69,8 +84,14 @@ public class PIDController {
             }
         }
 
-        integral += error;
-        double derivative = error - prevError;
+        // Apply time-aware exact calculus implementations
+        integral += error * m_period;
+        
+        double derivative = 0;
+        if (m_period > 0) {
+            derivative = (error - prevError) / m_period;
+        }
+        
         prevError = error;
 
         return kP * error + kI * integral + kD * derivative;

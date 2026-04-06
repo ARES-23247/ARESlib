@@ -159,6 +159,9 @@ public final class CommandScheduler {
         // 1. Run subsystem periodics
         for (Subsystem subsystem : m_subsystems) {
             subsystem.periodic();
+            if (org.areslib.core.AresRobot.isSimulation()) {
+                subsystem.simulationPeriodic();
+            }
         }
 
         // 2. Schedule default commands

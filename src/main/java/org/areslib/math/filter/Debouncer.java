@@ -14,7 +14,7 @@ public class Debouncer {
     private final double m_debounceTimeSeconds;
     private final DebounceType m_debounceType;
     private boolean m_baseline;
-    private long m_prevTimeMillis;
+    private double m_elapsedTimeSeconds;
 
     /**
      * Creates a new Debouncer.
@@ -26,7 +26,7 @@ public class Debouncer {
         m_debounceTimeSeconds = debounceTime;
         m_debounceType = type;
         m_baseline = false;
-        m_prevTimeMillis = System.currentTimeMillis();
+        m_elapsedTimeSeconds = 0.0;
     }
 
     /**
@@ -39,20 +39,24 @@ public class Debouncer {
     }
 
     private void resetTimer() {
-        m_prevTimeMillis = System.currentTimeMillis();
+        m_elapsedTimeSeconds = 0.0;
     }
 
     private boolean hasElapsed() {
-        return (System.currentTimeMillis() - m_prevTimeMillis) >= (m_debounceTimeSeconds * 1000.0);
+        return m_elapsedTimeSeconds >= m_debounceTimeSeconds;
     }
 
     /**
-     * Applies the debouncer to the input stream.
+     * Applies the debouncer to the input stream deterministically.
      *
      * @param input The current value of the input stream.
+     * @param periodSeconds Time elapsed since the last method call.
      * @return The debounced value of the input stream.
      */
-    public boolean calculate(boolean input) {
+    public boolean calculate(boolean input, double periodSeconds) {
+        if (input != m_baseline) {
+            m_elapsedTimeSeconds += periodSeconds;
+        }
         if (input == m_baseline) {
             resetTimer();
         }

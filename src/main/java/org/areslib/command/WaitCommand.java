@@ -5,7 +5,7 @@ package org.areslib.command;
  */
 public class WaitCommand extends Command {
     private final double m_durationSeconds;
-    private long m_startTimeMillis;
+    private double m_elapsedSeconds;
 
     /**
      * Creates a new WaitCommand.
@@ -18,11 +18,16 @@ public class WaitCommand extends Command {
 
     @Override
     public void initialize() {
-        m_startTimeMillis = System.currentTimeMillis();
+        m_elapsedSeconds = 0.0;
+    }
+
+    @Override
+    public void execute() {
+        m_elapsedSeconds += 0.02; // deterministic 50Hz base loop period
     }
 
     @Override
     public boolean isFinished() {
-        return (System.currentTimeMillis() - m_startTimeMillis) >= (m_durationSeconds * 1000.0);
+        return m_elapsedSeconds >= m_durationSeconds;
     }
 }

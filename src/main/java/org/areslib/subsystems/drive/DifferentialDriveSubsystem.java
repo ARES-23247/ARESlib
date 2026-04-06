@@ -87,8 +87,8 @@ public class DifferentialDriveSubsystem extends SubsystemBase {
      */
     public void drive(double forwardMetersPerSec, double turnRadPerSec) {
         if (fwdLimiter != null) {
-            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
-            turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
+            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec, 0.02);
+            turnRadPerSec = rotLimiter.calculate(turnRadPerSec, 0.02);
         }
 
         this.commandedVx = forwardMetersPerSec;
@@ -97,6 +97,7 @@ public class DifferentialDriveSubsystem extends SubsystemBase {
         org.areslib.math.kinematics.ChassisSpeeds speeds = new org.areslib.math.kinematics.ChassisSpeeds(
             forwardMetersPerSec, 0.0, turnRadPerSec
         );
+        speeds = org.areslib.math.kinematics.ChassisSpeeds.discretize(speeds, 0.02);
 
         org.areslib.math.kinematics.DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
 

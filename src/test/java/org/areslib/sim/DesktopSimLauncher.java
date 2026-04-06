@@ -27,6 +27,7 @@ public class DesktopSimLauncher {
 
     public static void main(String[] args) {
         System.out.println("Initializing ARES Simulator Environment...");
+        org.areslib.core.AresRobot.setSimulation(true);
 
         // 1. Register Telemetry Base
         AresTelemetry.registerBackend(new DesktopLiveBackend());

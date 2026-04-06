@@ -141,9 +141,9 @@ public class SwerveDriveSubsystem extends SubsystemBase {
      */
     public void drive(double forwardMetersPerSec, double strafeMetersPerSec, double turnRadPerSec) {
         if (fwdLimiter != null) {
-            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
-            strafeMetersPerSec = strLimiter.calculate(strafeMetersPerSec);
-            turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
+            forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec, 0.02);
+            strafeMetersPerSec = strLimiter.calculate(strafeMetersPerSec, 0.02);
+            turnRadPerSec = rotLimiter.calculate(turnRadPerSec, 0.02);
         }
 
         this.commandedVx = forwardMetersPerSec;
@@ -153,6 +153,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         org.areslib.math.kinematics.ChassisSpeeds speeds = new org.areslib.math.kinematics.ChassisSpeeds(
             forwardMetersPerSec, strafeMetersPerSec, turnRadPerSec
         );
+        speeds = org.areslib.math.kinematics.ChassisSpeeds.discretize(speeds, 0.02);
         org.areslib.math.kinematics.SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
         org.areslib.math.kinematics.SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeedMps);
 

@@ -5,13 +5,14 @@ import org.areslib.telemetry.AresTelemetry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Manages all active alerts and hardware faults, dispatching them to telemetry 
  * and providing haptic/visual feedback to the driver station.
  */
 public class AresFaultManager {
-    private static final List<AresAlert> alerts = new ArrayList<>();
+    private static final List<AresAlert> alerts = new CopyOnWriteArrayList<>();
     private static AresGamepad driverGamepad;
     
     private static boolean wasError = false;

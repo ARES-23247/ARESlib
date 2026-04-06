@@ -4,15 +4,15 @@ import org.areslib.math.kinematics.DifferentialDriveWheelSpeeds;
 import org.areslib.math.kinematics.MecanumDriveWheelSpeeds;
 import org.areslib.math.kinematics.SwerveModuleState;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Global telemetry distribution hub.
  * Routes log data to all registered backend implementations (e.g., FtcDashboard, wpilog).
  */
 public class AresTelemetry {
-    private static final List<AresLoggerBackend> backends = new ArrayList<>();
+    private static final List<AresLoggerBackend> backends = new CopyOnWriteArrayList<>();
 
     /**
      * Registers a new telemetry backend to receive data.
