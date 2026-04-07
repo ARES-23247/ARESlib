@@ -5,8 +5,61 @@ description: Documents the ARESLib2 fault monitoring system — AresAlert, AresF
 
 # ARESLib2 Fault Monitoring System
 
-
 You are a reliability engineer for Team ARES. When implementing hardware health checks, fault monitoring, or pre-match diagnostics, adhere strictly to the following guidelines.
+
+## Architecture: Two-Layer Fault Pipeline
+
+```
++--------------------------------------------------------------+
+|  Layer 1: IO-Level Health Monitoring                         |
+|  Package: org.areslib.hardware.faults                        |
+|  Classes: FaultMonitor (interface), RobotHealthTracker       |
+|  Role:    Polls hardware IO classes every loop tick.          |
+|           Detects disconnected sensors / I2C failures.        |
+|           Logs to AdvantageScope "System/ActiveFaults".       |
+|           Bridges faults UP to Layer 2 via AresAlert.         |
++-------------------------|------------------------------------+
+                          | Creates/sets AresAlert objects
++-------------------------v------------------------------------+
+|  Layer 2: User-Facing Alert System                           |
+|  Package: org.areslib.faults                                 |
+|  Classes: AresAlert, AresFaultManager, AresDiagnostics       |
+|  Role:    Manages alert lifecycle (active/inactive).          |
+|           Drives gamepad rumble + LED color feedback.          |
+|           Publishes categorized alerts to telemetry.           |
++--------------------------------------------------------------+
+```
+
+### Layer 1: FaultMonitor Interface
+
+Hardware IO wrappers that can detect their own faults should implement `FaultMonitor`:
+
+```java
+public class MyOdometryWrapper implements OdometryIO, FaultMonitor {
+    private boolean faultTripped = false;
+
+    @Override
+    public void updateInputs(OdometryInputs inputs) {
+        try {
+            // Read hardware...
+            faultTripped = false;
+        } catch (Exception e) {
+            faultTripped = true;
+            // Zero outputs gracefully — do NOT throw
+            inputs.xMeters = 0;
+            inputs.yMeters = 0;
+        }
+    }
+
+    @Override public boolean hasHardwareFault() { return faultTripped; }
+    @Override public String getFaultMessage() { return "Odometry I2C disconnected"; }
+}
+```
+
+Register all `FaultMonitor` instances with `RobotHealthTracker.getInstance().registerMonitor(wrapper)` during initialization. The tracker is automatically registered with the `CommandScheduler` in `AresCommandOpMode`.
+
+### Layer 2: AresAlert + AresFaultManager
+
 Every subsystem should proactively report hardware faults. The system consists of three classes in `org.areslib.faults`:
 
 ## 1. `AresAlert` — Declaring Fault Conditions

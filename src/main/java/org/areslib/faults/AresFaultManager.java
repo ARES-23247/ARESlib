@@ -11,27 +11,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Manages all active alerts and hardware faults, dispatching them to telemetry 
  * and providing haptic/visual feedback to the driver station.
  * <p>
- * <b>Architecture Note — Two-Layer Fault System:</b>
+ * <b>Architecture Note -- Two-Layer Fault System:</b>
  * <pre>
- *   ┌──────────────────────────────────────────────────────────────┐
- *   │  Layer 1: IO-Level Health Monitoring                        │
- *   │  Package: org.areslib.hardware.faults                       │
- *   │  Classes: FaultMonitor (interface), RobotHealthTracker      │
- *   │  Role:    Polls hardware IO classes every loop tick.         │
- *   │           Detects disconnected sensors / I2C failures.       │
- *   │           Blasts to AdvantageScope "System/ActiveFaults".    │
- *   │           Bridges detected faults UP to this layer (below).  │
- *   └──────────────────────┬───────────────────────────────────────┘
- *                          │ Creates/sets AresAlert objects
- *   ┌──────────────────────▼───────────────────────────────────────┐
- *   │  Layer 2: User-Facing Alert System                          │
- *   │  Package: org.areslib.faults (this package)                 │
- *   │  Classes: AresAlert, AresFaultManager, AresDiagnostics      │
- *   │  Role:    Manages alert lifecycle (active/inactive).         │
- *   │           Drives gamepad rumble + LED color feedback.         │
- *   │           Publishes categorized alerts to telemetry.          │
- *   │           AresDiagnostics runs pre-match hardware scans.     │
- *   └─────────────────────────────────────────────────────────────┘
+ *   +--------------------------------------------------------------+
+ *   |  Layer 1: IO-Level Health Monitoring                         |
+ *   |  Package: org.areslib.hardware.faults                        |
+ *   |  Classes: FaultMonitor (interface), RobotHealthTracker       |
+ *   |  Role:    Polls hardware IO classes every loop tick.          |
+ *   |           Detects disconnected sensors / I2C failures.        |
+ *   |           Blasts to AdvantageScope "System/ActiveFaults".     |
+ *   |           Bridges detected faults UP to this layer (below).   |
+ *   +-------------------------|------------------------------------+
+ *                              | Creates/sets AresAlert objects
+ *   +-------------------------v------------------------------------+
+ *   |  Layer 2: User-Facing Alert System                           |
+ *   |  Package: org.areslib.faults (this package)                  |
+ *   |  Classes: AresAlert, AresFaultManager, AresDiagnostics       |
+ *   |  Role:    Manages alert lifecycle (active/inactive).          |
+ *   |           Drives gamepad rumble + LED color feedback.          |
+ *   |           Publishes categorized alerts to telemetry.           |
+ *   |           AresDiagnostics runs pre-match hardware scans.      |
+ *   +--------------------------------------------------------------+
  * </pre>
  * A hardware fault detected at Layer 1 automatically becomes an active {@link AresAlert}
  * at Layer 2, triggering both AdvantageScope logging AND gamepad driver feedback.

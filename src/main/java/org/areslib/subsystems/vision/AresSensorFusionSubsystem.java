@@ -47,34 +47,22 @@ public class AresSensorFusionSubsystem extends SubsystemBase {
         double visionYInches = org.areslib.core.CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getY());
         double visionHeading = visionPose.getHeading(); // Radians are unit-agnostic
 
-        // Calculate Kalman-inspired standard deviations
-        // As confidence drops (target area shrinks/distance increases), vision variance explodes exponentially.
-        double odomVariance = 0.05; // Base localized tracking variance
-        double visionVariance = 0.1 * Math.exp(5.0 * (1.0 - confidence));
-        
-        // 1D Kalman Gain: K = Var(Odom) / (Var(Odom) + Var(Vision))
-        double kalmanGain = odomVariance / (odomVariance + visionVariance);
+        // Kalman-inspired gain: higher confidence = more trust in vision
+        double kalmanGain = org.areslib.core.CoordinateUtil.computeVisionKalmanGain(confidence);
         
         // Cap the gain dynamically to prevent massive frame-to-frame jumping
         double blendWeight = Math.min(kalmanGain, maxVisionTrustFactor);
 
         // Push standard deviations to telemetry for Advanced Observability
         org.areslib.telemetry.AresAutoLogger.recordOutput("Vision/KalmanGain", kalmanGain);
-        org.areslib.telemetry.AresAutoLogger.recordOutput("Vision/VisionVariance", visionVariance);
 
         // Perform linear interpolation (lerp) for X and Y coordinates (both in inches now)
-        double interpolatedX = currentPose.getX() + (visionXInches - currentPose.getX()) * blendWeight;
-        double interpolatedY = currentPose.getY() + (visionYInches - currentPose.getY()) * blendWeight;
+        double interpolatedX = org.areslib.core.CoordinateUtil.lerp(currentPose.getX(), visionXInches, blendWeight);
+        double interpolatedY = org.areslib.core.CoordinateUtil.lerp(currentPose.getY(), visionYInches, blendWeight);
 
-        // For headings, use shortest-path angular interpolation to avoid 360° wraparound snapping.
-        double currentHeading = currentPose.getHeading();
-        
-        // Shortest path angle difference
-        double angleDifference = visionHeading - currentHeading;
-        while (angleDifference > Math.PI) angleDifference -= 2 * Math.PI;
-        while (angleDifference < -Math.PI) angleDifference += 2 * Math.PI;
-
-        double interpolatedHeading = currentHeading + (angleDifference * blendWeight);
+        // For headings, use shortest-path angular interpolation to avoid 360 wraparound snapping.
+        double interpolatedHeading = org.areslib.core.CoordinateUtil.shortestAngleLerp(
+                currentPose.getHeading(), visionHeading, blendWeight);
 
         // Nudge the core localization follower (all values now in inches + radians)
         odometry.setPose(new Pose(interpolatedX, interpolatedY, interpolatedHeading));

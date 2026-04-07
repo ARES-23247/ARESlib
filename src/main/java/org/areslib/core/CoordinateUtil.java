@@ -119,4 +119,51 @@ public final class CoordinateUtil {
                 headingRad
         );
     }
+
+    // ===== Fusion Math Utilities =====
+
+    /**
+     * Linear interpolation between two values.
+     *
+     * @param current The current value.
+     * @param target  The target value to blend toward.
+     * @param weight  Blend weight in [0, 1]. 0 = no change, 1 = jump to target.
+     * @return The interpolated value.
+     */
+    public static double lerp(double current, double target, double weight) {
+        return current + (target - current) * weight;
+    }
+
+    /**
+     * Shortest-path angular interpolation. Prevents heading wraparound
+     * from causing a full 360-degree spin (e.g., 350 to 10 goes through 0, not 180).
+     *
+     * @param currentRad Current heading in radians.
+     * @param targetRad  Target heading in radians.
+     * @param weight     Blend weight in [0, 1].
+     * @return The interpolated heading in radians.
+     */
+    public static double shortestAngleLerp(double currentRad, double targetRad, double weight) {
+        double diff = targetRad - currentRad;
+        while (diff > Math.PI) diff -= 2 * Math.PI;
+        while (diff < -Math.PI) diff += 2 * Math.PI;
+        return currentRad + diff * weight;
+    }
+
+    /**
+     * Computes a 1D Kalman-inspired gain for vision fusion blending.
+     * Higher confidence = higher gain = more trust in vision.
+     * <pre>
+     *   K = Var(Odom) / (Var(Odom) + Var(Vision))
+     *   where Var(Vision) = 0.1 * e^(5 * (1 - confidence))
+     * </pre>
+     *
+     * @param confidence Vision confidence in [0, 1] (typically from target area).
+     * @return Kalman gain in [0, ~0.33].
+     */
+    public static double computeVisionKalmanGain(double confidence) {
+        double odomVariance = 0.05;
+        double visionVariance = 0.1 * Math.exp(5.0 * (1.0 - confidence));
+        return odomVariance / (odomVariance + visionVariance);
+    }
 }

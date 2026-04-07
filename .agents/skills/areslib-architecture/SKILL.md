@@ -46,18 +46,30 @@ ARESLib2 bridges three coordinate systems:
 
 ### Conversion Rules
 
-**ALWAYS use `CoordinateUtil`** (in `org.areslib.core`) for all conversions. Never write raw `* 0.0254` or `+ 72.0` in application code.
+**ALWAYS use `CoordinateUtil`** (in `org.areslib.core`) for all conversions. Never write raw `* 0.0254`, `/ 25.4`, `/ 1000.0`, or `+ 72.0` in application code.
 
 ```java
-// Pedro → WPILib
+// Pedro <-> WPILib
 Pose2d wpiPose = CoordinateUtil.pedroToWpi(pedroPose);
-
-// WPILib → Pedro  
 com.pedropathing.geometry.Pose pedroPose = CoordinateUtil.wpiToPedro(wpiPose);
 
-// Raw inch/meter conversions
+// Raw unit conversions
 double meters = CoordinateUtil.inchesToMeters(inches);
 double inches = CoordinateUtil.metersToInches(meters);
+double inches = CoordinateUtil.mmToInches(mm);      // LiDAR distance zones
+double meters = CoordinateUtil.mmToMeters(mm);       // Pinpoint odometry
+
+// Origin shifts (center meters <-> bottom-left inches)
+double pedroVal = CoordinateUtil.centerMetersToBottomLeftInches(centerMeters);
+double centerVal = CoordinateUtil.bottomLeftInchesToCenterMeters(pedroInches);
+
+// Vision center-origin pose -> Pedro (no axis swap, pre-aligned cameras)
+com.pedropathing.geometry.Pose p = CoordinateUtil.visionCenterToPedro(x, y, heading);
+
+// Fusion math (used by AresSensorFusionSubsystem)
+double gain = CoordinateUtil.computeVisionKalmanGain(confidence);
+double blended = CoordinateUtil.lerp(current, target, weight);
+double heading = CoordinateUtil.shortestAngleLerp(currentRad, targetRad, weight);
 ```
 
 All hardware IO wrappers (`OdometryIO`, `VisionIO`) **always emit SI units (meters/radians) with center origin**. The `AresPedroLocalizer` handles conversion to Pedro's coordinate system automatically.

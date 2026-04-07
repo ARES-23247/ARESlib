@@ -35,22 +35,30 @@ class VisionInputs implements AresLoggableInputs {
 
 **Critical format note:** `botPose3d` is a 7-element quaternion array `[x, y, z, w, i, j, k]` — NOT Euler angles. See `areslib-architecture` skill for quaternion conversion formulas.
 
-## 3. Pose Estimator Injection
-Once the `VisionIO` layer processes the target, fuse it with odometry via the pose estimator:
+## 3. Sensor Fusion (AresSensorFusionSubsystem)
 
-- **NEVER** overwrite the odometry `Pose2d` statically.
-- **ALWAYS** fuse with standard deviations representing distance uncertainty:
+The `AresSensorFusionSubsystem` handles the blending of vision and odometry poses. All math is centralized in `CoordinateUtil`:
 
 ```java
-// Inside DriveSubsystem periodic()
-if (visionInputs.hasTarget && visionInputs.fiducialCount > 0) {
-    poseEstimator.addVisionMeasurement(
-        visionPose2d,                                          // Extracted from botPose3d
-        Timer.getFPGATimestamp() - (visionInputs.latencyMs / 1000.0), // Latency-compensated timestamp
-        VecBuilder.fill(0.5, 0.5, Math.toRadians(10))          // Dynamic covariance
-    );
-}
+// Coordinate conversion: vision (meters, center origin) -> Pedro (inches, bottom-left)
+double visionXInches = CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getX());
+double visionYInches = CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getY());
+
+// Kalman gain: higher confidence = more trust in vision
+double kalmanGain = CoordinateUtil.computeVisionKalmanGain(confidence);
+double blendWeight = Math.min(kalmanGain, maxVisionTrustFactor); // Cap per-tick jump
+
+// Blend position and heading
+double fusedX = CoordinateUtil.lerp(odomX, visionXInches, blendWeight);
+double fusedY = CoordinateUtil.lerp(odomY, visionYInches, blendWeight);
+double fusedHeading = CoordinateUtil.shortestAngleLerp(odomHeading, visionHeading, blendWeight);
 ```
+
+**Key rules:**
+- Confidence below 0.05 is rejected entirely (no correction applied)
+- The blend weight is capped by `maxVisionTrustFactor` to prevent teleportation
+- `shortestAngleLerp` prevents 360-degree wraparound snapping
+- **NEVER** overwrite odometry directly — always blend via fusion
 
 ## 4. Multi-Camera Fusion Pattern
 When using multiple Limelights, the `LimelightVisionWrapper` employs **Winner-Takes-All** logic:
