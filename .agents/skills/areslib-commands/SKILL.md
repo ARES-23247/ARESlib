@@ -1,6 +1,6 @@
 ---
 name: areslib-commands
-description: Helps construct custom ARESLib2 WPILib-style commands, subsystem bases, and integration hooks with PedroPathing natively avoiding FTClib overlaps. Use when creating new commands, configuring button bindings, scheduling autonomous sequences, or wiring subsystem requirements.
+description: Helps construct custom ARESLib2 WPILib-style commands, subsystem bases, and integration hooks avoiding FTClib overlaps. Use when creating new commands, configuring button bindings, scheduling autonomous sequences, or wiring subsystem requirements.
 ---
 
 # ARESLib Native Command Architecture
@@ -129,23 +129,23 @@ public class ScoreCommand extends Command {
 
 If two commands require the same subsystem, the newly scheduled command **interrupts** the existing one (calls `end(true)` on it).
 
-## 6. Pedro Pathing Command Hooks
-Do not write custom `while(!follower.isBusy())` loops in standard Command execution blocks. 
-ARESLib abstracts path following through custom sequential chains.
+## 6. Path Following Command Hooks
+Do not write custom `while(!follower.isBusy())` loops in standard Command execution blocks.
+ARESLib abstracts path following through PathPlanner-based sequential chains.
 
 - Use proper WPILib `isFinished()` methodologies:
 ```java
 public class FollowPathCommand extends Command {
     private final AresFollower follower;
 
-    public FollowPathCommand(AresFollower aresFollower, PathChain chain) {
+    public FollowPathCommand(AresFollower aresFollower, PathPlannerPath path) {
         this.follower = aresFollower;
         addRequirements(aresFollower); // Exclusive follower access
     }
 
     @Override
     public boolean isFinished() {
-        return !follower.isBusy(); // Standard Pedro finished check
+        return !follower.isBusy();
     }
 }
 ```

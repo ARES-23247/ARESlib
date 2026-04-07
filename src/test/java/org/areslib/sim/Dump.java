@@ -1,1 +1,0 @@
-package org.areslib.sim; import com.pedropathing.math.Vector; public class Dump { public static void main(String[] args) { for(java.lang.reflect.Method m : Vector.class.getMethods()) System.out.println(m.getName()); } }

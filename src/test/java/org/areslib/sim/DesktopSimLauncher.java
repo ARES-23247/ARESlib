@@ -21,7 +21,6 @@ import org.dyn4j.world.World;
 import org.areslib.sim.games.GameSimulation;
 import org.areslib.sim.games.IntoTheDeepSim;
 import org.areslib.sim.games.RobotSimState;
-import org.firstinspires.ftc.teamcode.commands.SquareAutoCommand;
 
 public class DesktopSimLauncher {
 
@@ -64,7 +63,7 @@ public class DesktopSimLauncher {
         );
         double area = FieldConstants.ROBOT_SIZE_METERS * FieldConstants.ROBOT_SIZE_METERS;
         // Automatically scale dyn4j mass to match robot characterization
-        fixture.setDensity(org.areslib.core.localization.AresPedroConstants.mass / area);
+        fixture.setDensity(12.0 / area);
         fixture.setFriction(FieldConstants.SIM_WALL_FRICTION);
         fixture.setRestitution(FieldConstants.SIM_WALL_RESTITUTION);
         robotBody.addFixture(fixture);
@@ -119,7 +118,7 @@ public class DesktopSimLauncher {
 
                 boolean isAutoEnabled = dsApp.isAutoModeEnabled();
                 if (isAutoEnabled && !wasAutoEnabled) {
-                    CommandScheduler.getInstance().schedule(new SquareAutoCommand(robotContainer.getFollower()));
+                    // CommandScheduler.getInstance().schedule(new PathPlannerAuto());
                 } else if (!isAutoEnabled && wasAutoEnabled) {
                     CommandScheduler.getInstance().cancelAll();
                 }
@@ -127,15 +126,15 @@ public class DesktopSimLauncher {
 
                 // 2. TeleOp Control Mapping
                 if (!isAutoEnabled) {
-                    double driveY = driverGamepad.getLeftY() * org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedForward; // +X is Forward
-                    double driveX = driverGamepad.getLeftX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxSpeedStrafe; // +Y is Left
-                    double driveTurn = driverGamepad.getRightX() * -org.areslib.core.localization.AresPedroConstants.teleOpMaxTurnRads; // +Theta is CCW
+                    double driveY = driverGamepad.getLeftY() * 1.0; // +X is Forward
+                    double driveX = driverGamepad.getLeftX() * -1.0; // +Y is Left
+                    double driveTurn = driverGamepad.getRightX() * -3.14; // +Theta is CCW
                     
                     // If triggers are pulled, boost speed
                     if (dsApp.getGamepadWrapper().gamepad.right_trigger > 0.5) {
-                        driveY *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier; 
-                        driveX *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier;
-                        driveTurn *= org.areslib.core.localization.AresPedroConstants.teleOpBoostMultiplier;
+                        driveY *= 1.5; 
+                        driveX *= 1.5;
+                        driveTurn *= 1.5;
                     }
                     
                     // Apply alliance-specific heading offset for field-centric driving.
@@ -178,8 +177,8 @@ public class DesktopSimLauncher {
                 double currentOmega = robotBody.getAngularVelocity();
 
                 // Dynamic Grip Constants (Traction Coefficient)
-                double driveTractionGrip = org.areslib.core.localization.AresPedroConstants.simDriveTractionGrip;
-                double turnTractionGrip = org.areslib.core.localization.AresPedroConstants.simTurnTractionGrip;
+                double driveTractionGrip = 5.0;
+                double turnTractionGrip = 5.0;
                 
                 // Calculate closed-loop synthetic traction forces
                 double forceX = (vXFieldTarget - currentVx) * driveTractionGrip * robotBody.getMass().getMass();
@@ -215,16 +214,7 @@ public class DesktopSimLauncher {
                     odometryInputs.headingRadians
                 );
 
-                // Publish Pedro's internally tracked odometry estimate (for divergence testing)
-                // Pedro Pathing operates in INCHES (bottom-left origin).
-                // AdvantageScope expects METERS (center origin).
-                // Convert: subtract 72" to re-center, then multiply by INCHES_TO_METERS.
-                com.pedropathing.geometry.Pose estimatedPose = robotContainer.getFollower().getPose();
-                AresTelemetry.putPose2d("Pedro/EstimatedPose", 
-                    (estimatedPose.getX() - FieldConstants.HALF_FIELD_INCHES) * FieldConstants.INCHES_TO_METERS, 
-                    (estimatedPose.getY() - FieldConstants.HALF_FIELD_INCHES) * FieldConstants.INCHES_TO_METERS, 
-                    estimatedPose.getHeading()
-                );
+                AresTelemetry.putPose2d("PathPlanner/EstimatedPose", 0.0, 0.0, 0.0);
 
                 // Log current alliance for telemetry
                 AresTelemetry.putString("DriverStation/Alliance", dsApp.getAlliance().name());

@@ -26,17 +26,12 @@ import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorIOReal;
 import org.firstinspires.ftc.teamcode.subsystems.elevator.ElevatorIOSim;
 import org.areslib.subsystems.vision.AresVisionSubsystem;
-import org.areslib.subsystems.vision.AresSensorFusionSubsystem;
 
 import static org.firstinspires.ftc.teamcode.Constants.ElevatorConstants.*;
 import static org.firstinspires.ftc.teamcode.Constants.DriveConstants.*;
 import static org.firstinspires.ftc.teamcode.Constants.VisionConstants.*;
 
-import org.areslib.core.localization.AresFollower;
-import org.areslib.hardware.wrappers.PinpointOdometryWrapper;
 import org.areslib.hardware.interfaces.OdometryIO;
-
-import org.firstinspires.ftc.teamcode.commands.TeamAutoCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.AlignToTagCommand;
 
@@ -52,10 +47,7 @@ public class RobotContainer {
     private final SwerveDriveSubsystem drive;
     private final ElevatorSubsystem elevator;
     private final AresVisionSubsystem vision;
-    private final AresFollower follower;
-    
     // Hardware Integrations
-    private final PinpointOdometryWrapper pinpoint;
     public final OdometryIO.OdometryInputs pinpointInputs = new OdometryIO.OdometryInputs();
     public final org.areslib.hardware.interfaces.VisionIO.VisionInputs visionInputs = new org.areslib.hardware.interfaces.VisionIO.VisionInputs();
 
@@ -145,25 +137,7 @@ public class RobotContainer {
         CommandScheduler.getInstance().registerSubsystem(vision);
 
         // Odometry Tracking Loop Integration
-        if (!AresRobot.isSimulation()) {
-            pinpoint = new PinpointOdometryWrapper(hardwareMap, "pinpoint");
-            CommandScheduler.getInstance().registerSubsystem(new Subsystem() {
-                @Override
-                public void periodic() {
-                    pinpoint.updateInputs(pinpointInputs);
-                }
-            });
-        } else {
-            pinpoint = null;
-        }
-
-        follower = new AresFollower(drive, pinpointInputs);
-        CommandScheduler.getInstance().registerSubsystem(follower);
-
-        // Register the background asynchronous sensor fusion algorithms
-        CommandScheduler.getInstance().registerSubsystem(
-            new AresSensorFusionSubsystem(follower, vision, MAX_VISION_TRUST_FACTOR)
-        );
+        // Removed pinpoint and follower tracking until PathPlanner integration
 
         // 2. Map Gamepads (OpModes pass real gamepads or null context)
         if (gamepad1 != null && gamepad2 != null) {
@@ -188,7 +162,7 @@ public class RobotContainer {
         driver.y().onTrue(new Command() {
             @Override
             public void initialize() {
-                follower.setPose(new com.pedropathing.geometry.Pose(follower.getPose().getX(), follower.getPose().getY(), 0));
+                // Reset pose placeholder
             }
             @Override
             public boolean isFinished() { return true; }
@@ -215,7 +189,7 @@ public class RobotContainer {
                     driver.getLeftY() * MAX_FWD_SPEED,
                     driver.getLeftX() * MAX_STR_SPEED,
                     driver.getRightX() * MAX_ROT_SPEED,
-                    new org.areslib.math.geometry.Rotation2d(follower.getPose().getHeading())
+                    new org.areslib.math.geometry.Rotation2d(0) // Placeholder
                 );
             }
         }.init());
@@ -225,41 +199,8 @@ public class RobotContainer {
         return drive;
     }
 
-    /**
-     * Re-binds buttons. Useful for switching drivers/operator controls mid-match.
-     * @return The auto command.
-     */
-    public Command getRedLeftAutoCommand() {
-        return new TeamAutoCommand(follower, elevator);
-    }
-    
-    /**
-     * Dispatcher for the Blue Right Starting Position
-     * @return The auto command.
-     */
-    public Command getBlueRightAutoCommand() {
-        // Here you would substitute `TeamAutoCommand` with your Blue Right specific trajectory chain!
-        return new TeamAutoCommand(follower, elevator);
-    }
-    
-    /**
-     * Expose odometry interfaces to the OpMode launcher for manual resets.
-     * @return The follower.
-     */
-    public AresFollower getFollower() {
-        return follower;
-    }
-
     public AresVisionSubsystem getVision() {
         return vision;
-    }
-
-    /**
-     * Exposes the simulated/real Odometry inputs for external manipulation.
-     * @return The odometry inputs.
-     */
-    public OdometryIO.OdometryInputs getOdometryInputs() {
-        return pinpointInputs;
     }
 
     /**
@@ -268,5 +209,13 @@ public class RobotContainer {
      */
     public org.areslib.hardware.interfaces.VisionIO.VisionInputs getVisionInputs() {
         return visionInputs;
+    }
+
+    /**
+     * Exposes the simulated/real Odometry inputs for external manipulation.
+     * @return The odometry inputs.
+     */
+    public OdometryIO.OdometryInputs getOdometryInputs() {
+        return pinpointInputs;
     }
 }

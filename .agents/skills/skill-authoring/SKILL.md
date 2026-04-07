@@ -94,7 +94,6 @@ Always reference related skills instead of duplicating content:
 ```markdown
 For coordinate system conversions, see the `areslib-architecture` skill.
 For testing patterns, see the `areslib-testing` skill.
-For Pedro Pathing API details, see the `pedro-pathing` skill.
 ```
 
 ## 6. Naming Conventions
@@ -104,7 +103,7 @@ For Pedro Pathing API details, see the `pedro-pathing` skill.
 | Subsystem | `areslib-<name>` | `areslib-elevator` |
 | Hardware IO | `areslib-<sensor>` | `areslib-colorsensor` |
 | Framework utility | `areslib-<feature>` | `areslib-autonomous` |
-| External integration | `<vendor>-<feature>` | `pedro-pathing` |
+| External integration | `<vendor>-<feature>` | `pathplanner-ftc` |
 | Tooling/build | `<tool>-<purpose>` | `gradle-ftc-desktop` |
 
 ## 7. Required Checklist
@@ -184,15 +183,15 @@ The subsystem uses poses.
 # GOOD — specific to ARESLib2's coordinate convention
 ## Poses
 All poses use WPILib convention (X-forward, Y-left, θ CCW+).
-Pedro Pathing uses (X-right, Y-forward) — convert via:
-  wpilibX = pedroY, wpilibY = -pedroX
+PathPlanner uses WPILib convention natively, so no conversion is needed.
+For unit conversions, use `CoordinateUtil`.
 ```
 
 ### Don't: Duplicate content across skills
 ```markdown
-# BAD — copying Pedro API docs into the autonomous skill
-follower.followPath(chain);
+# BAD — copying path planning API docs into the autonomous skill
+follower.followPath(path);
 
-# GOOD — reference the skill
-See `pedro-pathing` skill for current API signatures.
+# GOOD — reference the source
+See the PathPlanner documentation for current API signatures.
 ```

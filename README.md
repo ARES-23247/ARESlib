@@ -1,7 +1,7 @@
 # ARESLib2 — Championship FTC Command Framework
 [![Build & Test](https://github.com/thehomelessguy/ARESLib2/actions/workflows/build.yml/badge.svg)](https://github.com/thehomelessguy/ARESLib2/actions)
 
-A professional-grade, Command-Based FTC robot framework with AdvantageKit-style telemetry, dyn4j physics simulation, and Pedro Pathing integration — built for Einstein.
+A professional-grade, Command-Based FTC robot framework with AdvantageKit-style telemetry, dyn4j physics simulation, and PathPlanner integration — built for Einstein.
 
 ## Quick Start (Mecanum)
 
@@ -11,7 +11,7 @@ A professional-grade, Command-Based FTC robot framework with AdvantageKit-style 
 4. Wait for Gradle sync to complete.
 5. Check the **starter templates** in `src/main/java/org/areslib/templates/`:
    - `SimpleIntakeSubsystem.java` — IO pattern + motor + sensor in one file
-   - `BasicMecanumAuto.java` — Pedro Pathing + 3 waypoints
+   - `BasicMecanumAuto.java` — PathPlanner + 3 waypoints
 6. Copy a template into your `teamcode/` package and start editing.
 
 > **Recommended:** Start with **Mecanum drive** (`MecanumDriveSubsystem`). It's proven, reliable, and covers 90% of FTC competition needs. Swerve support is available for advanced teams.
@@ -38,7 +38,7 @@ You don't need to understand the whole framework. Here are the 4 things that mat
 | Feature | Description |
 |:--------|:------------|
 | **Physics Simulation** | Full dyn4j rigid-body contact physics with field boundaries, game piece interaction, and collision logging to AdvantageScope |
-| **Dynamic Pathing** | Native Pedro Pathing wrappers with automated Bezier bounding-box obstacle avoidance |
+| **Dynamic Pathing** | PathPlanner trajectory generation with automated obstacle avoidance |
 | **Ghost Mode** | Serialized teleop JSON macros for auto-recording and flawless re-playback |
 | **Shoot-on-the-Move** | Feedforward kinematic aim calculators with target leading |
 | **State Machines** | Enum-based state machines with timed transitions, entry/exit actions, and timeout fallbacks |
@@ -65,7 +65,7 @@ src/main/java/org/areslib/          # Protected Framework Backend
 ├── subsystems/                     # SwerveDrive, Mecanum, Differential, Vision, LiDAR
 ├── templates/                      # ★ Starter templates — copy these into your teamcode!
 │   ├── SimpleIntakeSubsystem.java  # IO pattern + motor + sensor
-│   └── BasicMecanumAuto.java       # Pedro Pathing + 3 waypoints
+│   └── BasicMecanumAuto.java       # PathPlanner + 3 waypoints
 ├── teamcode/                       # Example robot code (mecanum, swerve, elevator, auto)
 └── telemetry/                      # AresAutoLogger, AresTelemetry backends
 ```
@@ -141,11 +141,11 @@ All robot interactions output WPILog telemetry compatible with [AdvantageScope](
 
 ## AI Development Skills
 
-ARESLib2 ships with **20 AI-assistant skill files** in `.agents/skills/` that constrain code generation to framework-correct patterns. Start with the routing table:
+ARESLib2 ships with **19 AI-assistant skill files** in `.agents/skills/` that constrain code generation to framework-correct patterns. Start with the routing table:
 
 | Skill | Purpose |
 |:------|:--------|
-| **`areslib`** | **★ Start here — routing table to all 19 domain skills** |
+| **`areslib`** | **★ Start here — routing table to all 18 domain skills** |
 | `areslib-architecture` | Root rules: IO pattern, coordinate systems, engineering quirks |
 | `areslib-autonomous` | Path following, ghost replay, shoot-on-the-move, avoidance |
 | `areslib-ci` | GitHub Actions CI/CD build pipeline |
@@ -159,7 +159,6 @@ ARESLib2 ships with **20 AI-assistant skill files** in `.agents/skills/` that co
 | `areslib-telemetry` | AresAutoLogger, AresTelemetry backend routing |
 | `areslib-testing` | Headless JUnit 5, physics-integrated test patterns |
 | `areslib-vision` | VisionIO, multi-camera fusion, AprilTag pipelines |
-| `pedro-pathing` | Path building, heading interpolation, follower setup |
 | `advantagescope-layouts` | Layout JSON configuration via MCP tools |
 | `advantagescope-hud-sim` | Gamepad mappings, Java 2D rendering for sim |
 | `gradle-ftc-desktop` | AAR extraction for desktop simulation builds |
@@ -171,6 +170,6 @@ ARESLib2 ships with **20 AI-assistant skill files** in `.agents/skills/` that co
 ## Acknowledgements & Licensing
 
 - **[WPILib](https://github.com/wpilibsuite/allwpilib)** — Foundational kinematics, geometry, and pose estimator architectures (BSD-3-Clause). See [WPILIB-LICENSE.md](WPILIB-LICENSE.md).
-- **[Pedro Pathing](https://github.com/Pedro-Pathing/PedroPathing)** — Trajectory generation and bounding-box avoidance.
+- **[PathPlanner](https://github.com/mjansen4857/pathplanner)** — Trajectory generation and path planning.
 - **[AdvantageKit & AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageKit)** — Deterministic logging architecture, recreated structurally within ARESLib.
 - **[dyn4j](https://github.com/dyn4j/dyn4j)** — 100% Java pure 2D rigid-body physics engine powering simulation.

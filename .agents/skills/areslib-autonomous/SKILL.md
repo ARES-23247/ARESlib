@@ -1,6 +1,6 @@
 ---
 name: areslib-autonomous
-description: Helps build autonomous routines, path following commands, ghost replay systems, and dynamic avoidance in ARESLib2. Use when creating autonomous OpModes, configuring PedroAutoBuilder, building path sequences, or implementing shoot-on-the-move.
+description: Helps build autonomous routines, path following commands, ghost replay systems, and dynamic avoidance in ARESLib2. Use when creating autonomous OpModes, building path sequences, or implementing shoot-on-the-move.
 ---
 
 You are an autonomous systems engineer for Team ARES. When building autonomous routines, path following commands, or replay systems for ARESLib2, adhere strictly to the following guidelines.
@@ -9,10 +9,9 @@ You are an autonomous systems engineer for Team ARES. When building autonomous r
 
 | Class | Location | Purpose |
 |:---|:---|:---|
-| `PedroAutoBuilder` | `command.auto` | Configures Pedro Pathing follower with ARESLib2 subsystems |
-| `AutoBuilder` | `command.auto` | Builds complete autonomous sequences from path chains |
+| `AutoBuilder` | `command.auto` | Builds complete autonomous sequences from PathPlanner paths |
 | `DynamicPathCommand` | `command.auto` | On-the-fly pathfinding with obstacle avoidance |
-| `FollowPathCommand` | `command` | WPILib Command wrapper around Pedro's path following |
+| `FollowPathCommand` | `command` | WPILib Command wrapper around path following |
 | `GhostRecorder` | `core` | Records driver inputs during teleop for autonomous replay |
 | `GhostPlaybackCommand` | `command` | Replays recorded ghost data as an autonomous routine |
 | `ShootOnTheMoveCommand` | `command.autoaim` | Kinematic aiming while robot is in motion |
@@ -26,32 +25,24 @@ Never write `while(!follower.isBusy())` loops. Wrap path following in proper WPI
 ```java
 public class FollowPathCommand extends Command {
     private final AresFollower follower;
-    private final PathChain chain;
+    private final PathPlannerPath path;
 
-    public FollowPathCommand(AresFollower follower, PathChain chain) {
+    public FollowPathCommand(AresFollower follower, PathPlannerPath path) {
         this.follower = follower;
-        this.chain = chain;
+        this.path = path;
         addRequirements(follower);
     }
 
-    @Override public void initialize() { follower.followPath(chain); }
+    @Override public void initialize() { follower.followPath(path); }
     @Override public void execute() { follower.update(); }
     @Override public boolean isFinished() { return !follower.isBusy(); }
 }
 ```
 
-### Rule B: Coordinate Conversion Required
-Pedro Pathing uses **(X-right, Y-forward)**. ARESLib2/WPILib uses **(X-forward, Y-left)**. Always convert:
-```java
-// Pedro → WPILib
-wpilibX = pedroY;
-wpilibY = -pedroX;
+### Rule B: Coordinate System
+ARESLib2 uses **WPILib convention** everywhere (X-forward, Y-left, theta CCW+). PathPlanner also uses WPILib convention natively, so no coordinate conversion is needed between them.
 
-// WPILib → Pedro
-pedroX = -wpilibY;
-pedroY = wpilibX;
-```
-See the `areslib-architecture` skill for the full coordinate guide.
+All conversions between internal frames are handled by `CoordinateUtil`. See the `areslib-architecture` skill for the full coordinate guide.
 
 ### Rule C: GhostRecorder Safety
 `GhostRecorder` records driver joystick inputs to a `GhostData` object. During replay, `GhostPlaybackCommand` injects these inputs back through the `AresGamepad` wrapper.
@@ -69,7 +60,7 @@ new GhostPlaybackCommand(data, driveSubsystem).schedule();
 ```
 
 ### Rule D: Dynamic Avoidance Uses ObstacleAvoider
-The `ObstacleAvoider` class in `math.pathing` generates Pedro-compatible waypoints that route around known field obstacles:
+The `ObstacleAvoider` class in `math.pathing` generates waypoints that route around known field obstacles:
 ```java
 ObstacleAvoider avoider = new ObstacleAvoider();
 avoider.addObstacle(FieldConstants.OBELISK_CENTER, FieldConstants.OBELISK_RADIUS);
@@ -109,7 +100,7 @@ The command continuously updates the heading lock while the path follower handle
 | Key | Type | Description |
 |:---|:---|:---|
 | `Auto/ActivePath` | `String` | Name of the currently executing path |
-| `Auto/FollowerBusy` | `boolean` | Whether Pedro is actively following |
+| `Auto/FollowerBusy` | `boolean` | Whether the follower is actively tracking |
 | `Auto/TargetPose` | `Pose2d` | Current path target pose |
 | `Auto/GhostRecording` | `boolean` | Whether ghost recording is active |
 | `Auto/AimAngle` | `double` | Shoot-on-the-move compensated heading (rad) |
@@ -124,12 +115,9 @@ void testFollowPathCommandCompletes() {
     CommandScheduler.getInstance().cancelAll();
     
     // Build path
-    PathChain chain = follower.pathBuilder()
-        .addPoint(new Point(0, 0))
-        .addPoint(new Point(24, 24))
-        .build();
+    PathPlannerPath path = PathPlannerPath.fromPathFile("ScorePath");
     
-    FollowPathCommand cmd = new FollowPathCommand(follower, chain);
+    FollowPathCommand cmd = new FollowPathCommand(follower, path);
     CommandScheduler.getInstance().schedule(cmd);
     
     // Run 150 ticks (3 seconds)
@@ -143,28 +131,19 @@ void testFollowPathCommandCompletes() {
 }
 ```
 
-For full test patterns, see the `areslib-testing` skill. For Pedro Pathing API details, see the `pedro-pathing` skill.
+For full test patterns, see the `areslib-testing` skill.
 
 ## 7. Common Pitfalls
-
-### Don't: Mix coordinate systems in paths
-```java
-// BAD — using WPILib coordinates in Pedro path points
-new Point(1.0, 0.5)  // Is this Pedro or WPILib? Ambiguous!
-
-// GOOD — use FieldConstants with explicit Pedro conversion
-new Point(FieldConstants.SCORING_X_PEDRO, FieldConstants.SCORING_Y_PEDRO)
-```
 
 ### Don't: Forget addRequirements on path commands
 ```java
 // BAD — drive can be interrupted mid-path
-public FollowPathCommand(AresFollower f, PathChain c) {
+public FollowPathCommand(AresFollower f, PathPlannerPath p) {
     this.follower = f; // No requirements!
 }
 
 // GOOD — exclusive access during path following
-public FollowPathCommand(AresFollower f, PathChain c) {
+public FollowPathCommand(AresFollower f, PathPlannerPath p) {
     this.follower = f;
     addRequirements(f);
 }

@@ -85,7 +85,7 @@ public class AresVisionSubsystem extends SubsystemBase {
      *
      * @return Field-centric 2D pose estimated by the vision system. Null if target isn't trustworthy.
      */
-    public com.pedropathing.geometry.Pose getEstimatedGlobalPose() {
+    public org.areslib.math.geometry.Pose2d getEstimatedGlobalPose() {
         if (!inputs.hasTarget) return null;
 
         // Sanity Check 1: Is the robot floating? 
@@ -109,10 +109,10 @@ public class AresVisionSubsystem extends SubsystemBase {
         double qZ = inputs.botPose3d[6];
         double yawRadians = Math.atan2(2.0 * (w * qZ + qX * qY), 1.0 - 2.0 * (qY * qY + qZ * qZ));
 
-        return new com.pedropathing.geometry.Pose(
+        return new org.areslib.math.geometry.Pose2d(
             xMeters, 
             yMeters, 
-            yawRadians // Extracted Yaw from Quaternion
+            new org.areslib.math.geometry.Rotation2d(yawRadians) 
         );
     }
     

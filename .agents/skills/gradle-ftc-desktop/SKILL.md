@@ -41,7 +41,7 @@ dependencies {
 |:---|:---|:---|
 | Standard Maven JAR | `implementation` | `dyn4j`, `JUnit`, `Gson` |
 | FTC SDK `.aar` | `ftcAars` | `RobotCore`, `FtcCommon`, `dashboard` |
-| Local JAR file | `implementation files(...)` | Pedro Pathing, custom libs |
+| Local JAR file | `implementation files(...)` | PathPlanner, custom libs |
 
 ## 3. Build Commands
 

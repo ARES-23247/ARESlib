@@ -20,7 +20,7 @@ Robot isn't moving?
 │
 └── Robot moves but wrong direction → Coordinate system issue
     ├── Check "Drive/Pose" in AdvantageScope
-    │   Should be (0-144, 0-144) inches in Pedro coordinates
+    │   Should show a valid field pose in WPILib coordinates (meters)
     ├── Is alliance configured correctly?
     │   RED = -90° offset, BLUE = +90° offset
     └── Check odometry source (OTOS vs Pinpoint vs Dead Wheels)
@@ -85,6 +85,6 @@ When a sensor disconnects, this is what happens:
 | `Diagnostics/Status` | Pre-match check result (PASS/FAIL) |
 | `Power/batteryVoltage` | Live battery voltage |
 | `Power/masterPowerScale` | Current power limiting factor (0.0-1.0) |
-| `Drive/Pose` | Current robot pose in Pedro coordinates |
+| `Drive/Pose` | Current robot pose in WPILib coordinates (meters) |
 | `LiDAR/FieldHits` | Detected obstacle positions |
 | `Console` | General system messages |

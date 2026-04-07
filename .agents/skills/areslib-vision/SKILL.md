@@ -40,7 +40,7 @@ class VisionInputs implements AresLoggableInputs {
 The `AresSensorFusionSubsystem` handles the blending of vision and odometry poses. All math is centralized in `CoordinateUtil`:
 
 ```java
-// Coordinate conversion: vision (meters, center origin) -> Pedro (inches, bottom-left)
+// Coordinate conversion: vision (meters, center origin) -> WPILib (meters, center origin)
 double visionXInches = CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getX());
 double visionYInches = CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getY());
 

@@ -1,12 +1,12 @@
 ---
 name: areslib-drivetrain
-description: Documents the ARESLib2 drivetrain subsystem layer — Swerve, Mecanum, and Differential drive implementations with IO abstraction. Use when configuring drive kinematics, adding new drive types, tuning odometry, or integrating with Pedro Pathing.
+description: Documents the ARESLib2 drivetrain subsystem layer — Swerve, Mecanum, and Differential drive implementations with IO abstraction. Use when configuring drive kinematics, adding new drive types, or tuning odometry.
 ---
 
 # ARESLib2 Drivetrain Subsystems
 
 
-You are a drivetrain engineer for Team ARES. When configuring drive kinematics, tuning odometry, or integrating with Pedro Pathing, adhere strictly to the following guidelines.
+You are a drivetrain engineer for Team ARES. When configuring drive kinematics or tuning odometry, adhere strictly to the following guidelines.
 ARESLib2 supports three drivetrain types, all following the IO abstraction pattern for seamless sim/real switching.
 
 ## 1. Architecture
@@ -47,14 +47,9 @@ public interface AresDrivetrain {
 - Y = left (positive toward your left when standing behind robot)
 - θ = counter-clockwise positive
 
-**Pedro Pathing uses different convention** — convert via:
-```java
-wpilibX = pedroY;
-wpilibY = -pedroX;
-wpilibHeading = pedroHeading - Math.PI/2;
-```
+**PathPlanner and ARESLib2 both use WPILib convention**, so no coordinate conversion is needed.
 
-See the `areslib-architecture` skill and the knowledge item on coordinate systems.
+For unit conversions (inches/mm to meters), use `CoordinateUtil`. See the `areslib-architecture` skill.
 
 ## 3. Key Configuration
 
@@ -125,7 +120,7 @@ void testFieldCentricTransform() {
 
 ## 8. Common Pitfalls
 
-- **Don't mix coordinate systems** — Pedro uses (X-right, Y-forward), WPILib uses (X-forward, Y-left)
+- **Always use WPILib convention** — X-forward, Y-left, θ CCW+
 - **Always reset odometry** at autonomous start
 - **Module order matters** — FL, FR, BL, BR consistently
 - **Wheel desaturation** — if any module exceeds max speed, all modules scale proportionally

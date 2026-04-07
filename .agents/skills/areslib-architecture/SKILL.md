@@ -1,6 +1,6 @@
 ---
 name: areslib-architecture
-description: Helps write and maintain code mapped to the ARESLib2 FTC framework, detailing coordinate systems, vision fusion architectures, and simulator parity techniques. Use when modifying or adding areslib subsystems, handling Pedro Pathing conversions, injecting vision offsets, or logging 3D poses natively to AdvantageScope.
+description: Helps write and maintain code mapped to the ARESLib2 FTC framework, detailing coordinate systems, vision fusion architectures, and simulator parity techniques. Use when modifying or adding areslib subsystems, injecting vision offsets, or logging 3D poses natively to AdvantageScope.
 ---
 
 You are an expert FTC Software Engineer for Team ARES. When asked to create new robot subsystems, commands, or mechanisms for an ARESLib2-based project, adhere strictly to the following architectural guidelines.
@@ -36,35 +36,25 @@ Do NOT use raw `telemetry.addData()`; use `AresAutoLogger` / `AresTelemetry`. Se
 
 ## 2. Coordinate System Mapping (CRITICAL)
 
-ARESLib2 bridges three coordinate systems:
+ARESLib2 bridges two coordinate systems:
 
 | System | Origin | Units | Axis Convention |
 |:---|:---|:---|:---|
-| **dyn4j / WPILib** | Field center (0, 0) | Meters, Radians | X-forward, Y-left, θ CCW+ |
-| **Pedro Pathing** | Bottom-left corner (72, 72) | Inches, Radians | X-right, Y-forward |
+| **dyn4j / WPILib / PathPlanner** | Field center (0, 0) | Meters, Radians | X-forward, Y-left, θ CCW+ |
 | **AdvantageScope** | Field center (0, 0) | Meters, Radians | WPILib convention |
+
+PathPlanner uses WPILib convention natively, so no coordinate conversion is needed between them.
 
 ### Conversion Rules
 
-**ALWAYS use `CoordinateUtil`** (in `org.areslib.core`) for all conversions. Never write raw `* 0.0254`, `/ 25.4`, `/ 1000.0`, or `+ 72.0` in application code.
+**ALWAYS use `CoordinateUtil`** (in `org.areslib.core`) for all conversions. Never write raw `* 0.0254`, `/ 25.4`, or `/ 1000.0` in application code.
 
 ```java
-// Pedro <-> WPILib
-Pose2d wpiPose = CoordinateUtil.pedroToWpi(pedroPose);
-com.pedropathing.geometry.Pose pedroPose = CoordinateUtil.wpiToPedro(wpiPose);
-
 // Raw unit conversions
 double meters = CoordinateUtil.inchesToMeters(inches);
 double inches = CoordinateUtil.metersToInches(meters);
 double inches = CoordinateUtil.mmToInches(mm);      // LiDAR distance zones
 double meters = CoordinateUtil.mmToMeters(mm);       // Pinpoint odometry
-
-// Origin shifts (center meters <-> bottom-left inches)
-double pedroVal = CoordinateUtil.centerMetersToBottomLeftInches(centerMeters);
-double centerVal = CoordinateUtil.bottomLeftInchesToCenterMeters(pedroInches);
-
-// Vision center-origin pose -> Pedro (no axis swap, pre-aligned cameras)
-com.pedropathing.geometry.Pose p = CoordinateUtil.visionCenterToPedro(x, y, heading);
 
 // Fusion math (used by AresSensorFusionSubsystem)
 double gain = CoordinateUtil.computeVisionKalmanGain(confidence);
@@ -72,7 +62,7 @@ double blended = CoordinateUtil.lerp(current, target, weight);
 double heading = CoordinateUtil.shortestAngleLerp(currentRad, targetRad, weight);
 ```
 
-All hardware IO wrappers (`OdometryIO`, `VisionIO`) **always emit SI units (meters/radians) with center origin**. The `AresPedroLocalizer` handles conversion to Pedro's coordinate system automatically.
+All hardware IO wrappers (`OdometryIO`, `VisionIO`) **always emit SI units (meters/radians) with center origin**.
 
 ## 3. AdvantageScope 3D Formats
 
@@ -138,9 +128,6 @@ All tests use headless JUnit 5 with real IOSim implementations — not mocks:
 FTC gamepads map "stick UP" to **negative Y** (`-1.0`). GUI frameworks (AWT, SDL2) map "UP" to **positive Y** (`+1.0`). The `AresGamepad` wrapper handles this inversion — do NOT double-invert in your code.
 
 ### dyn4j Wheel Slip vs Odometry
-In high-fidelity simulation, encoder distance and field translation will never perfectly match due to wheel slip. `dyn4j` applies `linearDamping` and mass to the robot body. High damping → Pedro PIDs ramp up voltage → encoders over-count distance. This is physically accurate. To reduce drift, lower `linearDamping`.
-
-### Pedro Pathing Static Configuration
-`AresPedroConstants.configure()` may throw if called twice (e.g., across JUnit tests). Always wrap in try/catch or guard with a static `configured` flag.
+In high-fidelity simulation, encoder distance and field translation will never perfectly match due to wheel slip. `dyn4j` applies `linearDamping` and mass to the robot body. High damping causes path-following PIDs to ramp up voltage, making encoders over-count distance. This is physically accurate. To reduce drift, lower `linearDamping`.
 
 For the full skill routing table, see the `areslib` skill.

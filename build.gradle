@@ -35,9 +35,6 @@ dependencies {
     ftcAars 'org.firstinspires.ftc:Hardware:11.1.0@aar'
     ftcAars 'org.firstinspires.ftc:FtcCommon:11.1.0@aar'
     
-    // Pedro Pathing (FTC classes need AAR extraction, core classes can be imported natively)
-    ftcAars 'com.pedropathing:ftc:2.1.1@aar'
-    implementation 'com.pedropathing:core:2.1.1'
 }
 
 // Automatically unpack AARs at configuration time so the IDE Language Server
