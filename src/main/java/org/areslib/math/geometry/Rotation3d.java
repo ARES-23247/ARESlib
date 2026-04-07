@@ -87,6 +87,8 @@ public class Rotation3d {
 
     /**
      * Returns the roll (rotation around X) in radians.
+     *
+     * @return The roll in radians.
      */
     public double getRoll() {
         double sinr = 2.0 * (m_w * m_x + m_y * m_z);
@@ -96,6 +98,8 @@ public class Rotation3d {
 
     /**
      * Returns the pitch (rotation around Y) in radians.
+     *
+     * @return The pitch in radians.
      */
     public double getPitch() {
         double sinp = 2.0 * (m_w * m_y - m_z * m_x);
@@ -106,6 +110,8 @@ public class Rotation3d {
 
     /**
      * Returns the yaw (rotation around Z) in radians.
+     *
+     * @return The yaw in radians.
      */
     public double getYaw() {
         double siny = 2.0 * (m_w * m_z + m_x * m_y);
@@ -132,6 +138,8 @@ public class Rotation3d {
 
     /**
      * Returns the inverse of this rotation (conjugate of the unit quaternion).
+     *
+     * @return The inverse rotation.
      */
     public Rotation3d unaryMinus() {
         return new Rotation3d(m_w, -m_x, -m_y, -m_z);
@@ -139,6 +147,8 @@ public class Rotation3d {
 
     /**
      * Projects this 3D rotation down to a 2D rotation by extracting the yaw component.
+     *
+     * @return The 2D rotation.
      */
     public Rotation2d toRotation2d() {
         return new Rotation2d(getYaw());

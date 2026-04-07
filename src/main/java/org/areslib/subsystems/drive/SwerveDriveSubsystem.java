@@ -11,6 +11,11 @@ import org.areslib.math.kinematics.SwerveModuleState;
 import org.areslib.math.kinematics.SwerveDriveKinematics;
 import org.areslib.telemetry.AresAutoLogger;
 import org.areslib.telemetry.AresTelemetry;
+import org.areslib.core.simulation.AresPhysicsWorld;
+import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.Geometry;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.dynamics.BodyFixture;
 
 /**
  * AdvantageKit-style Swerve Drive Subsystem.
@@ -95,6 +100,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
     private final SlewRateLimiter strLimiter;
     private final SlewRateLimiter rotLimiter;
 
+    private Body simChassis = null;
     /**
      * Constructs the SwerveDriveSubsystem.
      *
@@ -142,6 +148,18 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
             this.strLimiter = null;
             this.rotLimiter = null;
         }
+
+        if (org.areslib.core.AresRobot.isSimulation()) {
+            simChassis = new Body();
+            // 18x18 inches is 0.4572 meters
+            BodyFixture fixture = simChassis.addFixture(Geometry.createRectangle(0.4572, 0.4572));
+            fixture.setDensity(20.0); // Approximation for a ~15kg FTC robot
+            fixture.setFriction(0.5);
+            simChassis.setMass(MassType.NORMAL);
+            simChassis.setLinearDamping(0.9);
+            simChassis.setAngularDamping(0.9);
+            AresPhysicsWorld.getInstance().addBody(simChassis);
+        }
     }
 
     @Override
@@ -163,6 +181,15 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
             new SwerveModuleState(brInputs.driveVelocityMps, new Rotation2d(brInputs.turnAbsolutePositionRad)),
         };
         AresTelemetry.logSwerveStates("Robot/SwerveActual", actualStates);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        if (simChassis != null) {
+            // Apply commanded velocities to the physical body
+            simChassis.setLinearVelocity(commandedVx, commandedVy);
+            simChassis.setAngularVelocity(commandedOmega);
+        }
     }
 
     /** @return The commanded X velocity in m/s. */

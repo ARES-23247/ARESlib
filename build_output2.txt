@@ -1,0 +1,124 @@
+
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:7: error: package com.pedropathing.pathgen does not exist
+import com.pedropathing.pathgen.BezierLine;
+                               ^
+> Task :compileJava FAILED
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:8: error: package com.pedropathing.pathgen does not exist
+import com.pedropathing.pathgen.Point;
+                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:5: error: package com.pedropathing.pathgen does not exist
+import com.pedropathing.pathgen.Point;
+                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:6: error: package com.pedropathing.pathgen does not exist
+import com.pedropathing.pathgen.BezierCurve;
+                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:48: error: no suitable constructor found for PathBuilder(no arguments)
+        PathBuilder builder = new PathBuilder();
+                              ^
+    constructor com.pedropathing.paths.PathBuilder.PathBuilder(com.pedropathing.follower.Follower,com.pedropathing.paths.PathConstraints) is not applicable
+      (actual and formal argument lists differ in length)
+    constructor com.pedropathing.paths.PathBuilder.PathBuilder(com.pedropathing.follower.Follower) is not applicable
+      (actual and formal argument lists differ in length)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:49: error: cannot find symbol
+        builder.addPath(new BezierLine(new Point(startPose), new Point(targetPose)));
+                            ^
+  symbol:   class BezierLine
+  location: class org.areslib.command.teleop.SnapToPoseCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:49: error: cannot find symbol
+        builder.addPath(new BezierLine(new Point(startPose), new Point(targetPose)));
+                                           ^
+  symbol:   class Point
+  location: class org.areslib.command.teleop.SnapToPoseCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:49: error: cannot find symbol
+        builder.addPath(new BezierLine(new Point(startPose), new Point(targetPose)));
+                                                                 ^
+  symbol:   class Point
+  location: class org.areslib.command.teleop.SnapToPoseCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:77: error: cannot find symbol
+            m_follower.setTeleOpMovementVectors(0, 0, 0, true);
+                      ^
+  symbol:   method setTeleOpMovementVectors(int,int,int,boolean)
+  location: variable m_follower of type org.areslib.core.localization.AresFollower
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:135: error: no suitable constructor found for PathBuilder(no arguments)
+        PathBuilder builder = new PathBuilder();
+                              ^
+    constructor com.pedropathing.paths.PathBuilder.PathBuilder(com.pedropathing.follower.Follower,com.pedropathing.paths.PathConstraints) is not applicable
+      (actual and formal argument lists differ in length)
+    constructor com.pedropathing.paths.PathBuilder.PathBuilder(com.pedropathing.follower.Follower) is not applicable
+      (actual and formal argument lists differ in length)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:136: error: package com.pedropathing.pathgen does not exist
+        builder.addPath(new com.pedropathing.pathgen.BezierLine(new Point(start), new Point(target)));
+                                                    ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:136: error: cannot find symbol
+        builder.addPath(new com.pedropathing.pathgen.BezierLine(new Point(start), new Point(target)));
+                                                                    ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:136: error: cannot find symbol
+        builder.addPath(new com.pedropathing.pathgen.BezierLine(new Point(start), new Point(target)));
+                                                                                      ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:142: error: cannot find symbol
+        List<Point> waypoints = new ArrayList<>();
+             ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:145: error: cannot find symbol
+            waypoints.add(new Point(current.gridX * RESOLUTION_INCHES, current.gridY * RESOLUTION_INCHES, Point.CARTESIAN));
+                              ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:145: error: cannot find symbol
+            waypoints.add(new Point(current.gridX * RESOLUTION_INCHES, current.gridY * RESOLUTION_INCHES, Point.CARTESIAN));
+                                                                                                          ^
+  symbol:   variable Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:151: error: cannot find symbol
+        waypoints.set(0, new Point(startPose));
+                             ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:152: error: cannot find symbol
+        waypoints.set(waypoints.size() - 1, new Point(endPose));
+                                                ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:154: error: cannot find symbol
+        Point[] pointArray = waypoints.toArray(new Point[0]);
+        ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:154: error: cannot find symbol
+        Point[] pointArray = waypoints.toArray(new Point[0]);
+                                                   ^
+  symbol:   class Point
+  location: class org.areslib.math.pathing.ObstacleAvoider
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:155: error: no suitable constructor found for PathBuilder(no arguments)
+        PathBuilder builder = new PathBuilder();
+                              ^
+    constructor com.pedropathing.paths.PathBuilder.PathBuilder(com.pedropathing.follower.Follower,com.pedropathing.paths.PathConstraints) is not applicable
+      (actual and formal argument lists differ in length)
+    constructor com.pedropathing.paths.PathBuilder.PathBuilder(com.pedropathing.follower.Follower) is not applicable
+      (actual and formal argument lists differ in length)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\pathing\ObstacleAvoider.java:156: error: cannot find symbol
+        builder.addPath(new BezierCurve(pointArray));
+                            ^
+  symbol:   class BezierCurve
+  location: class org.areslib.math.pathing.ObstacleAvoider
+Note: C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+22 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1s
+1 actionable task: 1 executed

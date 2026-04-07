@@ -65,6 +65,9 @@ public class RobotContainer {
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
+     * @param hardwareMap The hardwareMap.
+     * @param gamepad1 The driver gamepad.
+     * @param gamepad2 The operator gamepad.
      */
     public RobotContainer(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
         // Bulk caching initialization - vital for extreme performance loops
@@ -224,6 +227,7 @@ public class RobotContainer {
 
     /**
      * Re-binds buttons. Useful for switching drivers/operator controls mid-match.
+     * @return The auto command.
      */
     public Command getRedLeftAutoCommand() {
         return new TeamAutoCommand(follower, elevator);
@@ -231,6 +235,7 @@ public class RobotContainer {
     
     /**
      * Dispatcher for the Blue Right Starting Position
+     * @return The auto command.
      */
     public Command getBlueRightAutoCommand() {
         // Here you would substitute `TeamAutoCommand` with your Blue Right specific trajectory chain!
@@ -239,6 +244,7 @@ public class RobotContainer {
     
     /**
      * Expose odometry interfaces to the OpMode launcher for manual resets.
+     * @return The follower.
      */
     public AresFollower getFollower() {
         return follower;
@@ -250,6 +256,7 @@ public class RobotContainer {
 
     /**
      * Exposes the simulated/real Odometry inputs for external manipulation.
+     * @return The odometry inputs.
      */
     public OdometryIO.OdometryInputs getOdometryInputs() {
         return pinpointInputs;
@@ -257,6 +264,7 @@ public class RobotContainer {
 
     /**
      * Exposes the simulated Vision inputs for external manipulation.
+     * @return The vision inputs.
      */
     public org.areslib.hardware.interfaces.VisionIO.VisionInputs getVisionInputs() {
         return visionInputs;

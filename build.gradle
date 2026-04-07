@@ -20,19 +20,19 @@ configurations {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    implementation 'com.acmerobotics.dashboard:core:0.4.16'
+    implementation 'com.acmerobotics.dashboard:core:0.5.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     
     // Android Context Stub
     implementation 'com.google.android:android:4.1.1.4'
 
     // Dashboard AAR
-    ftcAars 'com.acmerobotics.dashboard:dashboard:0.4.16@aar'
+    ftcAars 'com.acmerobotics.dashboard:dashboard:0.5.1@aar'
     
     // FTC SDK AARs
-    ftcAars 'org.firstinspires.ftc:RobotCore:10.1.1@aar'
-    ftcAars 'org.firstinspires.ftc:Hardware:10.1.1@aar'
-    ftcAars 'org.firstinspires.ftc:FtcCommon:10.1.1@aar'
+    ftcAars 'org.firstinspires.ftc:RobotCore:11.1.0@aar'
+    ftcAars 'org.firstinspires.ftc:Hardware:11.1.0@aar'
+    ftcAars 'org.firstinspires.ftc:FtcCommon:11.1.0@aar'
     
     // Pedro Pathing (FTC classes need AAR extraction, core classes can be imported natively)
     ftcAars 'com.pedropathing:ftc:2.1.1@aar'

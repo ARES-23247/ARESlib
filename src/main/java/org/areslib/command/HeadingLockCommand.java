@@ -101,6 +101,7 @@ public class HeadingLockCommand extends Command {
 
     /**
      * Returns whether the heading lock is currently active.
+      * @return The current value.
      */
     public boolean isLocked() {
         return m_isLocked;

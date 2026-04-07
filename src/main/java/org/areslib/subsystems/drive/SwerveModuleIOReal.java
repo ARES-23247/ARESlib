@@ -24,6 +24,7 @@ public class SwerveModuleIOReal implements SwerveModuleIO {
      * @param turnMotor    The hardware wrapper for the steering/turning motor.
      * @param driveEncoder The hardware wrapper for the driving encoder.
      * @param turnEncoder  The hardware wrapper for the absolute steering encoder.
+     * @param driveMetersPerTick Meters traveled per encoder tick for the drive motor.
      */
     public SwerveModuleIOReal(
             AresMotor driveMotor, 

@@ -53,6 +53,8 @@ public class StateMachine<S extends Enum<S>> {
 
     /**
      * Registers an action to run once when entering a state.
+     * @param state The state.
+     * @param action The action.
      */
     public void onEntry(S state, Runnable action) {
         m_entryActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
@@ -60,6 +62,8 @@ public class StateMachine<S extends Enum<S>> {
 
     /**
      * Registers an action to run once when exiting a state.
+     * @param state The state.
+     * @param action The action.
      */
     public void onExit(S state, Runnable action) {
         m_exitActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
@@ -67,6 +71,8 @@ public class StateMachine<S extends Enum<S>> {
 
     /**
      * Registers an action to run every loop tick while in a state.
+     * @param state The state.
+     * @param action The action.
      */
     public void during(S state, Runnable action) {
         m_duringActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
@@ -160,22 +166,31 @@ public class StateMachine<S extends Enum<S>> {
 
     // ── Queries ─────────────────────────────────────────────────────────────────
 
-    /** Returns the current state. */
+    /** Returns the current state.
+     * @return The current state.
+     */
     public S getState() {
         return m_currentState;
     }
 
-    /** Returns the previous state. */
+    /** Returns the previous state.
+     * @return The previous state.
+     */
     public S getPreviousState() {
         return m_previousState;
     }
 
-    /** Returns true if the machine is in the given state. */
+    /** Returns true if the machine is in the given state.
+     * @param state The state to check.
+     * @return True if in the given state.
+     */
     public boolean isInState(S state) {
         return m_currentState == state;
     }
 
-    /** Returns the time (in seconds) spent in the current state. */
+    /** Returns the time (in seconds) spent in the current state.
+     * @return Time in current state.
+     */
     public double getTimeInState() {
         return now() - m_stateEntryTime;
     }

@@ -36,9 +36,11 @@ public final class MathUtil {
      * Returns 0.0 if the given value is within the specified range around zero. The remaining range
      * between the deadband and 1.0 is scaled from 0.0 to 1.0.
      *
-     * @param value    Value to clip.
-     * @param deadband Range around zero.
+     * @param value        Value to clip.
+     * @param deadband     Range around zero.
+     * @param maxMagnitude The maximum magnitude of the signal to scale against.
      * @return The value after the deadband is applied.
+      * @param maxMagnitude The maxMagnitude value.
      */
     public static double applyDeadband(double value, double deadband, double maxMagnitude) {
         if (Math.abs(value) > deadband) {

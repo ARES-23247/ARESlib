@@ -54,6 +54,8 @@ public class AresHardwarePoseEstimator {
 
     /**
      * Returns the globally-corrected location of the robot on the mapping axis.
+     *
+     * @return The globally-corrected location.
      */
     public Pose2d getEstimatedPosition() {
         return m_estimatedPose;

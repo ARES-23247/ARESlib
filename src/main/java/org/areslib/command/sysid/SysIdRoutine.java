@@ -74,6 +74,8 @@ public class SysIdRoutine {
     /**
      * Creates a command to run a quasistatic (slow voltage ramp) test.
      * Finds kS (static friction) and kV (velocity constant).
+      * @param direction The direction value.
+      * @return The current value.
      */
     public org.areslib.command.Command quasistatic(Direction direction) {
         return new SysIdCommand(m_config, m_mechanism, true, direction);
@@ -82,6 +84,8 @@ public class SysIdRoutine {
     /**
      * Creates a command to run a dynamic (instant voltage step) test.
      * Finds kA (acceleration root constant).
+      * @param direction The direction value.
+      * @return The current value.
      */
     public org.areslib.command.Command dynamic(Direction direction) {
         return new SysIdCommand(m_config, m_mechanism, false, direction);

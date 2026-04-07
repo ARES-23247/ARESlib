@@ -19,6 +19,9 @@ public class Transform3d {
 
     /**
      * Constructs a Transform3d from a translation and rotation.
+     *
+     * @param translation The translation component.
+     * @param rotation The rotation component.
      */
     public Transform3d(Translation3d translation, Rotation3d rotation) {
         m_translation = translation;
@@ -49,6 +52,9 @@ public class Transform3d {
 
     /**
      * Composes this transform with another.
+     *
+     * @param other The transform to compose with.
+     * @return The composed transform.
      */
     public Transform3d plus(Transform3d other) {
         Pose3d origin = new Pose3d();
@@ -57,6 +63,8 @@ public class Transform3d {
 
     /**
      * Returns the inverse of this transform.
+     *
+     * @return The inverse transform.
      */
     public Transform3d inverse() {
         Rotation3d invRotation = m_rotation.unaryMinus();

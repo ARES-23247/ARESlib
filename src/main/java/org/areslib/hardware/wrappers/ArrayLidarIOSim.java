@@ -1,15 +1,18 @@
 package org.areslib.hardware.wrappers;
 
 import org.areslib.hardware.interfaces.ArrayLidarIO;
+import org.areslib.hardware.faults.FaultMonitor;
+import org.areslib.hardware.faults.AresHardwareFaultInjector;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
 import org.dyn4j.world.World;
 
-public class ArrayLidarIOSim implements ArrayLidarIO {
+public class ArrayLidarIOSim implements ArrayLidarIO, FaultMonitor {
 
     private final int resolution;
     private final java.util.function.Supplier<org.areslib.hardware.interfaces.OdometryIO.OdometryInputs> odometrySupplier;
     private final World<Body> world;
+    private boolean faultTripped = false;
 
     private static final double FIELD_FOV_RADIANS = Math.toRadians(45.0);
     private static final double MAX_RANGE_METERS = 4.0; 
@@ -41,6 +44,14 @@ public class ArrayLidarIOSim implements ArrayLidarIO {
     public void updateInputs(ArrayLidarInputs inputs) {
         if (inputs.distanceZonesMm.length != resolution) {
             inputs.distanceZonesMm = new double[resolution];
+        }
+
+        if (AresHardwareFaultInjector.simulateI2CCrash) {
+            faultTripped = true;
+            for (int i = 0; i < resolution; i++) {
+                inputs.distanceZonesMm[i] = 0.0;
+            }
+            return;
         }
 
         org.areslib.hardware.interfaces.OdometryIO.OdometryInputs odo = null;
@@ -106,5 +117,15 @@ public class ArrayLidarIOSim implements ArrayLidarIO {
                 inputs.distanceZonesMm[index] = Math.min(dist3D_mm, MAX_RANGE_METERS * 1000.0);
             }
         }
+    }
+
+    @Override
+    public boolean hasHardwareFault() {
+        return faultTripped;
+    }
+
+    @Override
+    public String getFaultMessage() {
+        return "I2C COMMUNICATION FAILURE: Array LiDAR Array Not Responding.";
     }
 }

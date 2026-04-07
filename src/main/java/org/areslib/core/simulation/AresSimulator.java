@@ -28,9 +28,16 @@ public class AresSimulator {
         if (isRunning) return;
         isRunning = true;
 
+        // Populate the physical world with DECODE assets
+        DecodeFieldSim.buildField();
+
         physicsThread = new Thread(() -> {
             while (isRunning && AresRobot.isSimulation()) {
                 long start = System.currentTimeMillis();
+
+                // Step the centralized physics world
+                double dtSeconds = periodMs / 1000.0;
+                AresPhysicsWorld.getInstance().step(dtSeconds);
 
                 // Poll physics logic decoupled from main scheduling pipeline
                 for (Subsystem subsystem : CommandScheduler.getInstance().getSubsystems()) {

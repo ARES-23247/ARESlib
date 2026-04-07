@@ -37,6 +37,8 @@ public class AresFaultManager {
 
     /**
      * Registers an alert with the system. Handled automatically when AresAlert is constructed.
+     *
+     * @param alert The alert to register.
      */
     public static void registerAlert(AresAlert alert) {
         if (!alerts.contains(alert)) {

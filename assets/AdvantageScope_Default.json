@@ -1,0 +1,73 @@
+{
+  "hubs": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720,
+      "state": {
+        "sidebar": {
+          "width": 160,
+          "expanded": []
+        },
+        "tabs": {
+          "selected": 0,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "t70hvk5fwt8yokihjpgmycd222a0or83",
+              "renderer": null,
+              "controlsHeight": 0
+            },
+            {
+              "type": 3,
+              "title": "Field 3D",
+              "controller": {
+                "game": "Decode"
+              },
+              "controllerUUID": "oe0rw63et15dujl27l2rj2lvok2k7dbs",
+              "renderer": null,
+              "controlsHeight": 0
+            },
+            {
+              "type": 1,
+              "title": "SysId Diagnostics",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "smooth",
+                    "logKey": "SysId/Voltage",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "smooth",
+                    "logKey": "SysId/Position",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "smooth",
+                    "logKey": "SysId/Velocity",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {}
+                  }
+                ]
+              },
+              "controllerUUID": "8dayxjvh5jlki9ls67cwz5f1ip689vco",
+              "renderer": null,
+              "controlsHeight": 0
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "26.0.0"
+}

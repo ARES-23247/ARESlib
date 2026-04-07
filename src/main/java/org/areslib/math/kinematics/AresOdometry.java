@@ -26,6 +26,8 @@ public class AresOdometry {
 
     /**
      * Resets the robot's position on the field.
+     *
+     * @param pose The new pose to reset to.
      */
     public void resetPosition(Pose2d pose) {
         m_pose = pose;

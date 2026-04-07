@@ -17,6 +17,8 @@ public class SysIdCommand extends Command {
     private final String m_stateName;
     
     private double m_accumulator = 0.0;
+    private SysIdJSONExporter.TestRecord m_currentTestRecord;
+
     /**
      * Constructs a new SysId test command.
      * 
@@ -40,6 +42,7 @@ public class SysIdCommand extends Command {
     public void initialize() {
         m_accumulator = 0.0;
         AresAutoLogger.recordOutput("SysId/State", m_stateName);
+        m_currentTestRecord = SysIdJSONExporter.startTest(m_stateName);
     }
 
     @Override
@@ -56,10 +59,16 @@ public class SysIdCommand extends Command {
         
         m_mechanism.voltageInput.accept(volts);
         
+        double pos = m_mechanism.positionOutput.get();
+        double vel = m_mechanism.velocityOutput.get();
+
         // Push standardized keys to telemetry
         AresAutoLogger.recordOutput("SysId/Voltage", volts);
-        AresAutoLogger.recordOutput("SysId/Position", m_mechanism.positionOutput.get());
-        AresAutoLogger.recordOutput("SysId/Velocity", m_mechanism.velocityOutput.get());
+        AresAutoLogger.recordOutput("SysId/Position", pos);
+        AresAutoLogger.recordOutput("SysId/Velocity", vel);
+
+        // Feed to JSON local cache
+        m_currentTestRecord.addFrame(m_accumulator, volts, pos, vel);
     }
 
     @Override

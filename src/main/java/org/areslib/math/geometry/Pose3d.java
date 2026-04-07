@@ -20,6 +20,9 @@ public class Pose3d {
 
     /**
      * Constructs a Pose3d from a translation and rotation.
+     *
+     * @param translation The translation offset.
+     * @param rotation The rotation offset.
      */
     public Pose3d(Translation3d translation, Rotation3d rotation) {
         m_translation = translation;
@@ -84,6 +87,8 @@ public class Pose3d {
      * Projects this 3D pose to a 2D pose by extracting (x, y, yaw).
      * <p>
      * This is the primary method for converting AprilTag 3D detections to field-plane poses.
+     *
+     * @return The projected 2D pose.
      */
     public Pose2d toPose2d() {
         return new Pose2d(

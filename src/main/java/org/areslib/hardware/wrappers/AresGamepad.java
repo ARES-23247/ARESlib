@@ -48,6 +48,8 @@ public class AresGamepad {
 
     /**
      * Returns the raw underlying FTC Gamepad object.
+     *
+     * @return The raw Gamepad object.
      */
     public Gamepad getGamepad() {
         return gamepad;

@@ -84,6 +84,7 @@ public final class CommandScheduler {
     /**
      * Returns an unmodifiable set of all registered subsystems.
      * Useful for external backend enumerators like physical simulators.
+      * @return The current value.
      */
     public java.util.Set<Subsystem> getSubsystems() {
         return java.util.Collections.unmodifiableSet(m_subsystems);

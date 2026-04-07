@@ -6,6 +6,7 @@ import org.areslib.hardware.interfaces.ArrayLidarIO;
 import org.areslib.subsystems.drive.SwerveDriveSubsystem;
 
 import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
@@ -45,7 +46,7 @@ public class DynamicAvoidanceAuto extends Command {
         Pose pedroTarget = new Pose(targetPose.getX(), targetPose.getY(), targetPose.getHeading());
         
         PathChain initialChain = follower.getFollower().pathBuilder()
-                .addPath(new BezierCurve(new Pose(pedroStart.getX(), pedroStart.getY(), pedroStart.getHeading()), new Pose(pedroTarget.getX(), pedroTarget.getY(), pedroTarget.getHeading())))
+                .addPath(new BezierLine(new Pose(pedroStart.getX(), pedroStart.getY(), pedroStart.getHeading()), new Pose(pedroTarget.getX(), pedroTarget.getY(), pedroTarget.getHeading())))
                 .setLinearHeadingInterpolation(pedroStart.getHeading(), pedroTarget.getHeading())
                 .build();
                 

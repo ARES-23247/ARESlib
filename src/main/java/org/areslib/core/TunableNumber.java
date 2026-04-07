@@ -77,6 +77,7 @@ public class TunableNumber {
 
     /**
      * Returns the dashboard key for this tunable number.
+     * @return The key.
      */
     public String getKey() {
         return m_key;

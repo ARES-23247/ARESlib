@@ -148,6 +148,8 @@ public class KalmanFilter1D {
 
     /**
      * Returns the optimally filtered position.
+     *
+     * @return The optimally filtered position.
      */
     public double getPosition() {
         return m_pos;
@@ -155,6 +157,8 @@ public class KalmanFilter1D {
 
     /**
      * Returns the optimally filtered velocity.
+     *
+     * @return The optimally filtered velocity.
      */
     public double getVelocity() {
         return m_vel;

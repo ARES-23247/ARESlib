@@ -98,4 +98,13 @@ public class AresAutoLogger {
     public static void recordOutputArray(String key, double... values) {
         AresTelemetry.putNumberArray(key, values);
     }
+    
+    /** 
+     * Manually track an array of Strings (like Active Faults). 
+     * @param key Telemetry key
+     * @param values The string array to log
+     */
+    public static void recordOutput(String key, String[] values) {
+        AresTelemetry.putStringArray(key, values);
+    }
 }

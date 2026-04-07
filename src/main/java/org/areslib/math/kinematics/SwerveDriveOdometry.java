@@ -71,6 +71,8 @@ public class SwerveDriveOdometry {
 
     /**
      * Retrieves the estimated pose of the robot.
+     *
+     * @return The estimated pose.
      */
     public Pose2d getPose() {
         return m_pose;

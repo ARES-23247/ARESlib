@@ -1,0 +1,35 @@
+Starting a Gradle Daemon, 15 stopped Daemons could not be reused, use --status for details
+
+> Task :compileJava
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\faults\RobotHealthTracker.java:53: error: no suitable method found for recordOutput(java.lang.String,java.lang.String[])
+            AresAutoLogger.recordOutput("System/ActiveFaults", activeFaults.toArray(new String[0]));
+                          ^
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,double) is not applicable
+      (argument mismatch; no instance(s) of type variable(s) T exist so that T[] conforms to double)
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,java.lang.String) is not applicable
+      (argument mismatch; no instance(s) of type variable(s) T exist so that T[] conforms to java.lang.String)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\faults\RobotHealthTracker.java:57: error: no suitable method found for recordOutput(java.lang.String,java.lang.String[])
+            AresAutoLogger.recordOutput("System/ActiveFaults", new String[]{"OK"});
+                          ^
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,double) is not applicable
+      (argument mismatch; java.lang.String[] cannot be converted to double)
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,java.lang.String) is not applicable
+      (argument mismatch; java.lang.String[] cannot be converted to java.lang.String)
+
+> Task :compileJava FAILED
+Note: C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+2 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 8s
+1 actionable task: 1 executed

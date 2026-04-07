@@ -48,8 +48,20 @@ public class AresSensorFusionSubsystem extends SubsystemBase {
         double visionYInches = (visionPose.getY() * org.areslib.core.FieldConstants.METERS_TO_INCHES) + org.areslib.core.FieldConstants.HALF_FIELD_INCHES;
         double visionHeading = visionPose.getHeading(); // Radians are unit-agnostic
 
-        // Calculate dynamic interpolation weight based on camera confidence
-        double blendWeight = confidence * maxVisionTrustFactor;
+        // Calculate Kalman-inspired standard deviations
+        // As confidence drops (target area shrinks/distance increases), vision variance explodes exponentially.
+        double odomVariance = 0.05; // Base localized tracking variance
+        double visionVariance = 0.1 * Math.exp(5.0 * (1.0 - confidence));
+        
+        // 1D Kalman Gain: K = Var(Odom) / (Var(Odom) + Var(Vision))
+        double kalmanGain = odomVariance / (odomVariance + visionVariance);
+        
+        // Cap the gain dynamically to prevent massive frame-to-frame jumping
+        double blendWeight = Math.min(kalmanGain, maxVisionTrustFactor);
+
+        // Push standard deviations to telemetry for Advanced Observability
+        org.areslib.telemetry.AresAutoLogger.recordOutput("Vision/KalmanGain", kalmanGain);
+        org.areslib.telemetry.AresAutoLogger.recordOutput("Vision/VisionVariance", visionVariance);
 
         // Perform linear interpolation (lerp) for X and Y coordinates (both in inches now)
         double interpolatedX = currentPose.getX() + (visionXInches - currentPose.getX()) * blendWeight;

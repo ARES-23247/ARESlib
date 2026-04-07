@@ -1,0 +1,156 @@
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+
+> Task :javadoc
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Pose3d.java:88: warning: no @return
+    public Pose2d toPose2d() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Pose3d.java:24: warning: no @param for translation
+    public Pose3d(Translation3d translation, Rotation3d rotation) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Pose3d.java:24: warning: no @param for rotation
+    public Pose3d(Translation3d translation, Rotation3d rotation) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Rotation3d.java:91: warning: no @return
+    public double getRoll() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Rotation3d.java:100: warning: no @return
+    public double getPitch() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Rotation3d.java:110: warning: no @return
+    public double getYaw() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Rotation3d.java:136: warning: no @return
+    public Rotation3d unaryMinus() {
+                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Rotation3d.java:143: warning: no @return
+    public Rotation2d toRotation2d() {
+                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Transform3d.java:53: warning: no @param for other
+    public Transform3d plus(Transform3d other) {
+                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Transform3d.java:53: warning: no @return
+    public Transform3d plus(Transform3d other) {
+                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Transform3d.java:61: warning: no @return
+    public Transform3d inverse() {
+                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Transform3d.java:23: warning: no @param for translation
+    public Transform3d(Translation3d translation, Rotation3d rotation) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Transform3d.java:23: warning: no @param for rotation
+    public Transform3d(Translation3d translation, Rotation3d rotation) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:43: warning: no @return
+    public double getNorm() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:52: warning: no @param for other
+    public Translation3d plus(Translation3d other) {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:52: warning: no @return
+    public Translation3d plus(Translation3d other) {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:59: warning: no @param for other
+    public Translation3d minus(Translation3d other) {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:59: warning: no @return
+    public Translation3d minus(Translation3d other) {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:66: warning: no @param for scalar
+    public Translation3d times(double scalar) {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:66: warning: no @return
+    public Translation3d times(double scalar) {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:73: warning: no @return
+    public Translation3d unaryMinus() {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\math\geometry\Translation3d.java:107: warning: no @return
+    public Translation2d toTranslation2d() {
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:228: warning: no @return
+    public Command getRedLeftAutoCommand() {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:235: warning: no @return
+    public Command getBlueRightAutoCommand() {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:243: warning: no @return
+    public AresFollower getFollower() {
+                        ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:254: warning: no @return
+    public OdometryIO.OdometryInputs getOdometryInputs() {
+                                     ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:261: warning: no @return
+    public org.areslib.hardware.interfaces.VisionIO.VisionInputs getVisionInputs() {
+                                                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:69: warning: no @param for hardwareMap
+    public RobotContainer(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:69: warning: no @param for gamepad1
+    public RobotContainer(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\firstinspires\ftc\teamcode\RobotContainer.java:69: warning: no @param for gamepad2
+    public RobotContainer(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2) {
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\subsystems\drive\SwerveModuleIOReal.java:28: warning: no @param for driveMetersPerTick
+    public SwerveModuleIOReal(
+           ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:57: warning: no @param for state
+    public void onEntry(S state, Runnable action) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:57: warning: no @param for action
+    public void onEntry(S state, Runnable action) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:64: warning: no @param for state
+    public void onExit(S state, Runnable action) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:64: warning: no @param for action
+    public void onExit(S state, Runnable action) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:71: warning: no @param for state
+    public void during(S state, Runnable action) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:71: warning: no @param for action
+    public void during(S state, Runnable action) {
+                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:164: warning: no @return
+    public S getState() {
+             ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:169: warning: no @return
+    public S getPreviousState() {
+             ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:174: warning: no @param for state
+    public boolean isInState(S state) {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:174: warning: no @return
+    public boolean isInState(S state) {
+                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\StateMachine.java:179: warning: no @return
+    public double getTimeInState() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\TunableNumber.java:81: warning: no @return
+    public String getKey() {
+                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\sysid\SysIdRoutine.java:78: warning: no @param for direction
+    public org.areslib.command.Command quasistatic(Direction direction) {
+                                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\sysid\SysIdRoutine.java:78: warning: no @return
+    public org.areslib.command.Command quasistatic(Direction direction) {
+                                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\sysid\SysIdRoutine.java:86: warning: no @param for direction
+    public org.areslib.command.Command dynamic(Direction direction) {
+                                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\sysid\SysIdRoutine.java:86: warning: no @return
+    public org.areslib.command.Command dynamic(Direction direction) {
+                                       ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\CommandScheduler.java:88: warning: no @return
+    public java.util.Set<Subsystem> getSubsystems() {
+                                    ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\HeadingLockCommand.java:105: warning: no @return
+    public boolean isLocked() {
+                   ^
+49 warnings
+
+BUILD SUCCESSFUL in 5s
+2 actionable tasks: 2 executed

@@ -155,6 +155,8 @@ public class TrapezoidProfile {
 
     /**
      * Returns the current state of the profile.
+     *
+     * @return The current state.
      */
     public State getState() {
         return m_current;
@@ -162,6 +164,8 @@ public class TrapezoidProfile {
 
     /**
      * Returns the goal state.
+     *
+     * @return The goal state.
      */
     public State getGoal() {
         return m_goal;
@@ -169,6 +173,8 @@ public class TrapezoidProfile {
 
     /**
      * Returns true if the profile has reached the goal state.
+     *
+     * @return true if finished, false otherwise.
      */
     public boolean isFinished() {
         return Math.abs(m_current.position - m_goal.position) < 1e-6

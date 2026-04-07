@@ -43,6 +43,8 @@ public class AresAlert {
      * If this alert was previously cleared from the {@link AresFaultManager}
      * (e.g., during an OpMode transition reset), calling this method will
      * automatically re-register it, ensuring static alerts survive lifecycle resets.
+     *
+     * @param active true to set the alert active, false to deactivate.
      */
     public void set(boolean active) {
         this.active = active;
@@ -53,6 +55,8 @@ public class AresAlert {
 
     /**
      * Sets the text for this alert dynamically.
+     *
+     * @param text The new text for the alert.
      */
     public void setText(String text) {
         this.text = text;

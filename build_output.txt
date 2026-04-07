@@ -1,95 +1,363 @@
-Initialized native services in: C:\Users\david\.gradle\native
-Initialized jansi services in: C:\Users\david\.gradle\native
-Received JVM installation metadata from 'C:\Program Files\Amazon Corretto\jdk1.8.0_462': {JAVA_HOME=C:\Program Files\Amazon Corretto\jdk1.8.0_462\jre, JAVA_VERSION=1.8.0_462, JAVA_VENDOR=Amazon.com Inc., RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=1.8.0_462-b08, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=25.462-b08, VM_VENDOR=Amazon.com Inc., OS_ARCH=amd64}
-Found daemon DaemonInfo{pid=37440, address=[9818eb84-29d7-4d1b-85fc-6e796929e331 port:54423, addresses:[/127.0.0.1]], state=Idle, lastBusy=1775509117169, context=DefaultDaemonContext[uid=6f2cf929-9e05-4e5b-a0dd-545fb61a94f7,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=37440,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
-JVM is incompatible.
-Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Amazon Corretto\jdk1.8.0_462 (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
-Actual: DefaultDaemonContext[uid=6f2cf929-9e05-4e5b-a0dd-545fb61a94f7,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=37440,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+> Task :clean
 
-  Looking for a different daemon...
-Found daemon DaemonInfo{pid=18524, address=[f43be7d3-46ed-4464-bde8-80731a5d1ad5 port:53996, addresses:[/127.0.0.1]], state=Idle, lastBusy=1775509121747, context=DefaultDaemonContext[uid=d1e46bde-969b-4a80-82df-fe1fbbfcdd03,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=18524,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
-JVM is incompatible.
-Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Amazon Corretto\jdk1.8.0_462 (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
-Actual: DefaultDaemonContext[uid=d1e46bde-969b-4a80-82df-fe1fbbfcdd03,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=18524,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
-
-  Looking for a different daemon...
-The client will now receive all logging from the daemon (pid: 25200). The daemon log file: C:\Users\david\.gradle\daemon\8.9\daemon-25200.out.log
-Starting 50th build in daemon [uptime: 3 hrs 0 mins 41.328 secs, performance: 100%, GC rate: 0.02/s, heap usage: 3% of 341.5 MiB, non-heap usage: 18% of 384 MiB]
-Using 16 worker leases.
-Now considering [C:\Users\david\dev\robotics\ftc\ARESLib2] as hierarchies to watch
-Watching the file system is configured to be enabled if available
-File system watching is active
-Starting Build
-Settings evaluated using settings file 'C:\Users\david\dev\robotics\ftc\ARESLib2\settings.gradle'.
-Projects loaded. Root project using build file 'C:\Users\david\dev\robotics\ftc\ARESLib2\build.gradle'.
-Included projects: [root project 'ARESLib2']
-
-> Configure project :
-Evaluating root project 'ARESLib2' using build file 'C:\Users\david\dev\robotics\ftc\ARESLib2\build.gradle'.
-All projects evaluated.
-Task name matched 'test'
-Selected primary task 'test' from project :
-Tasks to be executed: [task ':compileJava', task ':processResources', task ':classes', task ':compileTestJava', task ':processTestResources', task ':testClasses', task ':test']
-Tasks that were excluded: []
-Resolve mutations for :compileJava (Thread[Execution worker,5,main]) started.
-:compileJava (Thread[Execution worker Thread 12,5,main]) started.
-
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:7: error: package com.pedropathing.pathgen does not exist
+import com.pedropathing.pathgen.BezierLine;
 > Task :compileJava FAILED
-Caching disabled for task ':compileJava' because:
-  Build cache is disabled
-Task ':compileJava' is not up-to-date because:
-  Input property 'stableSources' file C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\auto\DynamicPathCommand.java has been added.
-  Input property 'stableSources' file C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java has been added.
-  Input property 'stableSources' file C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostData.java has been added.
-Compilation mode: in-process compilation
-Created classpath snapshot for incremental compilation in 0.003 secs.
-Compiling with toolchain 'C:\Program Files\Amazon Corretto\jdk1.8.0_462'.
-Compiling with JDK Java compiler API.
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java:3: error: package com.google.gson does not exist
-import com.google.gson.Gson;
-                      ^
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:3: error: package com.google.gson does not exist
-import com.google.gson.Gson;
-                      ^
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:4: error: package com.google.gson does not exist
-import com.google.gson.GsonBuilder;
-                      ^
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java:52: error: cannot find symbol
-                Gson gson = new Gson();
-                ^
-  symbol:   class Gson
-  location: class org.areslib.command.GhostPlaybackCommand
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java:52: error: cannot find symbol
-                Gson gson = new Gson();
+                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\teleop\SnapToPoseCommand.java:8: error: package com.pedropathing.pathgen does not exist
+import com.pedropathing.pathgen.Point;
+                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\AresCommandOpMode.java:3: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\AresCommandOpMode.java:4: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxModule;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\AresCommandOpMode.java:30: error: cannot find symbol
+public abstract class AresCommandOpMode extends LinearOpMode {
+                                                ^
+  symbol: class LinearOpMode
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\AresCommandOpMode.java:32: error: cannot find symbol
+    private List<LynxModule> allHubs;
+                 ^
+  symbol:   class LynxModule
+  location: class org.areslib.core.AresCommandOpMode
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\differential\DifferentialAdvancedTeleOp.java:3: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\differential\DifferentialAdvancedTeleOp.java:4: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\differential\DifferentialAdvancedTeleOp.java:22: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\differential\DifferentialAdvancedTeleOp.java:36: error: cannot find symbol
+@TeleOp(name = "Example: Differential Advanced (Pinpoint)", group = "ARES Examples")
+ ^
+  symbol: class TeleOp
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\AresGamepad.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.Gamepad;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\PinpointOdometryWrapper.java:4: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareMap;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\DigitalSensorWrapper.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\AresGamepad.java:16: error: cannot find symbol
+    private final Gamepad gamepad;
+                  ^
+  symbol:   class Gamepad
+  location: class org.areslib.hardware.wrappers.AresGamepad
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\AresGamepad.java:23: error: cannot find symbol
+    public AresGamepad(Gamepad gamepad) {
+                       ^
+  symbol:   class Gamepad
+  location: class org.areslib.hardware.wrappers.AresGamepad
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\AresGamepad.java:54: error: cannot find symbol
+    public Gamepad getGamepad() {
+           ^
+  symbol:   class Gamepad
+  location: class org.areslib.hardware.wrappers.AresGamepad
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\PinpointOdometryWrapper.java:22: error: cannot find symbol
+    public PinpointOdometryWrapper(HardwareMap hardwareMap, String deviceName) {
+                                   ^
+  symbol:   class HardwareMap
+  location: class org.areslib.hardware.wrappers.PinpointOdometryWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\DigitalSensorWrapper.java:7: error: cannot find symbol
+    private final DigitalChannel digitalChannel;
+                  ^
+  symbol:   class DigitalChannel
+  location: class org.areslib.hardware.wrappers.DigitalSensorWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\DigitalSensorWrapper.java:9: error: cannot find symbol
+    public DigitalSensorWrapper(DigitalChannel digitalChannel) {
                                 ^
-  symbol:   class Gson
-  location: class org.areslib.command.GhostPlaybackCommand
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:50: error: no suitable method found for recordOutput(java.lang.String,boolean)
-        AresAutoLogger.recordOutput("GhostMode/Recording", true);
-                      ^
-    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,double) is not applicable
-      (argument mismatch; boolean cannot be converted to double)
-    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,java.lang.String) is not applicable
-      (argument mismatch; boolean cannot be converted to java.lang.String)
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:77: error: no suitable method found for recordOutput(java.lang.String,boolean)
-        AresAutoLogger.recordOutput("GhostMode/Recording", false);
-                      ^
-    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,double) is not applicable
-      (argument mismatch; boolean cannot be converted to double)
-    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,java.lang.String) is not applicable
-      (argument mismatch; boolean cannot be converted to java.lang.String)
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:79: error: cannot find symbol
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        ^
-  symbol:   class Gson
-  location: class org.areslib.core.GhostRecorder
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:79: error: cannot find symbol
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  symbol:   class DigitalChannel
+  location: class org.areslib.hardware.wrappers.DigitalSensorWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\elevator\ElevatorIOReal.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\elevator\ElevatorIOReal.java:4: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareMap;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\elevator\ElevatorIOReal.java:5: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.Servo;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\DcMotorExWrapper.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ServoWrapper.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.Servo;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\elevator\ElevatorIOReal.java:28: error: cannot find symbol
+    public ElevatorIOReal(HardwareMap hardwareMap, ElevatorConfig config) {
+                          ^
+  symbol:   class HardwareMap
+  location: class org.areslib.examples.elevator.ElevatorIOReal
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\DcMotorExWrapper.java:13: error: cannot find symbol
+    private final DcMotorEx dcMotorEx;
+                  ^
+  symbol:   class DcMotorEx
+  location: class org.areslib.hardware.wrappers.DcMotorExWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\DcMotorExWrapper.java:18: error: cannot find symbol
+    public DcMotorExWrapper(DcMotorEx dcMotorEx) {
+                            ^
+  symbol:   class DcMotorEx
+  location: class org.areslib.hardware.wrappers.DcMotorExWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ServoWrapper.java:7: error: cannot find symbol
+    private final Servo servo;
+                  ^
+  symbol:   class Servo
+  location: class org.areslib.hardware.wrappers.ServoWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\wrappers\ServoWrapper.java:11: error: cannot find symbol
+    public ServoWrapper(Servo servo) {
                         ^
-  symbol:   class GsonBuilder
-  location: class org.areslib.core.GhostRecorder
-9 errors
-Incremental compilation of 6 classes completed in 0.135 secs.
+  symbol:   class Servo
+  location: class org.areslib.hardware.wrappers.ServoWrapper
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\mecanum\MecanumStandardTeleOp.java:3: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\mecanum\MecanumStandardTeleOp.java:4: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\mecanum\MecanumStandardTeleOp.java:21: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\mecanum\MecanumStandardTeleOp.java:35: error: cannot find symbol
+@TeleOp(name = "Example: Standard REV Mecanum", group = "ARES Examples")
+ ^
+  symbol: class TeleOp
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\swerve\SwerveRevOctoQuadTeleOp.java:3: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\swerve\SwerveRevOctoQuadTeleOp.java:4: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.CRServo;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\swerve\SwerveRevOctoQuadTeleOp.java:5: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\examples\swerve\SwerveRevOctoQuadTeleOp.java:40: error: cannot find symbol
+@TeleOp(name = "Example: OctoQuad Rev Swerve", group = "ARES Examples")
+ ^
+  symbol: class TeleOp
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\faults\AresDiagnostics.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\faults\AresDiagnostics.java:4: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareMap;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\faults\AresDiagnostics.java:5: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.Servo;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\faults\AresDiagnostics.java:46: error: cannot find symbol
+    public static boolean runPreMatchCheck(HardwareMap hardwareMap) {
+                                           ^
+  symbol:   class HardwareMap
+  location: class org.areslib.faults.AresDiagnostics
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\faults\AresDiagnostics.java:111: error: cannot find symbol
+    private static String getDeviceName(HardwareMap hardwareMap, Object device) {
+                                        ^
+  symbol:   class HardwareMap
+  location: class org.areslib.faults.AresDiagnostics
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\AresHardwareManager.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareMap;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\AresHardwareManager.java:7: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\AresHardwareManager.java:8: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.AnalogInput;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:5: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:6: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.I2cAddr;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:7: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:8: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:9: error: package com.qualcomm.robotcore.hardware.configuration.annotations does not exist
+import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
+                                                                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:10: error: package com.qualcomm.robotcore.hardware.configuration.annotations does not exist
+import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
+                                                                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:11: error: package com.qualcomm.robotcore.util does not exist
+import com.qualcomm.robotcore.util.RobotLog;
+                                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:21: error: cannot find symbol
+public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
+                            ^
+  symbol: class I2cDeviceSynchDevice
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:21: error: cannot find symbol
+public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
+                                                 ^
+  symbol: class I2cDeviceSynchSimple
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:19: error: cannot find symbol
+@I2cDeviceType
+ ^
+  symbol: class I2cDeviceType
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:20: error: cannot find symbol
+@DeviceProperties(xmlTag = "SRSHub", name = "SRSHub")
+ ^
+  symbol: class DeviceProperties
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\AresHardwareManager.java:24: error: cannot find symbol
+    private static VoltageSensor batteryVoltageSensor;
+                   ^
+  symbol:   class VoltageSensor
+  location: class org.areslib.hardware.AresHardwareManager
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\AresHardwareManager.java:67: error: cannot find symbol
+    public static void initHardware(HardwareMap hardwareMap) {
+                                    ^
+  symbol:   class HardwareMap
+  location: class org.areslib.hardware.AresHardwareManager
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:898: error: cannot find symbol
+        I2cDeviceSynchSimple deviceClient,
+        ^
+  symbol:   class I2cDeviceSynchSimple
+  location: class org.areslib.hardware.coprocessors.SRSHub
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:920: error: cannot find symbol
+    public Manufacturer getManufacturer() {
+           ^
+  symbol:   class Manufacturer
+  location: class org.areslib.hardware.coprocessors.SRSHub
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:26: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:27: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareDevice;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:28: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.I2cAddr;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:29: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:30: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:31: error: package com.qualcomm.robotcore.hardware.configuration.annotations does not exist
+import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
+                                                                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:32: error: package com.qualcomm.robotcore.hardware.configuration.annotations does not exist
+import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
+                                                                ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:33: error: package com.qualcomm.robotcore.util does not exist
+import com.qualcomm.robotcore.util.Range;
+                                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:34: error: package com.qualcomm.robotcore.util does not exist
+import com.qualcomm.robotcore.util.RobotLog;
+                                  ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:43: error: cannot find symbol
+public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple>
+                                  ^
+  symbol: class I2cDeviceSynchDevice
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:43: error: cannot find symbol
+public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple>
+                                                       ^
+  symbol: class I2cDeviceSynchSimple
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:40: error: cannot find symbol
+@I2cDeviceType
+ ^
+  symbol: class I2cDeviceType
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:41: error: cannot find symbol
+@DeviceProperties(xmlTag = "OctoQuadFWv3", name = "OctoQuadFWv3")
+ ^
+  symbol: class DeviceProperties
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:97: error: cannot find symbol
+    public OctoQuadFWv3(I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned)
+                        ^
+  symbol:   class I2cDeviceSynchSimple
+  location: class org.areslib.hardware.coprocessors.OctoQuadFWv3
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:115: error: package HardwareDevice does not exist
+    public HardwareDevice.Manufacturer getManufacturer()
+                         ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareMap;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java:4: error: package com.qualcomm.hardware.digitalchickenlabs does not exist
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
+                                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java:10: error: cannot find symbol
+    private final OctoQuad octoQuad;
+                  ^
+  symbol:   class OctoQuad
+  location: class org.areslib.hardware.coprocessors.OctoQuadV1Impl
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java:12: error: cannot find symbol
+    public OctoQuadV1Impl(HardwareMap hardwareMap, String deviceName) {
+                          ^
+  symbol:   class HardwareMap
+  location: class org.areslib.hardware.coprocessors.OctoQuadV1Impl
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV2Impl.java:3: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareMap;
+                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV2Impl.java:9: error: cannot find symbol
+    public OctoQuadV2Impl(HardwareMap hardwareMap, String deviceName) {
+                          ^
+  symbol:   class HardwareMap
+  location: class org.areslib.hardware.coprocessors.OctoQuadV2Impl
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:5: error: package com.qualcomm.ftccommon does not exist
+import com.qualcomm.ftccommon.FtcEventLoop;
+                             ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:6: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxI2cDeviceSynch;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:7: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxModule;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:8: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxUnsupportedCommandException;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:9: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxUsbDevice;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:10: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxUsbDeviceDelegate;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:11: error: package com.qualcomm.hardware.lynx does not exist
+import com.qualcomm.hardware.lynx.LynxUsbDeviceImpl;
+                                 ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:12: error: package com.qualcomm.hardware.lynx.commands does not exist
+import com.qualcomm.hardware.lynx.commands.LynxCommand;
+                                          ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:13: error: package com.qualcomm.hardware.lynx.commands does not exist
+import com.qualcomm.hardware.lynx.commands.LynxDatagram;
+                                          ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:14: error: package com.qualcomm.hardware.lynx.commands does not exist
+import com.qualcomm.hardware.lynx.commands.LynxMessage;
+                                          ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:15: error: package com.qualcomm.hardware.lynx.commands does not exist
+import com.qualcomm.hardware.lynx.commands.LynxRespondable;
+                                          ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:16: error: package com.qualcomm.hardware.lynx.commands.core does not exist
+import com.qualcomm.hardware.lynx.commands.core.LynxSetMotorConstantPowerCommand;
+                                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:17: error: package com.qualcomm.hardware.lynx.commands.core does not exist
+import com.qualcomm.hardware.lynx.commands.core.LynxSetServoPulseWidthCommand;
+                                               ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:18: error: package com.qualcomm.hardware.lynx.commands.standard does not exist
+import com.qualcomm.hardware.lynx.commands.standard.LynxAck;
+                                                   ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:19: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:20: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:21: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:22: error: package com.qualcomm.robotcore.eventloop.opmode does not exist
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
+                                              ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:23: error: package com.qualcomm.robotcore.hardware does not exist
+import com.qualcomm.robotcore.hardware.HardwareDevice;
+                                      ^
+100 errors
 
 FAILURE: Build failed with an exception.
 
@@ -98,8 +366,8 @@ Execution failed for task ':compileJava'.
 > Compilation failed; see the compiler error output for details.
 
 * Try:
+> Run with --info option to get more log output.
 > Run with --scan to get full insights.
 
-BUILD FAILED in 1s
-1 actionable task: 1 executed
-Watched directory hierarchies: [C:\Users\david\dev\robotics\ftc\ARESLib2]
+BUILD FAILED in 3s
+2 actionable tasks: 2 executed

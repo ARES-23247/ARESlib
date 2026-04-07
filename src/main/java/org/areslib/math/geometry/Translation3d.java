@@ -39,6 +39,8 @@ public class Translation3d {
 
     /**
      * Returns the Euclidean norm (length) of the translation vector.
+     *
+     * @return The norm of the translation.
      */
     public double getNorm() {
         return Math.sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
@@ -48,6 +50,9 @@ public class Translation3d {
 
     /**
      * Returns the sum of this translation and another.
+     *
+     * @param other The translation to add.
+     * @return The sum translation.
      */
     public Translation3d plus(Translation3d other) {
         return new Translation3d(m_x + other.m_x, m_y + other.m_y, m_z + other.m_z);
@@ -55,6 +60,9 @@ public class Translation3d {
 
     /**
      * Returns the difference of this translation and another.
+     *
+     * @param other The translation to subtract.
+     * @return The difference translation.
      */
     public Translation3d minus(Translation3d other) {
         return new Translation3d(m_x - other.m_x, m_y - other.m_y, m_z - other.m_z);
@@ -62,6 +70,9 @@ public class Translation3d {
 
     /**
      * Returns this translation scaled by a scalar.
+     *
+     * @param scalar The scalar to multiply by.
+     * @return The scaled translation.
      */
     public Translation3d times(double scalar) {
         return new Translation3d(m_x * scalar, m_y * scalar, m_z * scalar);
@@ -69,6 +80,8 @@ public class Translation3d {
 
     /**
      * Returns the negation of this translation.
+     *
+     * @return The negated translation.
      */
     public Translation3d unaryMinus() {
         return new Translation3d(-m_x, -m_y, -m_z);
@@ -103,6 +116,8 @@ public class Translation3d {
 
     /**
      * Projects this 3D translation to a 2D translation by discarding the Z component.
+     *
+     * @return The 2D translation.
      */
     public Translation2d toTranslation2d() {
         return new Translation2d(m_x, m_y);
