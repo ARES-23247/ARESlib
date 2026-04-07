@@ -3,10 +3,10 @@ package org.areslib.core;
 /**
  * Centralized field boundary constants for the FTC competition environment.
  * <p>
- * Pedro Pathing operates in inches with origin at bottom-left corner of the field.
+ * PathPlanner operates in meters following WPILib coordinates (origin at bottom-right of blue alliance wall).
  * Vision systems (Limelight) operate in meters with origin at field center.
  * Both coordinate systems are defined here to ensure consistency across
- * bounds-checking in {@code AresFollower} and {@code VisionSubsystem}.
+ * bounds-checking in {@code FollowPathCommand} and {@code VisionSubsystem}.
  */
 public final class FieldConstants {
 
@@ -20,7 +20,7 @@ public final class FieldConstants {
     /** Conversion factor from inches to meters. */
     public static final double INCHES_TO_METERS = 0.0254;
 
-    // ========== Pedro Pathing Coordinates (inches, origin = bottom-left corner) ==========
+    // ========== PathPlanner Coordinates (meters) ==========
 
     /** Field width/height in inches (12 feet = 144 inches). */
     public static final double FIELD_SIZE_INCHES = 144.0;
@@ -31,10 +31,10 @@ public final class FieldConstants {
     /** Tolerance padding in inches for robot overhang beyond field walls. */
     public static final double WALL_PADDING_INCHES = 12.0;
 
-    /** Minimum valid X/Y in Pedro coordinates (with padding). */
+    /** Minimum valid X/Y in WPILib/PathPlanner coordinates (with padding). */
     public static final double MIN_POSITION_INCHES = -WALL_PADDING_INCHES;
 
-    /** Maximum valid X/Y in Pedro coordinates (with padding). */
+    /** Maximum valid X/Y in WPILib/PathPlanner coordinates (with padding). */
     public static final double MAX_POSITION_INCHES = FIELD_SIZE_INCHES + WALL_PADDING_INCHES;
 
     // ========== Vision Coordinates (meters, origin = field center) ==========

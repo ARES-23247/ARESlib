@@ -5,7 +5,7 @@ import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
 
 /**
- * AdvantageKit-style IO abstraction for Odometry systems (e.g., SparkFun OTOS, GoBilda Pinpoint, or PedroPathing localizers).
+ * AdvantageKit-style IO abstraction for Odometry systems (e.g., SparkFun OTOS, GoBilda Pinpoint, or PathPlanner localizers).
  */
 public interface OdometryIO {
     /**

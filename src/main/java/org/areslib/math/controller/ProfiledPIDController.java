@@ -50,6 +50,34 @@ public class ProfiledPIDController {
     }
 
     /**
+     * Returns the current goal position.
+     * @return The goal position.
+     */
+    public double getGoal() {
+        return m_goalPosition;
+    }
+
+    /**
+     * Sets the velocity and acceleration constraints for the profile
+     * @param maxVelocity Maximum velocity
+     * @param maxAcceleration Maximum acceleration
+     */
+    public void setConstraints(double maxVelocity, double maxAcceleration) {
+        this.m_maxVelocity = maxVelocity;
+        this.m_maxAcceleration = maxAcceleration;
+    }
+
+    /**
+     * Enables continuous input wrapping on the internal PID controller.
+     * This is essential for angular control (e.g., heading) where -PI and PI are adjacent.
+     * @param minimumInput The minimum input value (e.g., -Math.PI).
+     * @param maximumInput The maximum input value (e.g., Math.PI).
+     */
+    public void enableContinuousInput(double minimumInput, double maximumInput) {
+        m_controller.enableContinuousInput(minimumInput, maximumInput);
+    }
+
+    /**
      * Sets the current state of the mechanism. Call this once when initializing a movement.
      * @param currentPosition The current position of the mechanism.
      * @param currentVelocity The current velocity of the mechanism.

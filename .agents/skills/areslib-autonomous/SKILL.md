@@ -5,6 +5,8 @@ description: Helps build autonomous routines, path following commands, ghost rep
 
 You are an autonomous systems engineer for Team ARES. When building autonomous routines, path following commands, or replay systems for ARESLib2, adhere strictly to the following guidelines.
 
+> **Cross-Reference**: For PathPlanner-specific configuration (dummy shim layer, AutoBuilder setup, FTC coordinate offsets), see the `pathplanner` skill.
+
 ## 1. Architecture Overview
 
 | Class | Location | Purpose |
@@ -20,23 +22,16 @@ You are an autonomous systems engineer for Team ARES. When building autonomous r
 
 ## 2. Key Rules
 
-### Rule A: Use FollowPathCommand, Not Raw Loops
-Never write `while(!follower.isBusy())` loops. Wrap path following in proper WPILib Commands:
+### Rule A: Use PathPlanner Commands, Not Raw Loops
+Never write `while(!follower.isBusy())` loops. Use PathPlanner's built-in command wrappers:
 ```java
-public class FollowPathCommand extends Command {
-    private final AresFollower follower;
-    private final PathPlannerPath path;
+// Option 1: Schedule a full auto routine by name
+CommandScheduler.getInstance().schedule(new PathPlannerAuto("SquareAuto"));
 
-    public FollowPathCommand(AresFollower follower, PathPlannerPath path) {
-        this.follower = follower;
-        this.path = path;
-        addRequirements(follower);
-    }
-
-    @Override public void initialize() { follower.followPath(path); }
-    @Override public void execute() { follower.update(); }
-    @Override public boolean isFinished() { return !follower.isBusy(); }
-}
+// Option 2: Follow a single path inline
+PathPlannerPath path = PathPlannerPath.fromPathFile("MyPath");
+Command followCmd = AutoBuilder.followPath(path);
+CommandScheduler.getInstance().schedule(followCmd);
 ```
 
 ### Rule B: Coordinate System

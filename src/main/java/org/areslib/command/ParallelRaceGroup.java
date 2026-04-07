@@ -11,6 +11,7 @@ import java.util.Set;
 public class ParallelRaceGroup extends Command {
     private final Set<Command> m_commands = new HashSet<>();
     private boolean m_finished = false;
+    private Command m_winner = null;
 
     /**
      * Creates a new ParallelRaceGroup. The given commands will be executed simultaneously, and
@@ -44,6 +45,7 @@ public class ParallelRaceGroup extends Command {
     @Override
     public void initialize() {
         m_finished = false;
+        m_winner = null;
         for (Command command : m_commands) {
             command.initialize();
         }
@@ -55,6 +57,7 @@ public class ParallelRaceGroup extends Command {
             command.execute();
             if (command.isFinished()) {
                 m_finished = true;
+                m_winner = command;
             }
         }
     }
@@ -62,7 +65,8 @@ public class ParallelRaceGroup extends Command {
     @Override
     public void end(boolean interrupted) {
         for (Command command : m_commands) {
-            command.end(true); // Always interrupt the others
+            // The winner finished naturally; all others are interrupted
+            command.end(interrupted || command != m_winner);
         }
     }
 
@@ -71,3 +75,4 @@ public class ParallelRaceGroup extends Command {
         return m_finished;
     }
 }
+

@@ -65,6 +65,17 @@ public class AresSimulator {
     }
 
     /**
+     * Returns whether the physics simulation thread is currently active.
+     * Used by {@link org.areslib.command.CommandScheduler} to avoid double-calling
+     * {@code simulationPeriodic()} when the high-frequency physics thread is already running.
+     *
+     * @return true if the physics thread is actively running
+     */
+    public static boolean isPhysicsRunning() {
+        return isRunning;
+    }
+
+    /**
      * Halts the background physics engine processing.
      */
     public static synchronized void stopPhysicsSim() {

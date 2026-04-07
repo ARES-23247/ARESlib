@@ -79,7 +79,7 @@ public class AresVisionSubsystem extends SubsystemBase {
      * <p>
      * <b>IMPORTANT: Coordinate Frame Assumption</b>: This subsystem and its consumer
      * {@link AresSensorFusionSubsystem} assume the vision system's botPose3d X/Y axes
-     * are pre-aligned to the Pedro Pathing frame (no axis swap). If using a WPILib-standard
+     * are pre-aligned to the PathPlanner frame (no axis swap). If using a WPILib-standard
      * Limelight with MegaTag2, this is typically true. If using a custom PhotonVision setup
      * where X=forward and Y=left, the axes must be swapped before fusion blending.
      *

@@ -24,6 +24,7 @@ public class Pose2d implements Interpolatable<Pose2d> {
         m_rotation = rotation;
     }
 
+    public Transform2d minus(Pose2d other) { return new Transform2d(other, this); }
     public Translation2d getTranslation() {
         return m_translation;
     }

@@ -13,6 +13,7 @@ ARESLib explicitly completely bypasses the legacy `FTCLib` library, shipping wit
 When generating subsystems:
 - Extend `org.areslib.command.SubsystemBase`.
 - Use standard `public void periodic()` loops to execute AdvantageKit updates.
+- Override `public void simulationPeriodic()` for simulation-only logic (physics sync, sensor simulation). This is called by `AresSimulator`'s high-frequency physics thread, or by `CommandScheduler` at the loop rate if `AresSimulator` is not active.
 - Keep state logic heavily encapsulated inside `[Subsystem]IO` components to ensure identical mock environments during Desktop Simulation.
 
 ## 2. Command Types & Imports
@@ -133,21 +134,20 @@ If two commands require the same subsystem, the newly scheduled command **interr
 Do not write custom `while(!follower.isBusy())` loops in standard Command execution blocks.
 ARESLib abstracts path following through PathPlanner-based sequential chains.
 
-- Use proper WPILib `isFinished()` methodologies:
+> **Cross-Reference**: See the `pathplanner` skill for full details on AutoBuilder configuration, dummy shim requirements, and FTC coordinate offsets.
+
+To schedule an autonomous routine:
 ```java
-public class FollowPathCommand extends Command {
-    private final AresFollower follower;
+// Schedule a PathPlanner auto by name (loads from deploy/pathplanner/autos/)
+CommandScheduler.getInstance().schedule(new PathPlannerAuto("SquareAuto"));
+```
 
-    public FollowPathCommand(AresFollower aresFollower, PathPlannerPath path) {
-        this.follower = aresFollower;
-        addRequirements(aresFollower); // Exclusive follower access
-    }
-
-    @Override
-    public boolean isFinished() {
-        return !follower.isBusy();
-    }
-}
+To create inline path-following commands:
+```java
+// Build a path command inline using AutoBuilder
+PathPlannerPath path = PathPlannerPath.fromPathFile("MyPath");
+Command followCmd = AutoBuilder.followPath(path);
+CommandScheduler.getInstance().schedule(followCmd);
 ```
 
 ## 7. Testing

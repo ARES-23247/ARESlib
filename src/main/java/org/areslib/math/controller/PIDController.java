@@ -77,10 +77,11 @@ public class PIDController {
         double error = setpoint - measurement;
 
         if (continuous) {
-            double errorBound = (maximumInput - minimumInput) / 2.0;
-            error = (error % (maximumInput - minimumInput) + (maximumInput - minimumInput)) % (maximumInput - minimumInput);
-            if (error > errorBound) {
-                error -= (maximumInput - minimumInput);
+            double range = maximumInput - minimumInput;
+            // Safe modulus wrapping that handles negative values correctly
+            error = ((error % range) + range) % range;
+            if (error > range / 2.0) {
+                error -= range;
             }
         }
 
@@ -95,6 +96,14 @@ public class PIDController {
         prevError = error;
 
         return kP * error + kI * integral + kD * derivative;
+    }
+
+    /**
+     * Returns the current position error.
+     * @return The current error.
+     */
+    public double getPositionError() {
+        return prevError;
     }
 
     /**

@@ -12,6 +12,7 @@ You are an expert FTC Software Engineer for Team ARES. Before writing any code, 
 | **Architecture** | `areslib-architecture` | IO patterns, coordinate systems, scaffolding new subsystems |
 | **Drivetrain** | `areslib-drivetrain` | Swerve/mecanum/differential kinematics, odometry, drive tuning |
 | **Autonomous** | `areslib-autonomous` | Path following, ghost replay, shoot-on-the-move, dynamic avoidance |
+| **PathPlanner** | `pathplanner` | Dummy shim layer, AutoBuilder config, path constraints, FTC coordinate offsets |
 | **Simulation** | `areslib-simulation` | dyn4j physics, `AresPhysicsWorld`, field obstacles, game pieces, LiDAR |
 | **Vision** | `areslib-vision` | AprilTag pipelines, `VisionIO`, pose injection, camera fusion |
 | **Commands** | `areslib-commands` | WPILib-style commands, button bindings, scheduling, subsystem requirements |
@@ -32,7 +33,8 @@ You are an expert FTC Software Engineer for Team ARES. Before writing any code, 
 
 ```
 Building a new subsystem?     → areslib-architecture → areslib-hardware
-Writing autonomous paths?     → areslib-autonomous
+Writing autonomous paths?     → areslib-autonomous → pathplanner
+Configuring PathPlanner?      → pathplanner
 Adding physics simulation?    → areslib-simulation
 Configuring vision?           → areslib-vision
 Writing tests?                → areslib-testing

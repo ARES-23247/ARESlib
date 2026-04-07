@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.areslib.command.CommandScheduler;
 import org.areslib.command.Command;
-import org.areslib.command.Subsystem;
 import org.areslib.hardware.AresHardwareManager;
 import org.areslib.hardware.wrappers.AresGamepad;
 import org.areslib.hardware.wrappers.DcMotorExWrapper;
@@ -34,6 +33,14 @@ import static org.firstinspires.ftc.teamcode.Constants.VisionConstants.*;
 import org.areslib.hardware.interfaces.OdometryIO;
 import org.firstinspires.ftc.teamcode.commands.ElevatorToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.AlignToTagCommand;
+
+import org.areslib.pathplanner.auto.AutoBuilder;
+import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
+import org.areslib.pathplanner.util.PIDConstants;
+import org.areslib.pathplanner.util.ReplanningConfig;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.math.geometry.Rotation2d;
+import org.areslib.math.kinematics.ChassisSpeeds;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -149,6 +156,37 @@ public class RobotContainer {
             driver = null;
             operator = null;
         }
+
+        initPathPlanner();
+    }
+
+    private void initPathPlanner() {
+        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID
+            new PIDConstants(5.0, 0.0, 0.0), // Rotation PID
+            5.0, // Max module speed
+            0.5, // Drive base radius
+            new ReplanningConfig()
+        );
+
+        // Center Origin FTC (0,0) mapped to PathPlanner Corner (1.8288, 1.8288)
+        double ftcOffset = 1.8288;
+
+        AutoBuilder.configureHolonomic(
+            () -> new Pose2d(pinpointInputs.xMeters + ftcOffset, pinpointInputs.yMeters + ftcOffset, new Rotation2d(pinpointInputs.headingRadians)),
+            (Pose2d setPose) -> {
+                pinpointInputs.xMeters = setPose.getX() - ftcOffset;
+                pinpointInputs.yMeters = setPose.getY() - ftcOffset;
+                pinpointInputs.headingRadians = setPose.getRotation().getRadians();
+            },
+            () -> new ChassisSpeeds(drive.getCommandedVx(), drive.getCommandedVy(), drive.getCommandedOmega()),
+            (ChassisSpeeds output) -> {
+                drive.drive(output.vxMetersPerSecond, output.vyMetersPerSecond, output.omegaRadiansPerSecond);
+            },
+            config,
+            () -> false, // Should Flip Path
+            drive
+        );
     }
 
     /**

@@ -10,6 +10,7 @@ import org.areslib.telemetry.AresTelemetry;
 import org.areslib.telemetry.DesktopLiveBackend;
 import org.areslib.telemetry.WpiLogBackend;
 import org.areslib.hardware.interfaces.OdometryIO;
+import org.areslib.pathplanner.commands.PathPlannerAuto;
 
 import org.areslib.hardware.wrappers.AresGamepad;
 import org.dyn4j.dynamics.Body;
@@ -118,7 +119,13 @@ public class DesktopSimLauncher {
 
                 boolean isAutoEnabled = dsApp.isAutoModeEnabled();
                 if (isAutoEnabled && !wasAutoEnabled) {
-                    // CommandScheduler.getInstance().schedule(new PathPlannerAuto());
+                    // 6. Hook Teleop or Auto Commands
+                    try {
+                        CommandScheduler.getInstance().schedule(new PathPlannerAuto("SquareAuto"));
+                    } catch (Exception autoEx) {
+                        System.err.println("[Sim] Auto failed to load: " + autoEx.getMessage());
+                        autoEx.printStackTrace();
+                    }
                 } else if (!isAutoEnabled && wasAutoEnabled) {
                     CommandScheduler.getInstance().cancelAll();
                 }
@@ -165,6 +172,13 @@ public class DesktopSimLauncher {
                 double vy = driveSubsystem.getCommandedVy();      // Robot-centric left (m/s)
                 double omega = driveSubsystem.getCommandedOmega(); // rad/s
                 
+                // Debug: log commanded speeds during auto
+                if (isAutoEnabled && (Math.abs(vx) > 0.01 || Math.abs(vy) > 0.01)) {
+                    AresTelemetry.putNumber("Auto/CommandedVx", vx);
+                    AresTelemetry.putNumber("Auto/CommandedVy", vy);
+                    AresTelemetry.putNumber("Auto/CommandedOmega", omega);
+                }
+
                 double currentHeadingRad = odometryInputs.headingRadians;
                 
                 // Convert to field-centric
@@ -197,7 +211,7 @@ public class DesktopSimLauncher {
                 odometryInputs.yMeters = robotBody.getTransform().getTranslationY();
                 odometryInputs.headingRadians = robotBody.getTransform().getRotationAngle();
                 
-                // Inject velocities so Pedro Pathing's Kalman filter and Feedforwards function properly
+                // Inject velocities so PathPlanner's controllers and feedforwards function properly
                 odometryInputs.xVelocityMetersPerSecond = robotBody.getLinearVelocity().x;
                 odometryInputs.yVelocityMetersPerSecond = robotBody.getLinearVelocity().y;
                 odometryInputs.angularVelocityRadiansPerSecond = robotBody.getAngularVelocity();
@@ -205,7 +219,7 @@ public class DesktopSimLauncher {
                 // Lidar Update
                 lidarSim.updateInputs(lidarInputs);
                 org.areslib.telemetry.AresAutoLogger.processInputs("Sensors/LiDAR", lidarInputs);
-                org.areslib.telemetry.AresAutoLogger.processInputs("Pedro/Odometry", odometryInputs);
+                org.areslib.telemetry.AresAutoLogger.processInputs("Drive/Odometry", odometryInputs);
                 
                 // Publish true physics state as the main robot
                 AresTelemetry.putPose2d("Robot/Pose", 
@@ -214,7 +228,10 @@ public class DesktopSimLauncher {
                     odometryInputs.headingRadians
                 );
 
-                AresTelemetry.putPose2d("PathPlanner/EstimatedPose", 0.0, 0.0, 0.0);
+                AresTelemetry.putPose2d("PathPlanner/EstimatedPose", 
+                    odometryInputs.xMeters + 1.8288, 
+                    odometryInputs.yMeters + 1.8288, 
+                    odometryInputs.headingRadians);
 
                 // Log current alliance for telemetry
                 AresTelemetry.putString("DriverStation/Alliance", dsApp.getAlliance().name());
@@ -233,8 +250,9 @@ public class DesktopSimLauncher {
                     Thread.sleep(20 - loopTime);
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             System.err.println("Simulation Faulted: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

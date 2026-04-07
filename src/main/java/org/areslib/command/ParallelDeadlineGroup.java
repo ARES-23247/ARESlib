@@ -1,15 +1,15 @@
 package org.areslib.command;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A CommandGroup that runs a set of commands in parallel, ending only when a specific command
  * (the "deadline") ends, interrupting all other commands that are still running at that point.
  */
 public class ParallelDeadlineGroup extends Command {
-    private final Set<Command> m_commands = new HashSet<>();
+    private final Map<Command, Boolean> m_commands = new HashMap<>();
     private Command m_deadline;
     private boolean m_finished = false;
 
@@ -40,7 +40,7 @@ public class ParallelDeadlineGroup extends Command {
             if (!Collections.disjoint(command.getRequirements(), m_requirements)) {
                 throw new IllegalArgumentException("Multiple commands in a parallel group cannot require the same subsystems");
             }
-            m_commands.add(command);
+            m_commands.put(command, false);
             m_requirements.addAll(command.getRequirements());
         }
     }
@@ -51,7 +51,7 @@ public class ParallelDeadlineGroup extends Command {
      * @param deadline the command that determines when the group ends.
      */
     public void setDeadline(Command deadline) {
-        if (!m_commands.contains(deadline)) {
+        if (!m_commands.containsKey(deadline)) {
             addCommands(deadline);
         }
         m_deadline = deadline;
@@ -60,30 +60,44 @@ public class ParallelDeadlineGroup extends Command {
     @Override
     public void initialize() {
         m_finished = false;
-        for (Command command : m_commands) {
-            command.initialize();
+        for (Map.Entry<Command, Boolean> entry : m_commands.entrySet()) {
+            entry.getKey().initialize();
+            entry.setValue(false);
         }
     }
 
     @Override
     public void execute() {
-        for (Command command : m_commands) {
+        for (Map.Entry<Command, Boolean> entry : m_commands.entrySet()) {
+            if (entry.getValue()) {
+                continue; // Already finished, skip
+            }
+            Command command = entry.getKey();
             command.execute();
-            if (command == m_deadline && command.isFinished()) {
-                m_finished = true;
+            if (command.isFinished()) {
+                if (command == m_deadline) {
+                    m_finished = true;
+                } else {
+                    // Non-deadline command finished naturally
+                    command.end(false);
+                    entry.setValue(true);
+                }
             }
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        for (Command command : m_commands) {
-            if (command == m_deadline) {
-                // Deadline finished naturally (or the whole group was interrupted)
-                command.end(interrupted);
-            } else {
-                // Other commands are always interrupted when the deadline finishes
-                command.end(true);
+        for (Map.Entry<Command, Boolean> entry : m_commands.entrySet()) {
+            if (!entry.getValue()) {
+                Command command = entry.getKey();
+                if (command == m_deadline) {
+                    // Deadline finished naturally (or group was interrupted)
+                    command.end(interrupted);
+                } else {
+                    // Still-running non-deadline commands are always interrupted
+                    command.end(true);
+                }
             }
         }
     }
@@ -93,3 +107,4 @@ public class ParallelDeadlineGroup extends Command {
         return m_finished;
     }
 }
+

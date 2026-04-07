@@ -189,6 +189,12 @@ public final class CommandScheduler {
         // 1. Run subsystem periodics
         for (Subsystem subsystem : m_subsystems) {
             subsystem.periodic();
+            // Only call simulationPeriodic from the scheduler if AresSimulator's
+            // high-frequency physics thread is NOT running (avoids double-execution)
+            if (org.areslib.core.AresRobot.isSimulation()
+                    && !org.areslib.core.simulation.AresSimulator.isPhysicsRunning()) {
+                subsystem.simulationPeriodic();
+            }
         }
 
         // 2. Schedule default commands

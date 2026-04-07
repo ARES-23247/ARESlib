@@ -14,7 +14,7 @@ import java.util.List;
  * <p>
  * Provides a declarative API for composing paths, actions, waits, and parallel groups
  * into a single {@link SequentialCommandGroup}. This is the generic base that accepts
- * any {@link Command} — see {@link PedroAutoBuilder} for Pedro Pathing convenience methods.
+ * any {@link Command} — see the standard AutoBuilder for convenience methods.
  *
  * <pre>{@code
  * Command auto = new AutoBuilder()

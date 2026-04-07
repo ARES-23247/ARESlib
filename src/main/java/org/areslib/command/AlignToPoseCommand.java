@@ -1,6 +1,6 @@
 package org.areslib.command;
 
-import org.areslib.math.controller.PIDController;
+import org.areslib.math.controller.ProfiledPIDController;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
 
@@ -28,22 +28,22 @@ public class AlignToPoseCommand extends Command {
     private final Pose2d m_targetPose;
     private final Supplier<Pose2d> m_poseSupplier;
     private final Consumer<ChassisSpeeds> m_output;
-    private final PIDController m_xController;
-    private final PIDController m_yController;
-    private final PIDController m_thetaController;
+    private final ProfiledPIDController m_xController;
+    private final ProfiledPIDController m_yController;
+    private final ProfiledPIDController m_thetaController;
     private final double m_xTolerance;
     private final double m_yTolerance;
     private final double m_thetaTolerance;
 
     /**
-     * Constructs an AlignToPoseCommand.
+     * Constructs an AlignToPoseCommand using Profiled PID controllers for smooth snapping.
      *
      * @param targetPose     The target field-relative pose to align to.
      * @param poseSupplier   Supplier for the current robot pose.
      * @param output         Consumer that receives the corrected ChassisSpeeds.
-     * @param xController    PID controller for the X axis.
-     * @param yController    PID controller for the Y axis.
-     * @param thetaController PID controller for heading (must have continuous input enabled).
+     * @param xController    Profiled PID controller for the X axis.
+     * @param yController    Profiled PID controller for the Y axis.
+     * @param thetaController Profiled PID controller for heading (must have continuous input enabled).
      * @param xTolerance     Position tolerance in meters for the X axis.
      * @param yTolerance     Position tolerance in meters for the Y axis.
      * @param thetaTolerance Heading tolerance in radians.
@@ -52,9 +52,9 @@ public class AlignToPoseCommand extends Command {
             Pose2d targetPose,
             Supplier<Pose2d> poseSupplier,
             Consumer<ChassisSpeeds> output,
-            PIDController xController,
-            PIDController yController,
-            PIDController thetaController,
+            ProfiledPIDController xController,
+            ProfiledPIDController yController,
+            ProfiledPIDController thetaController,
             double xTolerance,
             double yTolerance,
             double thetaTolerance) {
@@ -71,21 +71,24 @@ public class AlignToPoseCommand extends Command {
 
     @Override
     public void initialize() {
-        m_xController.reset();
-        m_yController.reset();
-        m_thetaController.reset();
+        Pose2d current = m_poseSupplier.get();
+        // Reset the profiles to our starting position so we don't aggressively lurch
+        m_xController.reset(current.getX(), 0.0);
+        m_yController.reset(current.getY(), 0.0);
+        m_thetaController.reset(current.getRotation().getRadians(), 0.0);
+        
+        m_xController.setGoal(m_targetPose.getX());
+        m_yController.setGoal(m_targetPose.getY());
+        m_thetaController.setGoal(m_targetPose.getRotation().getRadians());
     }
 
     @Override
     public void execute() {
         Pose2d current = m_poseSupplier.get();
 
-        double xSpeed = m_xController.calculate(current.getX(), m_targetPose.getX());
-        double ySpeed = m_yController.calculate(current.getY(), m_targetPose.getY());
-        double omegaSpeed = m_thetaController.calculate(
-            current.getRotation().getRadians(),
-            m_targetPose.getRotation().getRadians()
-        );
+        double xSpeed = m_xController.calculate(current.getX());
+        double ySpeed = m_yController.calculate(current.getY());
+        double omegaSpeed = m_thetaController.calculate(current.getRotation().getRadians());
 
         m_output.accept(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed));
     }

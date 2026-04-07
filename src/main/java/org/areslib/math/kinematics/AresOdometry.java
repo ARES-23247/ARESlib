@@ -9,7 +9,7 @@ import org.areslib.math.geometry.Translation2d;
  * to estimate the robot's Pose2d on the field.
  * 
  * Elite Feature: Serves as a standard, purely mathematical fallback when Advanced 
- * visual/dead-wheel localizers (like Pedro Pathing) are disabled or unavailable.
+ * visual/dead-wheel localizers (like PathPlanner) are disabled or unavailable.
  */
 public class AresOdometry {
     private Pose2d m_pose;

@@ -31,6 +31,7 @@ public class Translation2d implements Interpolatable<Translation2d> {
     public double getX() { return m_x; }
     public double getY() { return m_y; }
 
+    public double getDistance(Translation2d other) { return Math.hypot(other.getX() - m_x, other.getY() - m_y); }
     public double getNorm() {
         return Math.hypot(m_x, m_y);
     }
