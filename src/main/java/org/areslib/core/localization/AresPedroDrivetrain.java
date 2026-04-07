@@ -31,10 +31,10 @@ public class AresPedroDrivetrain extends Drivetrain {
      * and rotational PID output vectors into simulated m/s and rad/s values that ARESlib's
      * kinematics solver expects.
      *
-     * @param driveError    The current purely geometric drive error vector.
-     * @param headingError  The current purely geometric heading error vector.
-     * @param driveVector   The internal drive PID output computed by the follower.
-     * @param headingVector The internal heading PID output computed by the follower.
+     * @param correctivePower  The corrective translation vector to stay on path.
+     * @param headingPower     The rotational vector for heading correction.
+     * @param pathingPower     The forward feedforward velocity vector.
+     * @param robotHeading     The current rotation of the robot in radians.
      * @return Dummy zero-power array since hardware application happens asynchronously via the ARES framework.
      */
     @Override

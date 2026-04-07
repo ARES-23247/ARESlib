@@ -37,7 +37,7 @@ public class KinematicAiming {
      * Calculates the required aiming parameters to hit a static target while moving.
      *
      * @param robotVelocityFieldRelative The current velocity of the robot relative to the field.
-     *                                   (e.g., from {@link ChassisSpeeds#fromRobotRelativeSpeeds} with robot heading).
+     *                                   (e.g., from {@link ChassisSpeeds} with robot heading).
      * @param robotPosition            The current position of the robot.
      * @param targetPosition           The position of the target.
      * @param projectileSpeedMetersPerSec The muzzle velocity of the projectile.

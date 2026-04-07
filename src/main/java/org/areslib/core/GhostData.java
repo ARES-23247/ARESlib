@@ -19,7 +19,7 @@ public class GhostData {
 
     /** 
      * Bitmask arrays storing binary inputs (e.g., bumpers, triggers, buttons).
-     * Bit 0 -> Button 0, Bit 1 -> Button 1, etc.
+     * Bit 0: Button 0, Bit 1: Button 1, etc.
      */
     public List<Integer> buttonMasks = new ArrayList<>();
 
