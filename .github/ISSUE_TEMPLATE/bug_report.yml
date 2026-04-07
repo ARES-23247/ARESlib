@@ -1,0 +1,32 @@
+name: Bug Report
+description: Create a report to help us improve the simulator or framework.
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please provide as much context as possible.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this problem? (E.g. Are you running in simulation or real hardware?)
+    validations:
+      required: true
+  - type: dropdown
+    id: env
+    attributes:
+      label: Environment
+      options:
+        - Real Hardware (Control Hub)
+        - Simulation (Dyn4j / DesktopSimLauncher)
+    validations:
+      required: true
