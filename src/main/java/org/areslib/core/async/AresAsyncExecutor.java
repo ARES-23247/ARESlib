@@ -42,7 +42,7 @@ public class AresAsyncExecutor {
             throw new IllegalStateException("Cannot register new Async tasks after the executor has started.");
         }
         
-        long periodMs = 1000 / frequencyHz;
+        long periodMs = 1000L / frequencyHz;
         Runnable safeTask = () -> {
             try {
                 task.run();

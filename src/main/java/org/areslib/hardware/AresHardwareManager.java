@@ -95,10 +95,18 @@ public class AresHardwareManager {
             activeSrsHub = null;
         }
 
+        // Select the VoltageSensor reading the highest voltage.
+        // The FTC SDK exposes multiple sensors (12V battery, 3.3V/5V logic rails).
+        // Blindly taking the first iterator entry may bind to an internal rail,
+        // causing updatePowerStatus() to read ~3.3V and zero out masterPowerScale.
         batteryVoltageSensor = null;
+        double maxVoltage = 0.0;
         for (com.qualcomm.robotcore.hardware.VoltageSensor sensor : hardwareMap.voltageSensor) {
-            batteryVoltageSensor = sensor;
-            break;
+            double v = sensor.getVoltage();
+            if (v > maxVoltage) {
+                maxVoltage = v;
+                batteryVoltageSensor = sensor;
+            }
         }
 
         try {

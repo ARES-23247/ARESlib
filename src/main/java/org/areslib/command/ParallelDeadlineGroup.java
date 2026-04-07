@@ -78,7 +78,13 @@ public class ParallelDeadlineGroup extends Command {
     @Override
     public void end(boolean interrupted) {
         for (Command command : m_commands) {
-            command.end(true); // Always interrupt the remaining child commands
+            if (command == m_deadline) {
+                // Deadline finished naturally (or the whole group was interrupted)
+                command.end(interrupted);
+            } else {
+                // Other commands are always interrupted when the deadline finishes
+                command.end(true);
+            }
         }
     }
 

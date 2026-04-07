@@ -49,14 +49,15 @@ public class Twist2d {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Twist2d twist2d = (Twist2d) obj;
-        return Double.compare(twist2d.dx, dx) == 0 &&
-               Double.compare(twist2d.dy, dy) == 0 &&
-               Double.compare(twist2d.dtheta, dtheta) == 0;
+        Twist2d other = (Twist2d) obj;
+        return Math.abs(other.dx - dx) < 1e-9 &&
+               Math.abs(other.dy - dy) < 1e-9 &&
+               Math.abs(other.dtheta - dtheta) < 1e-9;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dx, dy, dtheta);
+        // Round to 1e-9 to match the epsilon tolerance used in equals().
+        return Objects.hash(Math.round(dx * 1e9), Math.round(dy * 1e9), Math.round(dtheta * 1e9));
     }
 }

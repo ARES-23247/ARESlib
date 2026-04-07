@@ -1,5 +1,5 @@
 # ARESLib2 Quickstart Template
-
+[![Build Status](https://github.com/thehomelessguy/ARESLib2/actions/workflows/build.yml/badge.svg)](https://github.com/thehomelessguy/ARESLib2/actions)
 Welcome to the ARESLib2 Quickstart! This template provides a full Command-Based FTC robot framework equipped with a physics simulator (Dyn4j) and AdvantageKit telemetry data-logging out of the box.
 
 ## How to Use this Template
@@ -8,6 +8,18 @@ Welcome to the ARESLib2 Quickstart! This template provides a full Command-Based 
 2. Clone your new repository onto your local machine.
 3. Open the repository in your IDE of choice (such as VS Code or Android Studio).
 4. Wait for Gradle to fully sync.
+
+## Elite Features (Included)
+
+ARESLib2 is packed with Einstein-tested capabilities that abstract complex kinematics away from the programmer:
+- **Virtual Simulation Parity**: Fully modeled Dyn4j rigit-body multi-robot contact physics natively logged to AdvantageScope.
+- **Dynamic On-The-Fly Pathing**: Native Pedro Pathing wrappers with automated Bezier bounding-box obstacle avoidance.
+- **Ghost Mode**: Serialized teleop JSON macros for auto-recording and flawless re-playback.
+- **Shoot-on-the-Move**: Feedforward kinematic aim calculators (target leading calculation).
+- **Advanced State Tracking**: 2D custom bounding-box State Machine loopers and GC-free 1D Kalman Filters for optimal mechanical isolation.
+- **Automated SysId**: Generates standardized quasistatic and dynamic WPILog routines to extract perfect $k_S, k_V, k_A$ Feedforwards.
+- **Persistent Fault Management**: `AresFaultManager` natively tracks and categorizes hardware alerts, broadcasting to AdvantageScope and automatically trigging haptic/LED feedback.
+- **Odometry & Localizer Independence**: Built-in generic hardware abstractions for modules like the GoBilda Pinpoint.
 
 ## Project Structure
 

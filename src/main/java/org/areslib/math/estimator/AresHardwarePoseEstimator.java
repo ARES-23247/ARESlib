@@ -1,7 +1,6 @@
 package org.areslib.math.estimator;
 
 import org.areslib.math.geometry.Pose2d;
-import org.areslib.math.geometry.Rotation2d;
 import org.areslib.math.geometry.TimeInterpolatableBuffer;
 import org.areslib.math.geometry.Twist2d;
 
@@ -91,36 +90,7 @@ public class AresHardwarePoseEstimator {
      * @param timestampSeconds The explicit timestamp the image was captured minus camera-pipeline delay.
      */
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        Pose2d sample = m_poseBuffer.getSample(timestampSeconds);
-        
-        // No valid buffer sequence means we can't reliably predict origin rollback
-        if (sample == null) {
-            return; 
-        }
-
-        // Isolate mathematical coordinate displacement diff
-        Pose2d transform = visionRobotPoseMeters.relativeTo(sample);
-        
-        double xError = transform.getX();
-        double yError = transform.getY();
-        double thetaError = transform.getRotation().getRadians();
-        
-        // Dampen the differential explicitly across configured trust values
-        double kX = 1.0 / (1.0 + m_visionStdDevs[0]);
-        double kY = 1.0 / (1.0 + m_visionStdDevs[1]);
-        double kTheta = 1.0 / (1.0 + m_visionStdDevs[2]);
-
-        // Synthesize the mathematically scaled true location origin AT that target time
-        Pose2d correctedRetroPose = new Pose2d(
-            sample.getX() + xError * kX,
-            sample.getY() + yError * kY,
-            new Rotation2d(sample.getRotation().getRadians() + thetaError * kTheta)
-        );
-
-        // Figure out exactly what curve sequence operations the JVM has computed since that historic photo
-        Twist2d replayTwist = sample.log(m_estimatedPose);
-        
-        // Explicitly map all curve data forward, locking the new coordinate base!
-        m_estimatedPose = correctedRetroPose.exp(replayTwist);
+        m_estimatedPose = VisionFusionHelper.applyVisionMeasurement(
+                visionRobotPoseMeters, timestampSeconds, m_estimatedPose, m_poseBuffer, m_visionStdDevs);
     }
 }

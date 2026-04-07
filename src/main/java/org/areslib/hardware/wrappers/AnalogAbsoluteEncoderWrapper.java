@@ -31,7 +31,11 @@ public class AnalogAbsoluteEncoderWrapper implements AresAbsoluteEncoder {
     public double getAbsolutePositionRad() {
         // Returns normalized absolute position from 0.0 to 1.0 scaled to rads
         double rads = (analogInput.getVoltage() / maxVoltage) * 2 * Math.PI;
-        return (rads - offset) % (2 * Math.PI);
+        double adjustedPos = (rads - offset) % (2 * Math.PI);
+        if (adjustedPos < 0) {
+            adjustedPos += 2 * Math.PI;
+        }
+        return adjustedPos;
     }
 
     @Override

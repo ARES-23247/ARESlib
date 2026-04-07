@@ -235,6 +235,25 @@ public class WpiLogBackend implements AresLoggerBackend {
 
     @Override
     public void update() {
-        // Written synchronously; no need to flush.
+        // Written synchronously; no need to flush per cycle.
+    }
+
+    /**
+     * Closes the underlying log file, flushing any buffered data.
+     * Should be called from {@code AresCommandOpMode.stop()} to prevent data loss
+     * if the OpMode is force-stopped on the Control Hub.
+     */
+    public void close() {
+        try {
+            if (channel != null && channel.isOpen()) {
+                channel.force(true);
+                channel.close();
+            }
+            if (fileOutputStream != null) {
+                fileOutputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

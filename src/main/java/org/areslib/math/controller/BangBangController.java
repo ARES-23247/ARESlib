@@ -99,6 +99,6 @@ public class BangBangController {
      * @return True if the error is within the tolerance.
      */
     public boolean atSetpoint(double measurement) {
-        return Math.abs(m_setpoint - measurement) < m_tolerance;
+        return Math.abs(m_setpoint - measurement) <= m_tolerance;
     }
 }

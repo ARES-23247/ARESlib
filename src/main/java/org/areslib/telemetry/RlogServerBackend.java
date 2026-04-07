@@ -17,6 +17,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Socket-based real-time telemetry streaming backend.
  * Streams AdvantageScope compatible packets over a TCP socket for remote viewing.
+ *
+ * <p><b>Protocol limitation:</b> Individual data record payloads are encoded as
+ * unsigned 16-bit lengths (max 65,535 bytes). Fields exceeding this limit will
+ * be truncated and a warning logged.
  */
 public class RlogServerBackend implements AresLoggerBackend {
     private final Map<String, Integer> keyToId = new HashMap<>();
@@ -139,6 +143,22 @@ public class RlogServerBackend implements AresLoggerBackend {
         }
     }
 
+    /** Maximum payload size encodable in 2 bytes (unsigned short). */
+    private static final int MAX_PAYLOAD_SIZE = 0xFFFF;
+
+    /**
+     * Clamps a payload size to the unsigned-short range and warns on overflow.
+     * This prevents silent data corruption on the RLOG wire protocol.
+     */
+    private int safePayloadLength(String key, int payloadSize) {
+        if (payloadSize > MAX_PAYLOAD_SIZE) {
+            System.err.println("RLOG WARNING: Payload for '" + key + "' is " + payloadSize
+                    + " bytes, exceeding the 65535-byte protocol limit. Data will be truncated.");
+            return MAX_PAYLOAD_SIZE;
+        }
+        return payloadSize;
+    }
+
     private int getOrCreateEntry(String key, String type) {
         if (keyToId.containsKey(key)) {
             return keyToId.get(key);
@@ -193,14 +213,15 @@ public class RlogServerBackend implements AresLoggerBackend {
     @Override
     public void putNumberArray(String key, double[] values) {
         int id = getOrCreateEntry(key, "double[]");
-        int payloadSize = values.length * 8;
+        int payloadSize = safePayloadLength(key, values.length * 8);
         ensureCapacity(1 + 2 + 2 + payloadSize);
         
         cycleBuffer.put((byte) 2);
         cycleBuffer.putShort((short) id);
         cycleBuffer.putShort((short) payloadSize);
-        for (double val : values) {
-            cycleBuffer.putDouble(val);
+        int maxDoubles = payloadSize / 8;
+        for (int i = 0; i < maxDoubles; i++) {
+            cycleBuffer.putDouble(values[i]);
         }
     }
 
@@ -208,12 +229,13 @@ public class RlogServerBackend implements AresLoggerBackend {
     public void putString(String key, String value) {
         int id = getOrCreateEntry(key, "string");
         byte[] strBytes = value.getBytes(StandardCharsets.UTF_8);
-        ensureCapacity(1 + 2 + 2 + strBytes.length);
+        int safeLen = safePayloadLength(key, strBytes.length);
+        ensureCapacity(1 + 2 + 2 + safeLen);
         
         cycleBuffer.put((byte) 2);
         cycleBuffer.putShort((short) id);
-        cycleBuffer.putShort((short) strBytes.length);
-        cycleBuffer.put(strBytes);
+        cycleBuffer.putShort((short) safeLen);
+        cycleBuffer.put(strBytes, 0, safeLen);
     }
 
     @Override
@@ -229,14 +251,14 @@ public class RlogServerBackend implements AresLoggerBackend {
     @Override
     public void putBooleanArray(String key, boolean[] values) {
         int id = getOrCreateEntry(key, "boolean[]");
-        int payloadSize = values.length;
+        int payloadSize = safePayloadLength(key, values.length);
         ensureCapacity(1 + 2 + 2 + payloadSize);
         
         cycleBuffer.put((byte) 2);
         cycleBuffer.putShort((short) id);
         cycleBuffer.putShort((short) payloadSize);
-        for (boolean val : values) {
-            cycleBuffer.put(val ? (byte) 1 : (byte) 0);
+        for (int i = 0; i < payloadSize; i++) {
+            cycleBuffer.put(values[i] ? (byte) 1 : (byte) 0);
         }
     }
 
@@ -251,10 +273,11 @@ public class RlogServerBackend implements AresLoggerBackend {
             payloadSize += 4 + utf8Strings[i].length;
         }
 
-        ensureCapacity(1 + 2 + 2 + payloadSize);
+        int safeSize = safePayloadLength(key, payloadSize);
+        ensureCapacity(1 + 2 + 2 + safeSize);
         cycleBuffer.put((byte) 2);
         cycleBuffer.putShort((short) id);
-        cycleBuffer.putShort((short) payloadSize);
+        cycleBuffer.putShort((short) safeSize);
         cycleBuffer.putInt(values.length);
         for (byte[] strBytes : utf8Strings) {
             cycleBuffer.putInt(strBytes.length);
@@ -272,11 +295,12 @@ public class RlogServerBackend implements AresLoggerBackend {
             }
         }
         
-        ensureCapacity(1 + 2 + 2 + structBytes.length);
+        int safeLen = safePayloadLength(key, structBytes.length);
+        ensureCapacity(1 + 2 + 2 + safeLen);
         cycleBuffer.put((byte) 2);
         cycleBuffer.putShort((short) id);
-        cycleBuffer.putShort((short) structBytes.length);
-        cycleBuffer.put(structBytes);
+        cycleBuffer.putShort((short) safeLen);
+        cycleBuffer.put(structBytes, 0, safeLen);
     }
 
     @Override

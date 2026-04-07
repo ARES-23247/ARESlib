@@ -13,10 +13,10 @@ public class MecanumDriveKinematics {
             Translation2d rearRightWheelMeters) {
 
         m_inverseKinematics = new double[4][3];
-        m_inverseKinematics[0][0] = 1; m_inverseKinematics[0][1] = -1; m_inverseKinematics[0][2] = -(frontLeftWheelMeters.getX() + frontLeftWheelMeters.getY());
-        m_inverseKinematics[1][0] = 1; m_inverseKinematics[1][1] = 1;  m_inverseKinematics[1][2] = (frontRightWheelMeters.getX() - frontRightWheelMeters.getY());
-        m_inverseKinematics[2][0] = 1; m_inverseKinematics[2][1] = 1;  m_inverseKinematics[2][2] = -(rearLeftWheelMeters.getX() - rearLeftWheelMeters.getY());
-        m_inverseKinematics[3][0] = 1; m_inverseKinematics[3][1] = -1; m_inverseKinematics[3][2] = (rearRightWheelMeters.getX() + rearRightWheelMeters.getY());
+        m_inverseKinematics[0][0] = 1; m_inverseKinematics[0][1] = -1; m_inverseKinematics[0][2] = -(frontLeftWheelMeters.getX() - frontLeftWheelMeters.getY());
+        m_inverseKinematics[1][0] = 1; m_inverseKinematics[1][1] = 1;  m_inverseKinematics[1][2] = -(frontRightWheelMeters.getX() + frontRightWheelMeters.getY());
+        m_inverseKinematics[2][0] = 1; m_inverseKinematics[2][1] = -1; m_inverseKinematics[2][2] = -(rearLeftWheelMeters.getX() - rearLeftWheelMeters.getY());
+        m_inverseKinematics[3][0] = 1; m_inverseKinematics[3][1] = 1;  m_inverseKinematics[3][2] = -(rearRightWheelMeters.getX() + rearRightWheelMeters.getY());
 
         m_forwardKinematics = InverseMatrixHelper.pseudoInverse(m_inverseKinematics);
     }

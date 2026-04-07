@@ -3,14 +3,13 @@ package org.areslib.math.estimator;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
 import org.areslib.math.geometry.TimeInterpolatableBuffer;
-import org.areslib.math.geometry.Twist2d;
 import org.areslib.math.kinematics.SwerveDriveKinematics;
 import org.areslib.math.kinematics.SwerveDriveOdometry;
 import org.areslib.math.kinematics.SwerveModulePosition;
 
 /**
  * A sophisticated pose estimator for Swerve Drives mirroring elite algorithms (WPILib 2024).
- * Uses exact exact module position tracking and a History Buffer for true latency-compensating Vision fusion.
+ * Uses exact module position tracking and a History Buffer for true latency-compensating Vision fusion.
  */
 public class SwerveDrivePoseEstimator {
     private final SwerveDriveOdometry m_odometry;
@@ -79,35 +78,10 @@ public class SwerveDrivePoseEstimator {
      * @param timestampSeconds The precise time the photo was taken (e.g. current_time - pipeline_latency).
      */
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        Pose2d sample = m_poseBuffer.getSample(timestampSeconds);
-        
-        if (sample == null) {
-            return; // Measurement is too old or buffer empty.
-        }
+        m_estimatedPose = VisionFusionHelper.applyVisionMeasurement(
+                visionRobotPoseMeters, timestampSeconds, m_estimatedPose, m_poseBuffer, m_visionStdDevs);
 
-        // Calculate the difference between what Odometry THOUGHT we were at t, and the CAmera's read at t.
-        Pose2d transform = visionRobotPoseMeters.relativeTo(sample);
-        
-        double xError = transform.getX();
-        double yError = transform.getY();
-        double thetaError = transform.getRotation().getRadians();
-        
-        double kX = 1.0 / (1.0 + m_visionStdDevs[0]);
-        double kY = 1.0 / (1.0 + m_visionStdDevs[1]);
-        double kTheta = 1.0 / (1.0 + m_visionStdDevs[2]);
-
-        Pose2d correctedRetroPose = new Pose2d(
-            sample.getX() + xError * kX,
-            sample.getY() + yError * kY,
-            new Rotation2d(sample.getRotation().getRadians() + thetaError * kTheta)
-        );
-
-        // Apply that same geometric offset to our CURRENT active position to replay the history!
-        // We use rigorous Twist mathematics to append curve deviations safely.
-        Twist2d replayTwist = sample.log(m_estimatedPose);
-        m_estimatedPose = correctedRetroPose.exp(replayTwist);
-        
-        // Technically WPILib forces an explicit rebuild of Odometry's internal Pose, we do this without destroying wheel buffers:
+        // Sync Odometry's internal pose without destroying wheel buffers:
         m_odometry.resetTranslation(m_estimatedPose);
     }
 }

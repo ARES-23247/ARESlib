@@ -21,7 +21,7 @@ public class DcMotorExWrapper implements AresMotor, AresEncoder {
 
     @Override
     public void setVoltage(double volts) {
-        double currentBattery = org.areslib.hardware.AresHardwareManager.getBatteryVoltage();
+        double currentBattery = Math.max(1.0, org.areslib.hardware.AresHardwareManager.getBatteryVoltage());
         double masterScale = org.areslib.hardware.AresHardwareManager.masterPowerScale;
         double power = (volts / currentBattery) * masterScale;
         

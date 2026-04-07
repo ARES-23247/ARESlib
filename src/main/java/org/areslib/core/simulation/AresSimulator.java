@@ -64,6 +64,7 @@ public class AresSimulator {
         isRunning = false;
         if (physicsThread != null) {
             physicsThread.interrupt();
+            physicsThread = null;
         }
     }
 }

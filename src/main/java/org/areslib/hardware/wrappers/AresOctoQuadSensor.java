@@ -70,9 +70,9 @@ public class AresOctoQuadSensor implements AresAbsoluteEncoder {
             // Note: This relies on the specific absolute encoder pulse behavior.
             double pulseUsec = driver.readPulseWidth(channel);
             double rad = (pulseUsec / 1024.0) * 2 * Math.PI; 
-            return rad - offset;
+            return org.areslib.math.MathUtil.angleModulus(rad - offset);
         } else {
-            return getPosition() - offset; // Not ideal for non-absolute
+            return org.areslib.math.MathUtil.angleModulus(getPosition() - offset);
         }
     }
 }

@@ -150,4 +150,27 @@ public class Trigger {
     public Trigger negate() {
         return new Trigger(() -> !condition.getAsBoolean());
     }
+
+    /**
+     * Creates a new trigger that only activates after the condition has been continuously
+     * true for the specified duration. Resets if the condition becomes false.
+     * <p>
+     * Uses deterministic loop counting based on {@link org.areslib.core.AresRobot#LOOP_PERIOD_SECS}
+     * rather than wall clock time to ensure consistent behavior.
+     *
+     * @param seconds The duration the condition must be continuously true before activating.
+     * @return The debounced trigger.
+     */
+    public Trigger debounce(double seconds) {
+        final double[] elapsed = {0.0};
+        final double period = org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+        return new Trigger(() -> {
+            if (condition.getAsBoolean()) {
+                elapsed[0] += period;
+            } else {
+                elapsed[0] = 0.0;
+            }
+            return elapsed[0] >= seconds;
+        });
+    }
 }

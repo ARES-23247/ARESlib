@@ -1,31 +1,105 @@
-> Task :compileJava UP-TO-DATE
-> Task :processResources NO-SOURCE
-> Task :classes UP-TO-DATE
-> Task :jar UP-TO-DATE
-> Task :assemble UP-TO-DATE
+Initialized native services in: C:\Users\david\.gradle\native
+Initialized jansi services in: C:\Users\david\.gradle\native
+Received JVM installation metadata from 'C:\Program Files\Amazon Corretto\jdk1.8.0_462': {JAVA_HOME=C:\Program Files\Amazon Corretto\jdk1.8.0_462\jre, JAVA_VERSION=1.8.0_462, JAVA_VENDOR=Amazon.com Inc., RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=1.8.0_462-b08, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=25.462-b08, VM_VENDOR=Amazon.com Inc., OS_ARCH=amd64}
+Found daemon DaemonInfo{pid=37440, address=[9818eb84-29d7-4d1b-85fc-6e796929e331 port:54423, addresses:[/127.0.0.1]], state=Idle, lastBusy=1775509117169, context=DefaultDaemonContext[uid=6f2cf929-9e05-4e5b-a0dd-545fb61a94f7,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=37440,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Amazon Corretto\jdk1.8.0_462 (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=6f2cf929-9e05-4e5b-a0dd-545fb61a94f7,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=37440,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-XX:MaxMetaspaceSize=384m,-XX:+HeapDumpOnOutOfMemoryError,-Xms256m,-Xmx512m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
 
-> Task :compileTestJava FAILED
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:37: error: cannot find symbol
-        org.firstinspires.ftc.teamcode.SwerveConfig config = new org.firstinspires.ftc.teamcode.SwerveConfig();
-                                      ^
-  symbol:   class SwerveConfig
-  location: package org.firstinspires.ftc.teamcode
-C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\sim\DesktopSimLauncher.java:37: error: cannot find symbol
-        org.firstinspires.ftc.teamcode.SwerveConfig config = new org.firstinspires.ftc.teamcode.SwerveConfig();
-                                                                                               ^
-  symbol:   class SwerveConfig
-  location: package org.firstinspires.ftc.teamcode
-2 errors
+  Looking for a different daemon...
+Found daemon DaemonInfo{pid=18524, address=[f43be7d3-46ed-4464-bde8-80731a5d1ad5 port:53996, addresses:[/127.0.0.1]], state=Idle, lastBusy=1775509121747, context=DefaultDaemonContext[uid=d1e46bde-969b-4a80-82df-fe1fbbfcdd03,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=18524,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Amazon Corretto\jdk1.8.0_462 (no JDK specified, using current Java home), daemonOpts=[-XX:MaxMetaspaceSize=384m, -XX:+HeapDumpOnOutOfMemoryError, -Xms256m, -Xmx512m, -Dfile.encoding=windows-1252, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=d1e46bde-969b-4a80-82df-fe1fbbfcdd03,javaHome=C:\Users\david\.antigravity\extensions\redhat.java-1.53.0-win32-x64\jre\21.0.10-win32-x86_64,javaVersion=21,daemonRegistryDir=C:\Users\david\.gradle\daemon,pid=18524,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED,--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+The client will now receive all logging from the daemon (pid: 25200). The daemon log file: C:\Users\david\.gradle\daemon\8.9\daemon-25200.out.log
+Starting 50th build in daemon [uptime: 3 hrs 0 mins 41.328 secs, performance: 100%, GC rate: 0.02/s, heap usage: 3% of 341.5 MiB, non-heap usage: 18% of 384 MiB]
+Using 16 worker leases.
+Now considering [C:\Users\david\dev\robotics\ftc\ARESLib2] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file 'C:\Users\david\dev\robotics\ftc\ARESLib2\settings.gradle'.
+Projects loaded. Root project using build file 'C:\Users\david\dev\robotics\ftc\ARESLib2\build.gradle'.
+Included projects: [root project 'ARESLib2']
+
+> Configure project :
+Evaluating root project 'ARESLib2' using build file 'C:\Users\david\dev\robotics\ftc\ARESLib2\build.gradle'.
+All projects evaluated.
+Task name matched 'test'
+Selected primary task 'test' from project :
+Tasks to be executed: [task ':compileJava', task ':processResources', task ':classes', task ':compileTestJava', task ':processTestResources', task ':testClasses', task ':test']
+Tasks that were excluded: []
+Resolve mutations for :compileJava (Thread[Execution worker,5,main]) started.
+:compileJava (Thread[Execution worker Thread 12,5,main]) started.
+
+> Task :compileJava FAILED
+Caching disabled for task ':compileJava' because:
+  Build cache is disabled
+Task ':compileJava' is not up-to-date because:
+  Input property 'stableSources' file C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\auto\DynamicPathCommand.java has been added.
+  Input property 'stableSources' file C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java has been added.
+  Input property 'stableSources' file C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostData.java has been added.
+Compilation mode: in-process compilation
+Created classpath snapshot for incremental compilation in 0.003 secs.
+Compiling with toolchain 'C:\Program Files\Amazon Corretto\jdk1.8.0_462'.
+Compiling with JDK Java compiler API.
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java:3: error: package com.google.gson does not exist
+import com.google.gson.Gson;
+                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:3: error: package com.google.gson does not exist
+import com.google.gson.Gson;
+                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:4: error: package com.google.gson does not exist
+import com.google.gson.GsonBuilder;
+                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java:52: error: cannot find symbol
+                Gson gson = new Gson();
+                ^
+  symbol:   class Gson
+  location: class org.areslib.command.GhostPlaybackCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\command\GhostPlaybackCommand.java:52: error: cannot find symbol
+                Gson gson = new Gson();
+                                ^
+  symbol:   class Gson
+  location: class org.areslib.command.GhostPlaybackCommand
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:50: error: no suitable method found for recordOutput(java.lang.String,boolean)
+        AresAutoLogger.recordOutput("GhostMode/Recording", true);
+                      ^
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,double) is not applicable
+      (argument mismatch; boolean cannot be converted to double)
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,java.lang.String) is not applicable
+      (argument mismatch; boolean cannot be converted to java.lang.String)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:77: error: no suitable method found for recordOutput(java.lang.String,boolean)
+        AresAutoLogger.recordOutput("GhostMode/Recording", false);
+                      ^
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,double) is not applicable
+      (argument mismatch; boolean cannot be converted to double)
+    method org.areslib.telemetry.AresAutoLogger.recordOutput(java.lang.String,java.lang.String) is not applicable
+      (argument mismatch; boolean cannot be converted to java.lang.String)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:79: error: cannot find symbol
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        ^
+  symbol:   class Gson
+  location: class org.areslib.core.GhostRecorder
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\core\GhostRecorder.java:79: error: cannot find symbol
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        ^
+  symbol:   class GsonBuilder
+  location: class org.areslib.core.GhostRecorder
+9 errors
+Incremental compilation of 6 classes completed in 0.135 secs.
 
 FAILURE: Build failed with an exception.
 
 * What went wrong:
-Execution failed for task ':compileTestJava'.
+Execution failed for task ':compileJava'.
 > Compilation failed; see the compiler error output for details.
 
 * Try:
-> Run with --info option to get more log output.
 > Run with --scan to get full insights.
 
 BUILD FAILED in 1s
-3 actionable tasks: 1 executed, 2 up-to-date
+1 actionable task: 1 executed
+Watched directory hierarchies: [C:\Users\david\dev\robotics\ftc\ARESLib2]

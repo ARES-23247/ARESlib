@@ -46,6 +46,10 @@ public class SimpleMotorFeedforward {
      * @return The calculated feedforward.
      */
     public double calculate(double currentVelocity, double nextVelocity, double dtSeconds) {
+        if (dtSeconds <= 0.0) {
+            // No valid timestep — return steady-state feedforward without acceleration term.
+            return ks * Math.signum(currentVelocity) + kv * currentVelocity;
+        }
         double acceleration = (nextVelocity - currentVelocity) / dtSeconds;
         return ks * Math.signum(currentVelocity) + kv * currentVelocity + ka * acceleration;
     }

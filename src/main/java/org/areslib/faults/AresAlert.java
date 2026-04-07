@@ -39,9 +39,16 @@ public class AresAlert {
 
     /**
      * Sets whether this alert is currently active.
+     * <p>
+     * If this alert was previously cleared from the {@link AresFaultManager}
+     * (e.g., during an OpMode transition reset), calling this method will
+     * automatically re-register it, ensuring static alerts survive lifecycle resets.
      */
     public void set(boolean active) {
         this.active = active;
+        // Re-register if we were dropped by a reset() cycle.
+        // registerAlert() is idempotent — it no-ops if already present.
+        AresFaultManager.registerAlert(this);
     }
 
     /**

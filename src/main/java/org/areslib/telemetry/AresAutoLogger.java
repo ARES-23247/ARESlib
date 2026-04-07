@@ -57,9 +57,9 @@ public class AresAutoLogger {
                     org.areslib.math.kinematics.SwerveModuleState[] states = (org.areslib.math.kinematics.SwerveModuleState[]) value;
                     double[] arr = new double[states.length * 2];
                     for (int i = 0; i < states.length; i++) {
-                        // AdvantageScope Swerve format: [speed, angle, speed, angle, ...]
-                        arr[i * 2] = states[i].speedMetersPerSecond;
-                        arr[i * 2 + 1] = states[i].angle.getRadians();
+                        // AdvantageScope Swerve format: [angle, speed, angle, speed, ...]
+                        arr[i * 2] = states[i].angle.getRadians();
+                        arr[i * 2 + 1] = states[i].speedMetersPerSecond;
                     }
                     AresTelemetry.putNumberArray(key, arr);
                 }

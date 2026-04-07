@@ -91,6 +91,10 @@ public class Translation2d implements Interpolatable<Translation2d> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_x, m_y);
+        // Round to 1e-9 to match the epsilon tolerance used in equals().
+        // Two Translation2d values that are equals() MUST produce the same hash.
+        long xHash = Math.round(m_x * 1e9);
+        long yHash = Math.round(m_y * 1e9);
+        return Objects.hash(xHash, yHash);
     }
 }

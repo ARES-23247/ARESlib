@@ -21,6 +21,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation 'com.acmerobotics.dashboard:core:0.4.16'
+    implementation 'com.google.code.gson:gson:2.10.1'
     
     // Android Context Stub
     implementation 'com.google.android:android:4.1.1.4'
@@ -67,5 +68,8 @@ task runSim(type: JavaExec) { mainClass = 'org.areslib.sim.DesktopSimLauncher'; 
 dependencies { 
     testImplementation 'com.google.code.gson:gson:2.10.1'
     testImplementation 'com.github.WilliamAHartman:Jamepad:1.3.2'
+    testImplementation 'org.mockito:mockito-core:4.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.11.0'
+    testImplementation 'org.mockito:mockito-inline:4.11.0'
     implementation 'org.dyn4j:dyn4j:4.2.2'
 }
