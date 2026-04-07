@@ -180,7 +180,9 @@ public class AresHardwareManager {
      *
      * @param bus The integer ID of the bus to access.
      * @return The bus object, currently always null due to unresolved ARES dependencies.
+     * @deprecated This method is non-functional and always returns null. Will be removed in a future version.
      */
+    @Deprecated
     public static Object getSrsI2cBus(int bus) {
         // Obsolete functionality, we don't bind embedded i2c inside the srs hub wrapper for simplicity currently.
         return null;

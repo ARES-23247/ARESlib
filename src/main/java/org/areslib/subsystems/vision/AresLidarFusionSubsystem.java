@@ -28,6 +28,13 @@ public class AresLidarFusionSubsystem extends SubsystemBase {
     // Assumes array covers exactly 45 degrees in front of robot
     private static final double FOV_RADIANS = Math.toRadians(45.0);
 
+    /**
+     * Constructs the LiDAR fusion subsystem.
+     *
+     * @param io       The LiDAR hardware IO interface (real or simulated).
+     * @param odometry The PedroPathing follower wrapper for current robot pose.
+     * @param avoider  The obstacle avoidance grid to inject detected hit points into.
+     */
     public AresLidarFusionSubsystem(ArrayLidarIO io, AresFollower odometry, ObstacleAvoider avoider) {
         this.io = io;
         this.odometry = odometry;

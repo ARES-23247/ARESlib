@@ -4,6 +4,20 @@ import org.areslib.command.SubsystemBase;
 import org.areslib.telemetry.AresAutoLogger;
 import org.areslib.hardware.interfaces.VisionIO;
 
+/**
+ * Core vision subsystem that wraps a {@link VisionIO} interface to provide
+ * validated AprilTag-derived pose estimates and configurable confidence scoring.
+ * <p>
+ * This subsystem performs three levels of sanity checking on incoming vision data:
+ * <ol>
+ *   <li>Z-elevation ghost rejection (robot floating/underground)</li>
+ *   <li>Field boundary validation (robot outside legal play area)</li>
+ *   <li>Target area gating (target too small to be reliable)</li>
+ * </ol>
+ *
+ * @see VisionIO
+ * @see AresSensorFusionSubsystem
+ */
 public class AresVisionSubsystem extends SubsystemBase {
     
     private final VisionIO io;

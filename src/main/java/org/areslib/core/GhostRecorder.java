@@ -74,7 +74,7 @@ public class GhostRecorder {
      */
     public void stopAndSave(String filePath) {
         m_isRecording = false;
-        AresAutoLogger.recordOutput("GhostMode/Recording", false ? 1.0 : 0.0);
+        AresAutoLogger.recordOutput("GhostMode/Recording", 0.0);
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         
