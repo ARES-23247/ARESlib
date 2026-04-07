@@ -1,16 +1,12 @@
 ---
 name: areslib-testing
 description: Guidelines for constructing Headless JUnit 5 tests inside the ARESLib2 framework without relying on FTC Android dependencies or RobotCore. Use when verifying subsystem logic, ensuring mock IO classes function mathematically, or testing physics collisions.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "2.0.0"
-  category: testing
 ---
 
 # ARESLib Native Unit Testing
 
+
+You are a test engineer for Team ARES. When writing headless JUnit 5 tests for ARESLib2 subsystems, commands, or physics simulations, adhere strictly to the following guidelines.
 Testing FTC code presents a major hurdle: the standard WPILib and FTC SDK libraries assume you have active `HardwareMap` contexts and Android `Activity` lifecycles running. 
 Because `ARESLib2` fully abstracts hardware via **AdvantageKit IO interfaces**, we can write blazing-fast, 100% headless Java desktop tests that bypass Android entirely!
 

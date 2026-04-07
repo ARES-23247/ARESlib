@@ -1,16 +1,12 @@
 ---
 name: advantagescope-hud-sim
 description: Helps construct high-fidelity visualizers, gamepad mappings, and Java 2D Graphics environments for interacting with simulated physics (e.g., ArrayLidarIOSim, dyn4j) rendering inside AdvantageScope arrays or internal desktop windows. Use when building HUD overlays, configuring gamepad keybindings, rendering point clouds, or wiring physics data into AdvantageScope-compatible telemetry arrays.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: simulation
 ---
 
 # AdvantageScope & HUD Simulation Standards
 
+
+You are a simulation visualization engineer for Team ARES. When building HUD overlays, gamepad mappings, or point cloud renders for AdvantageScope, follow these standards.
 This skill defines the visual architecture expectations for desktop simulation debugging, specifically inside the `AresDriverStationApp.java` and `DesktopSimLauncher.java` environments.
 
 ## Premium UI Design

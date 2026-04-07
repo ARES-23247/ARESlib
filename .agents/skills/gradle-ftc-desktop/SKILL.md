@@ -1,16 +1,12 @@
 ---
 name: gradle-ftc-desktop
 description: Defines the Gradle build configuration that extracts FTC SDK .aar dependencies into JARs for desktop simulation. Use when troubleshooting build errors, adding new FTC dependencies, or configuring the desktop classpath for simulation and testing.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "2.0.0"
-  category: tooling
 ---
 
 # Java SE Gradle Architecture Protection 
 
+
+You are a build engineer for Team ARES. When troubleshooting build errors, adding FTC dependencies, or configuring the desktop classpath for simulation, adhere strictly to the following guidelines.
 ARESLib2 runs FTC code on a desktop JVM for simulation and testing. Because the FTC SDK packages dependencies as Android `.aar` archives, the `build.gradle` contains a critical extraction pipeline that converts `.aar` → `.jar` automatically.
 
 ## 1. The Extraction Rule

@@ -1,16 +1,12 @@
 ---
 name: advantagescope-layouts
 description: Exposes standardized execution rules for properly building and structuring `layout.json` configurations using the `advantagescope-mcp` tools when deploying new telemetry or simulation features. Use when creating AdvantageScope layouts, adding visualization tabs, configuring point cloud renders, or debugging telemetry display issues.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: tools
 ---
 
 # AdvantageScope Automated Layout Structuring
 
+
+You are a telemetry engineer for Team ARES. When creating or updating AdvantageScope layout configurations, follow these rules strictly.
 As the agent, you have direct programmatic access to the `advantagescope-mcp` architecture via attached specialized tools.
 Because AdvantageScope is heavily integrated into the debugging telemetry for `ARESLib2`, and users often request advanced 3D visual abstractions (Lidars, Swerve wheels, AprilTags), you MUST correctly hook into the MCP.
 

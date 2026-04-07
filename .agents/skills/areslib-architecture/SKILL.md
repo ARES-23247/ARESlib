@@ -1,95 +1,153 @@
 ---
 name: areslib-architecture
 description: Helps write and maintain code mapped to the ARESLib2 FTC framework, detailing coordinate systems, vision fusion architectures, and simulator parity techniques. Use when modifying or adding areslib subsystems, handling Pedro Pathing conversions, injecting vision offsets, or logging 3D poses natively to AdvantageScope.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "2.0.0"
-  category: framework
 ---
 
-# ARESLib2 System Architecture & Design Patterns
+You are an expert FTC Software Engineer for Team ARES. When asked to create new robot subsystems, commands, or mechanisms for an ARESLib2-based project, adhere strictly to the following architectural guidelines.
 
-This guide outlines the critical geometric math, sensor integration patterns, and architectural abstractions used in the `ARESLib2` FTC framework. Before you make architectural changes, please review these standardized conventions.
+## 1. Scaffolding Subsystems (IO Abstraction Rule)
 
-## Coordinate Mapping Conventions (CRITICAL)
+Every subsystem MUST have its hardware interaction abstracted behind an IO interface. You must NEVER instantiate hardware directly in the subsystem class. You must generate exactly four files:
 
-ARESLib acts as a bridge between standard FTC SI unit paradigms and the custom Imperial structures required by WPILib logging / Pedro Pathing.
+1. **`[Name]IO.java`**: Interface with `[Name]Inputs` inner class. All hardware reads update this inputs object.
+2. **`[Name]IOReal.java`**: Hardware implementation using FTC `HardwareMap`.
+3. **`[Name]IOSim.java`**: Physics simulation using `AresPhysicsWorld` and `dyn4j`.
+4. **`[Name]Subsystem.java`**: Business logic. Accepts `[Name]IO` via constructor dependency injection.
 
-| System | Origin Location | Native Translation Unit | Angular Unit |
-| :--- | :--- | :--- | :--- |
-| **Dyn4j Physics** | Absolute Center (0, 0) | Meters (m) | Radians |
-| **Limelight / WPILib** | Absolute Center (0, 0) | Meters (m) | Radians / Quaternions |
-| **Pedro Pathing** | Bottom-Left Corner (72, 72)| Inches (in) | Radians |
+```java
+public class ElevatorSubsystem extends SubsystemBase {
+    private final ElevatorIO io;
+    private final ElevatorIO.ElevatorInputs inputs = new ElevatorIO.ElevatorInputs();
 
-### Code Usage Strategy
-- All hardware `IO` Wrappers (e.g., `OdometryIO`, `VisionIO`) should **always emit data in SI units (Meters/Radians) with a Center Origin**.
-- Any code inside `AresPedroLocalizer` translates this automatically by:
-  1. Converting meters to inches: `meters / 0.0254`
-  2. Offsetting dynamically: adding `+72.0` inches.
+    public ElevatorSubsystem(ElevatorIO io) {
+        this.io = io;  // Could be IOReal or IOSim
+    }
 
-## AdvantageScope 3D Formats
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        AresTelemetry.log("Elevator", inputs);
+    }
+}
+```
 
-When exporting positional telemetry (e.g. `VisionInputs.botPose3d`), the array must be specifically formatted so that AdvantageKit and AdvantageScope deserialize it flawlessly as an active `Pose3d` structure.
+Periodically perform `io.updateInputs(inputs)` and log via `AresTelemetry.log()`.
+Do NOT use raw `telemetry.addData()`; use `AresTelemetry`. See the `areslib-telemetry` skill.
 
-**Correct 3D Pose Structure: Length 7 `double` array**
-- `[X_Meters, Y_Meters, Z_Meters, W, X_Quat, Y_Quat, Z_Quat]`
-- Do **NOT** use `[X, Y, Z, Roll, Pitch, Yaw]`. Length 6 arrays are misidentified as a 2x3 trajectory (two 2D poses) by AdvantageScope.
-- Utilize standard geometric formulation to create Quaternions in Wrappers:
-  ```java
-  double cr = Math.cos(roll * 0.5); double sr = Math.sin(roll * 0.5);
-  double cp = Math.cos(pitch * 0.5); double sp = Math.sin(pitch * 0.5);
-  double cy = Math.cos(yaw * 0.5); double sy = Math.sin(yaw * 0.5);
-  // w = cr*cp*cy + sr*sp*sy 
-  // x = sr*cp*cy - cr*sp*sy 
-  // y = cr*sp*cy + sr*cp*sy 
-  // z = cr*cp*sy - sr*sp*cy
-  ```
+## 2. Coordinate System Mapping (CRITICAL)
 
-## Limelight Multi-Camera Sensor Fusion
+ARESLib2 bridges three coordinate systems:
 
-**Core Philosophy:** Winner-Takes-All, while visualizing everything.
-- `AresSensorFusionSubsystem` is a lightweight complementary filter. It should **not** average camera positions directly because of distant noise.
-- Multiple Limelights should be processed at the **Wrapper Level** (`LimelightVisionWrapper`).
-- The wrapper compares `Target Area (TA)` to evaluate which camera is physically closer to generating the most trustworthy target calculation.
-- The single "best" target is mapped to `VisionInputs` standard properties for Odometry fusion.
+| System | Origin | Units | Axis Convention |
+|:---|:---|:---|:---|
+| **dyn4j / WPILib** | Field center (0, 0) | Meters, Radians | X-forward, Y-left, θ CCW+ |
+| **Pedro Pathing** | Bottom-left corner (72, 72) | Inches, Radians | X-right, Y-forward |
+| **AdvantageScope** | Field center (0, 0) | Meters, Radians | WPILib convention |
 
-**Raw Camera Telemetry:**
-- To preserve debugging, the `LimelightVisionWrapper` packages *every* valid Limelight measurement into a single flat array: `rawCameraPoses`.
-- Layout is sequential length 7s: `[x,y,z,w,i,j,k,  x,y,z,w,i,j,k]`.
-- AdvantageScope will dynamically read this `double[]` array as a `Pose3D[]` list and spawn multiple ghost robots to let drivers debug tracking noise.
+### Conversion Rules
+```java
+// Pedro → WPILib
+wpilibX = pedroY;
+wpilibY = -pedroX;
 
-## Simulation Integrity & HUD Rendering
+// WPILib → Pedro  
+pedroX = -wpilibY;
+pedroY = wpilibX;
 
-When you construct any new `AresSubsystem`, verify if it has a real hardware equivalent. 
-- If yes, use constructor-level Dependency Injection (IO Abstractions) from the `RobotContainer`.
-- Initialize `DesktopSimLauncher` with identical dependencies to prove zero logic branching exists inside the subsystems. 
-- The simulation physics loop is exactly `50Hz`, natively pushing `xMeters` and `yMeters` through `odometrySupplier` functions into `ArrayVisionIOSim` and `ArrayLidarIOSim`.
+// Meters → Pedro inches (with origin shift)
+pedroInches = (meters / 0.0254) + 72.0;
+```
 
-### Desktop Simulation HUD (`DesktopSimLauncher`)
-We use `java.awt.Graphics2D` alongside `com.github.WilliamAHartman.Jamepad` for our advanced debugging visualizer:
-- **Gamepads**: Raw gamepad input updates (including all ABXY face buttons, triggers, and bumpers) must be pushed into the HUD at 50Hz via `setGamepadState()`.
-- **Glassmorphism UI**: When updating visual elements in `AresDriverStationApp.java` or `DesktopSimLauncher.java`, prioritize high-quality aesthetic UI designs over basic Swing primitives.
+All hardware IO wrappers (`OdometryIO`, `VisionIO`) **always emit SI units (meters/radians) with center origin**. The `AresPedroLocalizer` handles conversion to Pedro's coordinate system automatically.
 
+## 3. AdvantageScope 3D Formats
 
-## Advanced Simulation Physics & Telemetry Quirks
+When logging `Pose3d` data, use a **length-7 `double` array** with quaternion rotation:
+```
+[X_Meters, Y_Meters, Z_Meters, W, X_Quat, Y_Quat, Z_Quat]
+```
 
-Future developers, take note of these previously isolated engineering snags:
+**Critical:** Do NOT use length-6 arrays `[X, Y, Z, Roll, Pitch, Yaw]`. AdvantageScope misidentifies them as 2x3 trajectories (two 2D poses).
 
-### 1. AdvantageScope Swerve State Array Format
-When logging structural `SwerveModuleState[]` arrays directly as `double[]` streams for AdvantageScope to ingest, the 8-length array **MUST** be packed as `[Angle_rads, Speed_mps, Angle_rads, Speed_mps...]`. 
-- If you pack it as `[Speed, Angle]`, AdvantageScope will visually swap the physical size of the visual 3D vector arrows with their rotational angle, leading to impossibly confusing debugging where wheels appear to rotate precisely parallel with their speed.
+Swerve module state arrays must be packed as `[Angle_rads, Speed_mps, ...]` (angle first, then speed). Reversing this order causes inverted 3D vector rendering.
 
-### 2. Gamepad Axis Normalization
-FTC Hardware gamepads natively map "Stick Pushed UP" to a **Negative Y (`-1.0`)** value. 
-- Standard GUI APIs (like Java AWT or SDL2/Jamepad) map "UP" as Positive Y (`+1.0`) because `(0,0)` is the top-left graphical corner.
-- When injecting inputs via `VirtualGamepadWrapper`, you must manually invert the Y-axis native capture to strictly enforce `-1.0` for UP. 
-- If this is misaligned, downstream math (like `AresGamepad` interpreting it) will cancel out errors, causing the robot to drive correctly but UI elements (like driver station crosshairs) to render upside down relative to finger inputs.
+## 4. Simulation Integration (dyn4j)
 
-### 3. Dyn4j Wheel Slip vs Odometry (PID Differential)
-In a deeply simulated environment, theoretical "Encoder Distance" and actual "Field Translation" will never perfectly match due to **Wheel Slip**.
-- `dyn4j` applies simulated Field Drag (`linearDamping` / `angularDamping`) and Mass to the `robotBody`.
-- A high `linearDamping` (e.g., `8.0`) forces the robot to move sluggishly. Pedro Pathing's translation PIDs will detect the robot lagging and significantly ramp up commanded target velocities (`vTarget`) to drag the heavy robot to its setpoint.
-- Because `SwerveModuleIOSim` integrates internal wheel odometry based directly on these bloated closed-loop voltage commands (treating them as frictionless calculations), the theoretical accumulated wheel distance scales rapidly.
-- E.g: The physics body moves `1.37 meters`, but the wheels spun the equivalent of `2.0 meters` fighting the carpet drag. This is an accurate physical model of mechanical slip; to reduce parity drift, lower the Dyn4j `linearDamping` constant.
+When writing `[Name]IOSim.java` layers:
+- Register bodies to `AresPhysicsWorld.getInstance()`
+- Use proper material properties (see `areslib-simulation` skill)
+- Format point clouds as flat `double[]`: `[x1, y1, z1, x2, y2, z2, ...]`
+- The simulation loop runs at exactly 50Hz
+
+For deeper simulation guidance, see the `areslib-simulation` skill.
+
+## 5. Fault Management
+
+Always pipe hardware failures through `AresFaultManager`:
+```java
+if (!motor.isConnected()) {
+    AresFaultManager.getInstance().registerAlert(
+        new AresAlert("ElevatorMotor", "Motor disconnected")
+    );
+}
+```
+See the `areslib-faults` skill for full patterns.
+
+## 6. Command Architecture
+
+ARESLib2 uses a WPILib-ported command architecture. Do NOT use `com.arcrobotics.ftclib`:
+- Commands from `org.areslib.command`
+- Button bindings via `AresGamepad` and `Trigger`
+- Subsystem requirements via `addRequirements()`
+
+See the `areslib-commands` skill for full patterns.
+
+## 7. Multi-Camera Sensor Fusion
+
+`AresSensorFusionSubsystem` uses winner-takes-all selection, not averaging:
+- Multiple cameras are processed at the wrapper level (`LimelightVisionWrapper`)
+- The wrapper compares Target Area (`TA`) to select the most trustworthy measurement
+- Raw camera poses are logged as sequential length-7 arrays for AdvantageScope ghost rendering
+
+See the `areslib-vision` skill for full patterns.
+
+## 8. Testing
+
+All tests use headless JUnit 5 with real IOSim implementations — not mocks:
+- Reset `AresPhysicsWorld` and `CommandScheduler` before each test
+- Use `AresPhysicsWorld.getInstance().update(0.02)` for physics stepping
+- See the `areslib-testing` skill for full patterns
+
+## 9. Engineering Quirks & Hard-Won Lessons
+
+### Gamepad Axis Normalization
+FTC gamepads map "stick UP" to **negative Y** (`-1.0`). GUI frameworks (AWT, SDL2) map "UP" to **positive Y** (`+1.0`). The `AresGamepad` wrapper handles this inversion — do NOT double-invert in your code.
+
+### dyn4j Wheel Slip vs Odometry
+In high-fidelity simulation, encoder distance and field translation will never perfectly match due to wheel slip. `dyn4j` applies `linearDamping` and mass to the robot body. High damping → Pedro PIDs ramp up voltage → encoders over-count distance. This is physically accurate. To reduce drift, lower `linearDamping`.
+
+### Pedro Pathing Static Configuration
+`AresPedroConstants.configure()` may throw if called twice (e.g., across JUnit tests). Always wrap in try/catch or guard with a static `configured` flag.
+
+## 10. Skill Cross-Reference
+
+| Need | Skill |
+|:---|:---|
+| Drive subsystems & kinematics | `areslib-drivetrain` |
+| Path following & autonomous | `areslib-autonomous` |
+| Pedro Pathing API | `pedro-pathing` |
+| Physics simulation | `areslib-simulation` |
+| PID/feedforward/filters | `areslib-math` |
+| Vision pipelines | `areslib-vision` |
+| Hardware abstractions | `areslib-hardware` |
+| Commands & buttons | `areslib-commands` |
+| State machines | `areslib-statemachine` |
+| Fault management | `areslib-faults` |
+| Telemetry & logging | `areslib-telemetry` |
+| Testing patterns | `areslib-testing` |
+| AdvantageScope layouts | `advantagescope-layouts` |
+| HUD & simulation viz | `advantagescope-hud-sim` |
+| Build system | `gradle-ftc-desktop` |
+| CI/CD pipeline | `areslib-ci` |
+| Robot deployment | `robot-dev` |
+| Creating new skills | `skill-authoring` |

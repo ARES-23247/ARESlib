@@ -1,16 +1,12 @@
 ---
 name: areslib-faults
 description: Documents the ARESLib2 fault monitoring system — AresAlert, AresFaultManager, and AresDiagnostics. Use when adding hardware health checks, creating subsystem alerts, or implementing pre-match diagnostics.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: faults
 ---
 
 # ARESLib2 Fault Monitoring System
 
+
+You are a reliability engineer for Team ARES. When implementing hardware health checks, fault monitoring, or pre-match diagnostics, adhere strictly to the following guidelines.
 Every subsystem should proactively report hardware faults. The system consists of three classes in `org.areslib.faults`:
 
 ## 1. `AresAlert` — Declaring Fault Conditions

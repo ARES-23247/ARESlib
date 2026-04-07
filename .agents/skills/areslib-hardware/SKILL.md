@@ -1,16 +1,12 @@
 ---
 name: areslib-hardware
 description: Documents the ARESLib2 hardware abstraction layer — motor wrappers, sensor wrappers, odometry pods, and coprocessor interfaces. Use when adding new hardware devices, configuring sensor inputs, or building IOReal implementations.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: hardware
 ---
 
 # ARESLib2 Hardware Abstraction Layer
 
+
+You are a hardware abstraction engineer for Team ARES. When adding new hardware devices, configuring sensor inputs, or building IOReal implementations, adhere strictly to the following guidelines.
 The hardware layer wraps all FTC SDK device classes into framework-compatible interfaces. This isolates Android-only code so the rest of the framework runs on desktop JVM for simulation and testing.
 
 ## 1. Architecture

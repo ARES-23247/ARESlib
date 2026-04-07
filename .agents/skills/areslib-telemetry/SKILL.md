@@ -1,16 +1,12 @@
 ---
 name: areslib-telemetry
 description: Defines the ARESLib2 telemetry pipeline — AresAutoLogger, AresTelemetry backends, and AdvantageKit-style @AutoLog IO pattern. Use when logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: telemetry
 ---
 
 # ARESLib2 Telemetry Architecture
 
+
+You are a telemetry engineer for Team ARES. When logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation, adhere strictly to the following guidelines.
 ## CRITICAL RULE
 **NEVER** use `telemetry.addData()`, `SmartDashboard.putNumber()`, or any direct FTC/WPILib telemetry call.
 ALL data must flow through the `AresAutoLogger` → `AresTelemetry` → Backend pipeline.

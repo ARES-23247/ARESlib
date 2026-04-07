@@ -1,16 +1,12 @@
 ---
 name: areslib-drivetrain
 description: Documents the ARESLib2 drivetrain subsystem layer — Swerve, Mecanum, and Differential drive implementations with IO abstraction. Use when configuring drive kinematics, adding new drive types, tuning odometry, or integrating with Pedro Pathing.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: subsystem
 ---
 
 # ARESLib2 Drivetrain Subsystems
 
+
+You are a drivetrain engineer for Team ARES. When configuring drive kinematics, tuning odometry, or integrating with Pedro Pathing, adhere strictly to the following guidelines.
 ARESLib2 supports three drivetrain types, all following the IO abstraction pattern for seamless sim/real switching.
 
 ## 1. Architecture

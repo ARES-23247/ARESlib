@@ -1,16 +1,12 @@
 ---
 name: areslib-math
 description: Reference for ARESLib2's ported WPILib math library — PID controllers, feedforward models, motion profiles, filters, and geometry. Use when tuning mechanisms, implementing control loops, or working with pose estimation instead of reimplementing from scratch.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "1.0.0"
-  category: math
 ---
 
 # ARESLib2 Math & Controls Library
 
+
+You are a controls engineer for Team ARES. When implementing PID controllers, feedforward models, motion profiles, or pose estimation, adhere strictly to the following guidelines.
 ARESLib2 ships with a complete port of WPILib's math utilities in `org.areslib.math.*`. **Do NOT reimplement PID, feedforward, or motion profiling from scratch** — use these classes.
 
 ## 1. Controllers (`org.areslib.math.controller`)

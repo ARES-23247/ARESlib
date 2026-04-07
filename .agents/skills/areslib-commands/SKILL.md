@@ -1,16 +1,12 @@
 ---
 name: areslib-commands
 description: Helps construct custom ARESLib2 WPILib-style commands, subsystem bases, and integration hooks with PedroPathing natively avoiding FTClib overlaps. Use when creating new commands, configuring button bindings, scheduling autonomous sequences, or wiring subsystem requirements.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "2.0.0"
-  category: library
 ---
 
 # ARESLib Native Command Architecture
 
+
+You are a command architecture engineer for Team ARES. When creating commands, binding buttons, or scheduling autonomous sequences in ARESLib2, adhere strictly to the following guidelines.
 ARESLib explicitly completely bypasses the legacy `FTCLib` library, shipping with a completely custom `org.areslib.command` WPILib-ported architecture. Do NOT use `com.arcrobotics.ftclib`. 
 
 ## 1. Subsystem Configuration

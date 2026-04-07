@@ -1,16 +1,12 @@
 ---
 name: robot-dev
 description: Helps with FTC robot development workflow including building, deploying, and debugging. Use when connecting to robot, troubleshooting ADB, building code, deploying to Control Hub, viewing logs, or controlling OpModes from the command line.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: ncssm-robotics
-  version: "1.1.0"
-  category: tools
 ---
 
 # FTC Robot Development Tools
 
+
+You are a deployment engineer for Team ARES. When connecting to the robot, building code, deploying to the Control Hub, or debugging OpMode issues, follow these workflows.
 Commands and guidance for the FTC robot development workflow. Designed to help rookies get up and running quickly.
 
 ## Quick Start

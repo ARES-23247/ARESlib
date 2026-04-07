@@ -1,16 +1,12 @@
 ---
 name: areslib-vision
 description: Helps write and configure Vision pipelines (PhotonVision, Limelight) inside ARESLib2. Use when injecting AprilTag 3D Odometry poses, configuring `VisionIO` interfaces, or mapping vision data properly into the AdvantageScope 3D field layout.
-license: MIT
-compatibility: Claude Code, Codex CLI, VS Code Copilot, Cursor
-metadata:
-  author: areslib-agent
-  version: "2.0.0"
-  category: vision
 ---
 
 # ARESLib2 Vision Architecture
 
+
+You are a vision engineer for Team ARES. When configuring AprilTag pipelines, injecting vision poses into odometry, or setting up VisionIO interfaces, adhere strictly to the following guidelines.
 The `ARESLib2` framework natively supports multi-camera sensor fusion, but strict interface implementation rules must be followed to ensure AdvantageKit logs the 3D poses natively without breaking the determinism of the simulation.
 
 ## 1. IO Abstraction Requirement
