@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build & Test
 
 on:
   push:
@@ -15,6 +15,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Build, Test & Javadoc
 
     steps:
     - uses: actions/checkout@v4
@@ -29,16 +30,25 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
-    - name: Build and Test with Gradle
-      run: ./gradlew build javadoc --no-daemon
+    - name: Compile
+      run: ./gradlew compileJava compileTestJava --no-daemon
+
+    - name: Run Tests
+      run: ./gradlew test --no-daemon
+
+    - name: Generate Javadoc
+      run: ./gradlew javadoc --no-daemon
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
-      if: success() || failure()
+      if: always()
       with:
         name: test-results
-        path: build/reports/tests/test/
-        
+        path: |
+          build/reports/tests/test/
+          build/test-results/test/
+        retention-days: 30
+
     - name: Upload Javadoc
       uses: actions/upload-artifact@v4
       with:
@@ -46,9 +56,7 @@ jobs:
         path: build/docs/javadoc/
 
   deploy-pages:
-    # Add a dependency to the build job
     needs: build
-    # Only deploy on pushes to the default branch
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:

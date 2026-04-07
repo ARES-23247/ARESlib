@@ -1,69 +1,77 @@
-# ARESLib2 Quickstart Template
-[![Build Status](https://github.com/thehomelessguy/ARESLib2/actions/workflows/build.yml/badge.svg)](https://github.com/thehomelessguy/ARESLib2/actions)
-Welcome to the ARESLib2 Quickstart! This template provides a full Command-Based FTC robot framework equipped with a physics simulator (Dyn4j) and AdvantageKit telemetry data-logging out of the box.
+# ARESLib2 — Championship FTC Command Framework
+[![Build & Test](https://github.com/thehomelessguy/ARESLib2/actions/workflows/build.yml/badge.svg)](https://github.com/thehomelessguy/ARESLib2/actions)
+
+A professional-grade, Command-Based FTC robot framework with AdvantageKit-style telemetry, dyn4j physics simulation, and Pedro Pathing integration — built for Einstein.
 
 ## How to Use this Template
 
-1. Click the **"Use this template"** button on GitHub to create a copy of this repository for your team.
+1. Click **"Use this template"** on GitHub to create your team's copy.
 2. Clone your new repository onto your local machine.
-3. Open the repository in your IDE of choice (such as VS Code or Android Studio).
-4. Wait for Gradle to fully sync.
+3. Open in your IDE (VS Code or Android Studio).
+4. Wait for Gradle sync to complete.
 
-## Elite Features (Included)
+---
 
-ARESLib2 is packed with Einstein-tested capabilities that abstract complex kinematics away from the programmer:
-- **Virtual Simulation Parity**: Fully modeled Dyn4j rigit-body multi-robot contact physics natively logged to AdvantageScope.
-- **Dynamic On-The-Fly Pathing**: Native Pedro Pathing wrappers with automated Bezier bounding-box obstacle avoidance.
-- **Ghost Mode**: Serialized teleop JSON macros for auto-recording and flawless re-playback.
-- **Shoot-on-the-Move**: Feedforward kinematic aim calculators (target leading calculation).
-- **Advanced State Tracking**: 2D custom bounding-box State Machine loopers and GC-free 1D Kalman Filters for optimal mechanical isolation.
-- **Automated SysId**: Generates standardized quasistatic and dynamic WPILog routines to extract perfect $k_S, k_V, k_A$ Feedforwards.
-- **Persistent Fault Management**: `AresFaultManager` natively tracks and categorizes hardware alerts, broadcasting to AdvantageScope and automatically trigging haptic/LED feedback.
-- **Odometry & Localizer Independence**: Built-in generic hardware abstractions for modules like the GoBilda Pinpoint.
+## Elite Features
 
-## Project Structure (Directory Map)
+| Feature | Description |
+|:--------|:------------|
+| **Physics Simulation** | Full dyn4j rigid-body contact physics with field boundaries, game piece interaction, and collision logging to AdvantageScope |
+| **Dynamic Pathing** | Native Pedro Pathing wrappers with automated Bezier bounding-box obstacle avoidance |
+| **Ghost Mode** | Serialized teleop JSON macros for auto-recording and flawless re-playback |
+| **Shoot-on-the-Move** | Feedforward kinematic aim calculators with target leading |
+| **State Machines** | Enum-based state machines with timed transitions, entry/exit actions, and timeout fallbacks |
+| **Automated SysId** | Standardized quasistatic and dynamic WPILog routines to extract kS, kV, kA feedforwards |
+| **Fault Management** | `AresFaultManager` natively tracks hardware alerts, broadcasts to AdvantageScope, triggers haptic/LED feedback |
+| **Sensor Fusion** | Kalman-inspired vision + odometry blending with confidence gating and angular shortest-path interpolation |
+| **LiDAR Fusion** | Array-based LiDAR raycasting with A* grid injection for real-time obstacle mapping |
 
-To ensure the framework remains cleanly modular, the repository strictiy separates the backend architecture from the user's specific competition code:
+---
+
+## Project Structure
 
 ```text
-├── src/main/java/org/areslib/             # Protected Framework Backend
-│   ├── core/                              # Base hardware abstractions
-│   ├── math/                              # Kinematics and geometry utilities
-│   ├── subsystems/                        # Standardized, highly-tuned components
-│   └── telemetry/                         # AdvantageKit logging pipelines
-│
-└── src/main/java/org/firstinspires/ftc/teamcode/ # User Competition Footprint
-    ├── commands/                          # Autonomous and teleop routines
-    ├── Constants.java                     # Robot-specific tuning variables
-    └── RobotContainer.java                # Hardware IO dependency bindings
+src/main/java/org/areslib/          # Protected Framework Backend
+├── command/                        # CommandScheduler, Command, SubsystemBase
+├── core/                           # AresCommandOpMode, AresRobot, FieldConstants
+│   ├── async/                      # AresAsyncExecutor (off-loop compute)
+│   ├── localization/               # AresFollower, AresOdometry
+│   └── simulation/                 # AresPhysicsWorld, DecodeFieldSim
+├── faults/                         # AresAlert, AresFaultManager, AresDiagnostics
+├── hardware/                       # AresHardwareManager, motor/encoder/sensor wrappers
+│   └── interfaces/                 # VisionIO, ArrayLidarIO, AresMotor, AresEncoder
+├── math/                           # WPILib-ported PID, feedforward, geometry, kinematics
+├── statemachine/                   # Enum-based StateMachine framework
+├── subsystems/                     # SwerveDrive, Mecanum, Differential, Vision, LiDAR
+└── telemetry/                      # AresAutoLogger, AresTelemetry backends
+
+src/main/java/org/firstinspires/ftc/teamcode/  # Your Competition Code
+├── commands/                       # Autonomous and teleop routines
+├── Constants.java                  # Robot-specific tuning values
+└── RobotContainer.java             # Hardware IO dependency bindings
 ```
 
-## FRC-Style Hardware Abstraction Interfaces
+---
 
-ARESLib2 leverages FRC AdvantageKit's IO paradigm. The secret behind instantly pivoting your code from physical motors to 2D simulations is **Dependency Injection**. The following diagram explains how logic loops remain completely isolated from hardware loops:
+## IO Abstraction Pattern
+
+ARESLib2 uses FRC AdvantageKit's IO paradigm. Logic is completely decoupled from hardware through Dependency Injection:
 
 ```mermaid
 flowchart TD
     Container[RobotContainer] --> |Instantiates| Subsystem[Subsystems]
-    
     Subsystem --> |Constructs with| IOInterface{SubsystemIO Interface}
-    
     IOInterface --> |Simulation Mode| IOSim[SubsystemIOSim]
     IOInterface --> |Deploy Mode| IOReal[SubsystemIOReal]
-    
-    IOSim --> |Log Structure| AKLogger[(AdvantageKit Database)]
+    IOSim --> |Log Structure| AKLogger[(AresAutoLogger)]
     IOReal --> |Log Structure| AKLogger
-    
     IOSim -.-> |Dyn4j Constraints| Sim[Physics Engine]
-    IOReal -.-> |CAN / I2C Limits| Hardware[Physical Control Hub]
+    IOReal -.-> |CAN / I2C| Hardware[Control Hub]
 ```
-`RobotContainer.java` implicitly constructs subsystems with either Real Hardware Wrappers (like `SwerveModuleIOReal`) or Sim Physics Layers (like `SwerveModuleIOSim`) based on the active `AresRobot.isSimulation()` configuration.
 
-## Running the Simulator Locally
+---
 
-ARESLib2 comes with a fully functioning 2D physics simulation environment that allows you to test your OpModes and autonomous routines without a physical robot.
-
-To run the simulator from a terminal:
+## Running the Simulator
 
 ```bash
 # Windows
@@ -73,26 +81,70 @@ To run the simulator from a terminal:
 ./gradlew runSim
 ```
 
-## Exploring Data with AdvantageScope
+Connect AdvantageScope to `localhost:3300` for live telemetry visualization.
 
-All robot interactions (in simulation and in real life) output WPILog or RLog telemetry compatible with AdvantageScope.
-1. Download [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope).
-2. For live data, open AdvantageScope, connect to your robot's IP (or `localhost:3300` for simulation), and begin rendering kinematics and logs.
-3. For offline data, drag and drop the `.wpilog` files (found in the root folder after running a sim) into AdvantageScope.
-
-## Building and Deploying to the Robot
-
-To physically deploy your code to a REV Control Hub:
+## Running Tests
 
 ```bash
+# Run all 54 test files
+.\gradlew.bat test
+
+# Run with verbose output
+.\gradlew.bat test --info
+```
+
+Test coverage includes:
+- **Command system**: CommandScheduler lifecycle (schedule, cancel, interrupt, default commands, reset)
+- **Math library**: 24 test files covering PID, feedforward, kinematics, geometry, pose estimators
+- **Drive subsystems**: Swerve kinematics, field-centric transform, slew rate limiting, desaturation
+- **Vision pipeline**: Quaternion→yaw extraction, ghost rejection, field bounds, confidence scoring
+- **Sensor fusion**: Kalman gain, coordinate conversion, angular shortest-path interpolation
+- **Physics simulation**: dyn4j field bounds, body collision, LiDAR raycasting
+- **Fault management**: Alert registration, severity tracking
+- **State machines**: Transition logic, timeouts, entry/exit actions
+- **Ghost mode**: Record + playback lifecycle
+
+## Building and Deploying
+
+```bash
+# Deploy to REV Control Hub (connect to Control Hub Wi-Fi first)
 .\gradlew.bat installDebug
 ```
-Make sure you are connected to the Control Hub's Wi-Fi network before deploying.
+
+## Exploring Data with AdvantageScope
+
+All robot interactions output WPILog telemetry compatible with [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope).
+
+1. **Live data**: Connect to your robot's IP or `localhost:3300` for simulation.
+2. **Offline data**: Drag `.wpilog` files into AdvantageScope.
+
+---
+
+## AI Development Skills
+
+ARESLib2 ships with 13 AI-assistant skill files that constrain code generation to framework-correct patterns:
+
+| Skill | Purpose |
+|:------|:--------|
+| `areslib-architecture` | Coordinate systems, vision fusion, simulator parity |
+| `areslib-commands` | CommandScheduler lifecycle, AresGamepad bindings |
+| `areslib-faults` | AresAlert, AresFaultManager, AresDiagnostics |
+| `areslib-math` | PID controllers, feedforwards, motion profiles, filters |
+| `areslib-statemachine` | Enum-based StateMachine framework |
+| `areslib-telemetry` | AresAutoLogger, AresTelemetry backend routing |
+| `areslib-testing` | Headless JUnit 5, Mockito, CommandScheduler test stepping |
+| `areslib-vision` | VisionIO, multi-camera fusion, latency compensation |
+| `pedro-pathing` | Path building, heading interpolation, follower setup |
+| `advantagescope-layouts` | Layout JSON configuration via MCP tools |
+| `advantagescope-hud-sim` | Gamepad mappings, Java 2D rendering for sim |
+| `gradle-ftc-desktop` | AAR extraction for desktop simulation builds |
+| `robot-dev` | Build, deploy, ADB debugging workflow |
+
+---
 
 ## Acknowledgements & Licensing
 
-This project is deeply indebted to several incredible open-source communities driving modern robotics forward:
-- **[WPILib](https://github.com/wpilibsuite/allwpilib)**: `ARESLib2` heavily ports and relies upon WPILib's foundational 2D kinematics, geometry, and pose estimator architectures. These specific classes are distributed under the BSD-3-Clause license. Please see [WPILIB-LICENSE.md](WPILIB-LICENSE.md) for full licensing details.
-- **[Pedro Pathing](https://github.com/Pedro-Pathing/PedroPathing)**: Underpins the highly accurate trajectory generation and bounding-box avoidance functionality.
-- **[AdvantageKit & AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageKit)**: The golden standard for deterministic logging, recreated structurally within ARESLib to visualize complex coordinate spaces.
-- **[dyn4j](https://github.com/dyn4j/dyn4j)**: The 100% Java pure 2D rigid-body physics engine powering the high-fidelity Einstein-ready testbed simulations.
+- **[WPILib](https://github.com/wpilibsuite/allwpilib)** — Foundational kinematics, geometry, and pose estimator architectures (BSD-3-Clause). See [WPILIB-LICENSE.md](WPILIB-LICENSE.md).
+- **[Pedro Pathing](https://github.com/Pedro-Pathing/PedroPathing)** — Trajectory generation and bounding-box avoidance.
+- **[AdvantageKit & AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageKit)** — Deterministic logging architecture, recreated structurally within ARESLib.
+- **[dyn4j](https://github.com/dyn4j/dyn4j)** — 100% Java pure 2D rigid-body physics engine powering simulation.
