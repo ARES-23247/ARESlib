@@ -127,11 +127,13 @@ public class RlogServerBackend implements AresLoggerBackend {
                               byte[] dummy = new byte[1024];
                               while (in.read(dummy) != -1) {}
                             } catch (Exception ignored) {
+                              ignored.printStackTrace();
                             }
                             clients.remove(sc);
                             try {
                               clientSocket.close();
                             } catch (Exception ignored) {
+                              ignored.printStackTrace();
                             }
                           });
                   readerThread.setDaemon(true);
@@ -342,6 +344,7 @@ public class RlogServerBackend implements AresLoggerBackend {
         try {
           sc.socket.close();
         } catch (Exception ignored) {
+          ignored.printStackTrace();
         }
         clients.remove(sc);
       }

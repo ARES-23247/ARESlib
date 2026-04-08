@@ -22,7 +22,7 @@ public class ArrayVisionIOSim implements VisionIO {
   // Positions approximate the center of each field wall, using the half-field size from
   // FieldConstants.
   private static final double WALL_TAG_OFFSET = org.areslib.core.FieldConstants.HALF_FIELD_METERS;
-  private final double[][] INTO_THE_DEEP_TAGS = {
+  private final double[][] intoTheDeepTags = {
     {WALL_TAG_OFFSET, 0.0, Math.PI}, // East wall tag (facing West)
     {-WALL_TAG_OFFSET, 0.0, 0.0}, // West wall tag (facing East)
     {0.0, WALL_TAG_OFFSET, -Math.PI / 2.0}, // North wall tag (facing South)
@@ -52,7 +52,7 @@ public class ArrayVisionIOSim implements VisionIO {
     double closestDist = Double.MAX_VALUE;
 
     // Simulate Limelight scanning for Into The Deep fiducials
-    for (double[] tag : INTO_THE_DEEP_TAGS) {
+    for (double[] tag : intoTheDeepTags) {
       double tagX = tag[0];
       double tagY = tag[1];
       double tagHeading = tag[2];

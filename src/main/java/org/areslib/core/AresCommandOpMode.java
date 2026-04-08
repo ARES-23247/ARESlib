@@ -59,7 +59,7 @@ public abstract class AresCommandOpMode extends LinearOpMode {
     org.areslib.hardware.coprocessors.photon.PhotonCore.experimental.setMaximumParallelCommands(8);
     org.areslib.hardware.coprocessors.photon.PhotonCore.experimental.setSinglethreadedOptimized(
         false);
-    org.areslib.hardware.coprocessors.photon.PhotonCore.PARALLELIZE_SERVOS = true;
+    org.areslib.hardware.coprocessors.photon.PhotonCore.parallelizeServos = true;
     org.areslib.hardware.coprocessors.photon.PhotonCore.enable();
 
     allHubs = hardwareMap.getAll(LynxModule.class);

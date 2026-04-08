@@ -119,8 +119,8 @@ public class GeometryUtil {
   public static double calculateRadius(Translation2d a, Translation2d b, Translation2d c) {
     Translation2d vba = a.minus(b);
     Translation2d vbc = c.minus(b);
-    double cross_z = (vba.getX() * vbc.getY()) - (vba.getY() * vbc.getX());
-    int sign = (cross_z < 0) ? 1 : -1;
+    double crossZ = (vba.getX() * vbc.getY()) - (vba.getY() * vbc.getX());
+    int sign = (crossZ < 0) ? 1 : -1;
 
     double ab = a.getDistance(b);
     double bc = b.getDistance(c);

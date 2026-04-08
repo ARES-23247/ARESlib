@@ -105,7 +105,7 @@ public class PathfindingCommand extends Command {
     this.shouldFlipPath = shouldFlipPath;
 
     instances++;
-    // (tResourceType.kResourceType_PathFindingCommand, instances);
+    // (resourceType.kResourceType_PathFindingCommand, instances);
   }
 
   /**
@@ -154,7 +154,7 @@ public class PathfindingCommand extends Command {
     this.shouldFlipPath = () -> false;
 
     instances++;
-    // (tResourceType.kResourceType_PathFindingCommand, instances);
+    // (resourceType.kResourceType_PathFindingCommand, instances);
   }
 
   @Override

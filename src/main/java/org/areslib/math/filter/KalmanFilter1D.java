@@ -66,15 +66,15 @@ public class KalmanFilter1D {
     // P_k|k-1 = A * P_k-1|k-1 * A^T + Q
     // A = [1, dt]
     //     [0,  1]
-    double p00_new = m_p00 + dtSeconds * (m_p10 + m_p01) + dtSeconds * dtSeconds * m_p11 + m_qPos;
-    double p01_new = m_p01 + dtSeconds * m_p11;
-    double p10_new = m_p10 + dtSeconds * m_p11;
-    double p11_new = m_p11 + m_qVel;
+    double p00New = m_p00 + dtSeconds * (m_p10 + m_p01) + dtSeconds * dtSeconds * m_p11 + m_qPos;
+    double p01New = m_p01 + dtSeconds * m_p11;
+    double p10New = m_p10 + dtSeconds * m_p11;
+    double p11New = m_p11 + m_qVel;
 
-    m_p00 = p00_new;
-    m_p01 = p01_new;
-    m_p10 = p10_new;
-    m_p11 = p11_new;
+    m_p00 = p00New;
+    m_p01 = p01New;
+    m_p10 = p10New;
+    m_p11 = p11New;
   }
 
   /**
@@ -100,15 +100,15 @@ public class KalmanFilter1D {
     m_vel += k1 * y;
 
     // P_k|k = (I - K * H) * P_k|k-1
-    double p00_new = (1 - k0) * m_p00;
-    double p01_new = (1 - k0) * m_p01;
-    double p10_new = -k1 * m_p00 + m_p10;
-    double p11_new = -k1 * m_p01 + m_p11;
+    double p00New = (1 - k0) * m_p00;
+    double p01New = (1 - k0) * m_p01;
+    double p10New = -k1 * m_p00 + m_p10;
+    double p11New = -k1 * m_p01 + m_p11;
 
-    m_p00 = p00_new;
-    m_p01 = p01_new;
-    m_p10 = p10_new;
-    m_p11 = p11_new;
+    m_p00 = p00New;
+    m_p01 = p01New;
+    m_p10 = p10New;
+    m_p11 = p11New;
   }
 
   /**
@@ -134,15 +134,15 @@ public class KalmanFilter1D {
     m_vel += k1 * y;
 
     // P_k|k = (I - K * H) * P_k|k-1
-    double p00_new = m_p00 - k0 * m_p10;
-    double p01_new = m_p01 - k0 * m_p11;
-    double p10_new = (1 - k1) * m_p10;
-    double p11_new = (1 - k1) * m_p11;
+    double p00New = m_p00 - k0 * m_p10;
+    double p01New = m_p01 - k0 * m_p11;
+    double p10New = (1 - k1) * m_p10;
+    double p11New = (1 - k1) * m_p11;
 
-    m_p00 = p00_new;
-    m_p01 = p01_new;
-    m_p10 = p10_new;
-    m_p11 = p11_new;
+    m_p00 = p00New;
+    m_p01 = p01New;
+    m_p10 = p10New;
+    m_p11 = p11New;
   }
 
   /**

@@ -110,8 +110,9 @@ public class ArrayLidarIOSim implements ArrayLidarIO, FaultMonitor {
           boolean hit = false;
           for (Body b : world.getBodies()) {
             // Skip the robot's own body (it sits exactly at the origin of the ray)
-            if (b.getMass().getType() == org.dyn4j.geometry.MassType.NORMAL && currentDist < 0.2)
+            if (b.getMass().getType() == org.dyn4j.geometry.MassType.NORMAL && currentDist < 0.2) {
               continue;
+            }
 
             if (b.contains(point)) {
               hit = true;
@@ -124,9 +125,9 @@ public class ArrayLidarIOSim implements ArrayLidarIO, FaultMonitor {
           }
         }
 
-        double dist3D_mm = (dist2D / Math.cos(pitchOffset)) * 1000.0;
+        double dist3DMm = (dist2D / Math.cos(pitchOffset)) * 1000.0;
         int index = (row * gridDim) + col;
-        inputs.distanceZonesMm[index] = Math.min(dist3D_mm, MAX_RANGE_METERS * 1000.0);
+        inputs.distanceZonesMm[index] = Math.min(dist3DMm, MAX_RANGE_METERS * 1000.0);
       }
     }
   }

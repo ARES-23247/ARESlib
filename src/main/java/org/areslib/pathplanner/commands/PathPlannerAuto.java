@@ -52,7 +52,7 @@ public class PathPlannerAuto extends Command {
     PPLibTelemetry.registerHotReloadAuto(autoName, this);
 
     instances++;
-    // (tResourceType.kResourceType_PathPlannerAuto, instances);
+    // (resourceType.kResourceType_PathPlannerAuto, instances);
   }
 
   /**

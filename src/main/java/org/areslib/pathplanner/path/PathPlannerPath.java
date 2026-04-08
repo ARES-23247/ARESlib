@@ -76,7 +76,7 @@ public class PathPlannerPath {
     precalcValues();
 
     instances++;
-    // (tResourceType.kResourceType_PathPlannerPath, instances);
+    // (resourceType.kResourceType_PathPlannerPath, instances);
   }
 
   /**
@@ -163,7 +163,7 @@ public class PathPlannerPath {
     this.previewStartingRotation = Rotation2d.fromDegrees(0);
 
     instances++;
-    // (tResourceType.kResourceType_PathPlannerPath, instances);
+    // (resourceType.kResourceType_PathPlannerPath, instances);
   }
 
   /**

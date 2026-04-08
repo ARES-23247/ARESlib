@@ -8,7 +8,7 @@ import org.areslib.telemetry.AresLoggableInputs;
  */
 public interface IMUIO {
 
-  public static class IMUInputs implements AresLoggableInputs {
+  class IMUInputs implements AresLoggableInputs {
     /** True if the IMU is currently returning healthy data. */
     public boolean connected = false;
 

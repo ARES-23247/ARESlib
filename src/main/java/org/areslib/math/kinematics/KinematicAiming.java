@@ -66,15 +66,15 @@ public class KinematicAiming {
     // Solve quadratic equation for time of flight (t):
     // (s_p^2 - v_r^2) t^2 + 2(D · v_r)t - |D|^2 = 0
 
-    double v_r_sq = vx * vx + vy * vy;
-    double s_p_sq = projectileSpeedMetersPerSec * projectileSpeedMetersPerSec;
-    double a = s_p_sq - v_r_sq;
+    double vrSq = vx * vx + vy * vy;
+    double spSq = projectileSpeedMetersPerSec * projectileSpeedMetersPerSec;
+    double a = spSq - vrSq;
 
     double dotProduct = dx * vx + dy * vy;
     double b = 2.0 * dotProduct;
 
-    double d_sq = dx * dx + dy * dy;
-    double c = -d_sq;
+    double dSq = dx * dx + dy * dy;
+    double c = -dSq;
 
     if (Math.abs(a) < 1e-6) {
       // Projectile speed is exactly equal to robot speed. Linear fallback.

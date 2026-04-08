@@ -5,17 +5,17 @@ package org.areslib.pathplanner.dummy;
  * dependencies.
  */
 public class FRCNetComm {
-  public static class tInstances {
+  public static class instances {
     public static final int kLanguage_Java = 1;
   }
 
-  public static class tResourceType {
+  public static class resourceType {
     public static final int kResourceType_PathPlanner = 1;
   }
 
-  public static void FRCNetworkCommunicationObserveUserProgramStarting() {}
+  public static void frcNetworkCommunicationObserveUserProgramStarting() {}
 
-  public static void FRCNetworkCommunicationReserve() {}
+  public static void frcNetworkCommunicationReserve() {}
 
   public static void report(int type, int inst) {}
 }

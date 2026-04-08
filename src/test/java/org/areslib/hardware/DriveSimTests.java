@@ -3,7 +3,12 @@ package org.areslib.hardware;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.areslib.core.AresRobot;
-import org.areslib.subsystems.drive.*;
+import org.areslib.subsystems.drive.DifferentialDriveIO;
+import org.areslib.subsystems.drive.DifferentialDriveIOSim;
+import org.areslib.subsystems.drive.MecanumDriveIO;
+import org.areslib.subsystems.drive.MecanumDriveIOSim;
+import org.areslib.subsystems.drive.SwerveModuleIO;
+import org.areslib.subsystems.drive.SwerveModuleIOSim;
 import org.junit.jupiter.api.Test;
 
 public class DriveSimTests {

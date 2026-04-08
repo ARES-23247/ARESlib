@@ -57,9 +57,9 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
   private RobotUsbDevice robotUsbDevice;
   private HashMap<LynxModule, RobotUsbDevice> usbDeviceMap;
 
-  public static LynxModule CONTROL_HUB, EXPANSION_HUB;
+  public static LynxModule controlHub, expansionHub;
 
-  public static boolean PARALLELIZE_SERVOS = true;
+  public static boolean parallelizeServos = true;
 
   private OpModeManagerImpl opModeManager;
 
@@ -83,8 +83,8 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
   public static ExperimentalParameters experimental = new ExperimentalParameters();
 
   public PhotonCore() {
-    CONTROL_HUB = null;
-    EXPANSION_HUB = null;
+    controlHub = null;
+    expansionHub = null;
     enabled = new AtomicBoolean(false);
     threadEnabled = new AtomicBoolean(false);
     usbDeviceMap = new HashMap<>();
@@ -92,12 +92,12 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
 
   public static void enable() {
     instance.enabled.set(true);
-    if (CONTROL_HUB != null && CONTROL_HUB.getBulkCachingMode() == LynxModule.BulkCachingMode.OFF) {
-      CONTROL_HUB.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+    if (controlHub != null && controlHub.getBulkCachingMode() == LynxModule.BulkCachingMode.OFF) {
+      controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
     }
-    if (EXPANSION_HUB != null
-        && EXPANSION_HUB.getBulkCachingMode() == LynxModule.BulkCachingMode.OFF) {
-      EXPANSION_HUB.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+    if (expansionHub != null
+        && expansionHub.getBulkCachingMode() == LynxModule.BulkCachingMode.OFF) {
+      expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
     }
   }
 
@@ -123,8 +123,8 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
     synchronized (instance.messageSync) {
       while (((PhotonLynxModule) photonModule).getUnfinishedCommands().size()
           > experimental.maximumParallelCommands.get()) {
-        // RobotLog.ee("PhotonCore", ((PhotonLynxModule)CONTROL_HUB).getUnfinishedCommands().size()
-        // + " | " + ((PhotonLynxModule)EXPANSION_HUB).getUnfinishedCommands().size());
+        // RobotLog.ee("PhotonCore", ((PhotonLynxModule)controlHub).getUnfinishedCommands().size()
+        // + " | " + ((PhotonLynxModule)expansionHub).getUnfinishedCommands().size());
       }
 
       if (!experimental.singlethreadedOptimized.get()) {
@@ -178,7 +178,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
 
   protected static boolean shouldParallelize(LynxCommand command) {
     return (command instanceof LynxSetMotorConstantPowerCommand
-        || (PARALLELIZE_SERVOS && command instanceof LynxSetServoPulseWidthCommand));
+        || (parallelizeServos && command instanceof LynxSetServoPulseWidthCommand));
   }
 
   protected static boolean shouldAckImmediately(LynxCommand command) {
@@ -236,8 +236,8 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
         map.remove(s, toRemove.get(s));
       }
     } else {
-      CONTROL_HUB = null;
-      EXPANSION_HUB = null;
+      controlHub = null;
+      expansionHub = null;
     }
 
     instance.modules = map.getAll(LynxModule.class);
@@ -268,8 +268,8 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
 
         if (module.isParent()
             && (hasChub && LynxConstants.isEmbeddedSerialNumber(module.getSerialNumber()))
-            && CONTROL_HUB == null) {
-          CONTROL_HUB = photonLynxModule;
+            && controlHub == null) {
+          controlHub = photonLynxModule;
 
           ConcurrentHashMap<Integer, LynxRespondable> unfinishedCommands =
               new ConcurrentHashMap<>();
@@ -322,7 +322,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
               e.printStackTrace();
             }
           }
-          EXPANSION_HUB = photonLynxModule;
+          expansionHub = photonLynxModule;
         }
       } catch (IllegalAccessException e) {
         e.printStackTrace();
@@ -367,6 +367,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
             setLynxObject(device2, replacements);
             RobotLog.e("" + (device2 instanceof LynxI2cDeviceSynch));
           } catch (Exception ignored) {
+            ignored.printStackTrace();
           }
         } else if (device instanceof I2cDeviceSynchSimple) {
           try {
@@ -375,6 +376,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
                     ReflectionUtils.getField(device.getClass(), "deviceClient").get(device);
             setLynxObject(device2, replacements);
           } catch (Exception ignored) {
+            ignored.printStackTrace();
           }
         } else {
           setLynxObject(device, replacements);

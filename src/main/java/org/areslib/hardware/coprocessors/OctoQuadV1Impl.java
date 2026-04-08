@@ -29,6 +29,7 @@ public class OctoQuadV1Impl implements AresOctoQuadDriver {
         Method refreshMethod = octoQuad.getClass().getMethod("refreshCache");
         refreshMethod.invoke(octoQuad);
       } catch (Exception ignored) {
+        ignored.printStackTrace();
       }
     }
   }
@@ -57,6 +58,7 @@ public class OctoQuadV1Impl implements AresOctoQuadDriver {
     try {
       // Placeholder execution to map to OctoQuadBase$ChannelBankConfig
     } catch (Exception ignored) {
+      ignored.printStackTrace();
     }
   }
 }

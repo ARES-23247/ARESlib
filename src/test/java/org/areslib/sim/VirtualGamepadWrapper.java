@@ -79,18 +79,33 @@ public class VirtualGamepadWrapper {
       // Apply keyboard bounds
       float lx = 0;
       float ly = 0;
-      if (keyboardListener.isKeyDown('a')) lx -= 1.0f;
-      if (keyboardListener.isKeyDown('d')) lx += 1.0f;
-      if (keyboardListener.isKeyDown('w')) ly -= 1.0f; // FTC Standard: Up is negative
-      if (keyboardListener.isKeyDown('s')) ly += 1.0f;
+      if (keyboardListener.isKeyDown('a')) {
+        lx -= 1.0f;
+      }
+      if (keyboardListener.isKeyDown('d')) {
+        lx += 1.0f;
+      }
+      if (keyboardListener.isKeyDown('w')) {
+        ly -= 1.0f;
+      } // FTC Standard: Up is negative
+      if (keyboardListener.isKeyDown('s')) {
+        ly += 1.0f;
+      }
 
       float rx = 0;
       float ry = 0;
-      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_LEFT)) rx -= 1.0f;
-      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_RIGHT)) rx += 1.0f;
-      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_UP))
+      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_LEFT)) {
+        rx -= 1.0f;
+      }
+      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_RIGHT)) {
+        rx += 1.0f;
+      }
+      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_UP)) {
         ry -= 1.0f; // FTC Standard: Up is negative
-      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_DOWN)) ry += 1.0f;
+      }
+      if (keyboardListener.isKeyDown(java.awt.event.KeyEvent.VK_DOWN)) {
+        ry += 1.0f;
+      }
 
       gamepad.left_stick_x = lx;
       gamepad.left_stick_y = ly;

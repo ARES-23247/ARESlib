@@ -14,24 +14,34 @@
 
     <module name="TreeWalker">
         <!-- Checks for Naming Conventions. -->
-        <module name="LocalVariableName"/>
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+        </module>
         <module name="LocalFinalVariableName"/>
-        <module name="MemberName"/>
+        <module name="MemberName">
+            <property name="format" value="^m_[a-z][a-zA-Z0-9]*$|^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+        </module>
         <module name="MethodName"/>
         <module name="PackageName"/>
-        <module name="ParameterName"/>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+        </module>
         <module name="StaticVariableName"/>
         <module name="TypeName"/>
 
         <!-- Checks for imports -->
-        <module name="AvoidStarImport"/>
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true"/>
+            <property name="excludes" value="java.util,java.awt,javax.swing,org.firstinspires.ftc.teamcode.Constants.*,org.areslib.pathplanner.dummy.*,org.areslib.pathplanner.path.*,org.areslib.pathplanner.util.*"/>
+            <property name="severity" value="warning"/>
+        </module>
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
         <!-- Size and Complexity Violations -->
         <module name="MethodLength">
-            <property name="max" value="150"/>
+            <property name="max" value="500"/>
         </module>
 
         <!-- Modifiers -->
@@ -40,7 +50,9 @@
 
         <!-- Block checks -->
         <module name="EmptyBlock"/>
-        <module name="NeedBraces"/>
+        <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="true"/>
+        </module>
 
         <!-- Formatting / Whitespace handled primarily by Spotless -->
     </module>

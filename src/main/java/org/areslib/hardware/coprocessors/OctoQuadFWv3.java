@@ -439,7 +439,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
     }
 
     short crc = buffer.getShort();
-    short calculatedCrc = calc_crc16_profibus(asArray);
+    short calculatedCrc = calcCrc16Profibus(asArray);
 
     out.crcOk = calculatedCrc == crc;
 
@@ -516,14 +516,14 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    * {@link #setSingleChannelPulseWidthParams(int, ChannelPulseWidthParams)}
    */
   public static class ChannelPulseWidthParams {
-    public int min_length_us;
-    public int max_length_us;
+    public int minLengthUs;
+    public int maxLengthUs;
 
     public ChannelPulseWidthParams() {}
 
-    public ChannelPulseWidthParams(int min_length_us, int max_length_us) {
-      this.min_length_us = min_length_us;
-      this.max_length_us = max_length_us;
+    public ChannelPulseWidthParams(int minLengthUs, int maxLengthUs) {
+      this.minLengthUs = minLengthUs;
+      this.maxLengthUs = maxLengthUs;
     }
   }
 
@@ -552,11 +552,11 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
     verifyInitialization();
 
     Range.throwIfRangeIsInvalid(idx, ENCODER_FIRST, ENCODER_LAST);
-    Range.throwIfRangeIsInvalid(params.min_length_us, MIN_PULSE_WIDTH_US, MAX_PULSE_WIDTH_US);
-    Range.throwIfRangeIsInvalid(params.max_length_us, MIN_PULSE_WIDTH_US, MAX_PULSE_WIDTH_US);
+    Range.throwIfRangeIsInvalid(params.minLengthUs, MIN_PULSE_WIDTH_US, MAX_PULSE_WIDTH_US);
+    Range.throwIfRangeIsInvalid(params.maxLengthUs, MIN_PULSE_WIDTH_US, MAX_PULSE_WIDTH_US);
 
-    if (params.max_length_us <= params.min_length_us) {
-      throw new RuntimeException("params.max_length_us <= params.min_length_us");
+    if (params.maxLengthUs <= params.minLengthUs) {
+      throw new RuntimeException("params.maxLengthUs <= params.minLengthUs");
     }
 
     ByteBuffer outgoing = ByteBuffer.allocate(7);
@@ -564,8 +564,8 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
     outgoing.put(CMD_SET_PARAM);
     outgoing.put(PARAM_CHANNEL_PULSE_WIDTH_MIN_MAX);
     outgoing.put((byte) idx);
-    outgoing.putShort((short) params.min_length_us);
-    outgoing.putShort((short) params.max_length_us);
+    outgoing.putShort((short) params.minLengthUs);
+    outgoing.putShort((short) params.maxLengthUs);
 
     writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_5, outgoing.array());
   }
@@ -592,8 +592,8 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
     buffer.order(OCTOQUAD_ENDIAN);
 
     ChannelPulseWidthParams params = new ChannelPulseWidthParams();
-    params.min_length_us = buffer.getShort() & 0xFFFF;
-    params.max_length_us = buffer.getShort() & 0xFFFF;
+    params.minLengthUs = buffer.getShort() & 0xFFFF;
+    params.maxLengthUs = buffer.getShort() & 0xFFFF;
 
     return params;
   }
@@ -678,18 +678,18 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    *
    * <p>NOTE: this will not take effect until a call to {@link #resetLocalizerAndCalibrateIMU()}
    *
-   * @param ticksPerMM_x scalar for converting encoder counts on the X port to millimeters of travel
+   * @param ticksPerMmX scalar for converting encoder counts on the X port to millimeters of travel
    */
-  public void setLocalizerCountsPerMM_X(float ticksPerMM_x) {
+  public void setLocalizerCountsPerMmX(float ticksPerMmX) {
     verifyInitialization();
 
-    Range.throwIfRangeIsInvalid(ticksPerMM_x, 0, Float.MAX_VALUE);
+    Range.throwIfRangeIsInvalid(ticksPerMmX, 0, Float.MAX_VALUE);
 
     ByteBuffer buf = ByteBuffer.allocate(6);
     buf.order(OCTOQUAD_ENDIAN);
     buf.put(CMD_SET_PARAM);
     buf.put(PARAM_LOCALIZER_X_TICKS_PER_MM);
-    buf.putFloat(ticksPerMM_x);
+    buf.putFloat(ticksPerMmX);
 
     writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
   }
@@ -701,18 +701,18 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    *
    * <p>NOTE: this will not take effect until a call to {@link #resetLocalizerAndCalibrateIMU()}
    *
-   * @param ticksPerMM_y scalar for converting encoder counts on the Y port to millimeters of travel
+   * @param ticksPerMmY scalar for converting encoder counts on the Y port to millimeters of travel
    */
-  public void setLocalizerCountsPerMM_Y(float ticksPerMM_y) {
+  public void setLocalizerCountsPerMmY(float ticksPerMmY) {
     verifyInitialization();
 
-    Range.throwIfRangeIsInvalid(ticksPerMM_y, 0, Float.MAX_VALUE);
+    Range.throwIfRangeIsInvalid(ticksPerMmY, 0, Float.MAX_VALUE);
 
     ByteBuffer buf = ByteBuffer.allocate(6);
     buf.order(OCTOQUAD_ENDIAN);
     buf.put(CMD_SET_PARAM);
     buf.put(PARAM_LOCALIZER_Y_TICKS_PER_MM);
-    buf.putFloat(ticksPerMM_y);
+    buf.putFloat(ticksPerMmY);
 
     writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
   }
@@ -734,16 +734,16 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    *
    * <p>NOTE: this will not take effect until a call to {@link #resetLocalizerAndCalibrateIMU()}
    *
-   * @param tcpOffsetMM_X X component of the offset vector
+   * @param tcpOffsetMmX X component of the offset vector
    */
-  public void setLocalizerTcpOffsetMM_X(float tcpOffsetMM_X) {
+  public void setLocalizerTcpOffsetMmX(float tcpOffsetMmX) {
     verifyInitialization();
 
     ByteBuffer buf = ByteBuffer.allocate(6);
     buf.order(OCTOQUAD_ENDIAN);
     buf.put(CMD_SET_PARAM);
     buf.put(PARAM_LOCALIZER_TCP_OFFSET_X_MM);
-    buf.putFloat(tcpOffsetMM_X);
+    buf.putFloat(tcpOffsetMmX);
 
     writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
   }
@@ -765,16 +765,16 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    *
    * <p>NOTE: this will not take effect until a call to {@link #resetLocalizerAndCalibrateIMU()}
    *
-   * @param tcpOffsetMM_Y Y component of the offset vector
+   * @param tcpOffsetMmY Y component of the offset vector
    */
-  public void setLocalizerTcpOffsetMM_Y(float tcpOffsetMM_Y) {
+  public void setLocalizerTcpOffsetMmY(float tcpOffsetMmY) {
     verifyInitialization();
 
     ByteBuffer buf = ByteBuffer.allocate(6);
     buf.order(OCTOQUAD_ENDIAN);
     buf.put(CMD_SET_PARAM);
     buf.put(PARAM_LOCALIZER_TCP_OFFSET_Y_MM);
-    buf.putFloat(tcpOffsetMM_Y);
+    buf.putFloat(tcpOffsetMmY);
 
     writeContiguousRegisters(Register.COMMAND, Register.COMMAND_DAT_4, buf.array());
   }
@@ -865,28 +865,28 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    *
    * @param portX see desc. for specific function call
    * @param portY see desc. for specific function call
-   * @param ticksPerMM_x see desc. for specific function call
-   * @param ticksPerMM_y see desc. for specific function call
-   * @param tcpOffsetMM_X see desc. for specific function call
-   * @param tcpOffsetMM_Y see desc. for specific function call
+   * @param ticksPerMmX see desc. for specific function call
+   * @param ticksPerMmY see desc. for specific function call
+   * @param tcpOffsetMmX see desc. for specific function call
+   * @param tcpOffsetMmY see desc. for specific function call
    * @param headingScalar see desc. for specific function call
    * @param velocityIntervalMs see desc. for specific function call
    */
   public void setAllLocalizerParameters(
       int portX,
       int portY,
-      float ticksPerMM_x,
-      float ticksPerMM_y,
-      float tcpOffsetMM_X,
-      float tcpOffsetMM_Y,
+      float ticksPerMmX,
+      float ticksPerMmY,
+      float tcpOffsetMmX,
+      float tcpOffsetMmY,
       float headingScalar,
       int velocityIntervalMs) {
     setLocalizerPortX(portX);
     setLocalizerPortY(portY);
-    setLocalizerCountsPerMM_X(ticksPerMM_x);
-    setLocalizerCountsPerMM_Y(ticksPerMM_y);
-    setLocalizerTcpOffsetMM_X(tcpOffsetMM_X);
-    setLocalizerTcpOffsetMM_Y(tcpOffsetMM_Y);
+    setLocalizerCountsPerMmX(ticksPerMmX);
+    setLocalizerCountsPerMmY(ticksPerMmY);
+    setLocalizerTcpOffsetMmX(tcpOffsetMmX);
+    setLocalizerTcpOffsetMmY(tcpOffsetMmY);
     setLocalizerImuHeadingScalar(headingScalar);
     setLocalizerVelocityIntervalMS(velocityIntervalMs);
   }
@@ -981,12 +981,12 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   public static class LocalizerDataBlock {
     public LocalizerStatus localizerStatus;
     public boolean crcOk;
-    public float heading_rad;
-    public short posX_mm;
-    public short posY_mm;
-    public short velX_mmS;
-    public short velY_mmS;
-    public float velHeading_radS;
+    public float headingRad;
+    public short posXmm;
+    public short posYmm;
+    public short velXmmS;
+    public short velYmmS;
+    public float velHeadingRadS;
 
     /**
      * Check whether it is likely that the pose data is valid. The localizer status is read along
@@ -1016,15 +1016,15 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
       out.localizerStatus = LocalizerStatus.INVALID;
     }
 
-    out.velX_mmS = buf.getShort();
-    out.velY_mmS = buf.getShort();
-    out.velHeading_radS = buf.getShort() * SCALAR_LOCALIZER_HEADING_VELOCITY;
-    out.posX_mm = buf.getShort();
-    out.posY_mm = buf.getShort();
-    out.heading_rad = buf.getShort() * SCALAR_LOCALIZER_HEADING;
+    out.velXmmS = buf.getShort();
+    out.velYmmS = buf.getShort();
+    out.velHeadingRadS = buf.getShort() * SCALAR_LOCALIZER_HEADING_VELOCITY;
+    out.posXmm = buf.getShort();
+    out.posYmm = buf.getShort();
+    out.headingRad = buf.getShort() * SCALAR_LOCALIZER_HEADING;
 
     short crc = buf.getShort();
-    short calculatedCrc = calc_crc16_profibus(asArray);
+    short calculatedCrc = calcCrc16Profibus(asArray);
 
     out.crcOk = calculatedCrc == crc;
 
@@ -1095,19 +1095,19 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
    * "Teleport" the localizer to a new location. This may be useful, for instance, for updating your
    * position based on vision targeting.
    *
-   * @param posX_mm x position in millimeters
-   * @param posY_mm y position in millimeters
-   * @param heading_rad heading in radians
+   * @param posXmm x position in millimeters
+   * @param posYmm y position in millimeters
+   * @param headingRad heading in radians
    */
-  public void setLocalizerPose(int posX_mm, int posY_mm, float heading_rad) {
+  public void setLocalizerPose(int posXmm, int posYmm, float headingRad) {
     verifyInitialization();
 
     ByteBuffer buf = ByteBuffer.allocate(6);
     buf.order(OCTOQUAD_ENDIAN);
 
-    buf.putShort((short) posX_mm);
-    buf.putShort((short) posY_mm);
-    buf.putShort((short) (heading_rad / SCALAR_LOCALIZER_HEADING));
+    buf.putShort((short) posXmm);
+    buf.putShort((short) posYmm);
+    buf.putShort((short) (headingRad / SCALAR_LOCALIZER_HEADING));
 
     writeContiguousRegisters(Register.LOCALIZER_X, Register.LOCALIZER_H, buf.array());
   }
@@ -1363,7 +1363,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
         (short) 0x9BA3, (short) 0x866C
   };
 
-  private static short calc_crc16_profibus(byte[] data, int len) {
+  private static short calcCrc16Profibus(byte[] data, int len) {
     short crc = crc16_profibus_init;
 
     for (int i = 0; i < len; i++) {
@@ -1374,7 +1374,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
     return (short) (crc ^ crc16_profibus_xor_out);
   }
 
-  private static short calc_crc16_profibus(byte[] data) {
-    return calc_crc16_profibus(data, data.length);
+  private static short calcCrc16Profibus(byte[] data) {
+    return calcCrc16Profibus(data, data.length);
   }
 }
