@@ -5,34 +5,38 @@ import org.areslib.command.Subsystem;
 import org.areslib.core.AresRobot;
 
 /**
- * High-performance backend orchestrator for decoupled physics constraints.
- * Separates physical OpMode robot loops from Dyn4j spatial calculations.
+ * High-performance backend orchestrator for decoupled physics constraints. Separates physical
+ * OpMode robot loops from Dyn4j spatial calculations.
  */
 public class AresSimulator {
-    private static Thread physicsThread = null;
-    private static boolean isRunning = false;
+  private static Thread physicsThread = null;
+  private static boolean isRunning = false;
 
-    /**
-     * Starts an independent background thread that executes subsystem.simulationPeriodic()
-     * iteratively at a specified cycle rate.
-     * 
-     * @param periodMs The length of the targeted physics tick period in milliseconds (ex: 5ms for 200Hz).
-     */
-    public static synchronized void startPhysicsSim(int periodMs) {
-        // Prevent running if not in a simulated environment
-        if (!AresRobot.isSimulation()) {
-            System.err.println("AresSimulator warning: Ignoring start command; AresRobot is not in simulated mode.");
-            return;
-        }
+  /**
+   * Starts an independent background thread that executes subsystem.simulationPeriodic()
+   * iteratively at a specified cycle rate.
+   *
+   * @param periodMs The length of the targeted physics tick period in milliseconds (ex: 5ms for
+   *     200Hz).
+   */
+  public static synchronized void startPhysicsSim(int periodMs) {
+    // Prevent running if not in a simulated environment
+    if (!AresRobot.isSimulation()) {
+      System.err.println(
+          "AresSimulator warning: Ignoring start command; AresRobot is not in simulated mode.");
+      return;
+    }
 
-        if (isRunning) return;
-        isRunning = true;
+    if (isRunning) return;
+    isRunning = true;
 
-        // Populate the physical world with DECODE assets
-        DecodeFieldSim.buildField();
+    // Populate the physical world with DECODE assets
+    DecodeFieldSim.buildField();
 
-        physicsThread = new Thread(() -> {
-            while (isRunning && AresRobot.isSimulation()) {
+    physicsThread =
+        new Thread(
+            () -> {
+              while (isRunning && AresRobot.isSimulation()) {
                 long start = System.currentTimeMillis();
 
                 // Step the centralized physics world
@@ -41,48 +45,46 @@ public class AresSimulator {
 
                 // Poll physics logic decoupled from main scheduling pipeline
                 for (Subsystem subsystem : CommandScheduler.getInstance().getSubsystems()) {
-                    subsystem.simulationPeriodic();
+                  subsystem.simulationPeriodic();
                 }
 
                 long elapsed = System.currentTimeMillis() - start;
                 long sleepTime = periodMs - elapsed;
 
                 if (sleepTime > 0) {
-                    try {
-                        Thread.sleep(sleepTime);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
+                  try {
+                    Thread.sleep(sleepTime);
+                  } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                  }
                 }
-            }
-        });
-        
-        // Mark as daemon so it dies implicitly alongside the main application thread
-        physicsThread.setDaemon(true);
-        // Ensure simulation engine evaluates prior to standard background operations
-        physicsThread.setPriority(Thread.MAX_PRIORITY);
-        physicsThread.start();
-    }
+              }
+            });
 
-    /**
-     * Returns whether the physics simulation thread is currently active.
-     * Used by {@link org.areslib.command.CommandScheduler} to avoid double-calling
-     * {@code simulationPeriodic()} when the high-frequency physics thread is already running.
-     *
-     * @return true if the physics thread is actively running
-     */
-    public static boolean isPhysicsRunning() {
-        return isRunning;
-    }
+    // Mark as daemon so it dies implicitly alongside the main application thread
+    physicsThread.setDaemon(true);
+    // Ensure simulation engine evaluates prior to standard background operations
+    physicsThread.setPriority(Thread.MAX_PRIORITY);
+    physicsThread.start();
+  }
 
-    /**
-     * Halts the background physics engine processing.
-     */
-    public static synchronized void stopPhysicsSim() {
-        isRunning = false;
-        if (physicsThread != null) {
-            physicsThread.interrupt();
-            physicsThread = null;
-        }
+  /**
+   * Returns whether the physics simulation thread is currently active. Used by {@link
+   * org.areslib.command.CommandScheduler} to avoid double-calling {@code simulationPeriodic()} when
+   * the high-frequency physics thread is already running.
+   *
+   * @return true if the physics thread is actively running
+   */
+  public static boolean isPhysicsRunning() {
+    return isRunning;
+  }
+
+  /** Halts the background physics engine processing. */
+  public static synchronized void stopPhysicsSim() {
+    isRunning = false;
+    if (physicsThread != null) {
+      physicsThread.interrupt();
+      physicsThread = null;
     }
+  }
 }

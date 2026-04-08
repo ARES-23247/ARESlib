@@ -1,8 +1,8 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.pathplanner.auto.CommandUtil;
-import org.areslib.command.Command;
 import java.util.Objects;
+import org.areslib.command.Command;
+import org.areslib.pathplanner.auto.CommandUtil;
 import org.json.simple.JSONObject;
 
 /** Position along the path that will trigger a command when reached */

@@ -1,10 +1,10 @@
 package org.areslib.pathplanner.util;
 
-import org.areslib.pathplanner.path.PathPlannerPath;
-import org.areslib.math.geometry.Pose2d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.pathplanner.path.PathPlannerPath;
 
 /** Utility class for handling custom logging callbacks */
 public class PathPlannerLogging {

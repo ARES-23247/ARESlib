@@ -1,11 +1,11 @@
 package org.areslib.pathplanner.auto;
 
-import org.areslib.math.Pair;
-import org.areslib.pathplanner.dummy.DriverStation;
-import org.areslib.command.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.areslib.command.*;
+import org.areslib.math.Pair;
+import org.areslib.pathplanner.dummy.DriverStation;
 
 /** Utility class for managing named commands */
 public class NamedCommands {

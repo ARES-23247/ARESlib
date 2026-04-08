@@ -1,24 +1,23 @@
 package org.areslib.pathplanner.commands;
 
-import org.areslib.pathplanner.controllers.PathFollowingController;
-import org.areslib.pathplanner.path.*;
-import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
-import org.areslib.pathplanner.util.PPLibTelemetry;
-import org.areslib.pathplanner.util.PathPlannerLogging;
-import org.areslib.pathplanner.util.ReplanningConfig;
+import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import org.areslib.command.Command;
+import org.areslib.command.Subsystem;
 import org.areslib.math.Pair;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
 import org.areslib.math.geometry.Translation2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
+import org.areslib.pathplanner.controllers.PathFollowingController;
 import org.areslib.pathplanner.dummy.Timer;
-import org.areslib.command.Command;
-import org.areslib.command.SequentialCommandGroup;
-import org.areslib.command.Subsystem;
-import java.util.*;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import org.areslib.pathplanner.path.*;
+import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
+import org.areslib.pathplanner.util.PPLibTelemetry;
+import org.areslib.pathplanner.util.PathPlannerLogging;
+import org.areslib.pathplanner.util.ReplanningConfig;
 
 /** Base command for following a path */
 public class FollowPathCommand extends Command {
@@ -98,7 +97,11 @@ public class FollowPathCommand extends Command {
     controller.reset(currentPose, currentSpeeds);
 
     ChassisSpeeds fieldSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond, currentSpeeds.omegaRadiansPerSecond, currentPose.getRotation());
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            currentSpeeds.vxMetersPerSecond,
+            currentSpeeds.vyMetersPerSecond,
+            currentSpeeds.omegaRadiansPerSecond,
+            currentPose.getRotation());
     Rotation2d currentHeading =
         new Rotation2d(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond);
     Rotation2d targetHeading =
@@ -261,7 +264,8 @@ public class FollowPathCommand extends Command {
             (speeds) -> {},
             new HolonomicPathFollowerConfig(4.5, 0.4, new ReplanningConfig()),
             () -> true)
-        .andThen(org.areslib.pathplanner.dummy.Commands.print("[PathPlanner] FollowPathCommand finished warmup"))
-        ;
+        .andThen(
+            org.areslib.pathplanner.dummy.Commands.print(
+                "[PathPlanner] FollowPathCommand finished warmup"));
   }
 }

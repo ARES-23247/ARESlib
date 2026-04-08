@@ -1,11 +1,11 @@
 package org.areslib.pathplanner.pathfinding;
 
+import java.util.List;
+import org.areslib.math.Pair;
+import org.areslib.math.geometry.Translation2d;
 import org.areslib.pathplanner.path.GoalEndState;
 import org.areslib.pathplanner.path.PathConstraints;
 import org.areslib.pathplanner.path.PathPlannerPath;
-import org.areslib.math.Pair;
-import org.areslib.math.geometry.Translation2d;
-import java.util.List;
 
 /** Interface for a pathfinder that can be used by PPLib's pathfinding commands */
 public interface Pathfinder {

@@ -1,8 +1,8 @@
 package org.areslib.pathplanner.controllers;
 
-import org.areslib.pathplanner.path.PathPlannerTrajectory;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
+import org.areslib.pathplanner.path.PathPlannerTrajectory;
 
 /** Interface used by path following controllers */
 public interface PathFollowingController {

@@ -4,24 +4,29 @@ package org.areslib.pathplanner.util;
 public class HolonomicPathFollowerConfig {
   /** PIDConstants used for translation PID controllers */
   public final PIDConstants translationConstants;
+
   /** PIDConstants used for rotation PID controllers */
   public final PIDConstants rotationConstants;
+
   /** Max speed of a drive module in m/s */
   public final double maxModuleSpeed;
+
   /** Radius of the drive base in meters */
   public final double driveBaseRadius;
+
   /** Path replanning config */
   public final ReplanningConfig replanningConfig;
+
   /** Period of the robot control loop in seconds */
   public final double period;
 
   /**
    * Create a new holonomic path follower config
    *
-   * @param translationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating the
-   *     translation PID controllers
-   * @param rotationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating the
-   *     rotation PID controller
+   * @param translationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating
+   *     the translation PID controllers
+   * @param rotationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating
+   *     the rotation PID controller
    * @param maxModuleSpeed Max speed of an individual drive module in meters/sec
    * @param driveBaseRadius The radius of the drive base in meters. This is the distance from the
    *     center of the robot to the furthest module.
@@ -46,10 +51,10 @@ public class HolonomicPathFollowerConfig {
   /**
    * Create a new holonomic path follower config
    *
-   * @param translationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating the
-   *     translation PID controllers
-   * @param rotationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating the
-   *     rotation PID controller
+   * @param translationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating
+   *     the translation PID controllers
+   * @param rotationConstants {@link org.areslib.pathplanner.util.PIDConstants} used for creating
+   *     the rotation PID controller
    * @param maxModuleSpeed Max speed of an individual drive module in meters/sec
    * @param driveBaseRadius The radius of the drive base in meters. For swerve drive, this is the
    *     distance from the center of the robot to the furthest module. For mecanum, this is the

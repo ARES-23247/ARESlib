@@ -1,14 +1,13 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.pathplanner.util.GeometryUtil;
-import org.areslib.math.MathUtil;
+import java.util.*;
+import org.areslib.command.Command;
 import org.areslib.math.Pair;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
 import org.areslib.math.geometry.Translation2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
-import org.areslib.command.Command;
-import java.util.*;
+import org.areslib.pathplanner.util.GeometryUtil;
 
 /** Trajectory created from a pathplanner path */
 public class PathPlannerTrajectory {
@@ -299,6 +298,7 @@ public class PathPlannerTrajectory {
 
     /** The velocity at this state in m/s */
     public double velocityMps = 0;
+
     /** The acceleration at this state in m/s^2 */
     public double accelerationMpsSq = 0;
 
@@ -307,15 +307,19 @@ public class PathPlannerTrajectory {
 
     /** The position at this state in meters */
     public Translation2d positionMeters = new Translation2d();
+
     /** The heading (direction of travel) at this state */
     public Rotation2d heading = new Rotation2d();
+
     /** The target holonomic rotation at this state */
     public Rotation2d targetHolonomicRotation = new Rotation2d();
+
     /** Optional holonomic angular velocity. Will only be provided for choreo paths */
     public Optional<Double> holonomicAngularVelocityRps = Optional.empty();
 
     /** The curvature at this state in rad/m */
     public double curvatureRadPerMeter = 0;
+
     /** The constraints to apply at this state */
     public PathConstraints constraints;
 
@@ -407,7 +411,8 @@ public class PathPlannerTrajectory {
       reversed.headingAngularVelocityRps = -headingAngularVelocityRps;
       reversed.positionMeters = positionMeters;
       reversed.heading =
-          Rotation2d.fromDegrees((((heading.getDegrees() + 180 + 180.0) % 360.0 + 360.0) % 360.0 - 180.0));
+          Rotation2d.fromDegrees(
+              (((heading.getDegrees() + 180 + 180.0) % 360.0 + 360.0) % 360.0 - 180.0));
       reversed.targetHolonomicRotation = targetHolonomicRotation;
       reversed.holonomicAngularVelocityRps = holonomicAngularVelocityRps;
       reversed.curvatureRadPerMeter = -curvatureRadPerMeter;

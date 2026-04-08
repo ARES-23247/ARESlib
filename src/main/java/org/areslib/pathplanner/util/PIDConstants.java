@@ -4,10 +4,13 @@ package org.areslib.pathplanner.util;
 public class PIDConstants {
   /** P */
   public final double kP;
+
   /** I */
   public final double kI;
+
   /** D */
   public final double kD;
+
   /** Integral range */
   public final double iZone;
 

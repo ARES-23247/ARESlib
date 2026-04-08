@@ -1,22 +1,19 @@
 package org.areslib.pathplanner.commands;
 
-import org.areslib.pathplanner.controllers.PathFollowingController;
-import org.areslib.pathplanner.path.*;
-import org.areslib.pathplanner.pathfinding.Pathfinding;
-import org.areslib.pathplanner.util.*;
-import org.areslib.pathplanner.dummy.FRCNetComm.tResourceType;
-
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import org.areslib.command.Command;
+import org.areslib.command.Subsystem;
 import org.areslib.math.MathUtil;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
+import org.areslib.pathplanner.controllers.PathFollowingController;
 import org.areslib.pathplanner.dummy.Timer;
-import org.areslib.command.Command;
-import org.areslib.command.SequentialCommandGroup;
-import org.areslib.command.Subsystem;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import org.areslib.pathplanner.path.*;
+import org.areslib.pathplanner.pathfinding.Pathfinding;
+import org.areslib.pathplanner.util.*;
 
 /** Base pathfinding command */
 public class PathfindingCommand extends Command {
@@ -108,7 +105,7 @@ public class PathfindingCommand extends Command {
     this.shouldFlipPath = shouldFlipPath;
 
     instances++;
-    //(tResourceType.kResourceType_PathFindingCommand, instances);
+    // (tResourceType.kResourceType_PathFindingCommand, instances);
   }
 
   /**
@@ -157,7 +154,7 @@ public class PathfindingCommand extends Command {
     this.shouldFlipPath = () -> false;
 
     instances++;
-    //(tResourceType.kResourceType_PathFindingCommand, instances);
+    // (tResourceType.kResourceType_PathFindingCommand, instances);
   }
 
   @Override
@@ -245,7 +242,11 @@ public class PathfindingCommand extends Command {
         var closestState2 = currentTrajectory.getState(closestState2Idx);
 
         ChassisSpeeds fieldRelativeSpeeds =
-            ChassisSpeeds.fromFieldRelativeSpeeds(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond, currentSpeeds.omegaRadiansPerSecond, currentPose.getRotation());
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                currentSpeeds.vxMetersPerSecond,
+                currentSpeeds.vyMetersPerSecond,
+                currentSpeeds.omegaRadiansPerSecond,
+                currentPose.getRotation());
         Rotation2d currentHeading =
             new Rotation2d(
                 fieldRelativeSpeeds.vxMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond);
@@ -394,7 +395,8 @@ public class PathfindingCommand extends Command {
             ChassisSpeeds::new,
             (speeds) -> {},
             new HolonomicPathFollowerConfig(4.5, 0.4, new ReplanningConfig()))
-        .andThen(org.areslib.pathplanner.dummy.Commands.print("[PathPlanner] PathfindingCommand finished warmup"))
-        ;
+        .andThen(
+            org.areslib.pathplanner.dummy.Commands.print(
+                "[PathPlanner] PathfindingCommand finished warmup"));
   }
 }

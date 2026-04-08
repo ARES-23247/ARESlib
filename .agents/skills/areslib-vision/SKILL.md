@@ -40,9 +40,15 @@ class VisionInputs implements AresLoggableInputs {
 The `AresSensorFusionSubsystem` handles the blending of vision and odometry poses. All math is centralized in `CoordinateUtil`:
 
 ```java
-// Coordinate conversion: vision (meters, center origin) -> WPILib (meters, center origin)
-double visionXInches = CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getX());
-double visionYInches = CoordinateUtil.centerMetersToBottomLeftInches(visionPose.getY());
+// Limelight MegaTag natively outputs FRC coordinates (+X Forward, +Y Left).
+// DO NOT swap or negate these coordinates before injecting into WPILib math!
+double visionXMeters = visionPose.getX();
+double visionYMeters = visionPose.getY();
+
+// Coordinate conversion: vision (meters, center origin) -> if needed for legacy FTC logic
+double visionXInches = CoordinateUtil.metersToInches(visionXMeters);
+double visionYInches = CoordinateUtil.metersToInches(visionYMeters);
+
 
 // Kalman gain: higher confidence = more trust in vision
 double kalmanGain = CoordinateUtil.computeVisionKalmanGain(confidence);

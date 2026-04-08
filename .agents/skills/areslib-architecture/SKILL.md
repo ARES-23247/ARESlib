@@ -44,8 +44,15 @@ ARESLib2 bridges two coordinate systems:
 | **AdvantageScope** | Field center (0, 0) | Meters, Radians | WPILib convention |
 
 PathPlanner uses WPILib convention natively, so no coordinate conversion is needed between them.
+However, native FTC hardware wrappers (Pinpoint, OTOS) typically output FTC standards (`+X Right, +Y Forward`). 
 
 ### Conversion Rules
+
+**CRITICAL BUG PREVENTION**: All Odometry hardware implementations must manually swap and negate incoming position and velocity coordinates BEFORE injecting them into `inputs.positionMeters` or `inputs.velocityMps`. 
+- `WPILib X` = `FTC Y` (Forward)
+- `WPILib Y` = `-FTC X` (Left)
+
+Failure to do this will cause kinematics desynchronization where forward commands cause the robot to strafe.
 
 **ALWAYS use `CoordinateUtil`** (in `org.areslib.core`) for all conversions. Never write raw `* 0.0254`, `/ 25.4`, or `/ 1000.0` in application code.
 
@@ -82,6 +89,11 @@ When writing `[Name]IOSim.java` layers:
 - Use proper material properties (see `areslib-simulation` skill)
 - Format point clouds as flat `double[]`: `[x1, y1, z1, x2, y2, z2, ...]`
 - The simulation loop runs at exactly 50Hz
+
+### Subsystem vs IOSim Physics Boundaries
+**CRITICAL**: `dyn4j` physics simulation must be built entirely inside the `IOSim` files.
+- **Subsystem (`[Name]Subsystem.java`)**: Contains ONLY business logic, PID controllers, constraints, and hardware-agnostic state machines. Never instantiate `dyn4j` physics bodies here.
+- **IO Simulation (`[Name]IOSim.java`)**: Defines physical dimensions, mass, gearing, and friction. It attaches a `dyn4j` Body to `AresPhysicsWorld`, applies forces/voltages calculated by the Subsystem, and publishes the resulting kinematics positions back to the Subsystem's generic Inputs block.
 
 For deeper simulation guidance, see the `areslib-simulation` skill.
 

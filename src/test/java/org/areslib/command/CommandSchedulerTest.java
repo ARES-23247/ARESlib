@@ -1,294 +1,307 @@
 package org.areslib.command;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
- * Headless JUnit 5 tests for the {@link CommandScheduler} execution engine.
- * Covers scheduling, cancellation, interruption, default commands, button bindings,
- * subsystem periodic execution, and full reset lifecycle.
+ * Headless JUnit 5 tests for the {@link CommandScheduler} execution engine. Covers scheduling,
+ * cancellation, interruption, default commands, button bindings, subsystem periodic execution, and
+ * full reset lifecycle.
  */
 public class CommandSchedulerTest {
 
-    private CommandScheduler scheduler;
+  private CommandScheduler scheduler;
 
-    @BeforeEach
-    void setup() {
-        scheduler = CommandScheduler.getInstance();
-        scheduler.reset();
+  @BeforeEach
+  void setup() {
+    scheduler = CommandScheduler.getInstance();
+    scheduler.reset();
+  }
+
+  // ========== Helper classes ==========
+
+  /** A minimal concrete subsystem for testing. */
+  static class TestSubsystem extends SubsystemBase {
+    int periodicCount = 0;
+
+    @Override
+    public void periodic() {
+      periodicCount++;
+    }
+  }
+
+  /** A command that counts execute() calls and finishes after N ticks. */
+  static class CountingCommand extends Command {
+    final int ticksToFinish;
+    int initCount = 0;
+    int executeCount = 0;
+    int endCount = 0;
+    boolean wasInterrupted = false;
+
+    CountingCommand(int ticksToFinish, Subsystem... requirements) {
+      this.ticksToFinish = ticksToFinish;
+      addRequirements(requirements);
     }
 
-    // ========== Helper classes ==========
-
-    /** A minimal concrete subsystem for testing. */
-    static class TestSubsystem extends SubsystemBase {
-        int periodicCount = 0;
-        @Override
-        public void periodic() {
-            periodicCount++;
-        }
+    @Override
+    public void initialize() {
+      initCount++;
     }
 
-    /** A command that counts execute() calls and finishes after N ticks. */
-    static class CountingCommand extends Command {
-        final int ticksToFinish;
-        int initCount = 0;
-        int executeCount = 0;
-        int endCount = 0;
-        boolean wasInterrupted = false;
-
-        CountingCommand(int ticksToFinish, Subsystem... requirements) {
-            this.ticksToFinish = ticksToFinish;
-            addRequirements(requirements);
-        }
-
-        @Override public void initialize() { initCount++; }
-        @Override public void execute() { executeCount++; }
-        @Override public void end(boolean interrupted) {
-            endCount++;
-            wasInterrupted = interrupted;
-        }
-        @Override public boolean isFinished() { return executeCount >= ticksToFinish; }
+    @Override
+    public void execute() {
+      executeCount++;
     }
 
-    // ========== Scheduling Tests ==========
-
-    @Test
-    void testScheduleCallsInitialize() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
-
-        CountingCommand cmd = new CountingCommand(5, sub);
-        scheduler.schedule(cmd);
-
-        assertEquals(1, cmd.initCount, "initialize() should be called exactly once on schedule");
-        assertTrue(scheduler.isScheduled(cmd));
+    @Override
+    public void end(boolean interrupted) {
+      endCount++;
+      wasInterrupted = interrupted;
     }
 
-    @Test
-    void testScheduleRunsExecute() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
-
-        CountingCommand cmd = new CountingCommand(3, sub);
-        scheduler.schedule(cmd);
-
-        scheduler.run(); // Tick 1: execute
-        assertEquals(1, cmd.executeCount);
-        assertTrue(scheduler.isScheduled(cmd));
-
-        scheduler.run(); // Tick 2: execute
-        assertEquals(2, cmd.executeCount);
-        assertTrue(scheduler.isScheduled(cmd));
-
-        scheduler.run(); // Tick 3: execute → isFinished → end(false)
-        assertEquals(3, cmd.executeCount);
-        assertEquals(1, cmd.endCount);
-        assertFalse(cmd.wasInterrupted, "Command should end normally, not interrupted");
-        assertFalse(scheduler.isScheduled(cmd));
+    @Override
+    public boolean isFinished() {
+      return executeCount >= ticksToFinish;
     }
+  }
 
-    @Test
-    void testDuplicateScheduleIgnored() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+  // ========== Scheduling Tests ==========
 
-        CountingCommand cmd = new CountingCommand(10, sub);
-        scheduler.schedule(cmd);
-        scheduler.schedule(cmd); // Should be ignored
+  @Test
+  void testScheduleCallsInitialize() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        assertEquals(1, cmd.initCount, "initialize() should not be called twice");
-    }
+    CountingCommand cmd = new CountingCommand(5, sub);
+    scheduler.schedule(cmd);
 
-    // ========== Cancellation Tests ==========
+    assertEquals(1, cmd.initCount, "initialize() should be called exactly once on schedule");
+    assertTrue(scheduler.isScheduled(cmd));
+  }
 
-    @Test
-    void testCancelCallsEndWithInterrupted() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+  @Test
+  void testScheduleRunsExecute() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        CountingCommand cmd = new CountingCommand(100, sub);
-        scheduler.schedule(cmd);
-        assertTrue(scheduler.isScheduled(cmd));
+    CountingCommand cmd = new CountingCommand(3, sub);
+    scheduler.schedule(cmd);
 
-        scheduler.cancel(cmd);
-        assertEquals(1, cmd.endCount);
-        assertTrue(cmd.wasInterrupted, "Cancelled command should receive interrupted=true");
-        assertFalse(scheduler.isScheduled(cmd));
-    }
+    scheduler.run(); // Tick 1: execute
+    assertEquals(1, cmd.executeCount);
+    assertTrue(scheduler.isScheduled(cmd));
 
-    @Test
-    void testCancelNonScheduledCommandIsNoOp() {
-        CountingCommand cmd = new CountingCommand(5);
-        // Should not throw
-        scheduler.cancel(cmd);
-        assertEquals(0, cmd.endCount);
-    }
+    scheduler.run(); // Tick 2: execute
+    assertEquals(2, cmd.executeCount);
+    assertTrue(scheduler.isScheduled(cmd));
 
-    @Test
-    void testCancelAll() {
-        TestSubsystem sub1 = new TestSubsystem();
-        TestSubsystem sub2 = new TestSubsystem();
-        scheduler.registerSubsystem(sub1, sub2);
+    scheduler.run(); // Tick 3: execute → isFinished → end(false)
+    assertEquals(3, cmd.executeCount);
+    assertEquals(1, cmd.endCount);
+    assertFalse(cmd.wasInterrupted, "Command should end normally, not interrupted");
+    assertFalse(scheduler.isScheduled(cmd));
+  }
 
-        CountingCommand cmd1 = new CountingCommand(100, sub1);
-        CountingCommand cmd2 = new CountingCommand(100, sub2);
-        scheduler.schedule(cmd1);
-        scheduler.schedule(cmd2);
+  @Test
+  void testDuplicateScheduleIgnored() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        scheduler.cancelAll();
-        assertFalse(scheduler.isScheduled(cmd1));
-        assertFalse(scheduler.isScheduled(cmd2));
-        assertEquals(1, cmd1.endCount);
-        assertEquals(1, cmd2.endCount);
-    }
+    CountingCommand cmd = new CountingCommand(10, sub);
+    scheduler.schedule(cmd);
+    scheduler.schedule(cmd); // Should be ignored
 
-    // ========== Interruption (Requirement Conflict) Tests ==========
+    assertEquals(1, cmd.initCount, "initialize() should not be called twice");
+  }
 
-    @Test
-    void testNewCommandInterruptsExistingOnSameSubsystem() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+  // ========== Cancellation Tests ==========
 
-        CountingCommand cmd1 = new CountingCommand(100, sub);
-        CountingCommand cmd2 = new CountingCommand(100, sub);
+  @Test
+  void testCancelCallsEndWithInterrupted() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        scheduler.schedule(cmd1);
-        assertTrue(scheduler.isScheduled(cmd1));
+    CountingCommand cmd = new CountingCommand(100, sub);
+    scheduler.schedule(cmd);
+    assertTrue(scheduler.isScheduled(cmd));
 
-        // Scheduling cmd2 on the same subsystem should interrupt cmd1
-        scheduler.schedule(cmd2);
-        assertFalse(scheduler.isScheduled(cmd1), "Old command should be removed");
-        assertTrue(cmd1.wasInterrupted, "Old command should be interrupted");
-        assertTrue(scheduler.isScheduled(cmd2), "New command should be scheduled");
-    }
+    scheduler.cancel(cmd);
+    assertEquals(1, cmd.endCount);
+    assertTrue(cmd.wasInterrupted, "Cancelled command should receive interrupted=true");
+    assertFalse(scheduler.isScheduled(cmd));
+  }
 
-    // ========== Default Command Tests ==========
+  @Test
+  void testCancelNonScheduledCommandIsNoOp() {
+    CountingCommand cmd = new CountingCommand(5);
+    // Should not throw
+    scheduler.cancel(cmd);
+    assertEquals(0, cmd.endCount);
+  }
 
-    @Test
-    void testDefaultCommandScheduledWhenIdle() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+  @Test
+  void testCancelAll() {
+    TestSubsystem sub1 = new TestSubsystem();
+    TestSubsystem sub2 = new TestSubsystem();
+    scheduler.registerSubsystem(sub1, sub2);
 
-        CountingCommand defaultCmd = new CountingCommand(Integer.MAX_VALUE, sub);
-        scheduler.setDefaultCommand(sub, defaultCmd);
+    CountingCommand cmd1 = new CountingCommand(100, sub1);
+    CountingCommand cmd2 = new CountingCommand(100, sub2);
+    scheduler.schedule(cmd1);
+    scheduler.schedule(cmd2);
 
-        scheduler.run(); // Should schedule + execute the default command
-        assertTrue(scheduler.isScheduled(defaultCmd));
-        assertEquals(1, defaultCmd.executeCount);
-    }
+    scheduler.cancelAll();
+    assertFalse(scheduler.isScheduled(cmd1));
+    assertFalse(scheduler.isScheduled(cmd2));
+    assertEquals(1, cmd1.endCount);
+    assertEquals(1, cmd2.endCount);
+  }
 
-    @Test
-    void testDefaultCommandNotScheduledWhenBusy() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+  // ========== Interruption (Requirement Conflict) Tests ==========
 
-        CountingCommand activeCmd = new CountingCommand(100, sub);
-        CountingCommand defaultCmd = new CountingCommand(Integer.MAX_VALUE, sub);
-        scheduler.setDefaultCommand(sub, defaultCmd);
+  @Test
+  void testNewCommandInterruptsExistingOnSameSubsystem() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        scheduler.schedule(activeCmd);
-        scheduler.run();
+    CountingCommand cmd1 = new CountingCommand(100, sub);
+    CountingCommand cmd2 = new CountingCommand(100, sub);
 
-        assertTrue(scheduler.isScheduled(activeCmd));
-        assertFalse(scheduler.isScheduled(defaultCmd),
-            "Default command should NOT run while subsystem is occupied");
-    }
+    scheduler.schedule(cmd1);
+    assertTrue(scheduler.isScheduled(cmd1));
 
-    @Test
-    void testDefaultCommandResumesAfterActiveFinishes() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+    // Scheduling cmd2 on the same subsystem should interrupt cmd1
+    scheduler.schedule(cmd2);
+    assertFalse(scheduler.isScheduled(cmd1), "Old command should be removed");
+    assertTrue(cmd1.wasInterrupted, "Old command should be interrupted");
+    assertTrue(scheduler.isScheduled(cmd2), "New command should be scheduled");
+  }
 
-        CountingCommand activeCmd = new CountingCommand(1, sub); // Finishes after 1 tick
-        CountingCommand defaultCmd = new CountingCommand(Integer.MAX_VALUE, sub);
-        scheduler.setDefaultCommand(sub, defaultCmd);
+  // ========== Default Command Tests ==========
 
-        scheduler.schedule(activeCmd);
-        scheduler.run(); // activeCmd executes → finishes → removed
+  @Test
+  void testDefaultCommandScheduledWhenIdle() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        assertFalse(scheduler.isScheduled(activeCmd));
+    CountingCommand defaultCmd = new CountingCommand(Integer.MAX_VALUE, sub);
+    scheduler.setDefaultCommand(sub, defaultCmd);
 
-        scheduler.run(); // Now default should be scheduled
-        assertTrue(scheduler.isScheduled(defaultCmd));
-    }
+    scheduler.run(); // Should schedule + execute the default command
+    assertTrue(scheduler.isScheduled(defaultCmd));
+    assertEquals(1, defaultCmd.executeCount);
+  }
 
-    // ========== Subsystem Periodic Tests ==========
+  @Test
+  void testDefaultCommandNotScheduledWhenBusy() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-    @Test
-    void testSubsystemPeriodicRunsEveryTick() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+    CountingCommand activeCmd = new CountingCommand(100, sub);
+    CountingCommand defaultCmd = new CountingCommand(Integer.MAX_VALUE, sub);
+    scheduler.setDefaultCommand(sub, defaultCmd);
 
-        scheduler.run();
-        scheduler.run();
-        scheduler.run();
+    scheduler.schedule(activeCmd);
+    scheduler.run();
 
-        assertEquals(3, sub.periodicCount,
-            "Subsystem periodic() should be called once per scheduler.run()");
-    }
+    assertTrue(scheduler.isScheduled(activeCmd));
+    assertFalse(
+        scheduler.isScheduled(defaultCmd),
+        "Default command should NOT run while subsystem is occupied");
+  }
 
-    @Test
-    void testUnregisteredSubsystemPeriodicDoesNotRun() {
-        TestSubsystem sub = new TestSubsystem();
-        // NOT registered
-        scheduler.run();
-        scheduler.run();
-        assertEquals(0, sub.periodicCount);
-    }
+  @Test
+  void testDefaultCommandResumesAfterActiveFinishes() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-    // ========== Button Binding Tests ==========
+    CountingCommand activeCmd = new CountingCommand(1, sub); // Finishes after 1 tick
+    CountingCommand defaultCmd = new CountingCommand(Integer.MAX_VALUE, sub);
+    scheduler.setDefaultCommand(sub, defaultCmd);
 
-    @Test
-    void testButtonLoopPolledEveryTick() {
-        AtomicInteger pollCount = new AtomicInteger(0);
-        scheduler.addButton(pollCount::incrementAndGet);
+    scheduler.schedule(activeCmd);
+    scheduler.run(); // activeCmd executes → finishes → removed
 
-        scheduler.run();
-        scheduler.run();
-        scheduler.run();
+    assertFalse(scheduler.isScheduled(activeCmd));
 
-        assertEquals(3, pollCount.get(), "Button loops should be polled once per tick");
-    }
+    scheduler.run(); // Now default should be scheduled
+    assertTrue(scheduler.isScheduled(defaultCmd));
+  }
 
-    // ========== Reset Tests ==========
+  // ========== Subsystem Periodic Tests ==========
 
-    @Test
-    void testResetClearsEverything() {
-        TestSubsystem sub = new TestSubsystem();
-        scheduler.registerSubsystem(sub);
+  @Test
+  void testSubsystemPeriodicRunsEveryTick() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
 
-        CountingCommand cmd = new CountingCommand(100, sub);
-        scheduler.schedule(cmd);
-        scheduler.addButton(() -> {});
+    scheduler.run();
+    scheduler.run();
+    scheduler.run();
 
-        scheduler.reset();
+    assertEquals(
+        3, sub.periodicCount, "Subsystem periodic() should be called once per scheduler.run()");
+  }
 
-        assertFalse(scheduler.isScheduled(cmd));
-        assertTrue(scheduler.getSubsystems().isEmpty(),
-            "All subsystems should be cleared after reset");
+  @Test
+  void testUnregisteredSubsystemPeriodicDoesNotRun() {
+    TestSubsystem sub = new TestSubsystem();
+    // NOT registered
+    scheduler.run();
+    scheduler.run();
+    assertEquals(0, sub.periodicCount);
+  }
 
-        // After reset, running should be a no-op (no subsystems, no buttons, no commands)
-        scheduler.run();
-        assertEquals(0, sub.periodicCount - 0); // periodic should not be called after unregister
-    }
+  // ========== Button Binding Tests ==========
 
-    // ========== InstantCommand Integration ==========
+  @Test
+  void testButtonLoopPolledEveryTick() {
+    AtomicInteger pollCount = new AtomicInteger(0);
+    scheduler.addButton(pollCount::incrementAndGet);
 
-    @Test
-    void testInstantCommandFinishesImmediately() {
-        AtomicBoolean ran = new AtomicBoolean(false);
-        InstantCommand cmd = new InstantCommand(() -> ran.set(true));
+    scheduler.run();
+    scheduler.run();
+    scheduler.run();
 
-        scheduler.schedule(cmd);
-        assertTrue(ran.get(), "InstantCommand should run its action during initialize()");
+    assertEquals(3, pollCount.get(), "Button loops should be polled once per tick");
+  }
 
-        scheduler.run(); // Should finish and be removed
-        assertFalse(scheduler.isScheduled(cmd));
-    }
+  // ========== Reset Tests ==========
+
+  @Test
+  void testResetClearsEverything() {
+    TestSubsystem sub = new TestSubsystem();
+    scheduler.registerSubsystem(sub);
+
+    CountingCommand cmd = new CountingCommand(100, sub);
+    scheduler.schedule(cmd);
+    scheduler.addButton(() -> {});
+
+    scheduler.reset();
+
+    assertFalse(scheduler.isScheduled(cmd));
+    assertTrue(scheduler.getSubsystems().isEmpty(), "All subsystems should be cleared after reset");
+
+    // After reset, running should be a no-op (no subsystems, no buttons, no commands)
+    scheduler.run();
+    assertEquals(0, sub.periodicCount - 0); // periodic should not be called after unregister
+  }
+
+  // ========== InstantCommand Integration ==========
+
+  @Test
+  void testInstantCommandFinishesImmediately() {
+    AtomicBoolean ran = new AtomicBoolean(false);
+    InstantCommand cmd = new InstantCommand(() -> ran.set(true));
+
+    scheduler.schedule(cmd);
+    assertTrue(ran.get(), "InstantCommand should run its action during initialize()");
+
+    scheduler.run(); // Should finish and be removed
+    assertFalse(scheduler.isScheduled(cmd));
+  }
 }

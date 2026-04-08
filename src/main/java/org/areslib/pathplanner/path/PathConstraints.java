@@ -1,7 +1,7 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.math.Units;
 import java.util.Objects;
+import org.areslib.math.Units;
 import org.json.simple.JSONObject;
 
 /** Kinematic path following constraints */

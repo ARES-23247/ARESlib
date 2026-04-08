@@ -1,0 +1,211 @@
+=== Files Missing Corresponding *Test.java ===
+org\areslib\command\AlignToPoseCommand.java
+org\areslib\command\Command.java
+org\areslib\command\ConditionalCommand.java
+org\areslib\command\GhostPlaybackCommand.java
+org\areslib\command\HeadingLockCommand.java
+org\areslib\command\InstantCommand.java
+org\areslib\command\ParallelCommandGroup.java
+org\areslib\command\ParallelDeadlineGroup.java
+org\areslib\command\ParallelRaceGroup.java
+org\areslib\command\PrintCommand.java
+org\areslib\command\RunCommand.java
+org\areslib\command\SelectCommand.java
+org\areslib\command\SequentialCommandGroup.java
+org\areslib\command\SubsystemBase.java
+org\areslib\command\WaitCommand.java
+org\areslib\command\auto\AutoBuilder.java
+org\areslib\command\autoaim\ShootOnTheMoveCommand.java
+org\areslib\command\sysid\SysIdCommand.java
+org\areslib\command\sysid\SysIdJSONExporter.java
+org\areslib\core\AresCommandOpMode.java
+org\areslib\core\AresRobot.java
+org\areslib\core\CoordinateUtil.java
+org\areslib\core\FieldConstants.java
+org\areslib\core\GhostData.java
+org\areslib\core\GhostRecorder.java
+org\areslib\core\TunableNumber.java
+org\areslib\core\async\AresAsyncExecutor.java
+org\areslib\core\simulation\AresSimulator.java
+org\areslib\core\simulation\DecodeFieldSim.java
+org\areslib\faults\AresAlert.java
+org\areslib\faults\AresDiagnostics.java
+org\areslib\hardware\AresHardwareManager.java
+org\areslib\hardware\coprocessors\OctoMode.java
+org\areslib\hardware\coprocessors\OctoQuadFWv3.java
+org\areslib\hardware\coprocessors\OctoQuadV1Impl.java
+org\areslib\hardware\coprocessors\OctoQuadV2Impl.java
+org\areslib\hardware\coprocessors\SRSHub.java
+org\areslib\hardware\coprocessors\photon\PhotonCore.java
+org\areslib\hardware\coprocessors\photon\PhotonLynxModule.java
+org\areslib\hardware\coprocessors\photon\ReflectionUtils.java
+org\areslib\hardware\devices\AresMotorModel.java
+org\areslib\hardware\faults\AresHardwareFaultInjector.java
+org\areslib\hardware\faults\RobotHealthTracker.java
+org\areslib\hardware\interfaces\ArrayLidarIO.java
+org\areslib\hardware\interfaces\IMUIO.java
+org\areslib\hardware\interfaces\OdometryIO.java
+org\areslib\hardware\interfaces\VisionIO.java
+org\areslib\hardware\interfaces\VisionIOSim.java
+org\areslib\hardware\wrappers\AnalogAbsoluteEncoderWrapper.java
+org\areslib\hardware\wrappers\AnalogInputWrapper.java
+org\areslib\hardware\wrappers\AnalogSensorWrapper.java
+org\areslib\hardware\wrappers\AresOctoQuadSensor.java
+org\areslib\hardware\wrappers\AresRevColorSensor.java
+org\areslib\hardware\wrappers\AresSrsColorSensor.java
+org\areslib\hardware\wrappers\AresSrsSensor.java
+org\areslib\hardware\wrappers\ArrayLidarIOSim.java
+org\areslib\hardware\wrappers\ArrayLidarIOSrs.java
+org\areslib\hardware\wrappers\ArrayVisionIOSim.java
+org\areslib\hardware\wrappers\CRServoWrapper.java
+org\areslib\hardware\wrappers\DcMotorExWrapper.java
+org\areslib\hardware\wrappers\DigitalSensorWrapper.java
+org\areslib\hardware\wrappers\LimelightVisionWrapper.java
+org\areslib\hardware\wrappers\OctoQuadEncoderWrapper.java
+org\areslib\hardware\wrappers\OtosOdometryWrapper.java
+org\areslib\hardware\wrappers\PinpointOdometryWrapper.java
+org\areslib\hardware\wrappers\RevDistanceSensorWrapper.java
+org\areslib\hardware\wrappers\RevEncoderWrapper.java
+org\areslib\hardware\wrappers\RevIMUWrapper.java
+org\areslib\hardware\wrappers\ServoWrapper.java
+org\areslib\hardware\wrappers\SrsHubEncoderWrapper.java
+org\areslib\hardware\wrappers\SrsMode.java
+org\areslib\math\Pair.java
+org\areslib\math\Vector.java
+org\areslib\math\kinematics\DifferentialDriveWheelPositions.java
+org\areslib\math\kinematics\DifferentialDriveWheelSpeeds.java
+org\areslib\math\kinematics\MecanumDriveWheelPositions.java
+org\areslib\math\kinematics\MecanumDriveWheelSpeeds.java
+org\areslib\math\kinematics\SwerveModulePosition.java
+org\areslib\math\numbers\N2.java
+org\areslib\math\numbers\N3.java
+org\areslib\pathplanner\auto\AutoBuilder.java
+org\areslib\pathplanner\auto\CommandUtil.java
+org\areslib\pathplanner\auto\NamedCommands.java
+org\areslib\pathplanner\commands\FollowPathCommand.java
+org\areslib\pathplanner\commands\FollowPathHolonomic.java
+org\areslib\pathplanner\commands\FollowPathWithEvents.java
+org\areslib\pathplanner\commands\PathPlannerAuto.java
+org\areslib\pathplanner\commands\PathfindHolonomic.java
+org\areslib\pathplanner\commands\PathfindThenFollowPathHolonomic.java
+org\areslib\pathplanner\commands\PathfindThenFollowPathLTV.java
+org\areslib\pathplanner\commands\PathfindThenFollowPathRamsete.java
+org\areslib\pathplanner\commands\PathfindingCommand.java
+org\areslib\pathplanner\controllers\PPHolonomicDriveController.java
+org\areslib\pathplanner\dummy\Commands.java
+org\areslib\pathplanner\dummy\DoubleArrayPublisher.java
+org\areslib\pathplanner\dummy\DoublePublisher.java
+org\areslib\pathplanner\dummy\DriverStation.java
+org\areslib\pathplanner\dummy\FRCNetComm.java
+org\areslib\pathplanner\dummy\Filesystem.java
+org\areslib\pathplanner\dummy\FollowPathLTV.java
+org\areslib\pathplanner\dummy\FollowPathRamsete.java
+org\areslib\pathplanner\dummy\FunctionalCommand.java
+org\areslib\pathplanner\dummy\GenericEntry.java
+org\areslib\pathplanner\dummy\GenericPublisher.java
+org\areslib\pathplanner\dummy\MathSharedStore.java
+org\areslib\pathplanner\dummy\NetworkTable.java
+org\areslib\pathplanner\dummy\NetworkTableEntry.java
+org\areslib\pathplanner\dummy\NetworkTableEvent.java
+org\areslib\pathplanner\dummy\NetworkTableInstance.java
+org\areslib\pathplanner\dummy\NetworkTableListener.java
+org\areslib\pathplanner\dummy\PathfindLTV.java
+org\areslib\pathplanner\dummy\PathfindRamsete.java
+org\areslib\pathplanner\dummy\RobotBase.java
+org\areslib\pathplanner\dummy\SendableChooser.java
+org\areslib\pathplanner\dummy\SmartDashboard.java
+org\areslib\pathplanner\dummy\StructArrayPublisher.java
+org\areslib\pathplanner\dummy\StructPublisher.java
+org\areslib\pathplanner\dummy\Timer.java
+org\areslib\pathplanner\dummy\TrapezoidProfile.java
+org\areslib\pathplanner\dummy\VecBuilder.java
+org\areslib\pathplanner\path\ConstraintsZone.java
+org\areslib\pathplanner\path\EventMarker.java
+org\areslib\pathplanner\path\GoalEndState.java
+org\areslib\pathplanner\path\PathConstraints.java
+org\areslib\pathplanner\path\PathPlannerPath.java
+org\areslib\pathplanner\path\PathPlannerTrajectory.java
+org\areslib\pathplanner\path\PathPoint.java
+org\areslib\pathplanner\path\PathSegment.java
+org\areslib\pathplanner\path\RotationTarget.java
+org\areslib\pathplanner\pathfinding\LocalADStar.java
+org\areslib\pathplanner\pathfinding\Pathfinding.java
+org\areslib\pathplanner\util\ChassisSpeedsRateLimiter.java
+org\areslib\pathplanner\util\GeometryUtil.java
+org\areslib\pathplanner\util\HolonomicPathFollowerConfig.java
+org\areslib\pathplanner\util\PIDConstants.java
+org\areslib\pathplanner\util\PPLibTelemetry.java
+org\areslib\pathplanner\util\PathPlannerLogging.java
+org\areslib\pathplanner\util\ReplanningConfig.java
+org\areslib\subsystems\drive\DifferentialDriveIO.java
+org\areslib\subsystems\drive\DifferentialDriveIOReal.java
+org\areslib\subsystems\drive\DifferentialDriveIOSim.java
+org\areslib\subsystems\drive\DifferentialDriveSubsystem.java
+org\areslib\subsystems\drive\MecanumDriveIO.java
+org\areslib\subsystems\drive\MecanumDriveIOReal.java
+org\areslib\subsystems\drive\MecanumDriveIOSim.java
+org\areslib\subsystems\drive\MecanumDriveSubsystem.java
+org\areslib\subsystems\drive\SwerveModuleIO.java
+org\areslib\subsystems\drive\SwerveModuleIOReal.java
+org\areslib\subsystems\drive\SwerveModuleIOSim.java
+org\areslib\subsystems\vision\AresVisionSubsystem.java
+org\areslib\teamcode\differential\DifferentialAdvancedTeleOp.java
+org\areslib\teamcode\elevator\AutoHomeElevatorCommand.java
+org\areslib\teamcode\elevator\ElevatorIO.java
+org\areslib\teamcode\elevator\ElevatorIOReal.java
+org\areslib\teamcode\elevator\ElevatorIOSim.java
+org\areslib\teamcode\mecanum\MecanumStandardTeleOp.java
+org\areslib\teamcode\swerve\SwerveRevOctoQuadTeleOp.java
+org\areslib\telemetry\AndroidDashboardBackend.java
+org\areslib\telemetry\AresLoggableInputs.java
+org\areslib\telemetry\RlogServerBackend.java
+org\areslib\telemetry\WpiLogBackend.java
+org\areslib\templates\SimpleIntakeSubsystem.java
+org\firstinspires\ftc\teamcode\Constants.java
+org\firstinspires\ftc\teamcode\RobotContainer.java
+org\firstinspires\ftc\teamcode\commands\AlignToTagCommand.java
+org\firstinspires\ftc\teamcode\commands\ElevatorToPositionCommand.java
+org\firstinspires\ftc\teamcode\subsystems\drive\DifferentialConfig.java
+org\firstinspires\ftc\teamcode\subsystems\drive\MecanumConfig.java
+org\firstinspires\ftc\teamcode\subsystems\drive\SwerveConfig.java
+org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorConfig.java
+org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIO.java
+org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIOReal.java
+org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIOSim.java
+org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorSubsystem.java
+org\firstinspires\ftc\teamcode\teleop\MainTeleOp.java
+
+=== Files with potentially missing Javadoc on public methods ===
+No javadoc at all: org\areslib\core\CoordinateUtil.java
+No javadoc at all: org\areslib\hardware\coprocessors\AresOctoQuadDriver.java
+No javadoc at all: org\areslib\hardware\coprocessors\OctoMode.java
+No javadoc at all: org\areslib\hardware\coprocessors\OctoQuadV1Impl.java
+No javadoc at all: org\areslib\hardware\coprocessors\OctoQuadV2Impl.java
+No javadoc at all: org\areslib\hardware\coprocessors\photon\PhotonCore.java
+No javadoc at all: org\areslib\hardware\coprocessors\photon\PhotonLynxModule.java
+No javadoc at all: org\areslib\hardware\coprocessors\photon\ReflectionUtils.java
+No javadoc at all: org\areslib\hardware\wrappers\AnalogInputWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\AnalogSensorWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\AresRevColorSensor.java
+No javadoc at all: org\areslib\hardware\wrappers\AresSrsColorSensor.java
+No javadoc at all: org\areslib\hardware\wrappers\ArrayLidarIOSrs.java
+No javadoc at all: org\areslib\hardware\wrappers\ArrayVisionIOSim.java
+No javadoc at all: org\areslib\hardware\wrappers\CRServoWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\DigitalSensorWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\OtosOdometryWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\RevDistanceSensorWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\ServoWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\SrsMode.java
+No javadoc at all: org\areslib\math\Pair.java
+No javadoc at all: org\areslib\math\Vector.java
+No javadoc at all: org\areslib\math\kinematics\DifferentialDriveWheelSpeeds.java
+No javadoc at all: org\areslib\math\kinematics\MecanumDriveWheelPositions.java
+No javadoc at all: org\areslib\math\kinematics\MecanumDriveWheelSpeeds.java
+No javadoc at all: org\areslib\math\numbers\N2.java
+No javadoc at all: org\areslib\math\numbers\N3.java
+No javadoc at all: org\areslib\pathplanner\util\ChassisSpeedsRateLimiter.java
+No javadoc at all: org\areslib\pathplanner\util\PPLibTelemetry.java
+No javadoc at all: org\firstinspires\ftc\teamcode\commands\AlignToTagCommand.java
+No javadoc at all: org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIO.java
+No javadoc at all: org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIOReal.java
+No javadoc at all: org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorSubsystem.java

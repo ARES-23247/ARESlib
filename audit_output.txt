@@ -1,0 +1,34 @@
+=== Files Missing Corresponding *Test.java ===
+
+=== Files with potentially missing Javadoc on public methods ===
+No javadoc at all: org\areslib\hardware\coprocessors\AresOctoQuadDriver.java
+No javadoc at all: org\areslib\hardware\coprocessors\OctoMode.java
+No javadoc at all: org\areslib\hardware\coprocessors\OctoQuadV1Impl.java
+No javadoc at all: org\areslib\hardware\coprocessors\OctoQuadV2Impl.java
+No javadoc at all: org\areslib\hardware\coprocessors\photon\PhotonCore.java
+No javadoc at all: org\areslib\hardware\coprocessors\photon\ReflectionUtils.java
+No javadoc at all: org\areslib\hardware\wrappers\AnalogInputWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\AnalogSensorWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\AresRevColorSensor.java
+No javadoc at all: org\areslib\hardware\wrappers\AresSrsColorSensor.java
+No javadoc at all: org\areslib\hardware\wrappers\ArrayLidarIOSrs.java
+No javadoc at all: org\areslib\hardware\wrappers\ArrayVisionIOSim.java
+No javadoc at all: org\areslib\hardware\wrappers\CRServoWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\DigitalSensorWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\OtosOdometryWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\RevDistanceSensorWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\ServoWrapper.java
+No javadoc at all: org\areslib\hardware\wrappers\SrsMode.java
+No javadoc at all: org\areslib\math\Pair.java
+No javadoc at all: org\areslib\math\Vector.java
+No javadoc at all: org\areslib\math\kinematics\DifferentialDriveWheelSpeeds.java
+No javadoc at all: org\areslib\math\kinematics\MecanumDriveWheelPositions.java
+No javadoc at all: org\areslib\math\kinematics\MecanumDriveWheelSpeeds.java
+No javadoc at all: org\areslib\math\numbers\N2.java
+No javadoc at all: org\areslib\math\numbers\N3.java
+No javadoc at all: org\areslib\pathplanner\util\ChassisSpeedsRateLimiter.java
+No javadoc at all: org\areslib\pathplanner\util\PPLibTelemetry.java
+No javadoc at all: org\firstinspires\ftc\teamcode\commands\AlignToTagCommand.java
+No javadoc at all: org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIO.java
+No javadoc at all: org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorIOReal.java
+No javadoc at all: org\firstinspires\ftc\teamcode\subsystems\elevator\ElevatorSubsystem.java

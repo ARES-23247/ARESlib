@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# ARESLib2 Pre-Commit Hook
+
+echo ""
+echo "=== ARESLib2 Pre-commit Hook ==="
+echo "Running Spotless auto-formatting and Unit Tests..."
+echo ""
+
+# Capture Java files that the user is actively trying to commit
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
+
+# Run gradle formatting AND tests quietly
+./gradlew spotlessApply test -q
+
+if [ $? -ne 0 ]; then
+    echo "❌ ERROR: Tests failed or the Gradle JVM crashed."
+    echo "    Please run './gradlew test' to fix any compilation / logical errors."
+    echo "    Then stage those fixes and try committing again."
+    echo "================================"
+    exit 1
+fi
+
+# IMPORTANT: Re-stage the modified files so Spotless's formatting gets added to the commit 
+if [ -n "$STAGED_FILES" ]; then
+    echo "$STAGED_FILES" | xargs git add
+fi
+
+echo "✅ Code cleanly formatted and verified! Committing..."
+echo "================================"
+exit 0

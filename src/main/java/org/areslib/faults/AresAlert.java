@@ -1,76 +1,69 @@
 package org.areslib.faults;
 
-/**
- * Represents a hardware alert or state warning that can be displayed to the driver station.
- */
+/** Represents a hardware alert or state warning that can be displayed to the driver station. */
 public class AresAlert {
-    public enum AlertType {
-        /**
-         * Critical errors that stop subsystems from functioning, such as hardware disconnects.
-         */
-        ERROR,
-        
-        /**
-         * Warning conditions like brownouts or suboptimal loop times.
-         */
-        WARNING,
-        
-        /**
-         * General information.
-         */
-        INFO
-    }
+  public enum AlertType {
+    /** Critical errors that stop subsystems from functioning, such as hardware disconnects. */
+    ERROR,
 
-    private String text;
-    private final AlertType type;
-    private boolean active;
+    /** Warning conditions like brownouts or suboptimal loop times. */
+    WARNING,
 
-    /**
-     * Creates a new Alert and automatically registers it with the AresFaultManager.
-     * @param text The text to display.
-     * @param type The severity type.
-     */
-    public AresAlert(String text, AlertType type) {
-        this.text = text;
-        this.type = type;
-        this.active = false;
-        AresFaultManager.registerAlert(this);
-    }
+    /** General information. */
+    INFO
+  }
 
-    /**
-     * Sets whether this alert is currently active.
-     * <p>
-     * If this alert was previously cleared from the {@link AresFaultManager}
-     * (e.g., during an OpMode transition reset), calling this method will
-     * automatically re-register it, ensuring static alerts survive lifecycle resets.
-     *
-     * @param active true to set the alert active, false to deactivate.
-     */
-    public void set(boolean active) {
-        this.active = active;
-        // Re-register if we were dropped by a reset() cycle.
-        // registerAlert() is idempotent — it no-ops if already present.
-        AresFaultManager.registerAlert(this);
-    }
+  private String text;
+  private final AlertType type;
+  private boolean active;
 
-    /**
-     * Sets the text for this alert dynamically.
-     *
-     * @param text The new text for the alert.
-     */
-    public void setText(String text) {
-        this.text = text;
-    }
+  /**
+   * Creates a new Alert and automatically registers it with the AresFaultManager.
+   *
+   * @param text The text to display.
+   * @param type The severity type.
+   */
+  public AresAlert(String text, AlertType type) {
+    this.text = text;
+    this.type = type;
+    this.active = false;
+    AresFaultManager.registerAlert(this);
+  }
 
-    public boolean isActive() {
-        return active;
-    }
+  /**
+   * Sets whether this alert is currently active.
+   *
+   * <p>If this alert was previously cleared from the {@link AresFaultManager} (e.g., during an
+   * OpMode transition reset), calling this method will automatically re-register it, ensuring
+   * static alerts survive lifecycle resets.
+   *
+   * @param active true to set the alert active, false to deactivate.
+   */
+  public void set(boolean active) {
+    this.active = active;
+    // Re-register if we were dropped by a reset() cycle.
+    // registerAlert() is idempotent — it no-ops if already present.
+    AresFaultManager.registerAlert(this);
+  }
 
-    public String getText() {
-        return text;
-    }
+  /**
+   * Sets the text for this alert dynamically.
+   *
+   * @param text The new text for the alert.
+   */
+  public void setText(String text) {
+    this.text = text;
+  }
 
-    public AlertType getType() {
-        return type;
-    }
+  public boolean isActive() {
+    return active;
+  }
+
+  public String getText() {
+    return text;
+  }
+
+  public AlertType getType() {
+    return type;
+  }
 }

@@ -25,7 +25,25 @@
               "type": 3,
               "title": "Field 3D",
               "controller": {
-                "game": "Decode"
+                "game": "Decode",
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "RealOutputs/Odometry/Pose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "RealOutputs/Vision/Poses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  }
+                ]
               },
               "controllerUUID": "oe0rw63et15dujl27l2rj2lvok2k7dbs",
               "renderer": null,
@@ -60,6 +78,55 @@
                 ]
               },
               "controllerUUID": "8dayxjvh5jlki9ls67cwz5f1ip689vco",
+              "renderer": null,
+              "controlsHeight": 0
+            },
+            {
+              "type": 9,
+              "title": "Swerve Tuning",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "states",
+                    "logKey": "RealOutputs/Drive/SwerveStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "RealOutputs/Drive/TargetSwerveStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  }
+                ]
+              },
+              "controllerUUID": "zzg7vvzc5fyuhob1ovw36zyykc0g7axc",
+              "renderer": null,
+              "controlsHeight": 0
+            },
+            {
+              "type": 11,
+              "title": "LiDAR Points",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "circle",
+                    "logKey": "RealOutputs/Lidar/PointCloud",
+                    "logType": "NumberArray",
+                    "visible": true,
+                    "options": {
+                      "size": "medium"
+                    }
+                  }
+                ]
+              },
+              "controllerUUID": "arw6yhyj413oo1qr6uzpx0mq0gpzytln",
               "renderer": null,
               "controlsHeight": 0
             }

@@ -1,10 +1,10 @@
 package org.areslib.pathplanner.commands;
 
-import org.areslib.pathplanner.path.PathPlannerPath;
-import org.areslib.math.geometry.Pose2d;
-import org.areslib.command.Command;
 import java.util.*;
 import java.util.function.Supplier;
+import org.areslib.command.Command;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.pathplanner.path.PathPlannerPath;
 
 /** Command that will run a path following command and trigger event markers along the way */
 public class FollowPathWithEvents extends Command {

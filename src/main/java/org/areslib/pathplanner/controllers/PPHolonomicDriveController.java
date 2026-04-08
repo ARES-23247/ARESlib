@@ -1,15 +1,15 @@
 package org.areslib.pathplanner.controllers;
 
-import org.areslib.pathplanner.path.PathPlannerTrajectory;
-import org.areslib.pathplanner.util.PIDConstants;
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.areslib.math.controller.PIDController;
 import org.areslib.math.controller.ProfiledPIDController;
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
 import org.areslib.math.geometry.Translation2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
-import java.util.Optional;
-import java.util.function.Supplier;
+import org.areslib.pathplanner.path.PathPlannerTrajectory;
+import org.areslib.pathplanner.util.PIDConstants;
 
 /** Path following controller for holonomic drive trains */
 public class PPHolonomicDriveController implements PathFollowingController {
@@ -54,12 +54,9 @@ public class PPHolonomicDriveController implements PathFollowingController {
     // Temp rate limit of 0, will be changed in calculate
     this.rotationController =
         new ProfiledPIDController(
-            rotationConstants.kP,
-            rotationConstants.kI,
-            rotationConstants.kD,
-            0, 0,
-            period);
-    // this.rotationController.setIntegratorRange(-rotationConstants.iZone, rotationConstants.iZone);
+            rotationConstants.kP, rotationConstants.kI, rotationConstants.kD, 0, 0, period);
+    // this.rotationController.setIntegratorRange(-rotationConstants.iZone,
+    // rotationConstants.iZone);
     this.rotationController.enableContinuousInput(-Math.PI, Math.PI);
 
     this.maxModuleSpeed = maxModuleSpeed;
@@ -148,8 +145,7 @@ public class PPHolonomicDriveController implements PathFollowingController {
     }
 
     rotationController.setGoal(targetRotation.getRadians());
-    double rotationFeedback =
-        rotationController.calculate(currentPose.getRotation().getRadians());
+    double rotationFeedback = rotationController.calculate(currentPose.getRotation().getRadians());
     double rotationFF =
         targetState.holonomicAngularVelocityRps.orElse(rotationController.getSetpointVelocity());
 

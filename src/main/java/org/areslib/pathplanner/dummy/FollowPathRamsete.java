@@ -1,7 +1,11 @@
 package org.areslib.pathplanner.dummy;
 
 /**
- * A dummy shim implementation to allow PathPlanner compilation without native WPILib/Android dependencies.
+ * A dummy shim implementation to allow PathPlanner compilation without native WPILib/Android
+ * dependencies.
  */
 import org.areslib.command.Command;
-public class FollowPathRamsete extends Command { public FollowPathRamsete(Object... args) {} }
+
+public class FollowPathRamsete extends Command {
+  public FollowPathRamsete(Object... args) {}
+}

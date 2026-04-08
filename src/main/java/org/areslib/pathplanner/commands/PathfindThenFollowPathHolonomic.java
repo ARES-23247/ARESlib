@@ -1,15 +1,15 @@
 package org.areslib.pathplanner.commands;
 
-import org.areslib.pathplanner.path.PathConstraints;
-import org.areslib.pathplanner.path.PathPlannerPath;
-import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
-import org.areslib.math.geometry.Pose2d;
-import org.areslib.math.kinematics.ChassisSpeeds;
-import org.areslib.command.SequentialCommandGroup;
-import org.areslib.command.Subsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.areslib.command.SequentialCommandGroup;
+import org.areslib.command.Subsystem;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.math.kinematics.ChassisSpeeds;
+import org.areslib.pathplanner.path.PathConstraints;
+import org.areslib.pathplanner.path.PathPlannerPath;
+import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
 
 /** A command group that first pathfinds to a goal path and then follows the goal path. */
 public class PathfindThenFollowPathHolonomic extends SequentialCommandGroup {
@@ -21,8 +21,8 @@ public class PathfindThenFollowPathHolonomic extends SequentialCommandGroup {
    * @param poseSupplier a supplier for the robot's current pose
    * @param currentRobotRelativeSpeeds a supplier for the robot's current robot relative speeds
    * @param robotRelativeOutput a consumer for the output speeds (robot relative)
-   * @param config {@link org.areslib.pathplanner.util.HolonomicPathFollowerConfig} for configuring the
-   *     path following commands
+   * @param config {@link org.areslib.pathplanner.util.HolonomicPathFollowerConfig} for configuring
+   *     the path following commands
    * @param rotationDelayDistance Distance to delay the target rotation of the robot. This will
    *     cause the robot to hold its current rotation until it reaches the given distance along the
    *     path.
@@ -69,8 +69,8 @@ public class PathfindThenFollowPathHolonomic extends SequentialCommandGroup {
    * @param poseSupplier a supplier for the robot's current pose
    * @param currentRobotRelativeSpeeds a supplier for the robot's current robot relative speeds
    * @param robotRelativeOutput a consumer for the output speeds (robot relative)
-   * @param config {@link org.areslib.pathplanner.util.HolonomicPathFollowerConfig} for configuring the
-   *     path following commands
+   * @param config {@link org.areslib.pathplanner.util.HolonomicPathFollowerConfig} for configuring
+   *     the path following commands
    * @param shouldFlipPath Should the target path be flipped to the other side of the field? This
    *     will maintain a global blue alliance origin.
    * @param requirements the subsystems required by this command (drive subsystem)

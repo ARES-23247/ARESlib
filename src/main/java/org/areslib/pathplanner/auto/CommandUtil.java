@@ -1,7 +1,7 @@
 package org.areslib.pathplanner.auto;
 
-import org.areslib.pathplanner.path.PathPlannerPath;
 import org.areslib.command.*;
+import org.areslib.pathplanner.path.PathPlannerPath;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -77,7 +77,7 @@ public class CommandUtil {
 
   private static Command sequentialGroupFromData(JSONObject dataJson, boolean loadChoreoPaths) {
     SequentialCommandGroup group = new SequentialCommandGroup();
-    for (var cmdJson : (JSONArray) dataJson.get("commands")) {
+    for (Object cmdJson : (JSONArray) dataJson.get("commands")) {
       group.addCommands(commandFromJson((JSONObject) cmdJson, loadChoreoPaths));
     }
     return group;
@@ -85,7 +85,7 @@ public class CommandUtil {
 
   private static Command parallelGroupFromData(JSONObject dataJson, boolean loadChoreoPaths) {
     ParallelCommandGroup group = new ParallelCommandGroup();
-    for (var cmdJson : (JSONArray) dataJson.get("commands")) {
+    for (Object cmdJson : (JSONArray) dataJson.get("commands")) {
       group.addCommands(commandFromJson((JSONObject) cmdJson, loadChoreoPaths));
     }
     return group;
@@ -93,7 +93,7 @@ public class CommandUtil {
 
   private static Command raceGroupFromData(JSONObject dataJson, boolean loadChoreoPaths) {
     ParallelRaceGroup group = new ParallelRaceGroup();
-    for (var cmdJson : (JSONArray) dataJson.get("commands")) {
+    for (Object cmdJson : (JSONArray) dataJson.get("commands")) {
       group.addCommands(commandFromJson((JSONObject) cmdJson, loadChoreoPaths));
     }
     return group;

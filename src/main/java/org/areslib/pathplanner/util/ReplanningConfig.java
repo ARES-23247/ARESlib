@@ -7,13 +7,16 @@ public class ReplanningConfig {
    * starting point?
    */
   public final boolean enableInitialReplanning;
+
   /**
    * Should the path be replanned if the error grows too large or if a large error spike happens
    * while following the path?
    */
   public final boolean enableDynamicReplanning;
+
   /** The total error threshold, in meters, that will cause the path to be replanned */
   public final double dynamicReplanningTotalErrorThreshold;
+
   /** The error spike threshold, in meters, that will cause the path to be replanned */
   public final double dynamicReplanningErrorSpikeThreshold;
 

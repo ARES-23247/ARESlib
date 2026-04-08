@@ -1,0 +1,49 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+
+> Task :compileTestJava
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\subsystems\drive\MecanumDriveSubsystemTest.java:16: error: cannot find symbol
+        public void updateInputs(MecanumDriveIOInputs inputs) {
+                                 ^
+  symbol:   class MecanumDriveIOInputs
+  location: class MockMecanumIO
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\subsystems\drive\MecanumDriveSubsystemTest.java:49: error: incompatible types: MockOdometryIO cannot be converted to Config
+        subsystem = new MecanumDriveSubsystem(mockIO, mockOdo); 
+                                                      ^
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\subsystems\drive\MecanumDriveSubsystemTest.java:56: error: method drive in class MecanumDriveSubsystem cannot be applied to given types;
+        subsystem.drive(targetSpeeds);
+                 ^
+  required: double,double,double
+  found:    ChassisSpeeds
+  reason: actual and formal argument lists differ in length
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\subsystems\drive\MecanumDriveSubsystemTest.java:70: error: method drive in class MecanumDriveSubsystem cannot be applied to given types;
+        subsystem.drive(targetSpeeds);
+                 ^
+  required: double,double,double
+  found:    ChassisSpeeds
+  reason: actual and formal argument lists differ in length
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\test\java\org\areslib\subsystems\drive\MecanumDriveSubsystemTest.java:84: error: method drive in class MecanumDriveSubsystem cannot be applied to given types;
+        subsystem.drive(targetSpeeds);
+                 ^
+  required: double,double,double
+  found:    ChassisSpeeds
+  reason: actual and formal argument lists differ in length
+
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors
+> Task :compileTestJava FAILED
+> Task :processTestResources NO-SOURCE
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileTestJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 7s
+2 actionable tasks: 1 executed, 1 up-to-date

@@ -1,23 +1,5 @@
 package org.areslib.pathplanner.auto;
 
-import org.areslib.pathplanner.commands.*;
-import org.areslib.pathplanner.path.PathConstraints;
-import org.areslib.pathplanner.path.PathPlannerPath;
-import org.areslib.pathplanner.util.GeometryUtil;
-import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
-import org.areslib.pathplanner.util.ReplanningConfig;
-import org.areslib.math.Vector;
-import org.areslib.math.geometry.Pose2d;
-import org.areslib.math.geometry.Rotation2d;
-import org.areslib.math.kinematics.ChassisSpeeds;
-import org.areslib.math.numbers.N2;
-import org.areslib.math.numbers.N3;
-import org.areslib.pathplanner.dummy.DriverStation;
-import org.areslib.pathplanner.dummy.Filesystem;
-import org.areslib.pathplanner.dummy.SendableChooser;
-import org.areslib.command.Command;
-import org.areslib.command.SequentialCommandGroup;
-import org.areslib.command.Subsystem;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -29,6 +11,24 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.areslib.command.Command;
+import org.areslib.command.SequentialCommandGroup;
+import org.areslib.command.Subsystem;
+import org.areslib.math.Vector;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.math.geometry.Rotation2d;
+import org.areslib.math.kinematics.ChassisSpeeds;
+import org.areslib.math.numbers.N2;
+import org.areslib.math.numbers.N3;
+import org.areslib.pathplanner.commands.*;
+import org.areslib.pathplanner.dummy.DriverStation;
+import org.areslib.pathplanner.dummy.Filesystem;
+import org.areslib.pathplanner.dummy.SendableChooser;
+import org.areslib.pathplanner.path.PathConstraints;
+import org.areslib.pathplanner.path.PathPlannerPath;
+import org.areslib.pathplanner.util.GeometryUtil;
+import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
+import org.areslib.pathplanner.util.ReplanningConfig;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -56,8 +56,8 @@ public class AutoBuilder {
    * @param robotRelativeSpeedsSupplier a supplier for the robot's current robot relative chassis
    *     speeds
    * @param robotRelativeOutput a consumer for setting the robot's robot-relative chassis speeds
-   * @param config {@link org.areslib.pathplanner.util.HolonomicPathFollowerConfig} for configuring the
-   *     path following commands
+   * @param config {@link org.areslib.pathplanner.util.HolonomicPathFollowerConfig} for configuring
+   *     the path following commands
    * @param shouldFlipPath Supplier that determines if paths should be flipped to the other side of
    *     the field. This will maintain a global blue alliance origin.
    * @param driveSubsystem the subsystem for the robot's drive

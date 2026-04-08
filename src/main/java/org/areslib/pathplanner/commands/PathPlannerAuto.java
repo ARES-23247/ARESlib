@@ -1,24 +1,26 @@
 package org.areslib.pathplanner.commands;
 
-import org.areslib.pathplanner.auto.AutoBuilder;
-import org.areslib.pathplanner.path.PathPlannerPath;
-import org.areslib.pathplanner.util.PPLibTelemetry;
-import org.areslib.pathplanner.dummy.FRCNetComm.tResourceType;
-
-import org.areslib.math.geometry.Pose2d;
-import org.areslib.pathplanner.dummy.Filesystem;
-import org.areslib.command.Command;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import org.areslib.command.Command;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.pathplanner.auto.AutoBuilder;
+import org.areslib.pathplanner.dummy.Filesystem;
+import org.areslib.pathplanner.path.PathPlannerPath;
+import org.areslib.pathplanner.util.PPLibTelemetry;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /** A command that loads and runs an autonomous routine built using PathPlanner. */
-public class PathPlannerAuto extends Command { public String getName() { return ""; } 
+public class PathPlannerAuto extends Command {
+  public String getName() {
+    return "";
+  }
+
   private static int instances = 0;
 
   private Command autoCommand;
@@ -39,7 +41,8 @@ public class PathPlannerAuto extends Command { public String getName() { return 
     try {
       this.autoCommand = AutoBuilder.buildAuto(autoName);
     } catch (Exception e) {
-      System.err.println("[PathPlannerAuto] Failed to load auto '" + autoName + "': " + e.getMessage());
+      System.err.println(
+          "[PathPlannerAuto] Failed to load auto '" + autoName + "': " + e.getMessage());
       e.printStackTrace();
       // Fall back to a no-op command so the sim doesn't crash
       this.autoCommand = new org.areslib.command.InstantCommand(() -> {});
@@ -49,7 +52,7 @@ public class PathPlannerAuto extends Command { public String getName() { return 
     PPLibTelemetry.registerHotReloadAuto(autoName, this);
 
     instances++;
-    //(tResourceType.kResourceType_PathPlannerAuto, instances);
+    // (tResourceType.kResourceType_PathPlannerAuto, instances);
   }
 
   /**
@@ -154,7 +157,7 @@ public class PathPlannerAuto extends Command { public String getName() { return 
         || type.equals("parallel")
         || type.equals("race")
         || type.equals("deadline")) {
-      for (var cmdJson : (JSONArray) data.get("commands")) {
+      for (Object cmdJson : (JSONArray) data.get("commands")) {
         paths.addAll(pathsFromCommandJson((JSONObject) cmdJson, choreoPaths));
       }
     }

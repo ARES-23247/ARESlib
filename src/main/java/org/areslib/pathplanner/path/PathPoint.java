@@ -1,7 +1,7 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.math.geometry.Translation2d;
 import java.util.Objects;
+import org.areslib.math.geometry.Translation2d;
 
 /** A point along a pathplanner path */
 public class PathPoint {
@@ -10,12 +10,16 @@ public class PathPoint {
 
   /** The distance of this point along the path, in meters */
   public double distanceAlongPath = 0.0;
+
   /** The curve radius at this point */
   public double curveRadius = 0.0;
+
   /** The max velocity at this point */
   public double maxV = Double.POSITIVE_INFINITY;
+
   /** The target rotation at this point */
   public RotationTarget rotationTarget = null;
+
   /** The constraints applied to this point */
   public PathConstraints constraints = null;
 

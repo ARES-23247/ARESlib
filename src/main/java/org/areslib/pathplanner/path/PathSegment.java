@@ -1,10 +1,10 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.pathplanner.util.GeometryUtil;
-import org.areslib.math.geometry.Translation2d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.areslib.math.geometry.Translation2d;
+import org.areslib.pathplanner.util.GeometryUtil;
 
 /** A bezier curve segment */
 public class PathSegment {

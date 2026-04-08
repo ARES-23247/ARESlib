@@ -1,7 +1,7 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.math.geometry.Rotation2d;
 import java.util.Objects;
+import org.areslib.math.geometry.Rotation2d;
 import org.json.simple.JSONObject;
 
 /** Describes the goal end state of the robot when finishing a path */

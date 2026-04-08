@@ -1,16 +1,16 @@
 package org.areslib.pathplanner.pathfinding;
 
-import org.areslib.pathplanner.path.*;
-import org.areslib.pathplanner.util.GeometryUtil;
-import org.areslib.math.Pair;
-import org.areslib.math.geometry.Translation2d;
-import org.areslib.pathplanner.dummy.Filesystem;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.areslib.math.Pair;
+import org.areslib.math.geometry.Translation2d;
+import org.areslib.pathplanner.dummy.Filesystem;
+import org.areslib.pathplanner.path.*;
+import org.areslib.pathplanner.util.GeometryUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -734,6 +734,7 @@ public class LocalADStar implements Pathfinder {
   public static class GridPosition implements Comparable<GridPosition> {
     /** X index in the grid */
     public final int x;
+
     /** Y index in the grid */
     public final int y;
 

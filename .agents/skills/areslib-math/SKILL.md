@@ -116,6 +116,9 @@ double smoothedValue = limiter.calculate(rawInput);
 
 Full WPILib geometry port: `Pose2d`, `Pose3d`, `Rotation2d`, `Rotation3d`, `Translation2d`, `Translation3d`, `Transform2d`, `Transform3d`, `Twist2d`.
 
+> [!WARNING]
+> **Reference Frame for Kinematics:** When defining Translation2d array entries for `MecanumDriveKinematics` or `SwerveDriveKinematics`, ensure standard WPILib reference frames: Positive X points forward, Positive Y points left. The inverse matrices exclusively rely on `+Y=Left`.
+
 ## 6. Anti-Patterns
 
 ### Don't: Reimplement PID

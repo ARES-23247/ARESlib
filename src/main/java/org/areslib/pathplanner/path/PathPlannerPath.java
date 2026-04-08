@@ -1,23 +1,20 @@
 package org.areslib.pathplanner.path;
 
-import org.areslib.pathplanner.auto.CommandUtil;
-import org.areslib.pathplanner.util.GeometryUtil;
-import org.areslib.pathplanner.util.PPLibTelemetry;
-import org.areslib.pathplanner.dummy.FRCNetComm.tResourceType;
-
-import org.areslib.math.MathUtil;
-import org.areslib.math.Pair;
-import org.areslib.math.geometry.Pose2d;
-import org.areslib.math.geometry.Rotation2d;
-import org.areslib.math.geometry.Translation2d;
-import org.areslib.math.kinematics.ChassisSpeeds;
-import org.areslib.pathplanner.dummy.Filesystem;
-import org.areslib.command.Command;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.areslib.command.Command;
+import org.areslib.math.Pair;
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.math.geometry.Rotation2d;
+import org.areslib.math.geometry.Translation2d;
+import org.areslib.math.kinematics.ChassisSpeeds;
+import org.areslib.pathplanner.auto.CommandUtil;
+import org.areslib.pathplanner.dummy.Filesystem;
+import org.areslib.pathplanner.util.GeometryUtil;
+import org.areslib.pathplanner.util.PPLibTelemetry;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -79,7 +76,7 @@ public class PathPlannerPath {
     precalcValues();
 
     instances++;
-    //(tResourceType.kResourceType_PathPlannerPath, instances);
+    // (tResourceType.kResourceType_PathPlannerPath, instances);
   }
 
   /**
@@ -166,7 +163,7 @@ public class PathPlannerPath {
     this.previewStartingRotation = Rotation2d.fromDegrees(0);
 
     instances++;
-    //(tResourceType.kResourceType_PathPlannerPath, instances);
+    // (tResourceType.kResourceType_PathPlannerPath, instances);
   }
 
   /**
@@ -489,7 +486,8 @@ public class PathPlannerPath {
 
     if (reversed) {
       heading =
-          Rotation2d.fromDegrees((((heading.getDegrees() + 180 + 180.0) % 360.0 + 360.0) % 360.0 - 180.0));
+          Rotation2d.fromDegrees(
+              (((heading.getDegrees() + 180 + 180.0) % 360.0 + 360.0) % 360.0 - 180.0));
     }
 
     return new Pose2d(startPos, heading);
@@ -698,7 +696,11 @@ public class PathPlannerPath {
     }
 
     ChassisSpeeds currentFieldRelativeSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(currentSpeeds.vxMetersPerSecond, currentSpeeds.vyMetersPerSecond, currentSpeeds.omegaRadiansPerSecond, startingPose.getRotation().unaryMinus());
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            currentSpeeds.vxMetersPerSecond,
+            currentSpeeds.vyMetersPerSecond,
+            currentSpeeds.omegaRadiansPerSecond,
+            startingPose.getRotation().unaryMinus());
 
     Translation2d robotNextControl = null;
     double linearVel =

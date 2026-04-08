@@ -5,81 +5,89 @@ import org.areslib.core.AresRobot;
 import org.areslib.telemetry.AresAutoLogger;
 
 /**
- * The executing state machine that applies exact voltage over time and logs
- * the mechanism's instantaneous state in the official WPILib `SysId` format.
+ * The executing state machine that applies exact voltage over time and logs the mechanism's
+ * instantaneous state in the official WPILib `SysId` format.
  */
 public class SysIdCommand extends Command {
 
-    private final SysIdRoutine.Config m_config;
-    private final SysIdRoutine.Mechanism m_mechanism;
-    private final boolean m_isQuasistatic;
-    private final SysIdRoutine.Direction m_direction;
-    private final String m_stateName;
-    
-    private double m_accumulator = 0.0;
-    private SysIdJSONExporter.TestRecord m_currentTestRecord;
+  private final SysIdRoutine.Config m_config;
+  private final SysIdRoutine.Mechanism m_mechanism;
+  private final boolean m_isQuasistatic;
+  private final SysIdRoutine.Direction m_direction;
+  private final String m_stateName;
 
-    /**
-     * Constructs a new SysId test command.
-     * 
-     * @param config        The SysId configuration constraints.
-     * @param mechanism     The mechanism bindings allowing I/O access.
-     * @param isQuasistatic True if the test is a slow voltage ramp (quasistatic). False for an instant step (dynamic).
-     * @param direction     The direction of the test.
-     */
-    public SysIdCommand(SysIdRoutine.Config config, SysIdRoutine.Mechanism mechanism, boolean isQuasistatic, SysIdRoutine.Direction direction) {
-        m_config = config;
-        m_mechanism = mechanism;
-        m_isQuasistatic = isQuasistatic;
-        m_direction = direction;
-        
-        m_stateName = (isQuasistatic ? "quasistatic" : "dynamic") + "-" + (direction == SysIdRoutine.Direction.FORWARD ? "forward" : "reverse");
-        
-        addRequirements(mechanism.requirements);
+  private double m_accumulator = 0.0;
+  private SysIdJSONExporter.TestRecord m_currentTestRecord;
+
+  /**
+   * Constructs a new SysId test command.
+   *
+   * @param config The SysId configuration constraints.
+   * @param mechanism The mechanism bindings allowing I/O access.
+   * @param isQuasistatic True if the test is a slow voltage ramp (quasistatic). False for an
+   *     instant step (dynamic).
+   * @param direction The direction of the test.
+   */
+  public SysIdCommand(
+      SysIdRoutine.Config config,
+      SysIdRoutine.Mechanism mechanism,
+      boolean isQuasistatic,
+      SysIdRoutine.Direction direction) {
+    m_config = config;
+    m_mechanism = mechanism;
+    m_isQuasistatic = isQuasistatic;
+    m_direction = direction;
+
+    m_stateName =
+        (isQuasistatic ? "quasistatic" : "dynamic")
+            + "-"
+            + (direction == SysIdRoutine.Direction.FORWARD ? "forward" : "reverse");
+
+    addRequirements(mechanism.requirements);
+  }
+
+  @Override
+  public void initialize() {
+    m_accumulator = 0.0;
+    AresAutoLogger.recordOutput("SysId/State", m_stateName);
+    m_currentTestRecord = SysIdJSONExporter.startTest(m_stateName);
+  }
+
+  @Override
+  public void execute() {
+    m_accumulator += AresRobot.LOOP_PERIOD_SECS;
+
+    double volts;
+    if (m_isQuasistatic) {
+      volts = m_accumulator * m_config.rampRateVoltsPerSec;
+    } else {
+      volts = m_config.stepVoltageVolts;
     }
+    volts *= m_direction.multiplier;
 
-    @Override
-    public void initialize() {
-        m_accumulator = 0.0;
-        AresAutoLogger.recordOutput("SysId/State", m_stateName);
-        m_currentTestRecord = SysIdJSONExporter.startTest(m_stateName);
-    }
+    m_mechanism.voltageInput.accept(volts);
 
-    @Override
-    public void execute() {
-        m_accumulator += AresRobot.LOOP_PERIOD_SECS;
-        
-        double volts;
-        if (m_isQuasistatic) {
-            volts = m_accumulator * m_config.rampRateVoltsPerSec;
-        } else {
-            volts = m_config.stepVoltageVolts;
-        }
-        volts *= m_direction.multiplier;
-        
-        m_mechanism.voltageInput.accept(volts);
-        
-        double pos = m_mechanism.positionOutput.get();
-        double vel = m_mechanism.velocityOutput.get();
+    double pos = m_mechanism.positionOutput.get();
+    double vel = m_mechanism.velocityOutput.get();
 
-        // Push standardized keys to telemetry
-        AresAutoLogger.recordOutput("SysId/Voltage", volts);
-        AresAutoLogger.recordOutput("SysId/Position", pos);
-        AresAutoLogger.recordOutput("SysId/Velocity", vel);
+    // Push standardized keys to telemetry
+    AresAutoLogger.recordOutput("SysId/Voltage", volts);
+    AresAutoLogger.recordOutput("SysId/Position", pos);
+    AresAutoLogger.recordOutput("SysId/Velocity", vel);
 
-        // Feed to JSON local cache
-        m_currentTestRecord.addFrame(m_accumulator, volts, pos, vel);
-    }
+    // Feed to JSON local cache
+    m_currentTestRecord.addFrame(m_accumulator, volts, pos, vel);
+  }
 
-    @Override
-    public boolean isFinished() {
-        return m_accumulator >= m_config.timeoutSeconds;
-    }
+  @Override
+  public boolean isFinished() {
+    return m_accumulator >= m_config.timeoutSeconds;
+  }
 
-    @Override
-    public void end(boolean interrupted) {
-        m_mechanism.voltageInput.accept(0.0);
-        AresAutoLogger.recordOutput("SysId/State", "none");
-        AresAutoLogger.recordOutput("SysId/Voltage", 0.0);
-    }
+  @Override
+  public void end(boolean interrupted) {
+    m_mechanism.voltageInput.accept(0.0);
+    AresAutoLogger.recordOutput("SysId/State", "none");
+    AresAutoLogger.recordOutput("SysId/Voltage", 0.0);
+  }
 }
