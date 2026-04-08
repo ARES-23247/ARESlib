@@ -17,6 +17,7 @@ import org.areslib.pathplanner.util.*;
 
 /** Base pathfinding command */
 public class PathfindingCommand extends Command {
+  @SuppressWarnings("unused")
   private static int instances = 0;
 
   private final Timer timer = new Timer();

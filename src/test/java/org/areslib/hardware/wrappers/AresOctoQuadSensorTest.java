@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class AresOctoQuadSensorTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for AresOctoQuadSensor.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

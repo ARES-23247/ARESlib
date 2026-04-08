@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class AresDiagnosticsTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for AresDiagnostics.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

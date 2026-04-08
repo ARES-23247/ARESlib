@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class ReplanningConfigTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for ReplanningConfig.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

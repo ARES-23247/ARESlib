@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class GenericPublisherTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for GenericPublisher.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

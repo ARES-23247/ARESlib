@@ -37,7 +37,10 @@ public class AutoBuilder {
   private static boolean configured = false;
 
   private static Function<PathPlannerPath, Command> pathFollowingCommandBuilder;
+
+  @SuppressWarnings("unused")
   private static Supplier<Pose2d> getPose;
+
   private static Consumer<Pose2d> resetPose;
   private static BooleanSupplier shouldFlipPath;
 

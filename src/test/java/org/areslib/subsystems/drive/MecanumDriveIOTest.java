@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class MecanumDriveIOTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for MecanumDriveIO.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

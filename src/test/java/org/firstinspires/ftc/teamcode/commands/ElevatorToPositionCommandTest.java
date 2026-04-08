@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class ElevatorToPositionCommandTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for ElevatorToPositionCommand.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

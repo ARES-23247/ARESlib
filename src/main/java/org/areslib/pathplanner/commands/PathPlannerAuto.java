@@ -21,6 +21,7 @@ public class PathPlannerAuto extends Command {
     return "";
   }
 
+  @SuppressWarnings("unused")
   private static int instances = 0;
 
   private Command autoCommand;

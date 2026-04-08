@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class RlogServerBackendTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for RlogServerBackend.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

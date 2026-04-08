@@ -1,163 +1,371 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="output" path="bin/default"/>
-	<classpathentry output="bin/main" kind="src" path="src/main/java">
+	<classpathentry kind="src" output="build/resources/test" path="src/test/resources">
 		<attributes>
-			<attribute name="gradle_scope" value="main"/>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry output="bin/test" kind="src" path="src/test/java">
-		<attributes>
-			<attribute name="gradle_scope" value="test"/>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="resource" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.acmerobotics.dashboard/core/0.4.16/86dda695285fd327776f5331233383a58228a20b/core-0.4.16-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.acmerobotics.dashboard/core/0.4.16/f2650d16dc9876b06a074f5548983944de15a6e7/core-0.4.16.jar">
+	<classpathentry kind="src" output="build/classes/java/test" path="src/test/java">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.android/android/4.1.1.4/d0b222ba86f4143dd837ece95f84f0cf220dd737/android-4.1.1.4-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.android/android/4.1.1.4/3fb039385e71e9aa2ba547ea9ea8caa34a4ffac7/android-4.1.1.4.jar">
+	<classpathentry kind="src" output="build/resources/main" path="src/main/resources">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="resource" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.pedropathing/core/2.1.1/e80c29f33823f4c1c2ddd27999b26c8820af3c5d/core-2.1.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.pedropathing/core/2.1.1/e5fcfb9494f12b71031b79b3d7a69ef0a3426296/core-2.1.1.jar">
+	<classpathentry kind="src" output="build/classes/java/main" path="src/main/java">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/4.2.2/6b99ca683b5e9f1d43a06b82c6d41452394ce7e1/dyn4j-4.2.2-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/4.2.2/95ed57493d79bcf1ee814f8c56c638d704019fcb/dyn4j-4.2.2.jar">
+	<classpathentry kind="src" output="build/classes/java/test" path="build/generated/sources/annotationProcessor/java/test">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.0.1/2480b1ac944ebdd15f5f7b6730e9a151d39f4d88/httpclient-4.0.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.0.1/1d7d28fa738bdbfe4fbd895d9486308999bdf440/httpclient-4.0.1.jar">
+	<classpathentry kind="src" output="build/classes/java/main" path="build/generated/sources/annotationProcessor/java/main">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.1/f3f156cbff0e0fb0d64bfce31a352cce4a33bc19/commons-logging-1.1.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.1/5043bfebc3db072ed80fbd362e7caf00e885d8ae/commons-logging-1.1.1.jar">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.khronos/opengl-api/gl1.1-android-2.1_r1/3d04a959a571d615f4c96a7dd954af18df9da799/opengl-api-gl1.1-android-2.1_r1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.khronos/opengl-api/gl1.1-android-2.1_r1/8827d279add29cf9115820671e7879de7bf80390/opengl-api-gl1.1-android-2.1_r1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/Hardware-11.1.0.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="Hardware-11.1.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10.1/b3add478d4382b78ea20b1671390a858002feb6c/gson-2.10.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10.1/982a90132e942f302e6fe79d6e78c4bc2e998569/gson-2.10.1-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.google.code.gson"/>
+			<attribute name="artifactId" value="gson"/>
+			<attribute name="version" value="2.10.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/4.2.2/95ed57493d79bcf1ee814f8c56c638d704019fcb/dyn4j-4.2.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/4.2.2/6b99ca683b5e9f1d43a06b82c6d41452394ce7e1/dyn4j-4.2.2-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.dyn4j"/>
+			<attribute name="artifactId" value="dyn4j"/>
+			<attribute name="version" value="4.2.2"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.0.1/1d7d28fa738bdbfe4fbd895d9486308999bdf440/httpclient-4.0.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.0.1/2480b1ac944ebdd15f5f7b6730e9a151d39f4d88/httpclient-4.0.1-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.apache.httpcomponents"/>
+			<attribute name="artifactId" value="httpclient"/>
+			<attribute name="version" value="4.0.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/dashboard-0.5.1.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="dashboard-0.5.1.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/RobotCore-11.1.0.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="RobotCore-11.1.0.jar"/>
+			<attribute name="version" value="unknown"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.1/5043bfebc3db072ed80fbd362e7caf00e885d8ae/commons-logging-1.1.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.1/f3f156cbff0e0fb0d64bfce31a352cce4a33bc19/commons-logging-1.1.1-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="commons-logging"/>
+			<attribute name="artifactId" value="commons-logging"/>
+			<attribute name="version" value="1.1.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.android/android/4.1.1.4/3fb039385e71e9aa2ba547ea9ea8caa34a4ffac7/android-4.1.1.4.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.android/android/4.1.1.4/d0b222ba86f4143dd837ece95f84f0cf220dd737/android-4.1.1.4-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.google.android"/>
+			<attribute name="artifactId" value="android"/>
+			<attribute name="version" value="4.1.1.4"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.0.1/e813b8722c387b22e1adccf7914729db09bcb4a9/httpcore-4.0.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.0.1/69febd50593a006a4593ef64a697b14208a55b7b/httpcore-4.0.1-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.apache.httpcomponents"/>
+			<attribute name="artifactId" value="httpcore"/>
+			<attribute name="version" value="4.0.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.json/json/20080701/d652f102185530c93b66158b1859f35d45687258/json-20080701.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.json/json/20080701/71bd54221e701df9d112bf9ba2918e13b0671f3a/json-20080701-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.json"/>
+			<attribute name="artifactId" value="json"/>
+			<attribute name="version" value="20080701"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/xerces/xmlParserAPIs/2.6.2/65acede1e5305bd2b92213d7b5761328c6f4fd9/xmlParserAPIs-2.6.2.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="xerces"/>
+			<attribute name="artifactId" value="xmlParserAPIs"/>
+			<attribute name="version" value="2.6.2"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/xpp3/xpp3/1.1.4c/8dd0ddee19fe6ed0182b18e0e621d1c8b4d8d56/xpp3-1.1.4c-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/xpp3/xpp3/1.1.4c/9b988ea84b9e4e9f1874e390ce099b8ac12cfff5/xpp3-1.1.4c.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.3/fd32786786e2adb664d5ecc965da47629dca14ba/commons-codec-1.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.3/ee264b5d7a0f939d5999398c7f1ade031db3fcec/commons-codec-1.3-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="commons-codec"/>
+			<attribute name="artifactId" value="commons-codec"/>
+			<attribute name="version" value="1.3"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.json/json/20080701/71bd54221e701df9d112bf9ba2918e13b0671f3a/json-20080701-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.json/json/20080701/d652f102185530c93b66158b1859f35d45687258/json-20080701.jar">
+	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/FtcCommon-11.1.0.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="unknown"/>
+			<attribute name="artifactId" value="FtcCommon-11.1.0.jar"/>
+			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.0.1/69febd50593a006a4593ef64a697b14208a55b7b/httpcore-4.0.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.0.1/e813b8722c387b22e1adccf7914729db09bcb4a9/httpcore-4.0.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/xpp3/xpp3/1.1.4c/9b988ea84b9e4e9f1874e390ce099b8ac12cfff5/xpp3-1.1.4c.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/xpp3/xpp3/1.1.4c/8dd0ddee19fe6ed0182b18e0e621d1c8b4d8d56/xpp3-1.1.4c-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="xpp3"/>
+			<attribute name="artifactId" value="xpp3"/>
+			<attribute name="version" value="1.1.4c"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.3/ee264b5d7a0f939d5999398c7f1ade031db3fcec/commons-codec-1.3-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.3/fd32786786e2adb664d5ecc965da47629dca14ba/commons-codec-1.3.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.acmerobotics.dashboard/core/0.5.1/cdff3151ae98f9b5c5b000bbd42b67618c8b0204/core-0.5.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.acmerobotics.dashboard/core/0.5.1/16cd662031c42a4d16eb982c6cd88ae132d5588a/core-0.5.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.acmerobotics.dashboard"/>
+			<attribute name="artifactId" value="core"/>
+			<attribute name="version" value="0.5.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.8.1/386b61876dd33d0ef0381189d3c1db9455d99659/junit-platform-commons-1.8.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.8.1/1e362cbe6d0f225b066757865e233972557484/junit-platform-commons-1.8.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.googlecode.json-simple/json-simple/1.1.1/c9ad4a0850ab676c5c64461a05ca524cdfff59f1/json-simple-1.1.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.googlecode.json-simple/json-simple/1.1.1/15bba08e3a239d54b68209c001f9c911559d2fed/json-simple-1.1.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.googlecode.json-simple"/>
+			<attribute name="artifactId" value="json-simple"/>
+			<attribute name="version" value="1.1.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/junit/junit/4.10/e4f1766ce7404a08f45d859fb9c226fc9e41a861/junit-4.10.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/junit/junit/4.10/6c98d6766e72d5575f96c9479d1c1d3b865c6e25/junit-4.10-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="junit"/>
+			<attribute name="artifactId" value="junit"/>
+			<attribute name="version" value="4.10"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.khronos/opengl-api/gl1.1-android-2.1_r1/8827d279add29cf9115820671e7879de7bf80390/opengl-api-gl1.1-android-2.1_r1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.khronos/opengl-api/gl1.1-android-2.1_r1/3d04a959a571d615f4c96a7dd954af18df9da799/opengl-api-gl1.1-android-2.1_r1-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.khronos"/>
+			<attribute name="artifactId" value="opengl-api"/>
+			<attribute name="version" value="gl1.1-android-2.1_r1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/860340562250678d1a344907ac75754e259cdb14/hamcrest-core-1.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.1/2ccf1154d1a8936042a8a742dc3e611d02ac7213/hamcrest-core-1.1-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.hamcrest"/>
+			<attribute name="artifactId" value="hamcrest-core"/>
+			<attribute name="version" value="1.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.12.19/178d26e6a95e50502ae16673e08269797f8b254a/byte-buddy-1.12.19.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.12.19/59e5349f04f4f8e0eaa9f0881f1f0ac5e9eea9da/byte-buddy-1.12.19-sources.jar">
+		<attributes>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="net.bytebuddy"/>
+			<attribute name="artifactId" value="byte-buddy"/>
+			<attribute name="version" value="1.12.19"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.8.1/a3e13f34a2a47fb2c0d7385c5e6e0e8623194061/junit-jupiter-api-5.8.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.8.1/6538b88eb8bf8811bc7b6efb5246f835c15e0bfe/junit-jupiter-api-5.8.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/28c11eb91f9b6d8e200631d46e20a7f407f2a046/opentest4j-1.2.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/41d55b3c2254de9837b4ec8923cbd371b8a7eab5/opentest4j-1.2.0-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.opentest4j"/>
+			<attribute name="artifactId" value="opentest4j"/>
+			<attribute name="version" value="1.2.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10.1/982a90132e942f302e6fe79d6e78c4bc2e998569/gson-2.10.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10.1/b3add478d4382b78ea20b1671390a858002feb6c/gson-2.10.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.9.1/3145f821b5cd10abcdc5f925baa5fffa6f1b628f/junit-platform-commons-1.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.9.1/5d2f1078b36f69b0cbacc1efdbf073517c0c7d33/junit-platform-commons-1.9.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.platform"/>
+			<attribute name="artifactId" value="junit-platform-commons"/>
+			<attribute name="version" value="1.9.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.3.2/4d3584767b5e7c4ba133c7514dbb7af5f3c13394/Jamepad-1.3.2-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.3.2/9d1cbe9f52c863351faae2b05bb8fe3b316a21cf/Jamepad-1.3.2.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.javaparser/javaparser-core/2.3.0/a0ff6b83141734b4f7df2c1a7b0fa2ad5dc67523/javaparser-core-2.3.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.javaparser/javaparser-core/2.3.0/3b8934addaefeb82860ebd403f3117a518b53910/javaparser-core-2.3.0-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.github.javaparser"/>
+			<attribute name="artifactId" value="javaparser-core"/>
+			<attribute name="version" value="2.3.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/41d55b3c2254de9837b4ec8923cbd371b8a7eab5/opentest4j-1.2.0-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/28c11eb91f9b6d8e200631d46e20a7f407f2a046/opentest4j-1.2.0.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-inline/4.11.0/3d1dffee9a8a1998ec782383ca2f818848f2d5f1/mockito-inline-4.11.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-inline/4.11.0/3d1dffee9a8a1998ec782383ca2f818848f2d5f1/mockito-inline-4.11.0-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.mockito"/>
+			<attribute name="artifactId" value="mockito-inline"/>
+			<attribute name="version" value="4.11.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/e0787a997746ac32639e0bf3cb27af8dce8a3428/apiguardian-api-1.1.2-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/a231e0d844d2721b0fa1b238006d15c6ded6842a/apiguardian-api-1.1.2.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.9.1/7bb53fbc0173e9f6a9d21d58297af94b1f2f9ce1/junit-jupiter-api-5.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.9.1/ba8516b330a32b4957cdc6ad0cd1a594ec154fd2/junit-jupiter-api-5.9.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value=""/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-api"/>
+			<attribute name="version" value="5.9.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen/1.9.9/775d43e4008689571599da424c6c75c6ca5eeeae/gdx-jnigen-1.9.9-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen/1.9.9/b2f322689cc3e4b14d49d4ea927538262c8ac1ab/gdx-jnigen-1.9.9.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.8.1/1e362cbe6d0f225b066757865e233972557484/junit-platform-commons-1.8.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.8.1/386b61876dd33d0ef0381189d3c1db9455d99659/junit-platform-commons-1.8.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.platform"/>
+			<attribute name="artifactId" value="junit-platform-commons"/>
+			<attribute name="version" value="1.8.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.javaparser/javaparser-core/2.3.0/3b8934addaefeb82860ebd403f3117a518b53910/javaparser-core-2.3.0-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.javaparser/javaparser-core/2.3.0/a0ff6b83141734b4f7df2c1a7b0fa2ad5dc67523/javaparser-core-2.3.0.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/a231e0d844d2721b0fa1b238006d15c6ded6842a/apiguardian-api-1.1.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/e0787a997746ac32639e0bf3cb27af8dce8a3428/apiguardian-api-1.1.2-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.apiguardian"/>
+			<attribute name="artifactId" value="apiguardian-api"/>
+			<attribute name="version" value="1.1.2"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.8.1/9d87ea7959823714ad803aa91e0618bf2213b52c/junit-platform-engine-1.8.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.8.1/e6c63bf990dc88a6527b4ed617b23e47048f07e0/junit-platform-engine-1.8.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/4.11.0/ce5226440c2ee78915716d4ce3d10aed2dbf26fb/mockito-core-4.11.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/4.11.0/caa9afd0d62ce8c216eb10c76105bd9597ba03ae/mockito-core-4.11.0-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.mockito"/>
+			<attribute name="artifactId" value="mockito-core"/>
+			<attribute name="version" value="4.11.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.8.1/ea87fe3d752e24397f71f347872e79a89c61a704/junit-jupiter-engine-5.8.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.8.1/21b86e08aae2720bbf017703669948be96d1388c/junit-jupiter-engine-5.8.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.9.1/ffcd1013edaeee112be11fcddeb38882d79238de/junit-jupiter-params-5.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.9.1/f48e6a3bc9ac5acdde88951f83beb44adc78c8c5/junit-jupiter-params-5.9.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-params"/>
+			<attribute name="version" value="5.9.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/dashboard-0.4.16.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.8.1/6538b88eb8bf8811bc7b6efb5246f835c15e0bfe/junit-jupiter-api-5.8.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.8.1/a3e13f34a2a47fb2c0d7385c5e6e0e8623194061/junit-jupiter-api-5.8.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-api"/>
+			<attribute name="version" value="5.8.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/RobotCore-10.1.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.19/450917cf3b358b691a824acf4c67aa89c826f67e/byte-buddy-agent-1.12.19.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.19/261284eb82c0c2280424cabfa00edbb713313217/byte-buddy-agent-1.12.19-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="net.bytebuddy"/>
+			<attribute name="artifactId" value="byte-buddy-agent"/>
+			<attribute name="version" value="1.12.19"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/Hardware-10.1.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/3.3/1049c09f1de4331e8193e579448d0916d75b7631/objenesis-3.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/3.3/5fef34eeee6816b0ba2170755a8a9db7744990c3/objenesis-3.3-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.objenesis"/>
+			<attribute name="artifactId" value="objenesis"/>
+			<attribute name="version" value="3.3"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/FtcCommon-10.1.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/4.11.0/6a2a2d138141e9c003451292348173c899450872/mockito-junit-jupiter-4.11.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/4.11.0/6aa189452f42167be3dc9ce5ac029df0f15ba0e5/mockito-junit-jupiter-4.11.0-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.mockito"/>
+			<attribute name="artifactId" value="mockito-junit-jupiter"/>
+			<attribute name="version" value="4.11.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib2/.gradle/ftc-jars/ftc-2.1.1.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.9.1/1bf771097bde296c3ab174861954e8aafaaf2e94/junit-jupiter-engine-5.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.9.1/bc082b8e8a1f40d6846fccb59867c6524bf08155/junit-jupiter-engine-5.9.1-sources.jar">
 		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-engine"/>
+			<attribute name="version" value="5.9.1"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.3.2/9d1cbe9f52c863351faae2b05bb8fe3b316a21cf/Jamepad-1.3.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.3.2/4d3584767b5e7c4ba133c7514dbb7af5f3c13394/Jamepad-1.3.2-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.github.WilliamAHartman"/>
+			<attribute name="artifactId" value="Jamepad"/>
+			<attribute name="version" value="1.3.2"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.8.1/13afdb5d414cbe991fce3ef6b864de77c9644dae/junit-jupiter-params-5.8.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.8.1/d69300e26c3af1d798f412df28d060333e052472/junit-jupiter-params-5.8.1-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-params"/>
+			<attribute name="version" value="5.8.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen/1.9.9/b2f322689cc3e4b14d49d4ea927538262c8ac1ab/gdx-jnigen-1.9.9.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen/1.9.9/775d43e4008689571599da424c6c75c6ca5eeeae/gdx-jnigen-1.9.9-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.badlogicgames.gdx"/>
+			<attribute name="artifactId" value="gdx-jnigen"/>
+			<attribute name="version" value="1.9.9"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.9.1/83591e5089d6cea5f324aa3ecca9b19d5a275803/junit-platform-engine-1.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.9.1/bda902e43fe1f62674224452defd31f4c251e29d/junit-platform-engine-1.9.1-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.platform"/>
+			<attribute name="artifactId" value="junit-platform-engine"/>
+			<attribute name="version" value="1.9.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin/default"/>
 </classpath>

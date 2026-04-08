@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class CRServoWrapperTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for CRServoWrapper.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

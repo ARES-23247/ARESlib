@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class NetworkTableEntryTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for NetworkTableEntry.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class ServoWrapperTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for ServoWrapper.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

@@ -80,15 +80,34 @@ public class DesktopSimLauncher {
     robotBody.getTransform().setRotation(0.0);
     world.addBody(robotBody);
 
+    // Check for Headless Mode
+    boolean isHeadless =
+        java.util.Arrays.asList(args).contains("--headless")
+            || java.awt.GraphicsEnvironment.isHeadless();
+
     // Driver Station GUI Init
-    AresDriverStationApp dsApp = new AresDriverStationApp();
-    AresGamepad driverGamepad = new AresGamepad(dsApp.getGamepadWrapper().gamepad);
+    AresDriverStationApp dsApp = null;
+    com.qualcomm.robotcore.hardware.Gamepad syntheticGamepad =
+        new com.qualcomm.robotcore.hardware.Gamepad();
+    org.areslib.sim.VirtualGamepadWrapper vGamepadWrapper = null;
+
+    if (!isHeadless) {
+      dsApp = new AresDriverStationApp();
+      vGamepadWrapper = dsApp.getGamepadWrapper();
+      syntheticGamepad = vGamepadWrapper.gamepad;
+    }
+
+    AresGamepad driverGamepad = new AresGamepad(syntheticGamepad);
 
     // Form standard list array of active robots for the simulator context
     List<RobotSimState> activeRobots = new ArrayList<>();
-    activeRobots.add(new RobotSimState(robotBody, dsApp.getGamepadWrapper().gamepad));
+    activeRobots.add(new RobotSimState(robotBody, syntheticGamepad));
 
     com.qualcomm.robotcore.util.RobotLog.i("Sim Started! Connect AdvantageScope to 127.0.0.1");
+    if (isHeadless) {
+      com.qualcomm.robotcore.util.RobotLog.i(
+          "Running in STRICT HEADLESS MODE - Auto will start automatically.");
+    }
 
     boolean wasAutoEnabled = false;
 
@@ -98,27 +117,31 @@ public class DesktopSimLauncher {
         long startTime = System.currentTimeMillis();
 
         // 1. Update Gamepad Inputs
-        dsApp.getGamepadWrapper().update();
+        if (!isHeadless) {
+          vGamepadWrapper.update();
 
-        com.qualcomm.robotcore.hardware.Gamepad gamepad = dsApp.getGamepadWrapper().gamepad;
-        dsApp.updateGamepadState(
-            gamepad.left_stick_x,
-            gamepad.left_stick_y,
-            gamepad.right_stick_x,
-            gamepad.right_stick_y,
-            gamepad.left_bumper,
-            gamepad.right_bumper,
-            gamepad.left_trigger,
-            gamepad.right_trigger,
-            gamepad.a,
-            gamepad.b,
-            gamepad.x,
-            gamepad.y);
+          dsApp.updateGamepadState(
+              syntheticGamepad.left_stick_x,
+              syntheticGamepad.left_stick_y,
+              syntheticGamepad.right_stick_x,
+              syntheticGamepad.right_stick_y,
+              syntheticGamepad.left_bumper,
+              syntheticGamepad.right_bumper,
+              syntheticGamepad.left_trigger,
+              syntheticGamepad.right_trigger,
+              syntheticGamepad.a,
+              syntheticGamepad.b,
+              syntheticGamepad.x,
+              syntheticGamepad.y);
+        }
 
         // Process physical game piece interactions natively through the decoupled season class
         gameSim.updateField(world, activeRobots);
 
-        boolean isAutoEnabled = dsApp.isAutoModeEnabled();
+        FieldConstants.Alliance currentAlliance =
+            isHeadless ? FieldConstants.Alliance.BLUE : dsApp.getAlliance();
+
+        boolean isAutoEnabled = isHeadless ? true : dsApp.isAutoModeEnabled();
         if (isAutoEnabled && !wasAutoEnabled) {
           // 6. Hook Teleop or Auto Commands
           try {
@@ -140,7 +163,7 @@ public class DesktopSimLauncher {
           double driveTurn = driverGamepad.getRightX() * -3.14; // +Theta is CCW
 
           // If triggers are pulled, boost speed
-          if (dsApp.getGamepadWrapper().gamepad.right_trigger > 0.5) {
+          if (syntheticGamepad.right_trigger > 0.5) {
             driveY *= 1.5;
             driveX *= 1.5;
             driveTurn *= 1.5;
@@ -151,7 +174,6 @@ public class DesktopSimLauncher {
           // BLUE alliance: offset = 180° (driver faces -X, forward = away from driver).
           // The offset rotates the robot's heading reference so that "push stick forward"
           // always drives the robot AWAY from the driver regardless of which side they sit on.
-          FieldConstants.Alliance currentAlliance = dsApp.getAlliance();
           org.areslib.math.geometry.Rotation2d currentHeading =
               new org.areslib.math.geometry.Rotation2d(odometryInputs.headingRadians);
           org.areslib.math.geometry.Rotation2d allianceHeading =
@@ -246,7 +268,7 @@ public class DesktopSimLauncher {
             odometryInputs.headingRadians);
 
         // Log current alliance for telemetry
-        AresTelemetry.putString("DriverStation/Alliance", dsApp.getAlliance().name());
+        AresTelemetry.putString("DriverStation/Alliance", currentAlliance.name());
 
         // Push Field States
         gameSim.telemetryUpdate();
@@ -254,11 +276,14 @@ public class DesktopSimLauncher {
         // Telemetry Event Push
         AresTelemetry.update();
         int heldSamplesCount = gameSim.getHeldSamples(activeRobots.get(0));
-        dsApp.updateHud(
-            odometryInputs.xMeters,
-            odometryInputs.yMeters,
-            odometryInputs.headingRadians,
-            heldSamplesCount);
+
+        if (!isHeadless) {
+          dsApp.updateHud(
+              odometryInputs.xMeters,
+              odometryInputs.yMeters,
+              odometryInputs.headingRadians,
+              heldSamplesCount);
+        }
 
         // Precise 50Hz sleep
         long loopTime = System.currentTimeMillis() - startTime;

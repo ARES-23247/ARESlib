@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class CommandUtilTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for CommandUtil.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

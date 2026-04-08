@@ -21,6 +21,7 @@ import org.json.simple.parser.JSONParser;
 
 /** A PathPlanner path. NOTE: This is not a trajectory and isn't directly followed. */
 public class PathPlannerPath {
+  @SuppressWarnings("unused")
   private static int instances = 0;
 
   private List<Translation2d> bezierPoints;

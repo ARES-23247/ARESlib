@@ -9,12 +9,6 @@
           "data": {
             "pathName": "SquarePath"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "test"
-          }
         }
       ]
     }

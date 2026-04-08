@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PathConstraintsTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PathConstraints.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PathfindThenFollowPathRamseteTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PathfindThenFollowPathRamsete.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

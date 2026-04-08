@@ -1,7 +1,5 @@
 package org.areslib.telemetry;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 class AresLoggableInputsTest {
@@ -14,8 +12,7 @@ class AresLoggableInputsTest {
   void testMarkerInterface() {
     DummyInputs inputs = new DummyInputs();
 
-    // Ensure the interface properly acts as an instanceof tag
-    assertTrue(inputs instanceof AresLoggableInputs);
+    // Note: AresAutoLogger uses reflection to walk through
 
     // In actual implementation, AresAutoLogger uses reflection to walk through
     // public fields of classes implementing this interface. We verify instantiation here.

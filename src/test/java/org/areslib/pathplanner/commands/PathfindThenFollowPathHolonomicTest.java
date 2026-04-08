@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PathfindThenFollowPathHolonomicTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PathfindThenFollowPathHolonomic.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

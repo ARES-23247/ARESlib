@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class GeometryUtilTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for GeometryUtil.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

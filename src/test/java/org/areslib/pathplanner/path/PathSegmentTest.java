@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PathSegmentTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PathSegment.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

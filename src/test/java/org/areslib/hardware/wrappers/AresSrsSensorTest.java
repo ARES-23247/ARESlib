@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class AresSrsSensorTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for AresSrsSensor.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

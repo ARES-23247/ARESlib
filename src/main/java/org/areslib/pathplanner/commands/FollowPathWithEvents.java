@@ -1,6 +1,5 @@
 package org.areslib.pathplanner.commands;
 
-import java.util.*;
 import java.util.function.Supplier;
 import org.areslib.command.Command;
 import org.areslib.math.geometry.Pose2d;

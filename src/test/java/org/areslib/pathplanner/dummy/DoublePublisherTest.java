@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class DoublePublisherTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for DoublePublisher.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

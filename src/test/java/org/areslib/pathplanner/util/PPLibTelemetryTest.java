@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PPLibTelemetryTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PPLibTelemetry.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

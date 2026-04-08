@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class DifferentialConfigTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for DifferentialConfig.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

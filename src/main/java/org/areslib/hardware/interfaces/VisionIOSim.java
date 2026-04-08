@@ -55,6 +55,7 @@ public class VisionIOSim implements VisionIO {
    * Represents a known AprilTag location on the field. Coordinates are in meters with origin at
    * field center (vision coordinate system).
    */
+  @SuppressWarnings("unused")
   private static class AprilTagPose {
     final int id;
     final double x; // meters, field center origin

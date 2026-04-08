@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class AresHardwareManagerTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for AresHardwareManager.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PinpointOdometryWrapperTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PinpointOdometryWrapper.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

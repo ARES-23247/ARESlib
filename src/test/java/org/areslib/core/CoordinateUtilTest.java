@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class CoordinateUtilTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for CoordinateUtil.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

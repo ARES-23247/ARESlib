@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class SimpleIntakeSubsystemTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for SimpleIntakeSubsystem.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

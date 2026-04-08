@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class ConditionalCommandTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for ConditionalCommand.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

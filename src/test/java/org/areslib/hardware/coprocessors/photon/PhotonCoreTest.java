@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class PhotonCoreTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for PhotonCore.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

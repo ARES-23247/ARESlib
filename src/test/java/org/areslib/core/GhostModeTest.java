@@ -51,7 +51,8 @@ public class GhostModeTest {
     assertTrue(file.exists(), "JSON Macro should be written to disk");
 
     // Read file contents to verify JSON schema
-    String json = new String(Files.readAllBytes(file.toPath()));
+    String json =
+        new String(Files.readAllBytes(file.toPath()), java.nio.charset.StandardCharsets.UTF_8);
 
     assertTrue(json.contains("\"vxMetersPerSecond\": ["), "VX key should exist");
     assertTrue(json.contains("2.0"), "Should contain mocked 2.0 vx value");

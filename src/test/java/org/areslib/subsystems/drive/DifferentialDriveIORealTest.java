@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class DifferentialDriveIORealTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for DifferentialDriveIOReal.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

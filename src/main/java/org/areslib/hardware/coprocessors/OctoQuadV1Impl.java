@@ -34,6 +34,7 @@ public class OctoQuadV1Impl implements AresOctoQuadDriver {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public double readPosition(int channel) {
     return octoQuad.readSinglePosition(channel);

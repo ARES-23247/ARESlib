@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class GhostDataTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for GhostData.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

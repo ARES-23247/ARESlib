@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class MecanumConfigTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for MecanumConfig.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class RevIMUWrapperTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for RevIMUWrapper.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

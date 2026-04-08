@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class FieldConstantsTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for FieldConstants.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

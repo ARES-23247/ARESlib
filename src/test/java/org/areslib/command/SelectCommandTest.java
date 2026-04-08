@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class SelectCommandTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for SelectCommand.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

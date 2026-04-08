@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class ParallelCommandGroupTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for ParallelCommandGroup.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

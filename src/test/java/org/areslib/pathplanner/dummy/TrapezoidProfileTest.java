@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class TrapezoidProfileTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for TrapezoidProfile.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

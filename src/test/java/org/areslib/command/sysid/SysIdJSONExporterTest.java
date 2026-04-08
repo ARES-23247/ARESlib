@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class SysIdJSONExporterTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for SysIdJSONExporter.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }

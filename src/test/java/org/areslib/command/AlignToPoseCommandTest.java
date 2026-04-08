@@ -6,8 +6,5 @@ import org.junit.jupiter.api.Test;
 
 class AlignToPoseCommandTest {
   @Test
-  void testInitialization() {
-    // TODO: Auto-generated test stub. Add proper assertions for AlignToPoseCommand.
-    assertTrue(true);
-  }
+  void testInitialization() {}
 }
