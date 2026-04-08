@@ -80,10 +80,10 @@ public class GhostRecorder {
       file.getParentFile().mkdirs();
       try (FileWriter writer = new FileWriter(file)) {
         gson.toJson(m_data, writer);
-        System.out.println("Saved macro to: " + filePath);
+        com.qualcomm.robotcore.util.RobotLog.i("Saved macro to: " + filePath);
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 }

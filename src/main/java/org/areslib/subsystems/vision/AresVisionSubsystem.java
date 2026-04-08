@@ -93,8 +93,9 @@ public class AresVisionSubsystem extends SubsystemBase {
     // If the vision system thinks the robot's center is floating above the field
     // or buried deep underground, it is a ghost reflection.
     double zElevationMeters = inputs.botPose3d[2];
-    if (Math.abs(zElevationMeters) > org.areslib.core.FieldConstants.MAX_ELEVATION_METERS)
+    if (Math.abs(zElevationMeters) > org.areslib.core.FieldConstants.MAX_ELEVATION_METERS) {
       return null;
+    }
 
     // Sanity Check 2: Are we physically outside the FTC Field?
     // Uses centralized field constants for consistent bounds across the codebase.

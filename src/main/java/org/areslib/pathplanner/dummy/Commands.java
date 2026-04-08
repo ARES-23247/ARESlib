@@ -89,7 +89,7 @@ public class Commands {
    * @return the printing InstantCommand
    */
   public static Command print(String s) {
-    return new InstantCommand(() -> System.out.println(s));
+    return new InstantCommand(() -> com.qualcomm.robotcore.util.RobotLog.i(s));
   }
 
   /**

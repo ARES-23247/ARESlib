@@ -55,6 +55,7 @@ public class AresDriverStationApp extends JFrame {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (Exception e) {
+      Thread.yield();
     }
 
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

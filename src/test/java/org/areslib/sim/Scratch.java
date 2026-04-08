@@ -7,7 +7,7 @@ public class Scratch {
   public static void main(String[] args) {
     for (Method m : World.class.getMethods()) {
       if (m.getName().toLowerCase().contains("raycast")) {
-        System.out.println(m);
+        com.qualcomm.robotcore.util.RobotLog.i(String.valueOf(m));
       }
     }
   }

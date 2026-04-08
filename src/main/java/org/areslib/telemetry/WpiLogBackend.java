@@ -60,7 +60,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       ByteBuffer hBuf = ByteBuffer.wrap(header);
       channel.write(hBuf);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       channel = null;
     }
   }
@@ -103,7 +103,7 @@ public class WpiLogBackend implements AresLoggerBackend {
     try {
       writeStartRecord(key, type, id, getTimestamp());
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
     return id;
   }
@@ -122,7 +122,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -144,7 +144,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -164,7 +164,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -178,7 +178,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -200,7 +200,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -232,7 +232,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -251,7 +251,7 @@ public class WpiLogBackend implements AresLoggerBackend {
       encodeBuffer.flip();
       channel.write(encodeBuffer);
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 
@@ -275,7 +275,7 @@ public class WpiLogBackend implements AresLoggerBackend {
         fileOutputStream.close();
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 }

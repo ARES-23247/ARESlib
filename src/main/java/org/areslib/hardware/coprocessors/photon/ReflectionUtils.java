@@ -50,7 +50,7 @@ public class ReflectionUtils {
         try {
           f2.set(target, f.get(org));
         } catch (IllegalAccessException e) {
-          e.printStackTrace();
+          com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
         }
       }
     }

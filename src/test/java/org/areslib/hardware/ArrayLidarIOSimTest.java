@@ -7,7 +7,6 @@ import org.areslib.hardware.interfaces.ArrayLidarIO;
 import org.areslib.hardware.interfaces.OdometryIO.OdometryInputs;
 import org.areslib.hardware.wrappers.ArrayLidarIOSim;
 import org.dyn4j.dynamics.Body;
-import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Geometry;
 import org.dyn4j.world.World;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +36,7 @@ public class ArrayLidarIOSimTest {
   public void testRaycastHitsObject() {
     // Create an "Obelisk" object 1.0 meters directly in front of the robot (positive X axis)
     Body obelisk = new Body();
-    BodyFixture fixture = obelisk.addFixture(Geometry.createRectangle(0.5, 0.5));
+    obelisk.addFixture(Geometry.createRectangle(0.5, 0.5));
     obelisk.translate(1.0, 0.0); // 1 meter dead ahead
     world.addBody(obelisk);
 

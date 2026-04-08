@@ -30,8 +30,8 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
-    - name: Compile
-      run: ./gradlew compileJava compileTestJava --no-daemon
+    - name: Build & Check (Linting, Spotless, PMD)
+      run: ./gradlew build -x test --no-daemon
 
     - name: Run Tests
       run: ./gradlew test --no-daemon

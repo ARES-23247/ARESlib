@@ -8,6 +8,6 @@ public class PrintCommand extends InstantCommand {
    * @param message the message to print
    */
   public PrintCommand(String message) {
-    super(() -> System.out.println(message));
+    super(() -> com.qualcomm.robotcore.util.RobotLog.i(message));
   }
 }

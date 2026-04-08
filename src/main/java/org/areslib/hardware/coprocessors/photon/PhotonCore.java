@@ -123,6 +123,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
     synchronized (instance.messageSync) {
       while (((PhotonLynxModule) photonModule).getUnfinishedCommands().size()
           > experimental.maximumParallelCommands.get()) {
+        Thread.yield();
         // RobotLog.ee("PhotonCore", ((PhotonLynxModule)controlHub).getUnfinishedCommands().size()
         // + " | " + ((PhotonLynxModule)expansionHub).getUnfinishedCommands().size());
       }
@@ -169,7 +170,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
           command.onAckReceived(new LynxAck(photonModule, false));
         }
       } catch (LynxUnsupportedCommandException | RobotUsbException e) {
-        e.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       }
     }
 
@@ -202,7 +203,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
       try {
         Thread.sleep(5);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       }
     }
   }
@@ -293,9 +294,9 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
             robotUsbDevice = (RobotUsbDevice) f2.get(usbDevice);
             usbDeviceMap.put(photonLynxModule, robotUsbDevice);
           } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
           } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
           }
         } else {
           if (module.isParent()) {
@@ -319,13 +320,13 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
               robotUsbDevice = (RobotUsbDevice) f2.get(usbDevice);
               usbDeviceMap.put(photonLynxModule, robotUsbDevice);
             } catch (NoSuchFieldException e) {
-              e.printStackTrace();
+              com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
             }
           }
           expansionHub = photonLynxModule;
         }
       } catch (IllegalAccessException e) {
-        e.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       }
     }
 
@@ -344,7 +345,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
               photonLynxModule.getDeviceName());
         }
       } catch (IllegalAccessException e) {
-        e.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       }
     }
 
@@ -367,7 +368,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
             setLynxObject(device2, replacements);
             RobotLog.e("" + (device2 instanceof LynxI2cDeviceSynch));
           } catch (Exception ignored) {
-            ignored.printStackTrace();
+            com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
           }
         } else if (device instanceof I2cDeviceSynchSimple) {
           try {
@@ -376,7 +377,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
                     ReflectionUtils.getField(device.getClass(), "deviceClient").get(device);
             setLynxObject(device2, replacements);
           } catch (Exception ignored) {
-            ignored.printStackTrace();
+            com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
           }
         } else {
           setLynxObject(device, replacements);
@@ -409,7 +410,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
           f.set(device, replacements.get(module));
         }
       } catch (IllegalAccessException e) {
-        e.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       }
     }
   }

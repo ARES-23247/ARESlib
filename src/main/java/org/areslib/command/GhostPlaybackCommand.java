@@ -55,11 +55,12 @@ public class GhostPlaybackCommand extends Command {
         Gson gson = new Gson();
         m_data = gson.fromJson(reader, GhostData.class);
       } catch (IOException e) {
-        e.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
         m_data = null;
       }
     } else {
-      System.err.println("Ghost macro file not found: " + m_filePath);
+      com.qualcomm.robotcore.util.RobotLog.e(
+          String.valueOf("Ghost macro file not found: " + m_filePath));
       m_data = null;
     }
   }

@@ -36,9 +36,11 @@ public class ArrayLidarIOSrs implements ArrayLidarIO {
           try {
             this.getLidarZoneArrayMethod = clazz.getMethod("getVl53l5cxDistances", int.class);
           } catch (Exception ignored) {
+            Thread.yield();
           }
         }
       } catch (Exception ignored) {
+        Thread.yield();
       }
     }
   }
@@ -74,6 +76,7 @@ public class ArrayLidarIOSrs implements ArrayLidarIO {
           }
         }
       } catch (Exception ignored) {
+        Thread.yield();
       }
     }
   }

@@ -50,8 +50,9 @@ public class AresAsyncExecutor {
           try {
             task.run();
           } catch (Exception e) {
-            System.err.println("ARES Async Thread Crashed: " + e.getMessage());
-            e.printStackTrace();
+            com.qualcomm.robotcore.util.RobotLog.e(
+                String.valueOf("ARES Async Thread Crashed: " + e.getMessage()));
+            com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
           }
         };
     registeredLoops.add(new AsyncLoop(safeTask, periodMs));

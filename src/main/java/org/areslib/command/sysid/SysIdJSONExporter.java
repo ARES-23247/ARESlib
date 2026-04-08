@@ -84,9 +84,10 @@ public class SysIdJSONExporter {
     File file = new File("SysId_Output.json");
     try (FileWriter fw = new FileWriter(file)) {
       fw.write(sb.toString());
-      System.out.println("SysId Data Successfully Exported to: " + file.getAbsolutePath());
+      com.qualcomm.robotcore.util.RobotLog.i(
+          "SysId Data Successfully Exported to: " + file.getAbsolutePath());
     } catch (IOException e) {
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 }

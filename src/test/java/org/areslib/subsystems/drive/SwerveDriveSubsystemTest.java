@@ -99,7 +99,7 @@ public class SwerveDriveSubsystemTest {
     // Tick the sim modules to update their positions
     SwerveModuleIO.SwerveModuleInputs inputs = new SwerveModuleIO.SwerveModuleInputs();
     fl.updateInputs(inputs);
-    double angleBeforeStop = inputs.turnAbsolutePositionRad;
+    // Unused variable removed: double angleBeforeStop = inputs.turnAbsolutePositionRad;
 
     // Now command zero speed
     swerve.drive(0.0, 0.0, 0.0);

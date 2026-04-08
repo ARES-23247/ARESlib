@@ -29,7 +29,7 @@ public class OctoQuadV1Impl implements AresOctoQuadDriver {
         Method refreshMethod = octoQuad.getClass().getMethod("refreshCache");
         refreshMethod.invoke(octoQuad);
       } catch (Exception ignored) {
-        ignored.printStackTrace();
+        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
       }
     }
   }
@@ -56,9 +56,9 @@ public class OctoQuadV1Impl implements AresOctoQuadDriver {
     // Assume mapping logic for bank config if necessary.
     // Usually modifying a single channel config sets it to pulse/encoder.
     try {
-      // Placeholder execution to map to OctoQuadBase$ChannelBankConfig
+      Thread.yield(); // Placeholder execution to map to OctoQuadBase$ChannelBankConfig
     } catch (Exception ignored) {
-      ignored.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
     }
   }
 }

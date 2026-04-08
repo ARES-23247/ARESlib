@@ -64,7 +64,7 @@ public class RlogServerBackend implements AresLoggerBackend {
         new Thread(
             () -> {
               try (ServerSocket serverSocket = new ServerSocket(port)) {
-                System.out.println("Rlog Server listening on port " + port);
+                com.qualcomm.robotcore.util.RobotLog.i("Rlog Server listening on port " + port);
                 while (!Thread.currentThread().isInterrupted()) {
                   Socket clientSocket = serverSocket.accept();
                   clientSocket.setTcpNoDelay(true);
@@ -116,7 +116,8 @@ public class RlogServerBackend implements AresLoggerBackend {
 
                   sc.sendFramed(initPayload);
                   clients.add(sc);
-                  System.out.println("AdvantageScope Connected to RLOG Stream!");
+                  com.qualcomm.robotcore.util.RobotLog.i(
+                      "AdvantageScope Connected to RLOG Stream!");
 
                   // Discard incoming heartbeat bytes
                   Thread readerThread =
@@ -125,22 +126,24 @@ public class RlogServerBackend implements AresLoggerBackend {
                             try {
                               InputStream in = clientSocket.getInputStream();
                               byte[] dummy = new byte[1024];
-                              while (in.read(dummy) != -1) {}
+                              while (in.read(dummy) != -1) {
+                                Thread.yield();
+                              }
                             } catch (Exception ignored) {
-                              ignored.printStackTrace();
+                              com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
                             }
                             clients.remove(sc);
                             try {
                               clientSocket.close();
                             } catch (Exception ignored) {
-                              ignored.printStackTrace();
+                              com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
                             }
                           });
                   readerThread.setDaemon(true);
                   readerThread.start();
                 }
               } catch (IOException e) {
-                e.printStackTrace();
+                com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
               }
             });
     serverThread.setDaemon(true);
@@ -344,7 +347,7 @@ public class RlogServerBackend implements AresLoggerBackend {
         try {
           sc.socket.close();
         } catch (Exception ignored) {
-          ignored.printStackTrace();
+          com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
         }
         clients.remove(sc);
       }

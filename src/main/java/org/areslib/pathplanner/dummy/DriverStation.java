@@ -30,7 +30,7 @@ public class DriverStation {
    * @param p print trace
    */
   public static void reportWarning(String msg, boolean p) {
-    System.out.println("WARNING: " + msg);
+    com.qualcomm.robotcore.util.RobotLog.i("WARNING: " + msg);
   }
 
   /**
@@ -40,7 +40,7 @@ public class DriverStation {
    * @param p print trace
    */
   public static void reportError(String msg, boolean p) {
-    System.err.println("ERROR: " + msg);
+    com.qualcomm.robotcore.util.RobotLog.e(String.valueOf("ERROR: " + msg));
   }
 
   /**

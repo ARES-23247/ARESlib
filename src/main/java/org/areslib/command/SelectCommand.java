@@ -37,7 +37,8 @@ public class SelectCommand<K> extends Command {
     if (m_selectedCommand != null) {
       m_selectedCommand.initialize();
     } else {
-      System.err.println("SelectCommand: No command found for key: " + key);
+      com.qualcomm.robotcore.util.RobotLog.e(
+          String.valueOf("SelectCommand: No command found for key: " + key));
     }
   }
 

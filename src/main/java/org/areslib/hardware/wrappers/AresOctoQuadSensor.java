@@ -24,7 +24,8 @@ public class AresOctoQuadSensor implements AresAbsoluteEncoder {
     if (this.driver != null) {
       this.driver.setChannelBankConfig(channel, mode);
     } else {
-      System.out.println("AresOctoQuadSensor: Hardware not present (simulation or disabled)");
+      com.qualcomm.robotcore.util.RobotLog.i(
+          "AresOctoQuadSensor: Hardware not present (simulation or disabled)");
     }
   }
 

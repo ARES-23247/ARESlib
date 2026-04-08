@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.RobotContainer;
 public class DesktopSimLauncher {
 
   public static void main(String[] args) {
-    System.out.println("Initializing ARES Simulator Environment...");
+    com.qualcomm.robotcore.util.RobotLog.i("Initializing ARES Simulator Environment...");
     org.areslib.core.AresRobot.setSimulation(true);
 
     // 1. Register Telemetry Base
@@ -88,7 +88,7 @@ public class DesktopSimLauncher {
     List<RobotSimState> activeRobots = new ArrayList<>();
     activeRobots.add(new RobotSimState(robotBody, dsApp.getGamepadWrapper().gamepad));
 
-    System.out.println("Sim Started! Connect AdvantageScope to 127.0.0.1");
+    com.qualcomm.robotcore.util.RobotLog.i("Sim Started! Connect AdvantageScope to 127.0.0.1");
 
     boolean wasAutoEnabled = false;
 
@@ -124,8 +124,9 @@ public class DesktopSimLauncher {
           try {
             CommandScheduler.getInstance().schedule(new PathPlannerAuto("SquareAuto"));
           } catch (Exception autoEx) {
-            System.err.println("[Sim] Auto failed to load: " + autoEx.getMessage());
-            autoEx.printStackTrace();
+            com.qualcomm.robotcore.util.RobotLog.e(
+                String.valueOf("[Sim] Auto failed to load: " + autoEx.getMessage()));
+            com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(autoEx));
           }
         } else if (!isAutoEnabled && wasAutoEnabled) {
           CommandScheduler.getInstance().cancelAll();
@@ -266,8 +267,9 @@ public class DesktopSimLauncher {
         }
       }
     } catch (Exception e) {
-      System.err.println("Simulation Faulted: " + e.getMessage());
-      e.printStackTrace();
+      com.qualcomm.robotcore.util.RobotLog.e(
+          String.valueOf("Simulation Faulted: " + e.getMessage()));
+      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
     }
   }
 }

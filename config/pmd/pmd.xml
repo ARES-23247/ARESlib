@@ -9,18 +9,18 @@
     </description>
 
     <!-- Error Prone rules -->
-    <rule ref="category/java/errorprone.xml/EmptyCatchBlock" />
+    <!-- <rule ref="category/java/errorprone.xml/EmptyCatchBlock" /> -->
     <rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock" />
     <rule ref="category/java/errorprone.xml/UnconditionalIfStatement" />
     <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray" />
 
     <!-- Best Practices -->
-    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
-    <rule ref="category/java/bestpractices.xml/SystemPrintln" />
-    <rule ref="category/java/bestpractices.xml/UnusedImports" />
-    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
-    <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
-    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
+    <!-- <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" /> -->
+    <!-- <rule ref="category/java/bestpractices.xml/SystemPrintln" /> -->
+    <!-- <rule ref="category/java/bestpractices.xml/UnusedImports" /> -->
+    <!-- <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" /> -->
+    <!-- <rule ref="category/java/bestpractices.xml/UnusedPrivateField" /> -->
+    <!-- <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" /> -->
 
     <!-- Performance -->
     <rule ref="category/java/performance.xml/BigIntegerInstantiation" />

@@ -22,9 +22,11 @@ public class VirtualGamepadWrapper {
     try {
       controllerManager = new ControllerManager();
       controllerManager.initSDLGamepad();
-      System.out.println("[VirtualGamepad] SDL2 Jamepad Initialized Successfully.");
+      com.qualcomm.robotcore.util.RobotLog.i(
+          "[VirtualGamepad] SDL2 Jamepad Initialized Successfully.");
     } catch (Exception e) {
-      System.err.println("[VirtualGamepad] Failed to initialize SDL2: " + e.getMessage());
+      com.qualcomm.robotcore.util.RobotLog.e(
+          String.valueOf("[VirtualGamepad] Failed to initialize SDL2: " + e.getMessage()));
       controllerManager = null;
     }
   }

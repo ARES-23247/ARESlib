@@ -21,14 +21,14 @@ spotless {
 
 checkstyle {
     configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
-    ignoreFailures = true
+    ignoreFailures = false
 }
 
 pmd {
     consoleOutput = true
     ruleSets = []
     ruleSetFiles = files("${project.rootDir}/config/pmd/pmd.xml")
-    ignoreFailures = true
+    ignoreFailures = false
 }
 
 jacocoTestReport {

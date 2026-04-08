@@ -90,7 +90,8 @@ public class RobotHealthTracker extends SubsystemBase {
         activeFaults.add(monitor.getFaultMessage());
         alert.setText(monitor.getFaultMessage());
         alert.set(true);
-        System.err.println("[ERR] HARDWARE FAULT DETECTED: " + monitor.getFaultMessage());
+        com.qualcomm.robotcore.util.RobotLog.e(
+            String.valueOf("[ERR] HARDWARE FAULT DETECTED: " + monitor.getFaultMessage()));
       } else {
         alert.set(false);
       }
