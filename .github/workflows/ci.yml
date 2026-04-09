@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     # Required permissions for the jacoco-report action to comment on the PR
     permissions:
@@ -25,10 +26,19 @@ jobs:
       with:
         java-version: '17'
         distribution: 'corretto'
-        cache: 'gradle'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
 
     - name: Build with Gradle and generate JaCoCo Coverage
       run: ./gradlew build jacocoTestReport
+
+    - name: Upload Test Reports
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-reports
+        path: build/reports/tests/test/
 
     - name: Verify Code Formatting
       run: git diff --exit-code || (echo "Code formatting is incorrect. Spotless modified files. Please format locally before pushing." && exit 1)

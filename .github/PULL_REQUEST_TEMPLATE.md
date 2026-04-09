@@ -10,7 +10,14 @@
 
 ## Screenshots / AdvantageScope Logs (if appropriate):
 
+## Verification & Testing
+<!-- Please ensure you have completed the following steps before submitting: -->
+- [ ] I ran this on the physical robot (if applicable)
+- [ ] I verified these changes in the dyn4j Simulator
+- [ ] I checked AdvantageScope logs
+- [ ] I ensured my code compiles (`./gradlew build`) and tests pass
+
 ## Checklist
-- [ ] My code follows the current code style.
-- [ ] I have verified these changes in the dyn4j Simulator.
-- [ ] I have verified these changes on a physical robot.
+- [ ] My code follows the current code style (ran `./gradlew spotlessApply`)
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
