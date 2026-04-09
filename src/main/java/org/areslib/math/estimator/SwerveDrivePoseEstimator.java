@@ -80,13 +80,23 @@ public class SwerveDrivePoseEstimator {
    *     pipeline_latency).
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+    addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, m_visionStdDevs);
+  }
+
+  /**
+   * Adds a vision measurement to the pose estimator, using instantaneous dynamic standard
+   * deviations.
+   *
+   * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+   * @param timestampSeconds The precise time the photo was taken
+   * @param visionStdDevs Instantaneous standard deviations [x, y, theta] based on
+   *     distance/ambiguity scaling.
+   */
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters, double timestampSeconds, double[] visionStdDevs) {
     m_estimatedPose =
         VisionFusionHelper.applyVisionMeasurement(
-            visionRobotPoseMeters,
-            timestampSeconds,
-            m_estimatedPose,
-            m_poseBuffer,
-            m_visionStdDevs);
+            visionRobotPoseMeters, timestampSeconds, m_estimatedPose, m_poseBuffer, visionStdDevs);
 
     // Sync Odometry's internal pose without destroying wheel buffers:
     m_odometry.resetTranslation(m_estimatedPose);

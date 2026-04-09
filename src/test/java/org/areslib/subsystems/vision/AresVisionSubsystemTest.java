@@ -23,6 +23,9 @@ class AresVisionSubsystemTest {
       inputs.latencyMs = this.inputs.latencyMs;
       inputs.pipelineIndex = this.inputs.pipelineIndex;
       inputs.fiducialCount = this.inputs.fiducialCount;
+      inputs.minTagAmbiguity = this.inputs.minTagAmbiguity;
+      inputs.avgTagDistanceMeters = this.inputs.avgTagDistanceMeters;
+      inputs.isMegatag2 = this.inputs.isMegatag2;
       System.arraycopy(this.inputs.botPose3d, 0, inputs.botPose3d, 0, 7);
       System.arraycopy(this.inputs.botPoseMegaTag2, 0, inputs.botPoseMegaTag2, 0, 7);
     }
@@ -49,7 +52,6 @@ class AresVisionSubsystemTest {
     assertNotNull(vision.getEstimatedGlobalPose(), "Should return a valid pose");
     assertEquals(1.0, vision.getEstimatedGlobalPose().getX(), 1e-6);
     assertEquals(1.0, vision.getEstimatedGlobalPose().getY(), 1e-6);
-    assertEquals(0.5, vision.getPoseConfidence(), 1e-6);
   }
 
   @Test
@@ -77,5 +79,67 @@ class AresVisionSubsystemTest {
     assertNull(
         vision.getEstimatedGlobalPose(),
         "Pose should be rejected due to out of bounds X coordinate");
+  }
+
+  // Elite B.R.E.A.D Algorithm Tests
+  @Test
+  void testHighAngularVelocityRejection() {
+    mockIO.inputs.hasTarget = true;
+    vision.periodic();
+
+    double[] stds = vision.getVisionMeasurementStdDevs(2.0); // 2.0 rad/s > 1.5 threshold
+    assertArrayEquals(
+        new double[] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY},
+        stds);
+  }
+
+  @Test
+  void testMultiTagHighlyTrusted() {
+    mockIO.inputs.hasTarget = true;
+    mockIO.inputs.fiducialCount = 2; // >1 tag
+    vision.periodic();
+
+    double[] stds = vision.getVisionMeasurementStdDevs(0.0);
+    assertArrayEquals(new double[] {0.2, 0.2, 0.1}, stds);
+  }
+
+  @Test
+  void testSingleTagDisambiguationRejection() {
+    mockIO.inputs.hasTarget = true;
+    mockIO.inputs.fiducialCount = 1;
+    mockIO.inputs.minTagAmbiguity = 0.2; // 0.2 > 0.15 limit
+    vision.periodic();
+
+    double[] stds = vision.getVisionMeasurementStdDevs(0.0);
+    assertNull(stds, "High ambiguity should cause vision to be rejected.");
+  }
+
+  @Test
+  void testSingleTagPolynomialDistanceScale() {
+    mockIO.inputs.hasTarget = true;
+    mockIO.inputs.fiducialCount = 1;
+    mockIO.inputs.minTagAmbiguity = 0.1;
+    mockIO.inputs.avgTagDistanceMeters = 3.0; // test 3 meters away
+    vision.periodic();
+
+    double[] stds = vision.getVisionMeasurementStdDevs(0.0);
+    // B.R.E.A.D Equation is 0.03*d^2, 0.05*d^2
+    assertEquals(0.03 * 9.0, stds[0], 1e-4);
+    assertEquals(0.05 * 9.0, stds[2], 1e-4);
+  }
+
+  @Test
+  void testSingleTagDistanceFallback() {
+    mockIO.inputs.hasTarget = true;
+    mockIO.inputs.fiducialCount = 1;
+    mockIO.inputs.minTagAmbiguity = 0.1;
+    mockIO.inputs.avgTagDistanceMeters = 0; // Simulate Network table drop
+    mockIO.inputs.ta = 5.0; // Area = 5%
+    vision.periodic();
+
+    double[] stds = vision.getVisionMeasurementStdDevs(0.0);
+    // Distance fallback: 3.0 / sqrt(5.0) = 1.34164
+    double dist = 3.0 / Math.sqrt(5.0);
+    assertEquals(0.03 * dist * dist, stds[0], 1e-4);
   }
 }

@@ -123,10 +123,61 @@ public class AresVisionSubsystem extends SubsystemBase {
   }
 
   /**
+   * Calculates dynamic standard deviations for the vision measurement (X, Y, Theta) based on Elite
+   * team heuristics (Team 5940 B.R.E.A.D. and Team 254).
+   *
+   * @param currentAngularVelocityRadPerSec The current rotational velocity of the drivetrain.
+   * @return A double array [xStdDev, yStdDev, thetaStdDev] or null if the measurement should be
+   *     rejected.
+   */
+  public double[] getVisionMeasurementStdDevs(double currentAngularVelocityRadPerSec) {
+    if (!inputs.hasTarget) return null;
+
+    // Reject poses if angular velocity is too high (Team 254 Pattern: motion blur / skew destroys
+    // PnP)
+    if (Math.abs(currentAngularVelocityRadPerSec) > 1.5) { // ~85 deg/sec
+      return new double[] {
+        Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY
+      };
+    }
+
+    // Elite Scaling Pattern (Team 5940 B.R.E.A.D.)
+    if (inputs.fiducialCount >= 2) {
+      // Highly trusted multi-tag
+      return new double[] {0.2, 0.2, 0.1};
+    } else if (inputs.fiducialCount == 1) {
+      // Single tag disambiguation & distance falloff
+      if (inputs.minTagAmbiguity > 0.15) {
+        return null; // Reject high ambiguity single tags
+      }
+
+      double distance = inputs.avgTagDistanceMeters;
+      // If distance wasn't provided by the IO layer, approximate from Tag Area inversely
+      if (distance <= 0.01) {
+        distance = inputs.ta > 0 ? 3.0 / Math.sqrt(inputs.ta) : 5.0; // Rough heuristic fallback
+      }
+
+      // B.R.E.A.D. Distance-Squared Polynomial fallback
+      double xyStd = 0.03 * Math.pow(distance, 2);
+      double thetaStd = 0.05 * Math.pow(distance, 2);
+      return new double[] {xyStd, xyStd, thetaStd};
+    }
+
+    // Fallback based on area (Old ARESLib2 heuristic) if fiducialCount isn't populated
+    if (inputs.ta < minTargetAreaPercent) return null;
+    double confidence = Math.min(inputs.ta / maxTrustAreaPercent, 1.0);
+    double fallbackStd = (1.0 - confidence) * 2.0 + 0.1;
+    return new double[] {fallbackStd, fallbackStd, fallbackStd * 2.0};
+  }
+
+  /**
    * Calculates trust coefficient dynamically based on AprilTag latency and visible surface area.
    *
    * @return Raw confidence scale (0.0 to 1.0)
+   * @deprecated Use {@link #getVisionMeasurementStdDevs(double)} for dynamic, distance-based elite
+   *     odometry fusion.
    */
+  @Deprecated
   public double getPoseConfidence() {
     if (!inputs.hasTarget) return 0.0;
 

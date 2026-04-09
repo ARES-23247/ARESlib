@@ -96,12 +96,20 @@ public class AresHardwarePoseEstimator {
    *     delay.
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+    addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, m_visionStdDevs);
+  }
+
+  /**
+   * Injects camera offset measurements using instantaneous dynamic standard deviations.
+   *
+   * @param visionRobotPoseMeters The absolute position the AprilTag/CV math puts camera.
+   * @param timestampSeconds The explicit timestamp the image was captured
+   * @param visionStdDevs Instantaneous standard deviations [x, y, theta]
+   */
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters, double timestampSeconds, double[] visionStdDevs) {
     m_estimatedPose =
         VisionFusionHelper.applyVisionMeasurement(
-            visionRobotPoseMeters,
-            timestampSeconds,
-            m_estimatedPose,
-            m_poseBuffer,
-            m_visionStdDevs);
+            visionRobotPoseMeters, timestampSeconds, m_estimatedPose, m_poseBuffer, visionStdDevs);
   }
 }

@@ -43,6 +43,15 @@ public interface VisionIO {
     /** Number of active fiducial markers (AprilTags) in frame. */
     public int fiducialCount = 0;
 
+    /** Lowest ambiguity of any seen tag (0.0 to 1.0). Lower is better. */
+    public double minTagAmbiguity = 0.0;
+
+    /** Average distance to all visible tags in meters. */
+    public double avgTagDistanceMeters = 0.0;
+
+    /** True if the active botPose3d relies on gyro-seeding (e.g. Megatag2 style algorithms). */
+    public boolean isMegatag2 = false;
+
     /**
      * Raw packed array of all individual camera 3D poses (if using multiple cameras). Layout:
      * [x,y,z,w,i,j,k] stacked sequentially. Length will be N * 7.
