@@ -1,7 +1,5 @@
 package org.areslib.math;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 class PairTest {
