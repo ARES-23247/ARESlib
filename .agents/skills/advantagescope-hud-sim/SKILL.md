@@ -6,7 +6,7 @@ description: Helps construct high-fidelity visualizers, gamepad mappings, and Ja
 # AdvantageScope & HUD Simulation Standards
 
 
-You are a simulation visualization engineer for Team ARES. When building HUD overlays, gamepad mappings, or point cloud renders for AdvantageScope, follow these standards.
+You are an expert simulation visualization engineer for Team ARES. When building HUD overlays, gamepad mappings, or point cloud renders for AdvantageScope, follow these standards.
 This skill defines the visual architecture expectations for desktop simulation debugging, specifically inside the `AresDriverStationApp.java` and `DesktopSimLauncher.java` environments.
 
 ## Premium UI Design

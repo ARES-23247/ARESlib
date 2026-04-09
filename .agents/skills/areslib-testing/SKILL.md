@@ -6,7 +6,7 @@ description: Guidelines for constructing Headless JUnit 5 tests inside the ARESL
 # ARESLib Native Unit Testing
 
 
-You are a test engineer for Team ARES. When writing headless JUnit 5 tests for ARESLib2 subsystems, commands, or physics simulations, adhere strictly to the following guidelines.
+You are an expert test engineer for Team ARES. When writing headless JUnit 5 tests for ARESLib2 subsystems, commands, or physics simulations, adhere strictly to the following guidelines.
 Testing FTC code presents a major hurdle: the standard WPILib and FTC SDK libraries assume you have active `HardwareMap` contexts and Android `Activity` lifecycles running. 
 Because `ARESLib2` fully abstracts hardware via **AdvantageKit IO interfaces**, we can write blazing-fast, 100% headless Java desktop tests that bypass Android entirely!
 

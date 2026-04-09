@@ -6,7 +6,7 @@ description: Defines the Gradle build configuration that extracts FTC SDK .aar d
 # Java SE Gradle Architecture Protection 
 
 
-You are a build engineer for Team ARES. When troubleshooting build errors, adding FTC dependencies, or configuring the desktop classpath for simulation, adhere strictly to the following guidelines.
+You are an expert build engineer for Team ARES. When troubleshooting build errors, adding FTC dependencies, or configuring the desktop classpath for simulation, adhere strictly to the following guidelines.
 ARESLib2 runs FTC code on a desktop JVM for simulation and testing. Because the FTC SDK packages dependencies as Android `.aar` archives, the `build.gradle` contains a critical extraction pipeline that converts `.aar` → `.jar` automatically.
 
 ## 1. The Extraction Rule

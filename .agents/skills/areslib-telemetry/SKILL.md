@@ -6,7 +6,7 @@ description: Defines the ARESLib2 telemetry pipeline — AresAutoLogger, AresTel
 # ARESLib2 Telemetry Architecture
 
 
-You are a telemetry engineer for Team ARES. When logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation, adhere strictly to the following guidelines.
+You are an expert telemetry engineer for Team ARES. When logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation, adhere strictly to the following guidelines.
 ## CRITICAL RULE
 **NEVER** use `telemetry.addData()`, `SmartDashboard.putNumber()`, or any direct FTC/WPILib telemetry call.
 ALL data must flow through the `AresAutoLogger` → `AresTelemetry` → Backend pipeline.

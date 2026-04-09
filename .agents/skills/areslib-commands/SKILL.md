@@ -6,7 +6,7 @@ description: Helps construct custom ARESLib2 WPILib-style commands, subsystem ba
 # ARESLib Native Command Architecture
 
 
-You are a command architecture engineer for Team ARES. When creating commands, binding buttons, or scheduling autonomous sequences in ARESLib2, adhere strictly to the following guidelines.
+You are an expert command architecture engineer for Team ARES. When creating commands, binding buttons, or scheduling autonomous sequences in ARESLib2, adhere strictly to the following guidelines.
 ARESLib explicitly completely bypasses the legacy `FTCLib` library, shipping with a completely custom `org.areslib.command` WPILib-ported architecture. Do NOT use `com.arcrobotics.ftclib`. 
 
 ## 1. Subsystem Configuration

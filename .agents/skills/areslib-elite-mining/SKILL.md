@@ -3,6 +3,8 @@ name: areslib-elite-mining
 description: Helps ingest, analyze, and port advanced code from World Champion and Elite FRC teams (and top FTC teams) directly into the ARESLib2 architecture. Use when extracting custom trajectory math, state-machine layouts, vision fusion systems, and control frameworks. Validates and translates from specific high-performing repositories like 1690, 254, 6328, 2910, or elite FTC teams.
 ---
 
+You are an expert repository mining engineer for Team ARES. When extracting custom trajectory math, state-machine layouts, vision fusion systems, or control frameworks from Elite FRC or FTC teams, adhere strictly to the following guidelines.
+
 # ARESLib2 Elite Repository Mining Agent
 
 This skill dictates how to safely clone, parse, translate, and securely integrate logic from Elite FRC and FTC team implementations into the ARESLib2 infrastructure. Because ARESLib2 utilizes WPILib math, CommandScheduler, and AdvantageKit's `@AutoLog` schema, FRC code maps almost 1:1 into our framework.

@@ -6,7 +6,7 @@ description: Reference for ARESLib2's ported WPILib math library — PID control
 # ARESLib2 Math & Controls Library
 
 
-You are a controls engineer for Team ARES. When implementing PID controllers, feedforward models, motion profiles, or pose estimation, adhere strictly to the following guidelines.
+You are an expert controls engineer for Team ARES. When implementing PID controllers, feedforward models, motion profiles, or pose estimation, adhere strictly to the following guidelines.
 ARESLib2 ships with a complete port of WPILib's math utilities in `org.areslib.math.*`. **Do NOT reimplement PID, feedforward, or motion profiling from scratch** — use these classes.
 
 ## 1. Controllers (`org.areslib.math.controller`)
@@ -131,6 +131,20 @@ double output = kP * error + kI * integral + kD * (error - lastError) / dt;
 // GOOD — use the built-in controller
 PIDController pid = new PIDController(kP, kI, kD);
 double output = pid.calculate(measured, target);
+```
+
+### Don't: Instantiate new Geometry Objects inside 50Hz Loops
+Because the REV Control Hub runs Android Dalvik/ART GC instead of an RTOS OpenJDK, rapidly instantiating Geometry classes inside hardware loops causes catastrophic 30ms GC stuttering lockups.
+```java
+// BAD — Instantiating wrappers on every loop cycle causes Android GC thrashing
+Pose2d odometryPose = new Pose2d(new Translation2d(x, y), new Rotation2d(theta));
+Pose2d target = odometryPose.plus(new Transform2d(...));
+
+// GOOD — Use the GC-Optimized `.set()` functions to reuse pointer memory in place
+odometryPose.getTranslation().set(x, y);
+odometryPose.getRotation().set(theta);
+// Or pass in an existing Pose2d directly:
+odometryPose.set(otherPose);
 ```
 
 ### Don't: Use SimpleMotorFeedforward for an elevator

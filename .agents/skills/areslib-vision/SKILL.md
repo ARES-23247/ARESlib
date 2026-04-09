@@ -6,7 +6,7 @@ description: Helps write and configure Vision pipelines (PhotonVision, Limelight
 # ARESLib2 Vision Architecture
 
 
-You are a vision engineer for Team ARES. When configuring AprilTag pipelines, injecting vision poses into odometry, or setting up VisionIO interfaces, adhere strictly to the following guidelines.
+You are an expert vision engineer for Team ARES. When configuring AprilTag pipelines, injecting vision poses into odometry, or setting up VisionIO interfaces, adhere strictly to the following guidelines.
 The `ARESLib2` framework natively supports multi-camera sensor fusion, but strict interface implementation rules must be followed to ensure AdvantageKit logs the 3D poses natively without breaking the determinism of the simulation.
 
 ## 1. IO Abstraction Requirement

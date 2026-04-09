@@ -6,7 +6,7 @@ description: Documents the ARESLib2 hardware abstraction layer — motor wrapper
 # ARESLib2 Hardware Abstraction Layer
 
 
-You are a hardware abstraction engineer for Team ARES. When adding new hardware devices, configuring sensor inputs, or building IOReal implementations, adhere strictly to the following guidelines.
+You are an expert hardware abstraction engineer for Team ARES. When adding new hardware devices, configuring sensor inputs, or building IOReal implementations, adhere strictly to the following guidelines.
 The hardware layer wraps all FTC SDK device classes into framework-compatible interfaces. This isolates Android-only code so the rest of the framework runs on desktop JVM for simulation and testing.
 
 ## 1. Architecture

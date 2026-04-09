@@ -26,8 +26,8 @@ import org.areslib.pathplanner.auto.AutoBuilder;
 import org.areslib.pathplanner.util.HolonomicPathFollowerConfig;
 import org.areslib.pathplanner.util.PIDConstants;
 import org.areslib.pathplanner.util.ReplanningConfig;
-import org.areslib.subsystems.controllers.ControllerMode;
-import org.areslib.subsystems.controllers.ControllerModeManager;
+import org.areslib.subsystems.controllers.examples.ControllerModeExample;
+import org.areslib.subsystems.controllers.examples.ControllerModeManagerExample;
 import org.areslib.subsystems.drive.AresDrivetrain;
 import org.areslib.subsystems.drive.SwerveDriveSubsystem;
 import org.areslib.subsystems.drive.SwerveModuleIOReal;
@@ -53,7 +53,7 @@ public class RobotContainer {
   private final AresVisionSubsystem vision;
 
   // Controller Mode Management
-  private ControllerModeManager controllerModes;
+  private ControllerModeManagerExample controllerModes;
   // Hardware Integrations
   public final OdometryIO.OdometryInputs pinpointInputs = new OdometryIO.OdometryInputs();
   public final org.areslib.hardware.interfaces.VisionIO.VisionInputs visionInputs =
@@ -145,7 +145,7 @@ public class RobotContainer {
     // Removed pinpoint and follower tracking until PathPlanner integration
 
     // Initialize controller mode system (after gamepads are available)
-    controllerModes = new ControllerModeManager();
+    controllerModes = new ControllerModeManagerExample();
     controllerModes.configure();
 
     // 2. Map Gamepads (OpModes pass real gamepads or null context)
@@ -207,7 +207,7 @@ public class RobotContainer {
             new Command() {
               @Override
               public void initialize() {
-                controllerModes.setMode(ControllerMode.SPEAKER);
+                controllerModes.setMode(ControllerModeExample.SPEAKER);
               }
 
               @Override
@@ -223,7 +223,7 @@ public class RobotContainer {
             new Command() {
               @Override
               public void initialize() {
-                controllerModes.setMode(ControllerMode.HP);
+                controllerModes.setMode(ControllerModeExample.HP);
               }
 
               @Override
@@ -239,7 +239,7 @@ public class RobotContainer {
             new Command() {
               @Override
               public void initialize() {
-                controllerModes.setMode(ControllerMode.POOP);
+                controllerModes.setMode(ControllerModeExample.POOP);
               }
 
               @Override
@@ -255,7 +255,7 @@ public class RobotContainer {
             new Command() {
               @Override
               public void initialize() {
-                controllerModes.setMode(ControllerMode.CLIMB);
+                controllerModes.setMode(ControllerModeExample.CLIMB);
               }
 
               @Override
@@ -377,7 +377,7 @@ public class RobotContainer {
    *
    * @return The controller mode manager.
    */
-  public ControllerModeManager getControllerModes() {
+  public ControllerModeManagerExample getControllerModes() {
     return controllerModes;
   }
 }

@@ -3,7 +3,7 @@ name: areslib-autonomous
 description: Helps build autonomous routines, path following commands, ghost replay systems, and dynamic avoidance in ARESLib2. Use when creating autonomous OpModes, building path sequences, or implementing shoot-on-the-move.
 ---
 
-You are an autonomous systems engineer for Team ARES. When building autonomous routines, path following commands, or replay systems for ARESLib2, adhere strictly to the following guidelines.
+You are an expert autonomous systems engineer for Team ARES. When building autonomous routines, path following commands, or replay systems for ARESLib2, adhere strictly to the following guidelines.
 
 > **Cross-Reference**: For PathPlanner-specific configuration (dummy shim layer, AutoBuilder setup, FTC coordinate offsets), see the `pathplanner` skill.
 

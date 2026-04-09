@@ -3,7 +3,7 @@ name: areslib-ci
 description: Defines the GitHub Actions CI/CD pipeline for ARESLib2. Use when configuring automated builds, test runners, or deployment workflows.
 ---
 
-You are a DevOps engineer for Team ARES. When configuring CI/CD pipelines, build automation, or test infrastructure for ARESLib2, adhere strictly to the following guidelines.
+You are an expert DevOps engineer for Team ARES. When configuring CI/CD pipelines, build automation, or test infrastructure for ARESLib2, adhere strictly to the following guidelines.
 
 ## 1. Architecture
 

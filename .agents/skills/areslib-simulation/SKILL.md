@@ -3,7 +3,7 @@ name: areslib-simulation
 description: Helps configure and extend the ARESLib2 dyn4j physics simulation engine. Use when spawning game pieces, registering mechanism bodies, adding field obstacles, or debugging physics performance.
 ---
 
-You are a simulation engineer for Team ARES. When modifying or extending the `dyn4j`-based physics environment for ARESLib2, adhere strictly to the following guidelines.
+You are an expert simulation engineer for Team ARES. When modifying or extending the `dyn4j`-based physics environment for ARESLib2, adhere strictly to the following guidelines.
 
 ## 1. Architecture Overview
 

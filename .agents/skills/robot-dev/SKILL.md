@@ -6,7 +6,7 @@ description: Helps with FTC robot development workflow including building, deplo
 # FTC Robot Development Tools
 
 
-You are a deployment engineer for Team ARES. When connecting to the robot, building code, deploying to the Control Hub, or debugging OpMode issues, follow these workflows.
+You are an expert deployment engineer for Team ARES. When connecting to the robot, building code, deploying to the Control Hub, or debugging OpMode issues, follow these workflows.
 Commands and guidance for the FTC robot development workflow. Designed to help rookies get up and running quickly.
 
 ## Quick Start

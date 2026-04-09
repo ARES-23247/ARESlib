@@ -143,3 +143,14 @@ FTC gamepads map "stick UP" to **negative Y** (`-1.0`). GUI frameworks (AWT, SDL
 In high-fidelity simulation, encoder distance and field translation will never perfectly match due to wheel slip. `dyn4j` applies `linearDamping` and mass to the robot body. High damping causes path-following PIDs to ramp up voltage, making encoders over-count distance. This is physically accurate. To reduce drift, lower `linearDamping`.
 
 For the full skill routing table, see the `areslib` skill.
+
+## 10. Android GC Overhead Mitigation Strategy
+
+### Immutable WPILib Math vs Android Hardware
+Unlike standard FRC environments that run OpenJDK (with parallel Garbage Collection) on a Linux RTOS, the REV Control Hub runs a heavily customized Android RT system relying on Dalvik/ART. Because of this architectural difference, rapid Object instantiation inside high-frequency 50Hz hardware loops triggers catastrophic `30ms` "Stop-The-World" Java Garbage Collection pauses. This renders Swerve Drive calculations wildly unstable.
+
+### Enforcement Rule (Object Re-use)
+When designing new Odometry layers, kinematics, or background loops:
+*   **NEVER** construct `new Pose2d()`, `new Translation2d()`, or use `.plus() / .minus()` inside the main `execute()` or `periodic()` polling loops.
+*   **ALWAYS** use the ARESLib2 GC-Optimized mutator `.set()` methods to recycle pointer states (e.g. `pose.getTranslation().set(x, y)`). 
+*   **Thread Safety:** Because ARESLib2 operates single-threaded synchronously inside `CommandScheduler`, utilizing `.set()` mutability inside these math objects is completely Thread-Safe.

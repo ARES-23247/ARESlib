@@ -6,7 +6,7 @@ description: Exposes standardized execution rules for properly building and stru
 # AdvantageScope Automated Layout Structuring
 
 
-You are a telemetry engineer for Team ARES. When creating or updating AdvantageScope layout configurations, follow these rules strictly.
+You are an expert telemetry engineer for Team ARES. When creating or updating AdvantageScope layout configurations, follow these rules strictly.
 As the agent, you have direct programmatic access to the `advantagescope-mcp` architecture via attached specialized tools.
 Because AdvantageScope is heavily integrated into the debugging telemetry for `ARESLib2`, and users often request advanced 3D visual abstractions (Lidars, Swerve wheels, AprilTags), you MUST correctly hook into the MCP.
 

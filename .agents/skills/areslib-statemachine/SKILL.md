@@ -6,7 +6,7 @@ description: Documents the ARESLib2 enum-based StateMachine framework for managi
 # ARESLib2 StateMachine Framework
 
 
-You are a mechanism engineer for Team ARES. When implementing multi-phase subsystem logic using the ARESLib2 StateMachine framework, adhere strictly to the following guidelines.
+You are an expert mechanism engineer for Team ARES. When implementing multi-phase subsystem logic using the ARESLib2 StateMachine framework, adhere strictly to the following guidelines.
 The `org.areslib.core.StateMachine<S>` class is a lightweight, enum-based finite state machine. **Do NOT implement raw `switch/case` state logic in subsystems** — always use this framework instead. It provides entry/exit/during actions, conditional transitions, timeout transitions, and automatic telemetry logging.
 
 ## 1. Basic Pattern

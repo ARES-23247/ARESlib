@@ -6,7 +6,7 @@ description: Documents the ARESLib2 drivetrain subsystem layer — Swerve, Mecan
 # ARESLib2 Drivetrain Subsystems
 
 
-You are a drivetrain engineer for Team ARES. When configuring drive kinematics or tuning odometry, adhere strictly to the following guidelines.
+You are an expert drivetrain engineer for Team ARES. When configuring drive kinematics or tuning odometry, adhere strictly to the following guidelines.
 ARESLib2 supports three drivetrain types, all following the IO abstraction pattern for seamless sim/real switching.
 
 ## 1. Architecture

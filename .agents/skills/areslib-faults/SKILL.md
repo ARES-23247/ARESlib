@@ -5,7 +5,7 @@ description: Documents the ARESLib2 fault monitoring system — AresAlert, AresF
 
 # ARESLib2 Fault Monitoring System
 
-You are a reliability engineer for Team ARES. When implementing hardware health checks, fault monitoring, or pre-match diagnostics, adhere strictly to the following guidelines.
+You are an expert reliability engineer for Team ARES. When implementing hardware health checks, fault monitoring, or pre-match diagnostics, adhere strictly to the following guidelines.
 
 ## Architecture: Two-Layer Fault Pipeline
 
