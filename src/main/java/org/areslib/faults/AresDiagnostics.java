@@ -116,7 +116,6 @@ public final class AresDiagnostics {
         }
       }
     } catch (Exception ignored) {
-      Thread.yield();
     }
     return device.getClass().getSimpleName();
   }

@@ -52,6 +52,7 @@ tasks.withType(JavaCompile).configureEach {
     options.errorprone {
         disableWarningsInGeneratedCode = true
         errorproneArgs = ['-XepAllErrorsAsWarnings']
+        excludedPaths = '.*/org/areslib/pathplanner/.*|.*\\\\org\\\\areslib\\\\pathplanner\\\\.*'
     }
 }
 
@@ -152,6 +153,6 @@ task runSim(type: JavaExec) {
 task installGitHook(type: Copy) {
     from new File(project.rootDir, 'scripts/pre-commit')
     into new File(project.rootDir, '.git/hooks')
-    fileMode = 0777
+    filePermissions { unix(0777) }
 }
 build.dependsOn installGitHook

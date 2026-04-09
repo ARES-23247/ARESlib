@@ -55,7 +55,8 @@ public class AresDriverStationApp extends JFrame {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (Exception e) {
-      System.err.println("Failed to set system look and feel: " + e.getMessage());
+      java.util.logging.Logger.getLogger(AresDriverStationApp.class.getName())
+          .log(java.util.logging.Level.SEVERE, "Failed to set system look and feel", e);
     }
 
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

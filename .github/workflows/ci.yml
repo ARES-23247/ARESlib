@@ -1,6 +1,9 @@
 name: ARESLib2 CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -22,12 +25,14 @@ jobs:
       with:
         java-version: '17'
         distribution: 'corretto'
+        cache: 'gradle'
 
     - name: Build with Gradle and generate JaCoCo Coverage
       run: ./gradlew build jacocoTestReport
 
     - name: Add JaCoCo coverage report to PR
       uses: madrapps/jacoco-report@v1.6.1
+      if: github.event_name == 'pull_request'
       with:
         paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
         token: ${{ secrets.GITHUB_TOKEN }}

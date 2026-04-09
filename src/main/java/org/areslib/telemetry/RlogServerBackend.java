@@ -31,7 +31,7 @@ public class RlogServerBackend implements AresLoggerBackend {
   private final long startTimeMicrosec;
   private ByteBuffer cycleBuffer;
 
-  private class SocketClient {
+  private static class SocketClient {
     Socket socket;
     OutputStream out;
 
@@ -127,7 +127,7 @@ public class RlogServerBackend implements AresLoggerBackend {
                               InputStream in = clientSocket.getInputStream();
                               byte[] dummy = new byte[1024];
                               while (in.read(dummy) != -1) {
-                                Thread.yield();
+                                Thread.sleep(1);
                               }
                             } catch (Exception ignored) {
                               com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
@@ -171,7 +171,7 @@ public class RlogServerBackend implements AresLoggerBackend {
    */
   private int safePayloadLength(String key, int payloadSize) {
     if (payloadSize > MAX_PAYLOAD_SIZE) {
-      System.err.println(
+      com.qualcomm.robotcore.util.RobotLog.e(
           "RLOG WARNING: Payload for '"
               + key
               + "' is "
@@ -340,6 +340,7 @@ public class RlogServerBackend implements AresLoggerBackend {
     cycleBuffer.flip();
     cycleBuffer.get(payload);
 
+    List<SocketClient> failedClients = null;
     for (SocketClient sc : clients) {
       try {
         sc.sendFramed(payload);
@@ -349,8 +350,12 @@ public class RlogServerBackend implements AresLoggerBackend {
         } catch (Exception ignored) {
           com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
         }
-        clients.remove(sc);
+        if (failedClients == null) failedClients = new ArrayList<>();
+        failedClients.add(sc);
       }
+    }
+    if (failedClients != null) {
+      clients.removeAll(failedClients);
     }
 
     cycleBuffer.clear();

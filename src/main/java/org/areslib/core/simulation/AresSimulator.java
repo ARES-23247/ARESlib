@@ -22,7 +22,7 @@ public class AresSimulator {
   public static synchronized void startPhysicsSim(int periodMs) {
     // Prevent running if not in a simulated environment
     if (!AresRobot.isSimulation()) {
-      System.err.println(
+      com.qualcomm.robotcore.util.RobotLog.w(
           "AresSimulator warning: Ignoring start command; AresRobot is not in simulated mode.");
       return;
     }

@@ -42,9 +42,8 @@ public class PathPlannerAuto extends Command {
     try {
       this.autoCommand = AutoBuilder.buildAuto(autoName);
     } catch (Exception e) {
-      System.err.println(
+      com.qualcomm.robotcore.util.RobotLog.e(
           "[PathPlannerAuto] Failed to load auto '" + autoName + "': " + e.getMessage());
-      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
       // Fall back to a no-op command so the sim doesn't crash
       this.autoCommand = new org.areslib.command.InstantCommand(() -> {});
     }
