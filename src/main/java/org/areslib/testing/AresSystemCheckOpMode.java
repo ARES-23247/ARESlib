@@ -16,8 +16,6 @@ import org.areslib.hmi.LEDState;
  */
 public abstract class AresSystemCheckOpMode extends AresCommandOpMode {
 
-  private boolean checkComplete = false;
-
   @Override
   public void robotInit() {
     // Initialize the Hardware and Subsystems configured in RobotContainer
@@ -35,14 +33,11 @@ public abstract class AresSystemCheckOpMode extends AresCommandOpMode {
               systemCheckRoutine.andThen(
                   new org.areslib.command.InstantCommand(
                       () -> {
-                        checkComplete = true;
                         if (AresLEDManager.getInstance().getCurrentState() == LEDState.DIAGNOSTIC) {
                           AresLEDManager.getInstance()
                               .setState(LEDState.HAS_GAME_PIECE); // Green = Good to Go
                         }
                       })));
-    } else {
-      checkComplete = true; // Nothing to check
     }
   }
 

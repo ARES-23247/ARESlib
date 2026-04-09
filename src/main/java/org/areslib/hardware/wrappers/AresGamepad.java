@@ -1,6 +1,9 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
+import java.util.HashMap;
+import java.util.Map;
+import org.areslib.command.Command;
 import org.areslib.command.button.Trigger;
 import org.areslib.telemetry.AresTelemetry;
 
@@ -21,6 +24,8 @@ public class AresGamepad {
   private Trigger triggerA, triggerB, triggerX, triggerY;
   private Trigger triggerLB, triggerRB;
   private Trigger triggerDU, triggerDD, triggerDL, triggerDR;
+
+  private final Map<String, String> currentBindings = new HashMap<>();
 
   public AresGamepad(Gamepad gamepad, String name) {
     this.gamepad = gamepad;
@@ -161,6 +166,64 @@ public class AresGamepad {
   }
 
   /**
+   * Binds a command to a Trigger's `.onTrue()` scheduling method while automatically publishing the
+   * mapped action name to AresTelemetry.
+   *
+   * @param trigger The Trigger instance (e.g. this.a())
+   * @param buttonName The human-readable physical button name (e.g. "A_Button")
+   * @param actionName The macro the button runs (e.g. "Score Gamepiece")
+   * @param cmd The Command to schedule
+   * @return The Trigger to allow method chaining
+   */
+  public Trigger bindOnTrue(Trigger trigger, String buttonName, String actionName, Command cmd) {
+    currentBindings.put(buttonName, actionName);
+    AresTelemetry.putString("GamepadBindings/" + name + "/" + buttonName, actionName);
+    return trigger.onTrue(cmd);
+  }
+
+  /**
+   * Binds a command to a Trigger's `.whileTrue()` scheduling method while automatically publishing
+   * the mapped action name to AresTelemetry.
+   *
+   * @param trigger The Trigger instance (e.g. this.a())
+   * @param buttonName The human-readable physical button name (e.g. "RightTrigger")
+   * @param actionName The macro the button runs (e.g. "Shoot On Move")
+   * @param cmd The Command to schedule
+   * @return The Trigger to allow method chaining
+   */
+  public Trigger bindWhileTrue(Trigger trigger, String buttonName, String actionName, Command cmd) {
+    currentBindings.put(buttonName, actionName);
+    AresTelemetry.putString("GamepadBindings/" + name + "/" + buttonName, actionName);
+    return trigger.whileTrue(cmd);
+  }
+
+  /**
+   * Binds a command to a Trigger's `.onFalse()` scheduling method while automatically publishing
+   * the mapped action name to AresTelemetry.
+   *
+   * @param trigger The Trigger instance (e.g. this.a())
+   * @param buttonName The human-readable physical button name (e.g. "A_Button")
+   * @param actionName The macro the button runs (e.g. "Retract System")
+   * @param cmd The Command to schedule
+   * @return The Trigger to allow method chaining
+   */
+  public Trigger bindOnFalse(Trigger trigger, String buttonName, String actionName, Command cmd) {
+    currentBindings.put(buttonName, actionName + " (Release)");
+    AresTelemetry.putString(
+        "GamepadBindings/" + name + "/" + buttonName, actionName + " (Release)");
+    return trigger.onFalse(cmd);
+  }
+
+  /**
+   * Generates a raw mapping of binding pairs.
+   *
+   * @return A map mapping physical button names to current string macros.
+   */
+  public Map<String, String> getBindingsMap() {
+    return currentBindings;
+  }
+
+  /**
    * Returns the raw underlying FTC Gamepad object.
    *
    * @return The raw Gamepad object.
@@ -177,6 +240,19 @@ public class AresGamepad {
   public void rumble(int durationMs) {
     if (gamepad != null) {
       gamepad.rumble(durationMs);
+    }
+  }
+
+  /**
+   * Rumbles the controller with variable strength.
+   *
+   * @param rumble1 Motor 1 strength (0.0 to 1.0)
+   * @param rumble2 Motor 2 strength (0.0 to 1.0)
+   * @param durationMs Duration in milliseconds.
+   */
+  public void rumble(double rumble1, double rumble2, int durationMs) {
+    if (gamepad != null) {
+      gamepad.rumble(rumble1, rumble2, durationMs);
     }
   }
 

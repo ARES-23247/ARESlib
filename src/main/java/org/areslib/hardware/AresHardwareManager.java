@@ -3,6 +3,7 @@ package org.areslib.hardware;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import org.areslib.faults.AresAlert;
 import org.areslib.hardware.coprocessors.AresOctoQuadDriver;
 import org.areslib.hardware.coprocessors.OctoQuadV1Impl;
 import org.areslib.hardware.coprocessors.OctoQuadV2Impl;
@@ -23,6 +24,11 @@ public class AresHardwareManager {
   private static org.areslib.hardware.coprocessors.SRSHub activeSrsHub;
   private static VoltageSensor batteryVoltageSensor;
   private static org.areslib.hardware.interfaces.AresAnalogSensor floodgateSensor;
+
+  private static final AresAlert warningAlert =
+      new AresAlert("Power Load Shedding: Voltage below 10.0V", AresAlert.AlertType.WARNING);
+  private static final AresAlert criticalAlert =
+      new AresAlert("Power Load Shedding: Voltage below 8.0V", AresAlert.AlertType.ERROR);
 
   /** The last measured system battery voltage. */
   public static double batteryVoltage = 12.0;
@@ -149,6 +155,22 @@ public class AresHardwareManager {
       batteryVoltage = batteryVoltageSensor.getVoltage();
     }
 
+    if (batteryVoltage > 0) {
+      if (batteryVoltage < 8.0) {
+        warningAlert.set(true);
+        criticalAlert.set(true);
+      } else if (batteryVoltage < 10.0) {
+        warningAlert.set(true);
+        criticalAlert.set(false);
+      } else {
+        warningAlert.set(false);
+        criticalAlert.set(false);
+      }
+    } else {
+      warningAlert.set(false);
+      criticalAlert.set(false);
+    }
+
     if (floodgateSensor != null) {
       // Floodgate V2 maps 0-3.3V to 0-80A
       double rawAmps = (floodgateSensor.getVoltage() / 3.3) * 80.0;
@@ -198,5 +220,19 @@ public class AresHardwareManager {
       activeOctoQuad.clearReadCache();
     }
     // SRSHub uses explicit update() model, clearing cache handled natively in the read buffer
+  }
+
+  /**
+   * Helper function for mechanisms to compute their dynamically shedded current limit based on bus
+   * voltage. Linearly scales current limits back when voltage sags between NOMINAL and CRITICAL.
+   */
+  public static double calculateLoadSheddedLimit(
+      double maxCurrent, double minCurrent, double nominalVoltage, double criticalVoltage) {
+    if (batteryVoltage >= nominalVoltage) {
+      return maxCurrent;
+    }
+    double slope = (maxCurrent - minCurrent) / (nominalVoltage - criticalVoltage);
+    double limit = minCurrent + slope * (batteryVoltage - criticalVoltage);
+    return Math.max(minCurrent, Math.min(maxCurrent, limit));
   }
 }

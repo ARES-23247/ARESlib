@@ -42,6 +42,7 @@ public class AresFaultManager {
   private static AresGamepad driverGamepad;
 
   private static boolean wasError = false;
+  private static boolean hasNewError = false;
 
   /**
    * Initializes the Fault Manager with the driver gamepad to allow rumble and LED feedback.
@@ -57,7 +58,18 @@ public class AresFaultManager {
   public static void reset() {
     driverGamepad = null;
     wasError = false;
+    hasNewError = false;
     alerts.clear();
+  }
+
+  /**
+   * Returns true if a new error was detected on the last loop. Clears the flag upon reading to
+   * allow edge-detection pulsing.
+   */
+  public static boolean hasNewError() {
+    boolean val = hasNewError;
+    hasNewError = false;
+    return val;
   }
 
   /**
@@ -105,9 +117,8 @@ public class AresFaultManager {
         // If there's an active error, turn the controller red
         driverGamepad.setLedColor(1.0, 0.0, 0.0, 100);
 
-        // Trigger a rumble the moment a new error appears
         if (!wasError) {
-          driverGamepad.rumble(500);
+          hasNewError = true;
         }
       } else if (wasError) {
         // Issue resolved, reset to green

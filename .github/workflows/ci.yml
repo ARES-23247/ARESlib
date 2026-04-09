@@ -51,16 +51,7 @@ jobs:
       with:
         commit_message: "style: auto-format code with spotless"
 
-    - name: Run Reviewdog PMD Annotations
-      uses: reviewdog/action-pmd@v3
-      if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        pmd_version: "6.55.0"
-        workdir: ./
-        reporter: github-pr-review
-        fail_on_error: false
-      
+
     - name: Build with Gradle and Coverage
       run: ./gradlew build jacocoTestReport
 
