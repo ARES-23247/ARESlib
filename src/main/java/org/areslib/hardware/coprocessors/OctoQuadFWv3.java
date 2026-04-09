@@ -81,7 +81,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   private static final float SCALAR_LOCALIZER_HEADING_VELOCITY = 1 / 600f;
   private static final float SCALAR_LOCALIZER_HEADING = 1 / 5000f;
 
-  private boolean isInitialized = false;
+  private boolean driverInitialized = false;
 
   public static class OctoQuadException extends RuntimeException {
     public OctoQuadException(String msg) {
@@ -98,8 +98,9 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
 
   @Override
   protected boolean doInitialize() {
-    ((LynxI2cDeviceSynch) (deviceClient)).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
-    isInitialized = false;
+    LynxI2cDeviceSynch lynxClient = (LynxI2cDeviceSynch) deviceClient;
+    lynxClient.setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+    driverInitialized = false;
     verifyInitialization();
     return true;
   }
@@ -313,7 +314,12 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
      * Bank 1 (channels 0-3) is configured for Quadrature input; Bank 2 (channels 4-7) is configured
      * for pulse width input.
      */
-    BANK1_QUADRATURE_BANK2_PULSE_WIDTH(2);
+    BANK1_QUADRATURE_BANK2_PULSE_WIDTH(2),
+    /**
+     * Bank 1 (channels 0-3) is configured for pulse width input; Bank 2 (channels 4-7) is
+     * configured for Quadrature input.
+     */
+    BANK1_PULSE_WIDTH_BANK2_QUADRATURE(3);
 
     private final byte bVal;
 
@@ -1216,7 +1222,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   // ---------------------------------------------------------------------------------------------------------------------------------
 
   private void verifyInitialization() {
-    if (!isInitialized) {
+    if (!driverInitialized) {
       byte chipId = getChipId();
       if (chipId == OCTOQUAD_CHIP_ID) {
         FirmwareVersion fw = getFirmwareVersion();
@@ -1242,7 +1248,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
             chipId, OCTOQUAD_CHIP_ID);
       }
 
-      isInitialized = true;
+      driverInitialized = true;
     }
   }
 

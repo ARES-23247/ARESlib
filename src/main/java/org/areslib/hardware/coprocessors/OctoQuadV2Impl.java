@@ -52,7 +52,7 @@ public class OctoQuadV2Impl implements AresOctoQuadDriver {
         if (channel < 4) {
           if (cfg == OctoQuadFWv3.ChannelBankConfig.ALL_QUADRATURE) {
             octoQuadV2.setChannelBankConfig(
-                OctoQuadFWv3.ChannelBankConfig.BANK1_QUADRATURE_BANK2_PULSE_WIDTH);
+                OctoQuadFWv3.ChannelBankConfig.BANK1_PULSE_WIDTH_BANK2_QUADRATURE);
           }
         } else {
           if (cfg == OctoQuadFWv3.ChannelBankConfig.ALL_QUADRATURE) {

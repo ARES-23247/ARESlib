@@ -14,6 +14,8 @@ public interface AresMotor {
   void setVoltage(double volts);
 
   /**
+   * Returns estimated or actual applied voltage.
+   *
    * @return Estimated or actual applied voltage.
    */
   double getVoltage();

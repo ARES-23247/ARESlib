@@ -39,6 +39,7 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
 
   private boolean ready = false;
   private boolean disconnected = false;
+  private boolean driverInitialized = false;
 
   private final double[] analogDigitalValues = new double[12];
 
@@ -674,9 +675,10 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
 
   @Override
   protected boolean doInitialize() {
-    ((LynxI2cDeviceSynch) this.deviceClient).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+    LynxI2cDeviceSynch lynxClient = (LynxI2cDeviceSynch) deviceClient;
+    lynxClient.setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
 
-    isInitialized = false;
+    driverInitialized = false;
 
     verifyInitialization();
 
@@ -714,7 +716,7 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   private void verifyInitialization() {
-    if (!isInitialized) {
+    if (!driverInitialized) {
       byte[] deviceInfo =
           ByteBuffer.wrap(
                   deviceClient.read(Register.DEVICE_INFO.address, Register.DEVICE_INFO.length))
@@ -755,7 +757,7 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
                 + DEVICE_PATCH_VERSION);
       }
 
-      isInitialized = true;
+      driverInitialized = true;
     }
   }
 
@@ -763,7 +765,7 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
     RobotLog.setGlobalErrorMsg(message);
 
     try {
-      throw (exception.getConstructor(String.class).newInstance(message));
+      throw exception.getConstructor(String.class).newInstance(message);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -805,7 +807,7 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
 
     deviceClient.write(Register.RESTART.address, new byte[Register.RESTART.length]);
 
-    isInitialized = false;
+    driverInitialized = false;
 
     Arrays.fill(analogDigitalValues, 0);
 
@@ -1043,6 +1045,8 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
+   * Returns whether the SRSHub is done initializing.
+   *
    * @return whether the SRSHub is done initializing
    */
   public boolean ready() {
@@ -1050,6 +1054,8 @@ public class SRSHub extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
+   * Returns whether the most recent update failed.
+   *
    * @return whether the most recent update failed
    */
   public boolean disconnected() {

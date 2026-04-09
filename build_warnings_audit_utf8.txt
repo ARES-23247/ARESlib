@@ -1,0 +1,191 @@
+﻿> Task :spotlessInternalRegisterDependencies
+> Task :spotlessJava
+> Task :spotlessJavaApply
+> Task :spotlessApply
+
+> Task :compileJava
+.\gradlew.bat : 
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:766: warning: 
+[UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be misinterpreted 
+without them
+At line:1 char:1
++ .\gradlew.bat compileJava --rerun-tasks > build_warnings_audit.txt 2> ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\david\...ed without them:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+      throw (exception.getConstructor(String.class).newInstance(message));
+            ^
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean 'throw  exception.getConstructor(String.class).newInstance(message);'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:1046: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return whether the SRSHub is done initializing
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns whether the SRSHub is done initializing.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\SRSHub.java:1053: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return whether the most recent update failed
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns whether the most recent update failed.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:84: 
+warning: [HidingField] Hiding fields of superclasses may cause confusion and errors. This field is hiding a field of 
+the same name in superclass: I2cDeviceSynchDevice
+  private boolean isInitialized = false;
+                  ^
+    (see https://errorprone.info/bugpattern/HidingField)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadFWv3.java:101: 
+warning: [UnnecessaryParentheses] These grouping parentheses are unnecessary; it is unlikely the code will be 
+misinterpreted without them
+    ((LynxI2cDeviceSynch) (deviceClient)).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);
+                          ^
+    (see https://errorprone.info/bugpattern/UnnecessaryParentheses)
+  Did you mean '((LynxI2cDeviceSynch)  deviceClient).setBusSpeed(LynxI2cDeviceSynch.BusSpeed.FAST_400K);'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV1Impl.java:60: 
+warning: [ThreadPriorityCheck] Relying on the thread scheduler is discouraged.
+      Thread.yield(); // Placeholder execution to map to OctoQuadBase$ChannelBankConfig
+                  ^
+    (see https://errorprone.info/bugpattern/ThreadPriorityCheck)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\OctoQuadV2Impl.java:52: 
+warning: [DuplicateBranches] Both branches contain identical code
+        if (channel < 4) {
+        ^
+    (see https://errorprone.info/bugpattern/DuplicateBranches)
+  Did you mean 'if (cfg == OctoQuadFWv3.ChannelBankConfig.ALL_QUADRATURE) {'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:40: 
+warning: [NotJavadoc] Avoid using `/**` for comments which aren't actually Javadoc.
+/**
+^
+    (see https://errorprone.info/bugpattern/NotJavadoc)
+  Did you mean '/*'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:86: 
+warning: [StaticAssignmentInConstructor] This assignment is to a static field. Mutating static state from a 
+constructor is highly error-prone.
+    controlHub = null;
+               ^
+    (see https://errorprone.info/bugpattern/StaticAssignmentInConstructor)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:87: 
+warning: [StaticAssignmentInConstructor] This assignment is to a static field. Mutating static state from a 
+constructor is highly error-prone.
+    expansionHub = null;
+                 ^
+    (see https://errorprone.info/bugpattern/StaticAssignmentInConstructor)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:126: 
+warning: [ThreadPriorityCheck] Relying on the thread scheduler is discouraged.
+        Thread.yield();
+                    ^
+    (see https://errorprone.info/bugpattern/ThreadPriorityCheck)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:160: 
+warning: [SynchronizeOnNonFinalField] Synchronizing on non-final fields is not safe: if the field is ever updated, 
+different threads may end up locking on different objects.
+        synchronized (instance.syncLock) {
+                     ^
+    (see https://errorprone.info/bugpattern/SynchronizeOnNonFinalField)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:276: 
+warning: [ModifiedButNotUsed] A collection or proto builder was created, but its values were never accessed.
+              new ConcurrentHashMap<>();
+              ^
+    (see https://errorprone.info/bugpattern/ModifiedButNotUsed)
+  Did you mean to remove this line?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:275: 
+warning: [UnnecessaryAsync] Variables which are initialized and do not escape the current scope do not need to worry 
+about concurrency. Using the non-concurrent type will reduce overhead and verbosity.
+          ConcurrentHashMap<Integer, LynxRespondable> unfinishedCommands =
+                                                      ^
+    (see https://errorprone.info/bugpattern/UnnecessaryAsync)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\PhotonCore.java:400: 
+warning: [NonApiType] Prefer a java.util.Map instead. 
+  private void setLynxObject(Object device, HashMap<LynxModule, PhotonLynxModule> replacements) {
+                                                                                  ^
+    (see https://errorprone.info/bugpattern/NonApiType)
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\coprocessors\photon\ReflectionUtils.java:6:
+ warning: [NotJavadoc] Avoid using `/**` for comments which aren't actually Javadoc.
+/**
+^
+    (see https://errorprone.info/bugpattern/NotJavadoc)
+  Did you mean '/*'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\faults\FaultMonitor.java:10: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return True if a critical hardware fault is currently active.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns true if a critical hardware fault is currently active.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\faults\FaultMonitor.java:15: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return Details regarding the hardware fault (e.g. "I2C Disconnected", "Motor Controller
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns details regarding the hardware fault (e.g. "I2C Disconnected", "Motor Controller'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresEncoder.java:18: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return Distance in native units (user defines the scale).
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns distance in native units (user defines the scale).'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresEncoder.java:23: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return Velocity in native units per second.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns velocity in native units per second.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresColorSensor.java:6: 
+warning: [MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary 
+fragment instead.
+   * @return the red channel intensity.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns the red channel intensity.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresColorSensor.java:11: 
+warning: [MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary 
+fragment instead.
+   * @return the green channel intensity.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns the green channel intensity.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresColorSensor.java:16: 
+warning: [MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary 
+fragment instead.
+   * @return the blue channel intensity.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns the blue channel intensity.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresColorSensor.java:21: 
+warning: [MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary 
+fragment instead.
+   * @return the alpha (clear) channel intensity or overall luminescence.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns the alpha (clear) channel intensity or overall luminescence.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresIMU.java:9: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return Continuous yaw angle wrapped as a Rotation2d.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns continuous yaw angle wrapped as a Rotation2d.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\AresMotor.java:17: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+   * @return Estimated or actual applied voltage.
+     ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns estimated or actual applied voltage.'?
+C:\Users\david\dev\robotics\ftc\ARESLib2\src\main\java\org\areslib\hardware\interfaces\OdometryIO.java:33: warning: 
+[MissingSummary] A summary fragment is required; consider using the value of the @return block as a summary fragment 
+instead.
+     * @return The current estimated pose as a {@link Pose2d} object.
+       ^
+    (see https://google.github.io/styleguide/javaguide.html#s7.2-summary-fragment)
+  Did you mean '*Returns the current estimated pose as a {@link Pose2d} object.'?
+27 warnings
+
+BUILD SUCCESSFUL in 18s
+4 actionable tasks: 4 executed

@@ -15,11 +15,15 @@ public interface AresEncoder {
   void setDistancePerPulse(double distance);
 
   /**
+   * Returns distance in native units.
+   *
    * @return Distance in native units (user defines the scale).
    */
   double getPosition();
 
   /**
+   * Returns velocity in native units per second.
+   *
    * @return Velocity in native units per second.
    */
   double getVelocity();

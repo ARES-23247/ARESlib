@@ -30,6 +30,8 @@ public interface OdometryIO {
     public double angularVelocityRadiansPerSecond = 0.0;
 
     /**
+     * Returns the current estimated pose as a {@link Pose2d} object.
+     *
      * @return The current estimated pose as a {@link Pose2d} object.
      */
     public Pose2d getPoseMeters() {

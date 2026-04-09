@@ -30,19 +30,20 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.firstinspires.ftc.ftccommon.external.OnCreateEventLoop;
 import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
 
-@SuppressWarnings({"rawtypes", "unchecked", "unused"})
-/**
+@SuppressWarnings({"rawtypes", "unchecked", "unused", "SynchronizeOnNonFinalField"})
+/*
  * PhotonCore standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * PhotonCore}. Extracted and compiled as part of the ARESLib2 Code Audit for missing documentation
- * coverage.
+ * PhotonCore}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * documentation coverage.
  */
 public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications {
   protected static final PhotonCore instance = new PhotonCore();
@@ -50,7 +51,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
 
   private List<LynxModule> modules;
   private Thread thisThread = null;
-  private Object syncLock;
+  private Object syncLock = new Object();
 
   private final Object messageSync = new Object();
 
@@ -83,8 +84,6 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
   public static ExperimentalParameters experimental = new ExperimentalParameters();
 
   public PhotonCore() {
-    controlHub = null;
-    expansionHub = null;
     enabled = new AtomicBoolean(false);
     threadEnabled = new AtomicBoolean(false);
     usbDeviceMap = new HashMap<>();
@@ -123,7 +122,12 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
     synchronized (instance.messageSync) {
       while (((PhotonLynxModule) photonModule).getUnfinishedCommands().size()
           > experimental.maximumParallelCommands.get()) {
-        Thread.yield();
+        // Spinning waiting for parallel commands to finish
+        try {
+          Thread.sleep(1);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
         // RobotLog.ee("PhotonCore", ((PhotonLynxModule)controlHub).getUnfinishedCommands().size()
         // + " | " + ((PhotonLynxModule)expansionHub).getUnfinishedCommands().size());
       }
@@ -272,8 +276,6 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
             && controlHub == null) {
           controlHub = photonLynxModule;
 
-          ConcurrentHashMap<Integer, LynxRespondable> unfinishedCommands =
-              new ConcurrentHashMap<>();
           try {
             Field f1 = module.getClass().getDeclaredField("lynxUsbDevice");
             f1.setAccessible(true);
@@ -397,7 +399,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
     }
   }
 
-  private void setLynxObject(Object device, HashMap<LynxModule, PhotonLynxModule> replacements) {
+  private void setLynxObject(Object device, Map<LynxModule, PhotonLynxModule> replacements) {
     Field f = ReflectionUtils.getField(device.getClass(), LynxModule.class);
     if (f != null) {
       f.setAccessible(true);

@@ -117,6 +117,16 @@ configurations.ftcAars.resolvedConfiguration.lenientConfiguration.getArtifacts()
     def aarFile = artifact.file
     def outDir = file("${project.projectDir}/.gradle/ftc-jars")
     outDir.mkdirs()
+
+    // Audit: Clean up any JARs in the directory that don't match the current resolved version
+    // to avoid classpath conflicts or stale SDK definitions.
+    outDir.listFiles().each { file ->
+        if (file.name.endsWith(".jar") && !file.name.contains(artifact.moduleVersion.id.version)) {
+            if (file.name.startsWith(artifact.name)) {
+                file.delete()
+            }
+        }
+    }
     
     def jarFile = file("$outDir/${artifact.name}-${artifact.moduleVersion.id.version}.jar")
     
@@ -162,6 +172,10 @@ task runSim(type: JavaExec) {
     }
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'org.areslib.sim.DesktopSimLauncher'
+}
+
+task cleanFtcJars(type: Delete) {
+    delete "${project.projectDir}/.gradle/ftc-jars"
 }
 
 task installGitHook(type: Copy) {

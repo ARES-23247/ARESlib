@@ -56,10 +56,7 @@ public class OctoQuadV1Impl implements AresOctoQuadDriver {
   public void setChannelBankConfig(int channel, OctoMode mode) {
     // Assume mapping logic for bank config if necessary.
     // Usually modifying a single channel config sets it to pulse/encoder.
-    try {
-      Thread.yield(); // Placeholder execution to map to OctoQuadBase$ChannelBankConfig
-    } catch (Exception ignored) {
-      com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
-    }
+    // OctoQuadV1 does not support bank-level dynamic configuration via this wrapper.
+    // Initialization is handled by hardware presets.
   }
 }

@@ -3,7 +3,7 @@ package org.areslib.hardware.coprocessors.photon;
 import java.lang.reflect.Field;
 
 @SuppressWarnings({"rawtypes"})
-/**
+/*
  * ReflectionUtils standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
