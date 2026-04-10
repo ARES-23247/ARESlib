@@ -7,7 +7,7 @@ description: Documents the ARESLib2 enum-based StateMachine framework for managi
 
 
 You are an expert mechanism engineer for Team ARES. When implementing multi-phase subsystem logic using the ARESLib2 StateMachine framework, adhere strictly to the following guidelines.
-The `org.areslib.core.StateMachine<S>` class is a lightweight, enum-based finite state machine. **Do NOT implement raw `switch/case` state logic in subsystems** — always use this framework instead. It provides entry/exit/during actions, conditional transitions, timeout transitions, and automatic telemetry logging.
+The `org.areslib.core.StateMachine<S>` class is a lightweight, enum-based finite state machine. **Do NOT implement raw `switch/case` state logic in subsystems** — always use this framework instead. It provides entry/exit/during actions, conditional transitions, timeout transitions, validated transition tables, and automatic telemetry logging.
 
 ## 1. Basic Pattern
 
@@ -18,9 +18,17 @@ public class IntakeSubsystem extends SubsystemBase {
     
     enum IntakeState { IDLE, EXTENDING, GRIPPING, RETRACTING, STOWED }
     
-    private final StateMachine<IntakeState> sm = new StateMachine<>(IntakeState.IDLE);
+    // Auto-derived name or explicit named identity (strongly recommended for debugging)
+    private final StateMachine<IntakeState> sm = new StateMachine<>("Intake", IntakeState.class, IntakeState.IDLE);
     
     public IntakeSubsystem(IntakeIO io) {
+        // Validated Transition Table (optional but highly recommended)
+        // If ANY transitions are explicitly added, un-whitelisted transitions are blocked and logged.
+        sm.addTransition(IntakeState.IDLE, IntakeState.EXTENDING);
+        sm.addTransition(IntakeState.EXTENDING, IntakeState.GRIPPING);
+        sm.addValidBidirectional(IntakeState.GRIPPING, IntakeState.RETRACTING);
+        sm.addWildcardTo(IntakeState.IDLE); // Panic stop: anything can go to IDLE
+
         // Entry actions — run ONCE when entering a state
         sm.onEntry(IntakeState.EXTENDING, () -> io.setSlidePower(1.0));
         sm.onEntry(IntakeState.GRIPPING,  () -> io.closeGripper());
@@ -51,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
     
     // External trigger (e.g., from a button binding)
     public void startIntake() {
-        sm.forceState(IntakeState.EXTENDING);
+        sm.requestTransition(IntakeState.EXTENDING); // Use requestTransition to enforce table validation
     }
 }
 ```
@@ -60,14 +68,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
 | Method | Purpose |
 |:-------|:--------|
-| `new StateMachine<>(initialState)` | Constructor — starts in the given state |
+| `new StateMachine<>(name, class, state)` | Constructor — strictly tied to name & enum class |
+| `sm.addTransition(from, to)` | Register a legal transition (enables validated mode) |
+| `sm.addValidBidirectional(a, b)` | Register legal transitions in both directions |
+| `sm.addWildcardTo(state)` | Allow all states to transition to this state |
+| `sm.addWildcardFrom(state)` | Allow this state to transition to all others |
+| `sm.setOnTransition(callback)` | Register a `BiConsumer<S, S>` callback for accepted transitions |
 | `sm.onEntry(state, action)` | Register action that runs ONCE on state entry |
 | `sm.onExit(state, action)` | Register action that runs ONCE on state exit |
 | `sm.during(state, action)` | Register action that runs EVERY tick while in state |
-| `sm.transition(from, to, condition)` | Add conditional transition (first match wins) |
-| `sm.transitionAfter(from, to, seconds)` | Add timeout-based transition |
+| `sm.transition(from, to, cond)` | Add conditional transition (first match wins) |
+| `sm.transitionAfter(from, to, sec)`| Add timeout-based transition |
 | `sm.update()` | Evaluate transitions + run during actions (call every loop) |
-| `sm.forceState(state)` | Force an immediate state change (runs exit/entry actions) |
+| `sm.requestTransition(state)` | Requests a state change obeying validated transition table |
+| `sm.forceState(state)` | Force an immediate state change (bypasses validation) |
 | `sm.getState()` | Returns current state enum |
 | `sm.getPreviousState()` | Returns the state before the last transition |
 | `sm.isInState(state)` | Boolean check for current state |
@@ -77,17 +91,21 @@ public class IntakeSubsystem extends SubsystemBase {
 
 State transitions are **automatically logged** to AdvantageScope via:
 ```
-StateMachine/IntakeState → "GRIPPING"
+StateMachine/Intake → "GRIPPING"
+```
+Illegal transitions (bounced by the validation table) are logged to:
+```
+StateMachine/Intake/IllegalTransition → "STOWED -> GRIPPING"
 ```
 No manual `AresAutoLogger.recordOutput()` call is needed for state tracking.
 
 ## 4. Integration with Commands
 
-Use `forceState()` from Command bindings to trigger multi-phase mechanisms:
+Use `requestTransition()` from Command bindings to trigger multi-phase mechanisms gracefully:
 ```java
 // In configureBindings():
 driverGamepad.a().onTrue(new InstantCommand(() -> intake.startIntake()));
-driverGamepad.b().onTrue(new InstantCommand(() -> intake.sm.forceState(IntakeState.IDLE)));
+driverGamepad.b().onTrue(new InstantCommand(() -> intake.sm.requestTransition(IntakeState.IDLE)));
 ```
 
 ## 5. Anti-Patterns

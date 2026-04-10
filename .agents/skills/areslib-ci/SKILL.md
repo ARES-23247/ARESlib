@@ -11,63 +11,75 @@ ARESLib2 uses GitHub Actions for continuous integration. The pipeline lives in `
 
 ```
 .github/workflows/
-├── build.yml       # Compile + test on every push/PR
-├── release.yml     # Tagged release builds (optional)
+├── ci.yml               # Matrix build, Test, PMD, Spotless, JaCoCo, Javadocs
+├── dependabot-auto-merge.yml
+├── release-drafter.yml
 ```
 
 ## 2. Key Rules
 
-### Rule A: Every Push Builds and Tests
-The `build.yml` workflow triggers on every push to `master` and every pull request:
+The `ci.yml` workflow triggers on push/PRs to `main` (ignoring markdown changes):
 ```yaml
-name: Build & Test
+name: ARESLib2 FTC CI
 on:
   push:
-    branches: [master]
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
   pull_request:
-    branches: [master]
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
-      - name: Build
-        run: ./gradlew build -x test
-      - name: Test
-        run: ./gradlew test
-      - name: Upload Test Results
-        if: always()
+          distribution: 'corretto'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Compile (pre-check)
+        run: ./gradlew compileJava compileTestJava
+      - name: Build with Gradle and Coverage
+        run: ./gradlew build jacocoTestReport
+      - name: Upload Test Reports
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: build/reports/tests/
+          name: ARESLib2-Test-Reports-${{ matrix.os }} # Avoids collision
+          path: build/reports/tests/test/
 ```
 
 ### Rule B: Use Java 17
 ARESLib2 targets Java 17 (the FTC SDK minimum). Always specify `java-version: '17'` in the setup step. Do not use Java 21 — it introduces bytecode incompatibilities with the FTC runtime.
 
-### Rule C: Cache Gradle Dependencies
-Add Gradle caching to speed up CI builds:
+### Rule C: Gradle Caching & PMD Annotations
+ARESLib2 leverages `gradle/actions/setup-gradle@v4` for automatic build layer caching. We also enforce code quality natively in PRs using the Reviewdog PMD action and automatic Spotless commits:
 ```yaml
-      - name: Cache Gradle
-        uses: actions/cache@v4
+      - name: Apply Code Formatting
+        if: matrix.os == 'ubuntu-latest'
+        run: ./gradlew spotlessApply
+        
+      - name: Commit Auto-formatted Code
+        if: matrix.os == 'ubuntu-latest'
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-
+          commit_message: "style: auto-format code with spotless"
+          
+      - name: Run Reviewdog PMD Annotations
+        uses: kemsakurai/action-pmd@v1
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+        with:
+          reporter: github-pr-review
 ```
-
-### Rule D: Separate Build and Test Steps
-Always separate `build -x test` and `test` into two steps. This way:
-- Build failures are clearly distinguished from test failures
-- Test results are always uploaded even if some tests fail (`if: always()`)
 
 ## 3. Test Configuration
 
@@ -86,9 +98,9 @@ Run specific test suites in CI:
 
 ## 4. Branch Protection (Recommended)
 
-Configure GitHub branch protection for `master`:
+Configure GitHub branch protection for `main`:
 - Require status checks to pass before merging
-- Require the `build` job to succeed
+- Require the `build` job to succeed across all matrix matrices
 - Require PR reviews from at least 1 team member
 
 ## 5. Common Pitfalls

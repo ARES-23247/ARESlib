@@ -5,6 +5,10 @@ description: Helps find the right ARESLib2 skill for any task. Use when starting
 
 You are an expert FTC Software Engineer for Team ARES. Before writing any code, consult this routing table to find the correct domain skill for your task.
 
+## 0. Skill Maintenance
+
+**CRITICAL RULE:** Whenever you make architectural or significant code changes to the library (e.g., adding a new pattern, changing a physics method, refactoring how a subsystem is structured), you **MUST** identify and update the relevant `SKILL.md` files in `.agents/skills/` to reflect the new truth. Keeping skills in sync with the repository is mandatory.
+
 ## Skill Routing Table
 
 | Domain | Skill | Use When |
@@ -23,6 +27,7 @@ You are an expert FTC Software Engineer for Team ARES. Before writing any code, 
 | **Telemetry** | `areslib-telemetry` | `AresAutoLogger`, log backends, `@AutoLog` IO pattern |
 | **Testing** | `areslib-testing` | Headless JUnit 5, physics-integrated tests, mock-free IO testing |
 | **CI/CD** | `areslib-ci` | GitHub Actions build/test pipeline, Java 17, Gradle caching |
+| **Elite Mining** | `areslib-elite-mining` | Identifying, evaluating, and porting mechanics/math from elite teams |
 | **Build System** | `gradle-ftc-desktop` | `.aar` extraction, desktop classpath, dependency configuration |
 | **Deployment** | `robot-dev` | ADB, Control Hub deploy, OpMode control, log retrieval |
 | **AdvantageScope Layouts** | `advantagescope-layouts` | Layout JSON, tab configuration, MCP tools |

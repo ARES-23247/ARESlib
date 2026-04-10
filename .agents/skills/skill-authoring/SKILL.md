@@ -16,6 +16,8 @@ Create a new skill whenever you:
 
 **Rule: Every subsystem gets a skill.** If you build it, document it. Skills are the AI's long-term memory.
 
+**Rule: Claude / AI Agent Compatibility.** Every new skill MUST be encapsulated in the `.agents/skills/<skill-name>` directory and contain a valid `SKILL.md` file with proper YAML frontmatter. This architecture acts as the native plugin/wrapper that allows Claude, Gemini, and other supported AI agents to automatically discover and index the skill. Without this directory structure and frontmatter, the AI cannot import the skill into its context window.
+
 ## 2. YAML Frontmatter
 
 Keep it minimal. Only two fields are required:
@@ -144,9 +146,14 @@ Use the template above. **Be specific** — include actual class names, actual m
 ### Step 5: Write Tests (if missing)
 If the subsystem doesn't have a test file yet, create one following the `areslib-testing` skill patterns.
 
-### Step 6: Commit
+### Step 6: Agent Compatibility Registration
+- **Create the Manifest:** You MUST create a `plugin.json` file inside the new skill directory to ensure AI agents (like Claude) can detect it. Use an existing one (e.g., `areslib-vision/plugin.json`) as a template.
+- **Update Marketplace:** You MUST register the new skill by adding its name and relative source path to the `.agents/skills/marketplace.json` array.
+
+### Step 7: Commit
 ```bash
 git add .agents/skills/<skill-name>/
+git add .agents/skills/marketplace.json
 git commit -m "feat: add <skill-name> AI skill for <purpose>"
 git push
 ```

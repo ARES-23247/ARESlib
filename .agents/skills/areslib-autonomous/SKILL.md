@@ -40,20 +40,30 @@ ARESLib2 uses **WPILib convention** everywhere (X-forward, Y-left, theta CCW+). 
 All conversions between internal frames are handled by `CoordinateUtil`. See the `areslib-architecture` skill for the full coordinate guide.
 
 ### Rule C: GhostRecorder Safety
-`GhostRecorder` records driver joystick inputs to a `GhostData` object. During replay, `GhostPlaybackCommand` injects these inputs back through the `AresGamepad` wrapper.
+`GhostRecorder` records robot ChassisSpeeds and binary button inputs to a CSV file using a **lock-free background writer thread**, ensuring zero main-loop blocking from file I/O. During replay, `GhostPlaybackCommand` reads the CSV and feeds the speeds and buttons back to their consumers deterministically.
 
-**Critical:** Ghost recordings store raw FTC gamepad values (pre-inversion). The `AresGamepad` wrapper re-inverts them during playback, so driver Y-axis behavior is preserved.
+**Critical:** Ensure that `GhostRecorder` and `GhostPlaybackCommand` are mutually exclusive.
 
 ```java
+// Initialization (RobotContainer):
+GhostRecorder recorder = new GhostRecorder(
+    () -> driveSubsystem.getSpeeds(), 
+    () -> driverGamepad.rightTrigger() > 0.5 // example varargs boolean supplier
+);
+
 // Recording (in TeleOp):
-GhostRecorder recorder = new GhostRecorder();
-recorder.startRecording(gamepad1, gamepad2);
+// recorder.update() MUST be called in periodic!
+recorder.startRecording("/sdcard/FIRST/macros/auto1.csv");
 
 // Playback (in Auto):
-GhostData data = recorder.getRecording();
-new GhostPlaybackCommand(data, driveSubsystem).schedule();
+Command playbackCmd = new GhostPlaybackCommand(
+    "/sdcard/FIRST/macros/auto1.csv",
+    recorder,
+    speeds -> driveSubsystem.drive(speeds),
+    isShooting -> shooter.setShooting(isShooting) // corresponds to rightTrigger
+);
+playbackCmd.schedule();
 ```
-
 ### Rule D: Dynamic Avoidance Uses ObstacleAvoider
 The `ObstacleAvoider` class in `math.pathing` generates waypoints that route around known field obstacles:
 ```java

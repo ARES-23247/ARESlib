@@ -1,0 +1,90 @@
+﻿{
+    "name":  "ARESLib2 Local Skills",
+    "description":  "Local ARESLib2 framework skills for FTC robot development",
+    "plugins":  [
+                    {
+                        "name":  "advantagescope-hud-sim",
+                        "source":  "./advantagescope-hud-sim"
+                    },
+                    {
+                        "name":  "advantagescope-layouts",
+                        "source":  "./advantagescope-layouts"
+                    },
+                    {
+                        "name":  "areslib",
+                        "source":  "./areslib"
+                    },
+                    {
+                        "name":  "areslib-architecture",
+                        "source":  "./areslib-architecture"
+                    },
+                    {
+                        "name":  "areslib-autonomous",
+                        "source":  "./areslib-autonomous"
+                    },
+                    {
+                        "name":  "areslib-ci",
+                        "source":  "./areslib-ci"
+                    },
+                    {
+                        "name":  "areslib-commands",
+                        "source":  "./areslib-commands"
+                    },
+                    {
+                        "name":  "areslib-drivetrain",
+                        "source":  "./areslib-drivetrain"
+                    },
+                    {
+                        "name":  "areslib-elite-mining",
+                        "source":  "./areslib-elite-mining"
+                    },
+                    {
+                        "name":  "areslib-faults",
+                        "source":  "./areslib-faults"
+                    },
+                    {
+                        "name":  "areslib-hardware",
+                        "source":  "./areslib-hardware"
+                    },
+                    {
+                        "name":  "areslib-math",
+                        "source":  "./areslib-math"
+                    },
+                    {
+                        "name":  "areslib-simulation",
+                        "source":  "./areslib-simulation"
+                    },
+                    {
+                        "name":  "areslib-statemachine",
+                        "source":  "./areslib-statemachine"
+                    },
+                    {
+                        "name":  "areslib-telemetry",
+                        "source":  "./areslib-telemetry"
+                    },
+                    {
+                        "name":  "areslib-testing",
+                        "source":  "./areslib-testing"
+                    },
+                    {
+                        "name":  "areslib-vision",
+                        "source":  "./areslib-vision"
+                    },
+                    {
+                        "name":  "gradle-ftc-desktop",
+                        "source":  "./gradle-ftc-desktop"
+                    },
+                    {
+                        "name":  "pathplanner",
+                        "source":  "./pathplanner"
+                    },
+                    {
+                        "name":  "robot-dev",
+                        "source":  "./robot-dev"
+                    },
+                    {
+                        "name":  "skill-authoring",
+                        "source":  "./skill-authoring"
+                    }
+                ]
+}

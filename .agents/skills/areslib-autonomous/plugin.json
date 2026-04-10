@@ -1,0 +1,16 @@
+﻿{
+    "name":  "areslib-autonomous",
+    "version":  "1.0.0",
+    "description":  "ARESLib2 areslib-autonomous - FTC robot code framework component",
+    "author":  {
+                   "name":  "Team ARES",
+                   "url":  "https://github.com/ARESLib2"
+               },
+    "repository":  "https://github.com/ARESLib2/ARESLib2",
+    "license":  "MIT",
+    "keywords":  [
+                     "ftc",
+                     "areslib",
+                     "autonomous"
+                 ]
+}
