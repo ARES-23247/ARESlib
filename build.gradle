@@ -96,7 +96,7 @@ dependencies {
     implementation 'com.acmerobotics.dashboard:core:0.5.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.google.android:android:4.1.1.4'
-    implementation 'org.dyn4j:dyn4j:4.2.2'
+    implementation 'org.dyn4j:dyn4j:5.0.2'
 
     // Error Prone
     errorprone "com.google.errorprone:error_prone_core:2.36.0"
