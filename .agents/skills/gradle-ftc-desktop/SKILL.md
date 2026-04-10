@@ -7,7 +7,7 @@ description: Defines the Gradle build configuration that extracts FTC SDK .aar d
 
 
 You are an expert build engineer for Team ARES. When troubleshooting build errors, adding FTC dependencies, or configuring the desktop classpath for simulation, adhere strictly to the following guidelines.
-ARESLib2 runs FTC code on a desktop JVM for simulation and testing. Because the FTC SDK packages dependencies as Android `.aar` archives, the `build.gradle` contains a critical extraction pipeline that converts `.aar` → `.jar` automatically.
+ARESLib runs FTC code on a desktop JVM for simulation and testing. Because the FTC SDK packages dependencies as Android `.aar` archives, the `build.gradle` contains a critical extraction pipeline that converts `.aar` → `.jar` automatically.
 
 ## 1. The Extraction Rule
 
@@ -90,7 +90,7 @@ ftcAars 'com.acmerobotics.dashboard:dashboard:0.5.1@aar'
 // BAD — crashes desktop JVM
 import android.content.Context;
 
-// GOOD — use ARESLib2 wrappers
+// GOOD — use ARESLib wrappers
 import org.areslib.hardware.wrappers.DcMotorExWrapper;
 ```
 

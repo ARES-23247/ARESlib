@@ -191,7 +191,7 @@ public class AresVisionSubsystem extends SubsystemBase {
       return new double[] {xyStd, xyStd, thetaStd};
     }
 
-    // Fallback based on area (Old ARESLib2 heuristic) if fiducialCount isn't populated
+    // Fallback based on area (Old ARESLib heuristic) if fiducialCount isn't populated
     if (inputs.ta < minTargetAreaPercent) return null;
     double confidence = Math.min(inputs.ta / maxTrustAreaPercent, 1.0);
     double fallbackStd = (1.0 - confidence) * 2.0 + 0.1;

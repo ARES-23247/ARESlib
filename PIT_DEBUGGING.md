@@ -1,4 +1,4 @@
-# 🔧 ARESLib2 Pit Debugging Flowchart
+# 🔧 ARESLib Pit Debugging Flowchart
 
 Use this guide when the robot is misbehaving in the pits. Start at the top and follow the arrows.
 

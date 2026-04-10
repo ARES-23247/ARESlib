@@ -10,7 +10,7 @@ import org.areslib.subsystems.vision.AresVisionSubsystem;
  * AlignToTagCommand standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * AlignToTagCommand}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * AlignToTagCommand}. Extracted and compiled as part of the ARESLib Code Audit for missing
  * documentation coverage.
  */
 public class AlignToTagCommand extends Command {

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import org.ejml.simple.SimpleMatrix;
 
 /**
- * Offline System Identification tuner for ARESLib2, ported from MARSLib.
+ * Offline System Identification tuner for ARESLib, ported from MARSLib.
  *
  * <p>Parses SysId exported CSV data (from {@link SysIdJSONExporter}) and performs OLS linear
  * regression to calculate mechanistic constants (kS, kV, kA). Then back-calculates the true
@@ -72,7 +72,7 @@ public class SimSysIdTuner {
   public static void solveForSimConstants(
       String csvFilePath, double gearing, double torqueConstant, double resistance) {
     LOGGER.info("==========================================");
-    LOGGER.info("ARESLib2 Simulation Auto-Tuner Initialized");
+    LOGGER.info("ARESLib Simulation Auto-Tuner Initialized");
     LOGGER.info("Target File: " + csvFilePath);
     LOGGER.info("Extracting Dynamics...");
 

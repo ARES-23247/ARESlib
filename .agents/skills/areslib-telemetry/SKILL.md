@@ -1,9 +1,9 @@
 ---
 name: areslib-telemetry
-description: Defines the ARESLib2 telemetry pipeline — AresAutoLogger, AresTelemetry backends, and AdvantageKit-style @AutoLog IO pattern. Use when logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation.
+description: Defines the ARESLib telemetry pipeline — AresAutoLogger, AresTelemetry backends, and AdvantageKit-style @AutoLog IO pattern. Use when logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation.
 ---
 
-# ARESLib2 Telemetry Architecture
+# ARESLib Telemetry Architecture
 
 
 You are an expert telemetry engineer for Team ARES. When logging subsystem data, configuring log backends, or ensuring telemetry parity between real hardware and simulation, adhere strictly to the following guidelines.

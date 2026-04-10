@@ -1,6 +1,6 @@
-# Contributing to ARESLib2
+# Contributing to ARESLib
 
-Welcome to ARESLib2, FTC Team's championship-grade Command-Based robot framework! We are excited to have you writing code for the 2026 season.
+Welcome to ARESLib, FTC Team's championship-grade Command-Based robot framework! We are excited to have you writing code for the 2026 season.
 
 This repository isn't just standard Java—it is a simulator-validated, data-logged framework. Writing code here requires understanding a few core design rules. This guide will walk you through them so your code merges cleanly.
 

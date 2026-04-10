@@ -7,8 +7,8 @@ import org.areslib.hardware.interfaces.AresServo;
  * ServoWrapper standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * ServoWrapper}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
- * documentation coverage.
+ * ServoWrapper}. Extracted and compiled as part of the ARESLib Code Audit for missing documentation
+ * coverage.
  */
 public class ServoWrapper implements AresServo {
   private final Servo servo;

@@ -1,13 +1,13 @@
 ---
 name: areslib-drivetrain
-description: Documents the ARESLib2 drivetrain subsystem layer — Swerve, Mecanum, and Differential drive implementations with IO abstraction. Use when configuring drive kinematics, adding new drive types, or tuning odometry.
+description: Documents the ARESLib drivetrain subsystem layer — Swerve, Mecanum, and Differential drive implementations with IO abstraction. Use when configuring drive kinematics, adding new drive types, or tuning odometry.
 ---
 
-# ARESLib2 Drivetrain Subsystems
+# ARESLib Drivetrain Subsystems
 
 
 You are an expert drivetrain engineer for Team ARES. When configuring drive kinematics or tuning odometry, adhere strictly to the following guidelines.
-ARESLib2 supports three drivetrain types, all following the IO abstraction pattern for seamless sim/real switching.
+ARESLib supports three drivetrain types, all following the IO abstraction pattern for seamless sim/real switching.
 
 ## 1. Architecture
 
@@ -47,7 +47,7 @@ public interface AresDrivetrain {
 - Y = left (positive toward your left when standing behind robot)
 - θ = counter-clockwise positive
 
-**PathPlanner and ARESLib2 both use WPILib convention**, so no coordinate conversion is needed.
+**PathPlanner and ARESLib both use WPILib convention**, so no coordinate conversion is needed.
 
 For unit conversions (inches/mm to meters), use `CoordinateUtil`. See the `areslib-architecture` skill.
 

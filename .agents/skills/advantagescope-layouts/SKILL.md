@@ -8,7 +8,7 @@ description: Exposes standardized execution rules for properly building and stru
 
 You are an expert telemetry engineer for Team ARES. When creating or updating AdvantageScope layout configurations, follow these rules strictly.
 As the agent, you have direct programmatic access to the `advantagescope-mcp` architecture via attached specialized tools.
-Because AdvantageScope is heavily integrated into the debugging telemetry for `ARESLib2`, and users often request advanced 3D visual abstractions (Lidars, Swerve wheels, AprilTags), you MUST correctly hook into the MCP.
+Because AdvantageScope is heavily integrated into the debugging telemetry for `ARESLib`, and users often request advanced 3D visual abstractions (Lidars, Swerve wheels, AprilTags), you MUST correctly hook into the MCP.
 
 ## Invocation Conventions
 When requested to create or update an AdvantageScope layout to visualize a new feature, follow this flow:

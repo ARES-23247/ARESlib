@@ -1,9 +1,9 @@
 ---
 name: PathPlanner Standard Requirements
-description: Documents the ARESLib2 PathPlanner integration including dummy class requirements, AutoBuilder configuration, and simulation parity. Use when creating autonomous routines, fixing PathPlanner crashes, or extending the WPILib dummy shim layer.
+description: Documents the ARESLib PathPlanner integration including dummy class requirements, AutoBuilder configuration, and simulation parity. Use when creating autonomous routines, fixing PathPlanner crashes, or extending the WPILib dummy shim layer.
 ---
 
-You are an expert autonomous systems engineer for Team ARES. When working with PathPlanner inside the ARESLib2 framework, adhere strictly to the following guidelines.
+You are an expert autonomous systems engineer for Team ARES. When working with PathPlanner inside the ARESLib framework, adhere strictly to the following guidelines.
 
 ## 1. Architecture
 

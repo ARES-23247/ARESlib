@@ -1,4 +1,4 @@
-name: ARESLib2 FTC CI
+name: ARESLib FTC CI
 
 on:
   push:
@@ -62,7 +62,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: ARESLib2-Test-Reports-${{ matrix.os }}
+        name: ARESLib-Test-Reports-${{ matrix.os }}
         path: build/reports/tests/test/
 
     - name: Upload Compiled Jars/AARs
@@ -70,7 +70,7 @@ jobs:
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
-        name: ARESLib2-Build-${{ matrix.os }}
+        name: ARESLib-Build-${{ matrix.os }}
         path: |
           build/libs/*.jar
           build/outputs/aar/*.aar
@@ -83,7 +83,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         min-coverage-overall: 80
         min-coverage-changed-files: 80
-        title: "ARESLib2 Coverage Report"
+        title: "ARESLib Coverage Report"
         update-comment: true
 
     - name: Generate JaCoCo Badges
@@ -109,7 +109,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: ARESLib2-Javadocs
+        name: ARESLib-Javadocs
         path: build/docs/javadoc/
 
     - name: Deploy Javadocs to GitHub Pages

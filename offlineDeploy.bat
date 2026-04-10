@@ -1,6 +1,6 @@
 @echo off
 echo ==============================================
-echo ARESLib2 Offline Rapid Deployment
+echo ARESLib Offline Rapid Deployment
 echo ==============================================
 echo Bypassing internet resolution and locking daemon...
 

@@ -7,7 +7,7 @@ import org.areslib.hardware.interfaces.AresMotor;
  * CRServoWrapper standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * CRServoWrapper}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * CRServoWrapper}. Extracted and compiled as part of the ARESLib Code Audit for missing
  * documentation coverage.
  */
 public class CRServoWrapper implements AresMotor {

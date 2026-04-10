@@ -1,7 +1,7 @@
-# ARESLib2 — Championship FTC Command Framework
-[![Build & Test](https://github.com/thehomelessguy/ARESLib2/actions/workflows/ci.yml/badge.svg)](https://github.com/thehomelessguy/ARESLib2/actions)
-[![Coverage](https://raw.githubusercontent.com/thehomelessguy/ARESLib2/main/.github/badges/jacoco.svg)](https://github.com/thehomelessguy/ARESLib2/actions/workflows/ci.yml)
-[![Branches](https://raw.githubusercontent.com/thehomelessguy/ARESLib2/main/.github/badges/branches.svg)](https://github.com/thehomelessguy/ARESLib2/actions/workflows/ci.yml)
+# ARESLib — Championship FTC Command Framework
+[![Build & Test](https://github.com/thehomelessguy/ARESLib/actions/workflows/ci.yml/badge.svg)](https://github.com/thehomelessguy/ARESLib/actions)
+[![Coverage](https://raw.githubusercontent.com/thehomelessguy/ARESLib/main/.github/badges/jacoco.svg)](https://github.com/thehomelessguy/ARESLib/actions/workflows/ci.yml)
+[![Branches](https://raw.githubusercontent.com/thehomelessguy/ARESLib/main/.github/badges/branches.svg)](https://github.com/thehomelessguy/ARESLib/actions/workflows/ci.yml)
 
 A professional-grade, Command-Based FTC robot framework with AdvantageKit-style telemetry, dyn4j physics simulation, and PathPlanner integration — built for Einstein.
 
@@ -81,7 +81,7 @@ src/main/java/org/areslib/          # Protected Framework Backend
 
 ## IO Abstraction Pattern
 
-ARESLib2 uses FRC AdvantageKit's IO paradigm. Logic is completely decoupled from hardware through Dependency Injection:
+ARESLib uses FRC AdvantageKit's IO paradigm. Logic is completely decoupled from hardware through Dependency Injection:
 
 ```mermaid
 flowchart TD
@@ -148,7 +148,7 @@ All robot interactions output WPILog telemetry compatible with [AdvantageScope](
 
 ## AI Development Skills
 
-ARESLib2 ships with **21 AI-assistant skill files** in `.agents/skills/` that constrain code generation to framework-correct patterns. Start with the routing table:
+ARESLib ships with **21 AI-assistant skill files** in `.agents/skills/` that constrain code generation to framework-correct patterns. Start with the routing table:
 
 | Skill | Purpose |
 |:------|:--------|

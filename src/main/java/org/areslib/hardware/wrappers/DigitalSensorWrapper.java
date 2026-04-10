@@ -7,7 +7,7 @@ import org.areslib.hardware.interfaces.AresDigitalSensor;
  * DigitalSensorWrapper standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * DigitalSensorWrapper}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * DigitalSensorWrapper}. Extracted and compiled as part of the ARESLib Code Audit for missing
  * documentation coverage.
  */
 public class DigitalSensorWrapper implements AresDigitalSensor {

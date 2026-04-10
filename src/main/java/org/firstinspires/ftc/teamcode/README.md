@@ -1,6 +1,6 @@
 # Teamcode Structure Guide
 
-Welcome to the ARESLib2 Advanced Command-Based Template!
+Welcome to the ARESLib Advanced Command-Based Template!
 
 If you are coming from traditional FTC programming, the structure of this project might look unfamiliar. Instead of writing all your logic procedurally inside a `LinearOpMode`'s `while (opModeIsActive())` loop, we are utilizing the **WPILib Command-based framework**—the industry standard in the FIRST Robotics Competition (FRC).
 

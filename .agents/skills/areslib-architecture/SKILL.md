@@ -1,9 +1,9 @@
 ---
 name: areslib-architecture
-description: Helps write and maintain code mapped to the ARESLib2 FTC framework, detailing coordinate systems, vision fusion architectures, and simulator parity techniques. Use when modifying or adding areslib subsystems, injecting vision offsets, or logging 3D poses natively to AdvantageScope.
+description: Helps write and maintain code mapped to the ARESLib FTC framework, detailing coordinate systems, vision fusion architectures, and simulator parity techniques. Use when modifying or adding areslib subsystems, injecting vision offsets, or logging 3D poses natively to AdvantageScope.
 ---
 
-You are an expert FTC Software Engineer for Team ARES. When asked to create new robot subsystems, commands, or mechanisms for an ARESLib2-based project, adhere strictly to the following architectural guidelines.
+You are an expert FTC Software Engineer for Team ARES. When asked to create new robot subsystems, commands, or mechanisms for an ARESLib-based project, adhere strictly to the following architectural guidelines.
 
 ## 1. Scaffolding Subsystems (IO Abstraction Rule)
 
@@ -36,7 +36,7 @@ Do NOT use raw `telemetry.addData()`; use `AresAutoLogger` / `AresTelemetry`. Se
 
 ## 2. Coordinate System Mapping (CRITICAL)
 
-ARESLib2 bridges two coordinate systems:
+ARESLib bridges two coordinate systems:
 
 | System | Origin | Units | Axis Convention |
 |:---|:---|:---|:---|
@@ -111,7 +111,7 @@ See the `areslib-faults` skill for full patterns.
 
 ## 6. Command Architecture
 
-ARESLib2 uses a WPILib-ported command architecture. Do NOT use `com.arcrobotics.ftclib`:
+ARESLib uses a WPILib-ported command architecture. Do NOT use `com.arcrobotics.ftclib`:
 - Commands from `org.areslib.command`
 - Button bindings via `AresGamepad` and `Trigger`
 - Subsystem requirements via `addRequirements()`
@@ -152,5 +152,5 @@ Unlike standard FRC environments that run OpenJDK (with parallel Garbage Collect
 ### Enforcement Rule (Object Re-use)
 When designing new Odometry layers, kinematics, or background loops:
 *   **NEVER** construct `new Pose2d()`, `new Translation2d()`, or use `.plus() / .minus()` inside the main `execute()` or `periodic()` polling loops.
-*   **ALWAYS** use the ARESLib2 GC-Optimized mutator `.set()` methods to recycle pointer states (e.g. `pose.getTranslation().set(x, y)`). 
-*   **Thread Safety:** Because ARESLib2 operates single-threaded synchronously inside `CommandScheduler`, utilizing `.set()` mutability inside these math objects is completely Thread-Safe.
+*   **ALWAYS** use the ARESLib GC-Optimized mutator `.set()` methods to recycle pointer states (e.g. `pose.getTranslation().set(x, y)`). 
+*   **Thread Safety:** Because ARESLib operates single-threaded synchronously inside `CommandScheduler`, utilizing `.set()` mutability inside these math objects is completely Thread-Safe.

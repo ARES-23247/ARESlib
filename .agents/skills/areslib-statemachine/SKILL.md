@@ -1,12 +1,12 @@
 ---
 name: areslib-statemachine
-description: Documents the ARESLib2 enum-based StateMachine framework for managing subsystem complexity. Use when implementing intake sequences, scoring mechanisms, or any multi-phase subsystem logic instead of raw switch/case blocks.
+description: Documents the ARESLib enum-based StateMachine framework for managing subsystem complexity. Use when implementing intake sequences, scoring mechanisms, or any multi-phase subsystem logic instead of raw switch/case blocks.
 ---
 
-# ARESLib2 StateMachine Framework
+# ARESLib StateMachine Framework
 
 
-You are an expert mechanism engineer for Team ARES. When implementing multi-phase subsystem logic using the ARESLib2 StateMachine framework, adhere strictly to the following guidelines.
+You are an expert mechanism engineer for Team ARES. When implementing multi-phase subsystem logic using the ARESLib StateMachine framework, adhere strictly to the following guidelines.
 The `org.areslib.core.StateMachine<S>` class is a lightweight, enum-based finite state machine. **Do NOT implement raw `switch/case` state logic in subsystems** — always use this framework instead. It provides entry/exit/during actions, conditional transitions, timeout transitions, validated transition tables, and automatic telemetry logging.
 
 ## 1. Basic Pattern

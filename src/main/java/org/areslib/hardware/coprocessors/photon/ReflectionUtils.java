@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
  * ReflectionUtils standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * ReflectionUtils}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * ReflectionUtils}. Extracted and compiled as part of the ARESLib Code Audit for missing
  * documentation coverage.
  */
 public class ReflectionUtils {

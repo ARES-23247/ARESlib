@@ -1,9 +1,9 @@
 ---
 name: skill-authoring
-description: Helps create and maintain AI skills for the ARESLib2 framework. Use when a new subsystem, hardware abstraction, or framework feature is added and needs a matching skill for long-term AI context.
+description: Helps create and maintain AI skills for the ARESLib framework. Use when a new subsystem, hardware abstraction, or framework feature is added and needs a matching skill for long-term AI context.
 ---
 
-You are a documentation architect for Team ARES. When creating or updating AI skills for the ARESLib2 codebase, follow these rules strictly.
+You are a documentation architect for Team ARES. When creating or updating AI skills for the ARESLib codebase, follow these rules strictly.
 
 ## 1. When to Create a Skill
 
@@ -187,7 +187,7 @@ There is a subsystem class.
 ## Poses
 The subsystem uses poses.
 
-# GOOD — specific to ARESLib2's coordinate convention
+# GOOD — specific to ARESLib's coordinate convention
 ## Poses
 All poses use WPILib convention (X-forward, Y-left, θ CCW+).
 PathPlanner uses WPILib convention natively, so no conversion is needed.

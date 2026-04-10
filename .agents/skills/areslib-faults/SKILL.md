@@ -1,9 +1,9 @@
 ---
 name: areslib-faults
-description: Documents the ARESLib2 fault monitoring system — AresAlert, AresFaultManager, and AresDiagnostics. Use when adding hardware health checks, creating subsystem alerts, or implementing pre-match diagnostics.
+description: Documents the ARESLib fault monitoring system — AresAlert, AresFaultManager, and AresDiagnostics. Use when adding hardware health checks, creating subsystem alerts, or implementing pre-match diagnostics.
 ---
 
-# ARESLib2 Fault Monitoring System
+# ARESLib Fault Monitoring System
 
 You are an expert reliability engineer for Team ARES. When implementing hardware health checks, fault monitoring, or pre-match diagnostics, adhere strictly to the following guidelines.
 

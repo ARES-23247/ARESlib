@@ -1,14 +1,14 @@
 ---
 name: areslib-testing
-description: Guidelines for constructing Headless JUnit 5 tests inside the ARESLib2 framework without relying on FTC Android dependencies or RobotCore. Use when verifying subsystem logic, ensuring mock IO classes function mathematically, or testing physics collisions.
+description: Guidelines for constructing Headless JUnit 5 tests inside the ARESLib framework without relying on FTC Android dependencies or RobotCore. Use when verifying subsystem logic, ensuring mock IO classes function mathematically, or testing physics collisions.
 ---
 
 # ARESLib Native Unit Testing
 
 
-You are an expert test engineer for Team ARES. When writing headless JUnit 5 tests for ARESLib2 subsystems, commands, or physics simulations, adhere strictly to the following guidelines.
+You are an expert test engineer for Team ARES. When writing headless JUnit 5 tests for ARESLib subsystems, commands, or physics simulations, adhere strictly to the following guidelines.
 Testing FTC code presents a major hurdle: the standard WPILib and FTC SDK libraries assume you have active `HardwareMap` contexts and Android `Activity` lifecycles running. 
-Because `ARESLib2` fully abstracts hardware via **AdvantageKit IO interfaces**, we can write blazing-fast, 100% headless Java desktop tests that bypass Android entirely!
+Because `ARESLib` fully abstracts hardware via **AdvantageKit IO interfaces**, we can write blazing-fast, 100% headless Java desktop tests that bypass Android entirely!
 
 ## 1. Zero SDK Dependencies 
 NEVER import anything from `com.qualcomm.robotcore.hardware.*` (e.g., `HardwareMap`, `DcMotorEx`) or `org.firstinspires.ftc.robotcore.*` when writing JUnit assertions in the `src/test/java/` directory.

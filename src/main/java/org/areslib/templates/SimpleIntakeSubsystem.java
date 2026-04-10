@@ -6,7 +6,7 @@ import org.areslib.telemetry.AresTelemetry;
 /**
  * STARTER TEMPLATE: Simple intake subsystem with one motor and one sensor.
  *
- * <p>Copy this file into your teamcode package and rename it. This demonstrates the core ARESLib2
+ * <p>Copy this file into your teamcode package and rename it. This demonstrates the core ARESLib
  * patterns:
  *
  * <ul>

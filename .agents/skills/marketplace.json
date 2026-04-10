@@ -1,6 +1,6 @@
 ﻿{
-    "name":  "ARESLib2 Local Skills",
-    "description":  "Local ARESLib2 framework skills for FTC robot development",
+    "name":  "ARESLib Local Skills",
+    "description":  "Local ARESLib framework skills for FTC robot development",
     "plugins":  [
                     {
                         "name":  "advantagescope-hud-sim",

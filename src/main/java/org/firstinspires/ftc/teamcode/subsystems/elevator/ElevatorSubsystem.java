@@ -9,7 +9,7 @@ import org.areslib.telemetry.AresAutoLogger;
  * ElevatorSubsystem standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * ElevatorSubsystem}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * ElevatorSubsystem}. Extracted and compiled as part of the ARESLib Code Audit for missing
  * documentation coverage.
  */
 public class ElevatorSubsystem extends SubsystemBase {

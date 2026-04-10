@@ -6,7 +6,7 @@ import org.areslib.command.SequentialCommandGroup;
 
 /**
  * A dummy implementation of the WPILib Commands factory. This class translates WPILib-style command
- * requests internally into ARESLib2's compatible custom command framework to allow PathPlanner
+ * requests internally into ARESLib's compatible custom command framework to allow PathPlanner
  * configuration mapping without android/WPILib runtime.
  */
 public class Commands {

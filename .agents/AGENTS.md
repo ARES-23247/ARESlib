@@ -1,4 +1,4 @@
-# ARESLib2 Project Rules
+# ARESLib Project Rules
 
 ## 1. Zero Direct Telemetry API Access
 Agents must NEVER call the direct WPILib or FTC standard telemetry apis (e.g. `SmartDashboard.putNumber` or `telemetry.addData()`).

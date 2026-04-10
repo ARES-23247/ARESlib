@@ -1,13 +1,13 @@
 ---
 name: areslib-ci
-description: Defines the GitHub Actions CI/CD pipeline for ARESLib2. Use when configuring automated builds, test runners, or deployment workflows.
+description: Defines the GitHub Actions CI/CD pipeline for ARESLib. Use when configuring automated builds, test runners, or deployment workflows.
 ---
 
-You are an expert DevOps engineer for Team ARES. When configuring CI/CD pipelines, build automation, or test infrastructure for ARESLib2, adhere strictly to the following guidelines.
+You are an expert DevOps engineer for Team ARES. When configuring CI/CD pipelines, build automation, or test infrastructure for ARESLib, adhere strictly to the following guidelines.
 
 ## 1. Architecture
 
-ARESLib2 uses GitHub Actions for continuous integration. The pipeline lives in `.github/workflows/`:
+ARESLib uses GitHub Actions for continuous integration. The pipeline lives in `.github/workflows/`:
 
 ```
 .github/workflows/
@@ -20,7 +20,7 @@ ARESLib2 uses GitHub Actions for continuous integration. The pipeline lives in `
 
 The `ci.yml` workflow triggers on push/PRs to `main` (ignoring markdown changes):
 ```yaml
-name: ARESLib2 FTC CI
+name: ARESLib FTC CI
 on:
   push:
     branches: [ "main" ]
@@ -54,15 +54,15 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ARESLib2-Test-Reports-${{ matrix.os }} # Avoids collision
+          name: ARESLib-Test-Reports-${{ matrix.os }} # Avoids collision
           path: build/reports/tests/test/
 ```
 
 ### Rule B: Use Java 17
-ARESLib2 targets Java 17 (the FTC SDK minimum). Always specify `java-version: '17'` in the setup step. Do not use Java 21 — it introduces bytecode incompatibilities with the FTC runtime.
+ARESLib targets Java 17 (the FTC SDK minimum). Always specify `java-version: '17'` in the setup step. Do not use Java 21 — it introduces bytecode incompatibilities with the FTC runtime.
 
 ### Rule C: Gradle Caching & PMD Annotations
-ARESLib2 leverages `gradle/actions/setup-gradle@v4` for automatic build layer caching. We also enforce code quality natively in PRs using the Reviewdog PMD action and automatic Spotless commits:
+ARESLib leverages `gradle/actions/setup-gradle@v4` for automatic build layer caching. We also enforce code quality natively in PRs using the Reviewdog PMD action and automatic Spotless commits:
 ```yaml
       - name: Apply Code Formatting
         if: matrix.os == 'ubuntu-latest'
@@ -84,7 +84,7 @@ ARESLib2 leverages `gradle/actions/setup-gradle@v4` for automatic build layer ca
 ## 3. Test Configuration
 
 ### Headless Testing
-ARESLib2 tests run headless (no Android, no robot). The `build.gradle` configures this via the `.aar` extraction pipeline. See the `gradle-ftc-desktop` skill for details.
+ARESLib tests run headless (no Android, no robot). The `build.gradle` configures this via the `.aar` extraction pipeline. See the `gradle-ftc-desktop` skill for details.
 
 ### Test Filtering
 Run specific test suites in CI:

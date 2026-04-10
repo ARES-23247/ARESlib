@@ -1,6 +1,6 @@
 ---
 name: areslib
-description: Helps find the right ARESLib2 skill for any task. Use when starting any ARESLib2 work to identify which domain-specific skill to follow.
+description: Helps find the right ARESLib skill for any task. Use when starting any ARESLib work to identify which domain-specific skill to follow.
 ---
 
 You are an expert FTC Software Engineer for Team ARES. Before writing any code, consult this routing table to find the correct domain skill for your task.

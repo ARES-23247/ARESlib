@@ -1,9 +1,9 @@
 ---
 name: areslib-autonomous
-description: Helps build autonomous routines, path following commands, ghost replay systems, and dynamic avoidance in ARESLib2. Use when creating autonomous OpModes, building path sequences, or implementing shoot-on-the-move.
+description: Helps build autonomous routines, path following commands, ghost replay systems, and dynamic avoidance in ARESLib. Use when creating autonomous OpModes, building path sequences, or implementing shoot-on-the-move.
 ---
 
-You are an expert autonomous systems engineer for Team ARES. When building autonomous routines, path following commands, or replay systems for ARESLib2, adhere strictly to the following guidelines.
+You are an expert autonomous systems engineer for Team ARES. When building autonomous routines, path following commands, or replay systems for ARESLib, adhere strictly to the following guidelines.
 
 > **Cross-Reference**: For PathPlanner-specific configuration (dummy shim layer, AutoBuilder setup, FTC coordinate offsets), see the `pathplanner` skill.
 
@@ -35,7 +35,7 @@ CommandScheduler.getInstance().schedule(followCmd);
 ```
 
 ### Rule B: Coordinate System
-ARESLib2 uses **WPILib convention** everywhere (X-forward, Y-left, theta CCW+). PathPlanner also uses WPILib convention natively, so no coordinate conversion is needed between them.
+ARESLib uses **WPILib convention** everywhere (X-forward, Y-left, theta CCW+). PathPlanner also uses WPILib convention natively, so no coordinate conversion is needed between them.
 
 All conversions between internal frames are handled by `CoordinateUtil`. See the `areslib-architecture` skill for the full coordinate guide.
 

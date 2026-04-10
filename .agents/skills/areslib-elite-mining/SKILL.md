@@ -1,13 +1,13 @@
 ---
 name: areslib-elite-mining
-description: Helps ingest, analyze, and port advanced code from World Champion and Elite FRC teams (and top FTC teams) directly into the ARESLib2 architecture. Use when extracting custom trajectory math, state-machine layouts, vision fusion systems, and control frameworks. Validates and translates from specific high-performing repositories like 1690, 254, 6328, 2910, or elite FTC teams.
+description: Helps ingest, analyze, and port advanced code from World Champion and Elite FRC teams (and top FTC teams) directly into the ARESLib architecture. Use when extracting custom trajectory math, state-machine layouts, vision fusion systems, and control frameworks. Validates and translates from specific high-performing repositories like 1690, 254, 6328, 2910, or elite FTC teams.
 ---
 
 You are an expert repository mining engineer for Team ARES. When extracting custom trajectory math, state-machine layouts, vision fusion systems, or control frameworks from Elite FRC or FTC teams, adhere strictly to the following guidelines.
 
-# ARESLib2 Elite Repository Mining Agent
+# ARESLib Elite Repository Mining Agent
 
-This skill dictates how to safely clone, parse, translate, and securely integrate logic from Elite FRC and FTC team implementations into the ARESLib2 infrastructure. Because ARESLib2 utilizes WPILib math, CommandScheduler, and AdvantageKit's `@AutoLog` schema, FRC code maps almost 1:1 into our framework.
+This skill dictates how to safely clone, parse, translate, and securely integrate logic from Elite FRC and FTC team implementations into the ARESLib infrastructure. Because ARESLib utilizes WPILib math, CommandScheduler, and AdvantageKit's `@AutoLog` schema, FRC code maps almost 1:1 into our framework.
 **CRITICAL RULE:** Do NOT under any circumstances use `search_web` tools to find repositories. You must rely EXCLUSIVELY on the static manifest of GitHub URLs provided below. Clone or query these URLs directly.
 
 ## 1. Top Tier Manifest (The Elite Hit List)
@@ -132,10 +132,10 @@ Top-tier teams have notoriously large repositories. Avoid getting lost by anchor
 
 ## 4. Porting Constraints (Absolute Architecture Enforcements)
 
-Extracting elite code is useless if it creates technical debt. Any porting attempt into `ARESLib2` must rigidly comply with the following translations:
+Extracting elite code is useless if it creates technical debt. Any porting attempt into `ARESLib` must rigidly comply with the following translations:
 
-1.  **Dependency Injection Only:** Discard all singletons (e.g. `Drive.getInstance()`) and FTC hardware map singletons (`hardwareMap.get()`). Translate elite calculations to operate entirely inside ARESLib2's `@AutoLog` generic `HardwareIO` interfaces.
-2.  **No Vendor Lock-in API bleed:** Eliminate direct Rev Hub, GoBilda, or standard FTC SDK (`DcMotorEx`) calls from your final ported snippet. Replace them simply with math variables (e.g., Target Volts or System States), passing them downward into ARESLib2's IO layer.
+1.  **Dependency Injection Only:** Discard all singletons (e.g. `Drive.getInstance()`) and FTC hardware map singletons (`hardwareMap.get()`). Translate elite calculations to operate entirely inside ARESLib's `@AutoLog` generic `HardwareIO` interfaces.
+2.  **No Vendor Lock-in API bleed:** Eliminate direct Rev Hub, GoBilda, or standard FTC SDK (`DcMotorEx`) calls from your final ported snippet. Replace them simply with math variables (e.g., Target Volts or System States), passing them downward into ARESLib's IO layer.
 3.  **Strict Variable Formatting:** Nuke legacy `m_` prefixes. Everything must cleanly translate into unannotated `camelCase` parameters standardizing to modern Java layout.
 4.  **Logging Normalization:** Convert `telemetry.addData()` or `FtcDashboard` usages natively into AdvantageKit-style `AresAutoLogger` or `AresTelemetry` outputs.
 5.  **FTC to FRC Math Conversion:** If porting from standard FTC code (like RoadRunner), adapt `Pose2d` to WPILib math standards. If porting from FRC (like 254), leave the WPILib math intact but map it to our simulated `dyn4j` or `AresSimulator` structure if testing is needed.
@@ -143,5 +143,5 @@ Extracting elite code is useless if it creates technical debt. Any porting attem
 ## 5. Exit Validation
 
 Before surfacing the ported architectural snippet up to the user:
-*   Validate `spotlessApply` compliance across the local `ARESLib2` Gradle context.
+*   Validate `spotlessApply` compliance across the local `ARESLib` Gradle context.
 *   Confirm there are no unresolved static imports or FTC SDK blocking errors via `./gradlew build`.

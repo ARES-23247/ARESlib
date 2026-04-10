@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# ARESLib2 Pre-Commit Hook
+# ARESLib Pre-Commit Hook
 
 echo ""
-echo "=== ARESLib2 Pre-commit Hook ==="
+echo "=== ARESLib Pre-commit Hook ==="
 echo "Running Spotless auto-formatting and Unit Tests..."
 echo ""
 

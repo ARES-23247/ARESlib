@@ -5,7 +5,7 @@ import java.util.Optional;
 /**
  * A dummy implementation of the WPILib DriverStation. This class abstracts away the FRC
  * DriverStation dependency and hardcodes standard simulation responses (e.g. Always Enabled, Always
- * Autonomous) so that PathPlanner can execute natively in the ARESLib2 headless environment.
+ * Autonomous) so that PathPlanner can execute natively in the ARESLib headless environment.
  */
 public class DriverStation {
   /** Dummy representation of an FRC Alliance color. */

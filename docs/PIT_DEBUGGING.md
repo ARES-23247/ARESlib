@@ -1,4 +1,4 @@
-# ARESLib2 Pit Debugging Flowchart
+# ARESLib Pit Debugging Flowchart
 
 ## Quick Reference: What To Check When Something Breaks
 

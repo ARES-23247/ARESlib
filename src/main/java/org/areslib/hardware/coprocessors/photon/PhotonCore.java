@@ -42,7 +42,7 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
  * PhotonCore standard implementation.
  *
  * <p>This class provides the core structural components or hardware abstraction for {@code
- * PhotonCore}. Extracted and compiled as part of the ARESLib2 Code Audit for missing
+ * PhotonCore}. Extracted and compiled as part of the ARESLib Code Audit for missing
  * documentation coverage.
  */
 public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications {

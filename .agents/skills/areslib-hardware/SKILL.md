@@ -1,9 +1,9 @@
 ---
 name: areslib-hardware
-description: Documents the ARESLib2 hardware abstraction layer — motor wrappers, sensor wrappers, odometry pods, and coprocessor interfaces. Use when adding new hardware devices, configuring sensor inputs, or building IOReal implementations.
+description: Documents the ARESLib hardware abstraction layer — motor wrappers, sensor wrappers, odometry pods, and coprocessor interfaces. Use when adding new hardware devices, configuring sensor inputs, or building IOReal implementations.
 ---
 
-# ARESLib2 Hardware Abstraction Layer
+# ARESLib Hardware Abstraction Layer
 
 
 You are an expert hardware abstraction engineer for Team ARES. When adding new hardware devices, configuring sensor inputs, or building IOReal implementations, adhere strictly to the following guidelines.

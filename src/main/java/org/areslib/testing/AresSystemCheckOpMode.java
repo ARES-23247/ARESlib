@@ -9,7 +9,7 @@ import org.areslib.hmi.LEDState;
  * Abstract base OpMode for running standardized pre-match hardware system checks.
  *
  * <p>In FRC, pit crews run a "SysCheck" to briefly actuate all mechanisms and verify encoder
- * integrity. ARESLib2 brings this to FTC.
+ * integrity. ARESLib brings this to FTC.
  *
  * <p>By extending this OpMode, teams can define a sequential command that steps through their
  * assemblies (e.g. spin intake, check beam break, lift elevator, read encoder limit).

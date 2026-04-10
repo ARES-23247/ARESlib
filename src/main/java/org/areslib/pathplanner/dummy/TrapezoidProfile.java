@@ -1,7 +1,7 @@
 package org.areslib.pathplanner.dummy;
 
 /**
- * A dummy TrapezoidProfile fallback implementation since ARESLib2 relies on native math profiles.
+ * A dummy TrapezoidProfile fallback implementation since ARESLib relies on native math profiles.
  */
 public class TrapezoidProfile {
   public static class Constraints {
