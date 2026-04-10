@@ -76,7 +76,7 @@ jobs:
           build/outputs/aar/*.aar
 
     - name: Post PR Coverage Annotations
-      uses: madrapps/jacoco-report@v1.6.1
+      uses: madrapps/jacoco-report@v1.7.2
       if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
       with:
         paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
