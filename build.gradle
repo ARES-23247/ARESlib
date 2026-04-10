@@ -115,9 +115,9 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     testImplementation 'com.google.code.gson:gson:2.10.1'
     testImplementation 'com.github.WilliamAHartman:Jamepad:1.4.0'
-    testImplementation 'org.mockito:mockito-core:4.11.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:4.11.0'
-    testImplementation 'org.mockito:mockito-inline:4.11.0'
+    testImplementation 'org.mockito:mockito-core:5.2.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
 
     // Offline SysId tuner (desktop-only, linear algebra regression)
     testImplementation 'org.ejml:ejml-simple:0.44.0'
