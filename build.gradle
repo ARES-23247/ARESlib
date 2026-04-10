@@ -120,8 +120,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:4.11.0'
 
     // Offline SysId tuner (desktop-only, linear algebra regression)
-    testImplementation 'org.ejml:ejml-simple:0.43.1'
-    testImplementation 'org.ejml:ejml-core:0.43.1'
+    testImplementation 'org.ejml:ejml-simple:0.44.0'
+    testImplementation 'org.ejml:ejml-core:0.44.0'
 }
 
 // Automatically unpack AARs at configuration time so the IDE Language Server
