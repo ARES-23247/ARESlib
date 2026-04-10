@@ -26,6 +26,7 @@
               "type": 3,
               "title": "Field Simulation",
               "controller": {
+                "game": "Decode",
                 "sources": [
                   {
                     "type": "gamePiece",

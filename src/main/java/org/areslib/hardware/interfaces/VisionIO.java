@@ -57,6 +57,9 @@ public interface VisionIO {
      * [x,y,z,w,i,j,k] stacked sequentially. Length will be N * 7.
      */
     public double[] rawCameraPoses = new double[0];
+
+    /** Array representing the 3D FOV frustum of the camera. Packed [x,y,z,w,i,j,k,...] */
+    public double[] cameraFovFrustum = new double[0];
   }
 
   /**

@@ -194,6 +194,19 @@ public class VisionIOSim implements VisionIO {
     // Latency
     inputs.latencyMs = config.latencyMs;
     inputs.pipelineIndex = 0;
+
+    // Generate telemetry frustum to visualize camera line-of-sight in sim
+    org.areslib.math.geometry.Pose3d cameraPose =
+        new org.areslib.math.geometry.Pose3d(
+            robotPos.x,
+            robotPos.y,
+            0.20,
+            new org.areslib.math.geometry.Rotation3d(0, 0, cameraHeading));
+    org.areslib.math.geometry.Pose3d[] frustumPoses =
+        org.areslib.core.simulation.FrustumVisualizer.generateFrustum(
+            cameraPose, Math.toDegrees(config.cameraFovRadians), 45.0, config.maxRangeMeters);
+    inputs.cameraFovFrustum =
+        org.areslib.core.simulation.FrustumVisualizer.toFlatArray(frustumPoses);
   }
 
   /**

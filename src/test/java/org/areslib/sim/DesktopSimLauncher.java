@@ -7,8 +7,8 @@ import org.areslib.core.FieldConstants;
 import org.areslib.hardware.interfaces.OdometryIO;
 import org.areslib.hardware.wrappers.AresGamepad;
 import org.areslib.pathplanner.commands.PathPlannerAuto;
+import org.areslib.sim.games.DecodeFieldSim;
 import org.areslib.sim.games.GameSimulation;
-import org.areslib.sim.games.IntoTheDeepSim;
 import org.areslib.sim.games.RobotSimState;
 import org.areslib.subsystems.drive.AresDrivetrain;
 import org.areslib.telemetry.AresTelemetry;
@@ -41,9 +41,9 @@ public class DesktopSimLauncher {
     // Define Custom Spawn Point
     // Physical origin is standard (0,0) in dyn4j/AdvantageScope
     OdometryIO.OdometryInputs odometryInputs = robotContainer.getOdometryInputs();
-    odometryInputs.xMeters = 0.0;
-    odometryInputs.yMeters = 0.0;
-    odometryInputs.headingRadians = 0.0;
+    odometryInputs.xMeters = 1.6;
+    odometryInputs.yMeters = -1.6;
+    odometryInputs.headingRadians = Math.PI / 2.0;
 
     // Initialize dyn4j Physics World
     World<Body> world = new World<>();
@@ -55,7 +55,7 @@ public class DesktopSimLauncher {
         new org.areslib.hardware.interfaces.ArrayLidarIO.ArrayLidarInputs();
 
     // Target active game state logic! Easily interchangeable for Centerstage, Into The Deep, etc.
-    GameSimulation gameSim = new IntoTheDeepSim();
+    GameSimulation gameSim = new DecodeFieldSim();
     gameSim.initField(world);
 
     // Create Primary Robot Rigid Body using named constants from FieldConstants

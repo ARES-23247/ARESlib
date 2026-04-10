@@ -52,6 +52,9 @@ jobs:
         commit_message: "style: auto-format code with spotless"
 
 
+    - name: Compile (pre-check)
+      run: ./gradlew compileJava compileTestJava
+
     - name: Build with Gradle and Coverage
       run: ./gradlew build jacocoTestReport
 
@@ -59,7 +62,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: ARESLib2-Test-Reports
+        name: ARESLib2-Test-Reports-${{ matrix.os }}
         path: build/reports/tests/test/
 
     - name: Upload Compiled Jars/AARs
@@ -67,7 +70,7 @@ jobs:
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
-        name: ARESLib2-Build
+        name: ARESLib2-Build-${{ matrix.os }}
         path: |
           build/libs/*.jar
           build/outputs/aar/*.aar
@@ -78,8 +81,8 @@ jobs:
       with:
         paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
         token: ${{ secrets.GITHUB_TOKEN }}
-        min-coverage-overall: 50
-        min-coverage-changed-files: 60
+        min-coverage-overall: 80
+        min-coverage-changed-files: 80
         title: "ARESLib2 Coverage Report"
         update-comment: true
 
@@ -100,19 +103,16 @@ jobs:
 
     - name: Generate Javadocs
       if: matrix.os == 'ubuntu-latest'
-      continue-on-error: true
       run: ./gradlew javadoc
 
     - name: Upload Javadoc Artifact
       if: matrix.os == 'ubuntu-latest'
-      continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
         name: ARESLib2-Javadocs
         path: build/docs/javadoc/
 
     - name: Deploy Javadocs to GitHub Pages
-      continue-on-error: true
       if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.os == 'ubuntu-latest'
       uses: peaceiris/actions-gh-pages@v3
       with:

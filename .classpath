@@ -160,6 +160,12 @@
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-simple/0.43.1/d900b99e9abc2d4bb3bf29b8b2447f65f251c3f3/ejml-simple-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-simple/0.43.1/14bdcf04ee68dbe6c4b57a7c465ef0c9194417ba/ejml-simple-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/41d55b3c2254de9837b4ec8923cbd371b8a7eab5/opentest4j-1.2.0-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/28c11eb91f9b6d8e200631d46e20a7f407f2a046/opentest4j-1.2.0.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="test"/>
@@ -185,6 +191,48 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.19/261284eb82c0c2280424cabfa00edbb713313217/byte-buddy-agent-1.12.19-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.19/450917cf3b358b691a824acf4c67aa89c826f67e/byte-buddy-agent-1.12.19.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fsparse/0.43.1/1586c3f5bbca7198989e07bdc3efb153df4563ea/ejml-fsparse-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fsparse/0.43.1/a059f579095b9841dbe32113b96450413b401db3/ejml-fsparse-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fdense/0.43.1/6a212f233a86691236294baac3ee50e052caf23c/ejml-fdense-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fdense/0.43.1/97806ca2f8df28a92152edee1cac17577b103582/ejml-fdense-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-dsparse/0.43.1/4350e7ab2f7674c8ff6c29df4a58d2dec6f874d9/ejml-dsparse-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-dsparse/0.43.1/bb2e0d4410799f3e4f2ca6e1b870f2693f9f7ca3/ejml-dsparse-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-ddense/0.43.1/422158a55cf12c82de98c5df0c4e7ccf13444e05/ejml-ddense-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-ddense/0.43.1/a74df7b79121914a6921194b9a39d6c0a73b7744/ejml-ddense-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-cdense/0.43.1/11463e5e03f16609c27ed4993a91ccc0c19c1359/ejml-cdense-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-cdense/0.43.1/7be7e81513c630637fa97f621c6b076712e1ffb/ejml-cdense-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-zdense/0.43.1/adfe4f983eb136a571d83508691d120df485302e/ejml-zdense-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-zdense/0.43.1/5b8b11fd46abafe095c37e7926896adccd58277e/ejml-zdense-0.43.1.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="test"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-core/0.43.1/dc8cfb8504de7c117d944fb7dfdece414a2d680a/ejml-core-0.43.1-sources.jar" kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-core/0.43.1/378837ef010fedab1a8c25f19079503aaf054a81/ejml-core-0.43.1.jar">
 		<attributes>
 			<attribute name="gradle_used_by_scope" value="test"/>
 			<attribute name="test" value="true"/>

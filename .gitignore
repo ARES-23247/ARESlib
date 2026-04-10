@@ -17,6 +17,9 @@ build/
 # Log files
 *.log
 
+# Build debug artifacts
+build_*.txt
+
 # Temporary debugging and testing files
 test*.txt
 test*.gradle
@@ -28,5 +31,6 @@ tmp_pedro_core/
 
 # Added for template
 .gemini/
+.claude/
 tmp/
 bin/

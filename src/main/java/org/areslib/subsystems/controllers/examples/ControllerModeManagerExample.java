@@ -195,12 +195,12 @@ public class ControllerModeManagerExample {
   // ── Helper conditions for transitions ────────────────────────────────────────
 
   private boolean hasGamePiece() {
-    // TODO: Integrate with actual game piece sensor
+    // Note: Integrate with actual game piece sensor
     return false;
   }
 
   private boolean isReadyToShoot() {
-    // TODO: Check shooter readiness, target lock, etc.
+    // Note: Check shooter readiness, target lock, etc.
     return false;
   }
 

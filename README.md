@@ -41,13 +41,15 @@ You don't need to understand the whole framework. Here are the 4 things that mat
 |:--------|:------------|
 | **Physics Simulation** | Full dyn4j rigid-body contact physics with field boundaries, game piece interaction, and collision logging to AdvantageScope |
 | **Dynamic Pathing** | PathPlanner trajectory generation with automated obstacle avoidance |
-| **Ghost Mode** | Serialized teleop JSON macros for auto-recording and flawless re-playback |
+| **Ghost Mode** | CSV-based teleop macros with lock-free background recording and deterministic re-playback |
 | **Shoot-on-the-Move** | Feedforward kinematic aim calculators with target leading |
 | **State Machines** | Enum-based state machines with timed transitions, entry/exit actions, and timeout fallbacks |
 | **Automated SysId** | Standardized quasistatic and dynamic WPILog routines to extract kS, kV, kA feedforwards |
 | **Fault Management** | `AresFaultManager` natively tracks hardware alerts, broadcasts to AdvantageScope, triggers haptic/LED feedback |
-| **Sensor Fusion** | Kalman-inspired vision + odometry blending with confidence gating and angular shortest-path interpolation |
+| **Sensor Fusion** | Vision + odometry blending with confidence gating and angular shortest-path interpolation |
 | **LiDAR Fusion** | Array-based LiDAR raycasting with A* grid injection for real-time obstacle mapping |
+| **Traction Control** | 2D slew rate limiter preventing wheel slip from diagonal acceleration vectors |
+| **SimSysId Tuner** | Offline OLS regression tool for extracting kS/kV/kA constants from SysId data |
 
 ---
 
@@ -67,7 +69,10 @@ src/main/java/org/areslib/          # Protected Framework Backend
 ├── subsystems/                     # SwerveDrive, Mecanum, Differential, Vision, LiDAR
 ├── templates/                      # ★ Starter templates — copy these into your teamcode!
 │   ├── SimpleIntakeSubsystem.java  # IO pattern + motor + sensor
-│   └── BasicMecanumAuto.java       # PathPlanner + 3 waypoints
+│   ├── BasicMecanumAuto.java       # PathPlanner + 3 waypoints
+│   ├── FlywheelIO.java / Sim       # Shooter/roller/spinner template
+│   ├── LinearMechanismIO.java / Sim # Elevator/slide/lift template
+│   └── RotaryMechanismIO.java / Sim # Arm/wrist/pivot template
 ├── teamcode/                       # Example robot code (mecanum, swerve, elevator, auto)
 └── telemetry/                      # AresAutoLogger, AresTelemetry backends
 ```
@@ -107,7 +112,7 @@ Connect AdvantageScope to `localhost:3300` for live telemetry visualization.
 ## Running Tests
 
 ```bash
-# Run all 54 test files
+# Run all 245 test files
 .\gradlew.bat test
 
 # Run with verbose output
@@ -143,11 +148,11 @@ All robot interactions output WPILog telemetry compatible with [AdvantageScope](
 
 ## AI Development Skills
 
-ARESLib2 ships with **19 AI-assistant skill files** in `.agents/skills/` that constrain code generation to framework-correct patterns. Start with the routing table:
+ARESLib2 ships with **21 AI-assistant skill files** in `.agents/skills/` that constrain code generation to framework-correct patterns. Start with the routing table:
 
 | Skill | Purpose |
 |:------|:--------|
-| **`areslib`** | **★ Start here — routing table to all 18 domain skills** |
+| **`areslib`** | **★ Start here — routing table to all 20 domain skills** |
 | `areslib-architecture` | Root rules: IO pattern, coordinate systems, engineering quirks |
 | `areslib-autonomous` | Path following, ghost replay, shoot-on-the-move, avoidance |
 | `areslib-ci` | GitHub Actions CI/CD build pipeline |

@@ -23,7 +23,6 @@ public class DecodeFieldSim {
     worldWrapper.reset(); // Clear old instances
 
     createFieldBounds(worldWrapper);
-    createObelisk(worldWrapper);
     createClassifiers(worldWrapper);
 
     // Spawn default artifact layouts
@@ -59,17 +58,7 @@ public class DecodeFieldSim {
     worldWrapper.addBody(wallRight);
   }
 
-  private static void createObelisk(AresPhysicsWorld worldWrapper) {
-    // The Obelisk is the center structure. We inject a generic static square barrier in the center.
-    // Assuming ~ 0.5m x 0.5m footprint.
-    Body obelisk = new Body();
-    BodyFixture fixture = obelisk.addFixture(Geometry.createRectangle(0.5, 0.5));
-    fixture.setRestitution(0.2); // slight bounce
-    obelisk.translate(0, 0); // Center of the field (assuming (0,0) center layout)
-    obelisk.setMass(MassType.INFINITE);
-    worldWrapper.addBody(obelisk);
-  }
-
+  // Obelisk is outside the active field bounds, so no physics body is needed.
   private static void createClassifiers(AresPhysicsWorld worldWrapper) {
     // Goals (Ramp + Gate) placed generally on the sides or corners.
     // We will represent them as static geometric bounds.
@@ -109,19 +98,36 @@ public class DecodeFieldSim {
   }
 
   private static void spawnArtifacts(AresPhysicsWorld worldWrapper) {
-    // Base coordinate arrays - update these from the latest official DECODE manual (Team Updates)
-    // Currently structured as a sample horizontal array in each alliance wing.
+    // 4 rows of 3 balls (Artifacts) on each side
+    double[] rowsXRed = {0.6, 0.9, 1.2, 1.5};
+    double[] rowsXBlue = {-0.6, -0.9, -1.2, -1.5};
+    double[] colsY = {-0.6, 0.0, 0.6};
 
-    // Red Wing Sample Artifacts
-    double[][] redStaging = {{1.0, 0.5}, {1.0, 0.0}, {1.0, -0.5}};
-    for (double[] pos : redStaging) {
-      spawnArtifact(worldWrapper, pos[0], pos[1]);
+    // Spawn Red Side Artifacts
+    for (double x : rowsXRed) {
+      for (double y : colsY) {
+        spawnArtifact(worldWrapper, x, y);
+      }
     }
 
-    // Blue Wing Sample Artifacts
-    double[][] blueStaging = {{-1.0, 0.5}, {-1.0, 0.0}, {-1.0, -0.5}};
-    for (double[] pos : blueStaging) {
-      spawnArtifact(worldWrapper, pos[0], pos[1]);
+    // Spawn Blue Side Artifacts
+    for (double x : rowsXBlue) {
+      for (double y : colsY) {
+        spawnArtifact(worldWrapper, x, y);
+      }
     }
+
+    // Staging the 3 starting preloads per robot.
+    // Usually held by the robot, but for physics accuracy, we drop them near typical starting
+    // zones.
+    // Red Alliance Preloads (assuming Red robot starts near x=1.6, y=-1.5)
+    spawnArtifact(worldWrapper, 1.6, -1.4);
+    spawnArtifact(worldWrapper, 1.6, -1.5);
+    spawnArtifact(worldWrapper, 1.6, -1.6);
+
+    // Blue Alliance Preloads (assuming Blue robot starts near x=-1.6, y=1.5)
+    spawnArtifact(worldWrapper, -1.6, 1.4);
+    spawnArtifact(worldWrapper, -1.6, 1.5);
+    spawnArtifact(worldWrapper, -1.6, 1.6);
   }
 }
