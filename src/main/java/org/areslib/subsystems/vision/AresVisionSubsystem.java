@@ -198,27 +198,6 @@ public class AresVisionSubsystem extends SubsystemBase {
     return new double[] {fallbackStd, fallbackStd, fallbackStd * 2.0};
   }
 
-  /**
-   * Calculates trust coefficient dynamically based on AprilTag latency and visible surface area.
-   *
-   * @return Raw confidence scale (0.0 to 1.0)
-   * @deprecated Use {@link #getVisionMeasurementStdDevs(double)} for dynamic, distance-based elite
-   *     odometry fusion.
-   */
-  @Deprecated
-  public double getPoseConfidence() {
-    if (!inputs.hasTarget) return 0.0;
-
-    // Sanity Check 3: Is it way too small/ambiguous?
-    // If the target consumes less than our minimum threshold, we don't trust it enough to blend.
-    if (inputs.ta < minTargetAreaPercent) return 0.0;
-
-    // Simple heuristic: larger area = higher confidence. Cap at 1.0.
-    // A single tag taking up > maxTrustAreaPercent is very clear and close.
-    double confidence = inputs.ta / maxTrustAreaPercent;
-    return Math.min(confidence, 1.0);
-  }
-
   public void setPipeline(int index) {
     io.setPipeline(index);
   }

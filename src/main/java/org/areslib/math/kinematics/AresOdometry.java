@@ -50,10 +50,12 @@ public class AresOdometry {
     double dx = speeds.vxMetersPerSecond * dtSeconds;
     double dy = speeds.vyMetersPerSecond * dtSeconds;
 
-    Translation2d deltaTranslation;
+    double deltaX;
+    double deltaY;
     if (Math.abs(dtheta) < 1E-9) {
       // Straight line
-      deltaTranslation = new Translation2d(dx, dy);
+      deltaX = dx;
+      deltaY = dy;
     } else {
       // Arc
       double sinTheta = Math.sin(dtheta);
@@ -62,14 +64,20 @@ public class AresOdometry {
       double s = sinTheta / dtheta;
       double c = (1.0 - cosTheta) / dtheta;
 
-      deltaTranslation = new Translation2d(dx * s - dy * c, dx * c + dy * s);
+      deltaX = dx * s - dy * c;
+      deltaY = dx * c + dy * s;
     }
 
     // Rotate the delta according to the previous heading to get field-centric changes
-    Translation2d fieldDelta = deltaTranslation.rotateBy(m_previousAngle);
+    double pCos = m_previousAngle.getCos();
+    double pSin = m_previousAngle.getSin();
+    double fieldDeltaX = deltaX * pCos - deltaY * pSin;
+    double fieldDeltaY = deltaX * pSin + deltaY * pCos;
 
-    // Update global pose
-    m_pose = new Pose2d(m_pose.getTranslation().plus(fieldDelta), gyroAngle);
+    // Update global pose (we still allocate one new Pose2d so callers don't get aliased references)
+    m_pose =
+        new Pose2d(
+            new Translation2d(m_pose.getX() + fieldDeltaX, m_pose.getY() + fieldDeltaY), gyroAngle);
     m_previousAngle = gyroAngle;
 
     return m_pose;

@@ -43,19 +43,24 @@ public final class VisionFusionHelper {
       return currentEstimate; // Measurement is too old or buffer empty.
     }
 
-    // Calculate the difference between what Odometry thought and what Vision measured at t.
-    Pose2d transform = visionRobotPoseMeters.relativeTo(sample);
+    // Correct mathematical interpolation: The difference must be taken in global field coordinates.
+    // The previous implementation used relativeTo() which mixed robot-relative errors with
+    // field-relative sample origins.
+    double xError = visionRobotPoseMeters.getX() - sample.getX();
+    double yError = visionRobotPoseMeters.getY() - sample.getY();
+    double thetaError =
+        visionRobotPoseMeters.getRotation().getRadians() - sample.getRotation().getRadians();
 
-    double xError = transform.getX();
-    double yError = transform.getY();
-    double thetaError = transform.getRotation().getRadians();
+    // Standardize theta error to -PI to PI
+    while (thetaError < -Math.PI) thetaError += 2.0 * Math.PI;
+    while (thetaError > Math.PI) thetaError -= 2.0 * Math.PI;
 
     // Dampen the correction using configured trust values
     double kX = 1.0 / (1.0 + visionStdDevs[0]);
     double kY = 1.0 / (1.0 + visionStdDevs[1]);
     double kTheta = 1.0 / (1.0 + visionStdDevs[2]);
 
-    // Synthesize the corrected pose AT the measurement timestamp
+    // Synthesize the corrected pose AT the measurement timestamp (1 new object)
     Pose2d correctedRetroPose =
         new Pose2d(
             sample.getX() + xError * kX,

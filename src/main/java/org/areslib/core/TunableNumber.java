@@ -92,18 +92,6 @@ public class TunableNumber {
   }
 
   /**
-   * Returns true if the value has changed since the last call. Convenience overload for single-
-   * consumer usage.
-   *
-   * @return True if the value changed.
-   * @deprecated Use {@link #hasChanged(int)} for multi-consumer safety.
-   */
-  @Deprecated
-  public boolean hasChanged() {
-    return hasChanged(0);
-  }
-
-  /**
    * Returns the default value this tunable was constructed with.
    *
    * @return The default value.

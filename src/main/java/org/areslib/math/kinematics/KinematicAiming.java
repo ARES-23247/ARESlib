@@ -54,10 +54,9 @@ public class KinematicAiming {
       Translation2d targetPosition,
       double projectileSpeedMetersPerSec) {
 
-    // Relative distance vector D from robot to target
-    Translation2d distanceVec = targetPosition.minus(robotPosition);
-    double dx = distanceVec.getX();
-    double dy = distanceVec.getY();
+    // Relative distance vector dx, dy from robot to target
+    double dx = targetPosition.getX() - robotPosition.getX();
+    double dy = targetPosition.getY() - robotPosition.getY();
 
     // Robot velocity components
     double vx = robotVelocityFieldRelative.vxMetersPerSecond;
@@ -79,19 +78,19 @@ public class KinematicAiming {
     if (Math.abs(a) < 1e-6) {
       // Projectile speed is exactly equal to robot speed. Linear fallback.
       if (Math.abs(b) < 1e-6) {
-        return noValidSolution(distanceVec, robotPosition);
+        return noValidSolution(dx, dy, robotPosition);
       }
       double t = -c / b;
       if (t > 0) {
-        return buildResult(t, distanceVec, vx, vy, robotPosition);
+        return buildResult(t, dx, dy, vx, vy, robotPosition);
       }
-      return noValidSolution(distanceVec, robotPosition);
+      return noValidSolution(dx, dy, robotPosition);
     }
 
     double discriminant = b * b - 4 * a * c;
     if (discriminant < 0) {
       // No real roots -> target is unreachable at this speed
-      return noValidSolution(distanceVec, robotPosition);
+      return noValidSolution(dx, dy, robotPosition);
     }
 
     // Find the smallest positive root for time of flight
@@ -110,32 +109,33 @@ public class KinematicAiming {
 
     if (t <= 0) {
       // Impossible to hit in the future
-      return noValidSolution(distanceVec, robotPosition);
+      return noValidSolution(dx, dy, robotPosition);
     }
 
-    return buildResult(t, distanceVec, vx, vy, robotPosition);
+    return buildResult(t, dx, dy, vx, vy, robotPosition);
   }
 
   private static AimResult buildResult(
-      double t, Translation2d distanceVec, double vx, double vy, Translation2d robotPos) {
+      double t, double dx, double dy, double vx, double vy, Translation2d robotPos) {
     // The point we need to aim at is where the target *will be* relative to the robot's frame if
     // the robot were stationary.
     // Virtual target = Actual Target - (Robot Velocity * Time of Flight)
-    double virtualX = distanceVec.getX() - (vx * t);
-    double virtualY = distanceVec.getY() - (vy * t);
+    double virtualX = dx - (vx * t);
+    double virtualY = dy - (vy * t);
 
-    Translation2d virtualVec = new Translation2d(virtualX, virtualY);
     Rotation2d requiredYaw = new Rotation2d(virtualX, virtualY);
 
     // Offset back to world coordinates for the virtual target output
-    Translation2d virtualWorldTarget = robotPos.plus(virtualVec);
+    Translation2d virtualWorldTarget =
+        new Translation2d(robotPos.getX() + virtualX, robotPos.getY() + virtualY);
 
     return new AimResult(requiredYaw, virtualWorldTarget, t, true);
   }
 
-  private static AimResult noValidSolution(Translation2d distanceVec, Translation2d robotPos) {
+  private static AimResult noValidSolution(double dx, double dy, Translation2d robotPos) {
     // Fallback: aim directly at the true target
-    Rotation2d directYaw = new Rotation2d(distanceVec.getX(), distanceVec.getY());
-    return new AimResult(directYaw, robotPos.plus(distanceVec), 0.0, false);
+    Rotation2d directYaw = new Rotation2d(dx, dy);
+    return new AimResult(
+        directYaw, new Translation2d(robotPos.getX() + dx, robotPos.getY() + dy), 0.0, false);
   }
 }
