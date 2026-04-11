@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -26,6 +28,7 @@ public class RlogServerBackend implements AresLoggerBackend {
   private final List<byte[]> startRecordsCache = new ArrayList<>();
   private final Map<Integer, byte[]> schemaDataCache = new HashMap<>();
   private final List<SocketClient> clients = new CopyOnWriteArrayList<>();
+  private final BlockingQueue<byte[]> sendQueue = new ArrayBlockingQueue<>(100);
 
   private int nextEntryId = 1;
   private final long startTimeMicrosec;
@@ -148,6 +151,37 @@ public class RlogServerBackend implements AresLoggerBackend {
             });
     serverThread.setDaemon(true);
     serverThread.start();
+
+    Thread senderThread =
+        new Thread(
+            () -> {
+              while (!Thread.currentThread().isInterrupted()) {
+                try {
+                  byte[] payload = sendQueue.take();
+                  List<SocketClient> failedClients = null;
+                  for (SocketClient sc : clients) {
+                    try {
+                      sc.sendFramed(payload);
+                    } catch (IOException e) {
+                      try {
+                        sc.socket.close();
+                      } catch (Exception ignored) {
+                        com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
+                      }
+                      if (failedClients == null) failedClients = new ArrayList<>();
+                      failedClients.add(sc);
+                    }
+                  }
+                  if (failedClients != null) {
+                    clients.removeAll(failedClients);
+                  }
+                } catch (InterruptedException e) {
+                  Thread.currentThread().interrupt();
+                }
+              }
+            });
+    senderThread.setDaemon(true);
+    senderThread.start();
   }
 
   private void ensureCapacity(int neededBytes) {
@@ -340,22 +374,12 @@ public class RlogServerBackend implements AresLoggerBackend {
     cycleBuffer.flip();
     cycleBuffer.get(payload);
 
-    List<SocketClient> failedClients = null;
-    for (SocketClient sc : clients) {
-      try {
-        sc.sendFramed(payload);
-      } catch (IOException e) {
-        try {
-          sc.socket.close();
-        } catch (Exception ignored) {
-          com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(ignored));
-        }
-        if (failedClients == null) failedClients = new ArrayList<>();
-        failedClients.add(sc);
-      }
-    }
-    if (failedClients != null) {
-      clients.removeAll(failedClients);
+    if (!sendQueue.offer(payload)) {
+      com.qualcomm.robotcore.util.RobotLog.w(
+          "RLOG WARNING: Send queue full, dropping oldest telemetry frame "
+              + "to maintain 20ms loop performance.");
+      sendQueue.poll(); // drop oldest
+      sendQueue.offer(payload);
     }
 
     cycleBuffer.clear();

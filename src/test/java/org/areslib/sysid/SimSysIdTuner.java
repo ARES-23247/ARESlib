@@ -69,8 +69,12 @@ public class SimSysIdTuner {
    *     HD Hex = ~0.018.
    * @param resistance Motor internal resistance in Ohms. GoBilda 5202 = ~5.0, REV HD Hex = ~7.0.
    */
-  public static void solveForSimConstants(
-      String csvFilePath, double gearing, double torqueConstant, double resistance) {
+  public static SysIdResult solveForSimConstants(
+      String csvFilePath,
+      double gearing,
+      double torqueConstant,
+      double resistance,
+      String jsonOutputPath) {
     LOGGER.info("==========================================");
     LOGGER.info("ARESLib Simulation Auto-Tuner Initialized");
     LOGGER.info("Target File: " + csvFilePath);
@@ -81,7 +85,7 @@ public class SimSysIdTuner {
 
       if (data.size() < 10) {
         LOGGER.warning("[ERROR] Insufficient data points found (" + data.size() + " < 10).");
-        return;
+        return null;
       }
 
       LOGGER.info("Extracted " + data.size() + " telemetry frames.");
@@ -113,7 +117,7 @@ public class SimSysIdTuner {
       if (Math.abs(xtx.determinant()) < 1e-10) {
         LOGGER.warning("[ERROR] Dataset mathematically singular. Cannot perform regression.");
         LOGGER.warning("This usually means the motor didn't move enough during the test.");
-        return;
+        return null;
       }
 
       SimpleMatrix beta = xtx.invert().mult(xt).mult(y);
@@ -141,8 +145,39 @@ public class SimSysIdTuner {
       LOGGER.info(String.format("  public static final double SIM_MOI = %.5f;", calcMOI));
       LOGGER.info("==========================================");
 
+      if (jsonOutputPath != null && !jsonOutputPath.isEmpty()) {
+        String json =
+            String.format(
+                "{\n  \"kS\": %.5f,\n  \"kV\": %.5f,\n  \"kA\": %.5f,\n  \"simMOI\": %.5f\n}",
+                Math.abs(kS), Math.abs(kV), Math.abs(kA), calcMOI);
+        try {
+          Files.write(Paths.get(jsonOutputPath), json.getBytes(StandardCharsets.UTF_8));
+          LOGGER.info("Wrote SysId constants to: " + jsonOutputPath);
+        } catch (IOException e) {
+          LOGGER.warning("[ERROR] Failed to write JSON output: " + e.getMessage());
+        }
+      }
+
+      return new SysIdResult(Math.abs(kS), Math.abs(kV), Math.abs(kA), calcMOI);
+
     } catch (IOException e) {
       LOGGER.log(Level.SEVERE, "[ERROR] Failed to read CSV file.", e);
+      return null;
+    }
+  }
+
+  /** Container for SysId regression results. */
+  public static class SysIdResult {
+    public final double kS;
+    public final double kV;
+    public final double kA;
+    public final double simMOI;
+
+    public SysIdResult(double kS, double kV, double kA, double simMOI) {
+      this.kS = kS;
+      this.kV = kV;
+      this.kA = kA;
+      this.simMOI = simMOI;
     }
   }
 
@@ -187,7 +222,8 @@ public class SimSysIdTuner {
     //     "/sdcard/FIRST/sysid/sysid_drive_2026-04-10.csv",
     //     3.7,     // gear ratio (motor:output)
     //     0.025,   // Kt for GoBilda 5202 in N*m/A
-    //     5.0      // Motor resistance in Ohms
+    //     5.0,     // Motor resistance in Ohms
+    //     "src/main/deploy/sysid_drive.json" // Output JSON
     // );
     //
     // For REV HD Hex motors:
@@ -195,7 +231,8 @@ public class SimSysIdTuner {
     //     "/sdcard/FIRST/sysid/sysid_arm_2026-04-10.csv",
     //     20.0,    // gear ratio (typical arm gearbox)
     //     0.018,   // Kt for REV HD Hex
-    //     7.0      // Motor resistance
+    //     7.0,     // Motor resistance
+    //     "src/main/deploy/sysid_arm.json"
     // );
 
     LOGGER.info("SimSysIdTuner ready. Uncomment the above template with your values.");

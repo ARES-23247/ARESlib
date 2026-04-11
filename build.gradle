@@ -316,3 +316,97 @@ task generateControllerMappings {
     }
 }
 project.compileJava.dependsOn(generateControllerMappings)
+
+task generateMechanism {
+    description = "Generates ARESLib Subsystem scaffolding. Usage: ./gradlew generateMechanism -Pname=MySubsystem"
+    doLast {
+        if (!project.hasProperty('mechName')) {
+            throw new GradleException("You must provide a subsystem name. Usage: ./gradlew generateMechanism -PmechName=Elevator")
+        }
+
+        def subName = project.property('mechName')
+        def baseDir = file("src/main/java/org/areslib/subsystems/${subName.toLowerCase()}")
+        baseDir.mkdirs()
+
+        def subsystemFile = new File(baseDir, "${subName}Subsystem.java")
+        def ioFile = new File(baseDir, "${subName}IO.java")
+        def ioRealFile = new File(baseDir, "${subName}IOReal.java")
+        def ioSimFile = new File(baseDir, "${subName}IOSim.java")
+
+        subsystemFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
+
+import org.areslib.command.Subsystem;
+import org.areslib.telemetry.AresAutoLogger;
+
+public class ${subName}Subsystem extends Subsystem {
+  private final ${subName}IO io;
+  private final ${subName}IO.AutoLog_${subName}Inputs inputs = new ${subName}IO.AutoLog_${subName}Inputs();
+
+  public ${subName}Subsystem(${subName}IO io) {
+    this.io = io;
+  }
+
+  @Override
+  public void update() {
+    io.updateInputs(inputs);
+  }
+}
+"""
+
+        ioFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
+
+import org.areslib.telemetry.AresLoggableInputs;
+
+public interface ${subName}IO {
+  class AutoLog_${subName}Inputs implements AresLoggableInputs {
+    public double positionRad = 0.0;
+    public double velocityRadPerSec = 0.0;
+    public double appliedVolts = 0.0;
+    public double currentAmps = 0.0;
+  }
+
+  default void updateInputs(AutoLog_${subName}Inputs inputs) {}
+  default void setVoltage(double volts) {}
+}
+"""
+
+        ioRealFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
+
+public class ${subName}IOReal implements ${subName}IO {
+  public ${subName}IOReal() {
+    // Initialize real hardware here
+  }
+
+  @Override
+  public void updateInputs(AutoLog_${subName}Inputs inputs) {
+    // Read hardware
+  }
+
+  @Override
+  public void setVoltage(double volts) {
+    // Write hardware
+  }
+}
+"""
+
+        ioSimFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
+
+public class ${subName}IOSim implements ${subName}IO {
+  public ${subName}IOSim() {
+    // Initialize simulation models here
+  }
+
+  @Override
+  public void updateInputs(AutoLog_${subName}Inputs inputs) {
+    // Read sim state
+  }
+
+  @Override
+  public void setVoltage(double volts) {
+    // Write sim state
+  }
+}
+"""
+        println "Generated scaffolding for ${subName} in org.areslib.subsystems.${subName.toLowerCase()}"
+    }
+}
