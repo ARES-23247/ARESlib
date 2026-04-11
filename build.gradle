@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'eclipse'
-    id 'com.diffplug.spotless' version '6.11.0'
+    id 'com.diffplug.spotless' version '8.4.0'
     id 'jacoco'
     id 'checkstyle'
     id 'pmd'
