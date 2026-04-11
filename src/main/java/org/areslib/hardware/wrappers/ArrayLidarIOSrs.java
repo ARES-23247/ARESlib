@@ -1,5 +1,6 @@
 package org.areslib.hardware.wrappers;
 
+import com.qualcomm.robotcore.util.RobotLog;
 import java.lang.reflect.Method;
 import org.areslib.hardware.AresHardwareManager;
 import org.areslib.hardware.interfaces.ArrayLidarIO;
@@ -35,12 +36,15 @@ public class ArrayLidarIOSrs implements ArrayLidarIO {
         } catch (Exception e) {
           try {
             this.getLidarZoneArrayMethod = clazz.getMethod("getVl53l5cxDistances", int.class);
-          } catch (Exception ignored) {
-            // Ignored
+          } catch (Exception e2) {
+            RobotLog.addGlobalWarningMessage(
+                "ARESLib: Failed to map Array Lidar methods on SRS Hub. Returning empty arrays. "
+                    + e2.getMessage());
           }
         }
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e3) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to access SRS Hub class for Lidar mapping: " + e3.getMessage());
       }
     }
   }
@@ -75,8 +79,9 @@ public class ArrayLidarIOSrs implements ArrayLidarIO {
             inputs.distanceZonesMm[i] = arr[i];
           }
         }
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to invoke Array Lidar inputs from SRS Hub: " + e.getMessage());
       }
     }
   }

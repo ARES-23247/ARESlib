@@ -1,5 +1,6 @@
 package org.areslib.hardware.wrappers;
 
+import com.qualcomm.robotcore.util.RobotLog;
 import java.lang.reflect.Method;
 import org.areslib.hardware.AresHardwareManager;
 import org.areslib.hardware.interfaces.AresColorSensor;
@@ -35,8 +36,9 @@ public class AresSrsColorSensor implements AresColorSensor {
         this.getGreenMethod = clazz.getMethod("getColorGreen", int.class);
         this.getBlueMethod = clazz.getMethod("getColorBlue", int.class);
         this.getAlphaMethod = clazz.getMethod("getColorAlpha", int.class);
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to map SRS color sensor methods. Returning 0. " + e.getMessage());
       }
     }
   }
@@ -46,8 +48,9 @@ public class AresSrsColorSensor implements AresColorSensor {
     if (getRedMethod != null) {
       try {
         return ((Number) getRedMethod.invoke(srsHub, port)).intValue();
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to invoke SRS color sensor getRed: " + e.getMessage());
       }
     }
     return 0;
@@ -58,8 +61,9 @@ public class AresSrsColorSensor implements AresColorSensor {
     if (getGreenMethod != null) {
       try {
         return ((Number) getGreenMethod.invoke(srsHub, port)).intValue();
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to invoke SRS color sensor getGreen: " + e.getMessage());
       }
     }
     return 0;
@@ -70,8 +74,9 @@ public class AresSrsColorSensor implements AresColorSensor {
     if (getBlueMethod != null) {
       try {
         return ((Number) getBlueMethod.invoke(srsHub, port)).intValue();
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to invoke SRS color sensor getBlue: " + e.getMessage());
       }
     }
     return 0;
@@ -82,8 +87,9 @@ public class AresSrsColorSensor implements AresColorSensor {
     if (getAlphaMethod != null) {
       try {
         return ((Number) getAlphaMethod.invoke(srsHub, port)).intValue();
-      } catch (Exception ignored) {
-        // Ignored
+      } catch (Exception e) {
+        RobotLog.addGlobalWarningMessage(
+            "ARESLib: Failed to invoke SRS color sensor getAlpha: " + e.getMessage());
       }
     }
     return 0;

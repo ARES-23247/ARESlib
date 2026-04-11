@@ -1,5 +1,6 @@
 package org.areslib.hardware.wrappers;
 
+import com.qualcomm.robotcore.util.RobotLog;
 import org.areslib.hardware.AresHardwareManager;
 import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
 import org.areslib.hardware.interfaces.AresAnalogSensor;
@@ -29,6 +30,8 @@ public class AresSrsSensor implements AresAbsoluteEncoder, AresAnalogSensor, Are
     try {
       return activeSrsHub.readEncoder(port).position;
     } catch (Exception e) {
+      RobotLog.addGlobalWarningMessage(
+          "ARESLib: AresSrsSensor getPosition failed for port " + port + ": " + e.getMessage());
       return 0.0;
     }
   }
@@ -39,6 +42,8 @@ public class AresSrsSensor implements AresAbsoluteEncoder, AresAnalogSensor, Are
     try {
       return activeSrsHub.readEncoder(port).velocity;
     } catch (Exception e) {
+      RobotLog.addGlobalWarningMessage(
+          "ARESLib: AresSrsSensor getVelocity failed for port " + port + ": " + e.getMessage());
       return 0.0;
     }
   }
@@ -60,6 +65,8 @@ public class AresSrsSensor implements AresAbsoluteEncoder, AresAnalogSensor, Are
       // SRSHub returns a 0.0 to 1.0 ratio, multiply by 3.3 for standard analog voltage
       return activeSrsHub.readAnalogDigitalDevice(port) * 3.3;
     } catch (Exception e) {
+      RobotLog.addGlobalWarningMessage(
+          "ARESLib: AresSrsSensor getVoltage failed for port " + port + ": " + e.getMessage());
       return 0.0;
     }
   }
@@ -70,6 +77,8 @@ public class AresSrsSensor implements AresAbsoluteEncoder, AresAnalogSensor, Are
     try {
       return activeSrsHub.readAnalogDigitalDevice(port) > 0.5;
     } catch (Exception e) {
+      RobotLog.addGlobalWarningMessage(
+          "ARESLib: AresSrsSensor getState failed for port " + port + ": " + e.getMessage());
       return false;
     }
   }

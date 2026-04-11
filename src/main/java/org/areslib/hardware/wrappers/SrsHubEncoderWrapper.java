@@ -1,16 +1,17 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 import java.lang.reflect.Method;
 import org.areslib.hardware.interfaces.AresAbsoluteEncoder;
 
 /** Optional Wrapper for the SRSHub driver using reflection. */
 public class SrsHubEncoderWrapper implements AresAbsoluteEncoder {
 
-  private final Object srsHubDevice;
-  private final int channelIndex;
-  private final Method getEncoderPositionMethod;
-  private final Method getEncoderVelocityMethod;
+  private Object srsHubDevice;
+  private int channelIndex;
+  private Method getEncoderPositionMethod;
+  private Method getEncoderVelocityMethod;
 
   public SrsHubEncoderWrapper(HardwareMap hardwareMap, String deviceName, int channel) {
     this.channelIndex = channel;
@@ -20,8 +21,9 @@ public class SrsHubEncoderWrapper implements AresAbsoluteEncoder {
       this.getEncoderPositionMethod = clazz.getMethod("getEncoderPosition", int.class);
       this.getEncoderVelocityMethod = clazz.getMethod("getEncoderVelocity", int.class);
     } catch (Exception e) {
-      throw new RuntimeException(
-          "ARESlib: Failed to bind to SRSHub driver. Make sure the driver is installed.", e);
+      RobotLog.addGlobalWarningMessage(
+          "ARESlib: Failed to bind to SRSHub driver. Make sure the driver is installed. "
+              + e.getMessage());
     }
   }
 
@@ -31,19 +33,27 @@ public class SrsHubEncoderWrapper implements AresAbsoluteEncoder {
   @Override
   public double getPosition() {
     try {
-      return ((Number) getEncoderPositionMethod.invoke(srsHubDevice, channelIndex)).doubleValue();
+      if (getEncoderPositionMethod != null) {
+        return ((Number) getEncoderPositionMethod.invoke(srsHubDevice, channelIndex)).doubleValue();
+      }
     } catch (Exception e) {
-      throw new RuntimeException("ARESlib: SRSHub getEncoderPosition failed.", e);
+      RobotLog.addGlobalWarningMessage(
+          "ARESlib: SRSHub getEncoderPosition failed: " + e.getMessage());
     }
+    return 0.0;
   }
 
   @Override
   public double getVelocity() {
     try {
-      return ((Number) getEncoderVelocityMethod.invoke(srsHubDevice, channelIndex)).doubleValue();
+      if (getEncoderVelocityMethod != null) {
+        return ((Number) getEncoderVelocityMethod.invoke(srsHubDevice, channelIndex)).doubleValue();
+      }
     } catch (Exception e) {
-      throw new RuntimeException("ARESlib: SRSHub getEncoderVelocity failed.", e);
+      RobotLog.addGlobalWarningMessage(
+          "ARESlib: SRSHub getEncoderVelocity failed: " + e.getMessage());
     }
+    return 0.0;
   }
 
   private double offset = 0.0;

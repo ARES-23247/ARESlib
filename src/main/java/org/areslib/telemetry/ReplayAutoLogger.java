@@ -66,8 +66,6 @@ public class ReplayAutoLogger {
     if (inputs == null) return;
 
     // TODO: This would query the WpiLogReader for the current mock timestamp's entries.
-    // Map<String, Object> tickData =
-    // WpiLogReader.getInstance().getTickData(AresTimer.getFPGATimestamp());
 
     String cacheKey = prefix + "_" + inputs.getClass().getName();
     List<ReplayEntry> entries =
@@ -83,16 +81,8 @@ public class ReplayAutoLogger {
             });
 
     for (int i = 0; i < entries.size(); i++) {
-      // ReplayEntry entry = entries.get(i);
-      // Mock integration hook:
-      // Object historicalData = tickData.get(entry.key);
-      // if (historicalData == null) continue;
-
-      // Example assignment:
-      // entry.field.set(inputs, historicalData);
-
       // Real deserialization requires type casting matching the WPILog format.
-      // Leaving hook available for WPILogReader parity.
+      // Leaving hook open for WPILogReader parity API.
       continue;
     }
   }

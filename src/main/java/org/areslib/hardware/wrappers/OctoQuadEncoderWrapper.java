@@ -1,16 +1,17 @@
 package org.areslib.hardware.wrappers;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 import java.lang.reflect.Method;
 import org.areslib.hardware.interfaces.AresEncoder;
 
 /** Optional Wrapper for the DigitalChickenLabs OctoQuad driver using reflection. */
 public class OctoQuadEncoderWrapper implements AresEncoder {
 
-  private final Object octoQuadDevice;
-  private final int channelIndex;
-  private final Method getSinglePositionMethod;
-  private final Method getSingleVelocityMethod;
+  private Object octoQuadDevice;
+  private int channelIndex;
+  private Method getSinglePositionMethod;
+  private Method getSingleVelocityMethod;
 
   public OctoQuadEncoderWrapper(HardwareMap hardwareMap, String deviceName, int channel) {
     this.channelIndex = channel;
@@ -20,8 +21,9 @@ public class OctoQuadEncoderWrapper implements AresEncoder {
       this.getSinglePositionMethod = clazz.getMethod("getSinglePosition", int.class);
       this.getSingleVelocityMethod = clazz.getMethod("getSingleVelocity", int.class);
     } catch (Exception e) {
-      throw new RuntimeException(
-          "ARESlib: Failed to bind to OctoQuad driver. Make sure the driver is installed.", e);
+      RobotLog.addGlobalWarningMessage(
+          "ARESlib: Failed to bind to OctoQuad driver. Make sure the driver is installed. "
+              + e.getMessage());
     }
   }
 
@@ -31,18 +33,28 @@ public class OctoQuadEncoderWrapper implements AresEncoder {
   @Override
   public double getPosition() {
     try {
-      return ((Number) getSinglePositionMethod.invoke(octoQuadDevice, channelIndex)).doubleValue();
+      if (getSinglePositionMethod != null) {
+        return ((Number) getSinglePositionMethod.invoke(octoQuadDevice, channelIndex))
+            .doubleValue();
+      }
     } catch (Exception e) {
-      throw new RuntimeException("ARESlib: OctoQuad getSinglePosition failed.", e);
+      RobotLog.addGlobalWarningMessage(
+          "ARESlib: OctoQuad getSinglePosition failed: " + e.getMessage());
     }
+    return 0.0;
   }
 
   @Override
   public double getVelocity() {
     try {
-      return ((Number) getSingleVelocityMethod.invoke(octoQuadDevice, channelIndex)).doubleValue();
+      if (getSingleVelocityMethod != null) {
+        return ((Number) getSingleVelocityMethod.invoke(octoQuadDevice, channelIndex))
+            .doubleValue();
+      }
     } catch (Exception e) {
-      throw new RuntimeException("ARESlib: OctoQuad getSingleVelocity failed.", e);
+      RobotLog.addGlobalWarningMessage(
+          "ARESlib: OctoQuad getSingleVelocity failed: " + e.getMessage());
     }
+    return 0.0;
   }
 }
