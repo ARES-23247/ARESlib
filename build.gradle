@@ -12,16 +12,16 @@ plugins {
 
 testlogger {
     theme 'mocha'
-    showExceptions true
-    showStackTraces true
-    showFullStackTraces false
-    showCauses true
-    slowThreshold 2000
-    showSummary true
-    showSimpleNames false
-    showPassed true
-    showSkipped true
-    showFailed true
+    showExceptions = true
+    showStackTraces = true
+    showFullStackTraces = false
+    showCauses = true
+    slowThreshold = 2000
+    showSummary = true
+    showSimpleNames = false
+    showPassed = true
+    showSkipped = true
+    showFailed = true
 }
 
 spotless {
@@ -37,7 +37,7 @@ spotless {
             include '**/*.gradle'
             exclude '**/build/**', '**/build-*/**'
         }
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
@@ -54,7 +54,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         trimTrailingWhitespace()
-        indentWithSpaces(2)
+        leadingTabsToSpaces(2)
         endWithNewline()
     }
 }
@@ -106,9 +106,9 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.brott.dev/' }
-    maven { url 'https://mymaven.bylazar.com/releases' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.brott.dev/' }
+    maven { url = 'https://mymaven.bylazar.com/releases' }
 }
 
 configurations {
@@ -185,9 +185,9 @@ test {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
-        exceptionFormat "full"
-        showCauses true
-        showStackTraces true
+        exceptionFormat = "full"
+        showCauses = true
+        showStackTraces = true
     }
 }
 
