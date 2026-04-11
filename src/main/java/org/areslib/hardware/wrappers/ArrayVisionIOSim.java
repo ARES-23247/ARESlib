@@ -1,5 +1,7 @@
 package org.areslib.hardware.wrappers;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.areslib.hardware.interfaces.OdometryIO;
@@ -16,6 +18,7 @@ public class ArrayVisionIOSim implements VisionIO {
 
   private final Supplier<OdometryIO.OdometryInputs> odometrySupplier;
   private final Random rand = new Random();
+  private final Map<Integer, double[]> arrayPool = new HashMap<>();
 
   // FTC Into The Deep Wall Tag Coordinates (x, y, tag_yaw_facing)
   // Meters + Radians, center-origin coordinate system.
@@ -118,14 +121,14 @@ public class ArrayVisionIOSim implements VisionIO {
       inputs.botPose3d[5] = cr * sp * cy + sr * cp * sy; // Y
       inputs.botPose3d[6] = cr * cp * sy - sr * sp * cy; // Z
 
-      inputs.rawCameraPoses = new double[7];
+      inputs.rawCameraPoses = arrayPool.computeIfAbsent(7, k -> new double[k]);
       System.arraycopy(inputs.botPose3d, 0, inputs.rawCameraPoses, 0, 7);
 
       inputs.ta = Math.max(0.1, 10.0 - (closestDist * 2.0)); // Larger area when closer
       inputs.fiducialCount = 1;
       inputs.latencyMs = 12.5; // Simulate pipeline latency
     } else {
-      inputs.rawCameraPoses = new double[0];
+      inputs.rawCameraPoses = arrayPool.computeIfAbsent(0, k -> new double[k]);
       inputs.fiducialCount = 0;
       inputs.ta = 0;
       inputs.latencyMs = 0;

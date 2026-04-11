@@ -122,7 +122,8 @@ public class AresAutoLogger {
             break;
         }
       } catch (IllegalAccessException e) {
-        // Skip inaccessible or non-primitive fields if they failed
+        com.qualcomm.robotcore.util.RobotLog.addGlobalWarningMessage(
+            "AresAutoLogger field access failed: " + e.getMessage());
       }
     }
   }

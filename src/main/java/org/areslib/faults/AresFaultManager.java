@@ -1,7 +1,9 @@
 package org.areslib.faults;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.areslib.hardware.wrappers.AresGamepad;
 import org.areslib.telemetry.AresTelemetry;
@@ -45,6 +47,8 @@ public class AresFaultManager {
   private static final List<String> CACHED_ERRORS = new ArrayList<>();
   private static final List<String> CACHED_WARNINGS = new ArrayList<>();
   private static final List<String> CACHED_INFOS = new ArrayList<>();
+
+  private static final Map<Integer, String[]> ARRAY_POOL = new HashMap<>();
 
   private static boolean wasError = false;
   private static boolean hasNewError = false;
@@ -121,9 +125,13 @@ public class AresFaultManager {
       }
     }
 
-    AresTelemetry.putStringArray("Alerts/Errors", CACHED_ERRORS.toArray(new String[0]));
-    AresTelemetry.putStringArray("Alerts/Warnings", CACHED_WARNINGS.toArray(new String[0]));
-    AresTelemetry.putStringArray("Alerts/Infos", CACHED_INFOS.toArray(new String[0]));
+    String[] errArray = ARRAY_POOL.computeIfAbsent(CACHED_ERRORS.size(), String[]::new);
+    String[] warnArray = ARRAY_POOL.computeIfAbsent(CACHED_WARNINGS.size(), String[]::new);
+    String[] infoArray = ARRAY_POOL.computeIfAbsent(CACHED_INFOS.size(), String[]::new);
+
+    AresTelemetry.putStringArray("Alerts/Errors", CACHED_ERRORS.toArray(errArray));
+    AresTelemetry.putStringArray("Alerts/Warnings", CACHED_WARNINGS.toArray(warnArray));
+    AresTelemetry.putStringArray("Alerts/Infos", CACHED_INFOS.toArray(infoArray));
 
     // Edge detection for error state transitions — works even without a gamepad
     if (hasError && !wasError) {

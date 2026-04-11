@@ -14,7 +14,7 @@ public interface ElevatorIO {
     public double positionMeters = 0.0;
     public double velocityMetersPerSec = 0.0;
     public double appliedVolts = 0.0;
-    public double[] currentAmps = new double[] {};
+    public double[] currentAmps = new double[1];
   }
 
   default void updateInputs(ElevatorIOInputs inputs) {}

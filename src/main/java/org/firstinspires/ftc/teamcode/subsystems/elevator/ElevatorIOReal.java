@@ -25,7 +25,7 @@ public class ElevatorIOReal implements ElevatorIO {
     inputs.positionMeters = motor.getPosition() * distancePerTick;
     inputs.velocityMetersPerSec = motor.getVelocity() * distancePerTick;
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] {motor.getCurrentAmps()};
+    inputs.currentAmps[0] = motor.getCurrentAmps();
   }
 
   @Override

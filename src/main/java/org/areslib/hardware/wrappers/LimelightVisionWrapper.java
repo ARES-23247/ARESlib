@@ -3,6 +3,8 @@ package org.areslib.hardware.wrappers;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import java.util.HashMap;
+import java.util.Map;
 import org.areslib.hardware.interfaces.VisionIO;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -11,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 public class LimelightVisionWrapper implements VisionIO {
 
   private final Limelight3A[] limelights;
+
+  private final Map<Integer, double[]> arrayPool = new HashMap<>();
 
   public LimelightVisionWrapper(HardwareMap hardwareMap, String... deviceNames) {
     // Officially supported in FTC SDK >= 10.1
@@ -124,7 +128,8 @@ public class LimelightVisionWrapper implements VisionIO {
       }
     }
 
-    inputs.rawCameraPoses = new double[validCount * 7];
+    int arrayLength = validCount * 7;
+    inputs.rawCameraPoses = arrayPool.computeIfAbsent(arrayLength, k -> new double[k]);
     int idx = 0;
 
     for (Limelight3A limelight : limelights) {

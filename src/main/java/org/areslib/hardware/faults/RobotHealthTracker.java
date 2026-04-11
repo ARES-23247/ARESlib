@@ -28,6 +28,9 @@ public class RobotHealthTracker extends SubsystemBase {
   /** Lazily-created AresAlerts bridged to AresFaultManager for each monitor. */
   private final Map<FaultMonitor, AresAlert> alertBridge = new HashMap<>();
 
+  private static final String[] OK_STATUS = new String[] {"OK"};
+  private static final Map<Integer, String[]> ARRAY_POOL = new HashMap<>();
+
   private RobotHealthTracker() {
     // Singleton pattern
   }
@@ -93,8 +96,6 @@ public class RobotHealthTracker extends SubsystemBase {
         activeFaults.add(monitor.getFaultMessage());
         alert.setText(monitor.getFaultMessage());
         alert.set(true);
-        com.qualcomm.robotcore.util.RobotLog.e(
-            String.valueOf("[ERR] HARDWARE FAULT DETECTED: " + monitor.getFaultMessage()));
       } else {
         alert.set(false);
       }
@@ -102,11 +103,11 @@ public class RobotHealthTracker extends SubsystemBase {
 
     // Blast to AdvantageScope Console and StringArray variables
     if (!activeFaults.isEmpty()) {
-      AresAutoLogger.recordOutput("System/ActiveFaults", activeFaults.toArray(new String[0]));
-      AresAutoLogger.recordOutput(
-          "Console", "[ERR] " + activeFaults.size() + " Hardware Fault(s) Active!");
+      String[] faultArray = ARRAY_POOL.computeIfAbsent(activeFaults.size(), String[]::new);
+      AresAutoLogger.recordOutput("System/ActiveFaults", activeFaults.toArray(faultArray));
+      // Only log count, not per-tick string regeneration.
     } else {
-      AresAutoLogger.recordOutput("System/ActiveFaults", new String[] {"OK"});
+      AresAutoLogger.recordOutput("System/ActiveFaults", OK_STATUS);
     }
   }
 }

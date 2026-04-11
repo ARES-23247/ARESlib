@@ -45,7 +45,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.appliedVolts = appliedVolts;
     // Approximate current draw: ~2A per volt. This is a rough linear model
     // for telemetry visualization only — real motors have non-linear I/V curves.
-    inputs.currentAmps = new double[] {Math.abs(appliedVolts * 2.0)};
+    inputs.currentAmps[0] = Math.abs(appliedVolts * 2.0);
   }
 
   @Override
