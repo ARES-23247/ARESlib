@@ -12,11 +12,11 @@ import org.areslib.math.kinematics.MecanumDriveWheelPositions;
  * exact module position tracking and a History Buffer for true latency-compensating Vision fusion.
  */
 public class MecanumDrivePoseEstimator {
-  private final MecanumDriveOdometry m_odometry;
-  private final TimeInterpolatableBuffer<Pose2d> m_poseBuffer;
+  private final MecanumDriveOdometry odometry;
+  private final TimeInterpolatableBuffer<Pose2d> poseBuffer;
 
-  private Pose2d m_estimatedPose;
-  private double[] m_visionStdDevs = new double[] {0.1, 0.1, 0.1};
+  private Pose2d estimatedPose;
+  private double[] visionStdDevs = new double[] {0.1, 0.1, 0.1};
 
   /**
    * Constructs a MecanumDrivePoseEstimator.
@@ -31,28 +31,28 @@ public class MecanumDrivePoseEstimator {
       Rotation2d gyroAngle,
       MecanumDriveWheelPositions wheelPositions,
       Pose2d initialPoseMeters) {
-    m_odometry = new MecanumDriveOdometry(kinematics, gyroAngle, wheelPositions, initialPoseMeters);
-    m_estimatedPose = initialPoseMeters;
+    odometry = new MecanumDriveOdometry(kinematics, gyroAngle, wheelPositions, initialPoseMeters);
+    estimatedPose = initialPoseMeters;
 
-    m_poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
+    poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
   }
 
   public void setVisionMeasurementStdDevs(double[] visionStdDevs) {
     if (visionStdDevs.length != 3) {
       throw new IllegalArgumentException("Standard deviations array must be of length 3");
     }
-    m_visionStdDevs = visionStdDevs;
+    this.visionStdDevs = visionStdDevs;
   }
 
   public void resetPosition(
       Rotation2d gyroAngle, MecanumDriveWheelPositions wheelPositions, Pose2d poseMeters) {
-    m_odometry.resetPosition(gyroAngle, wheelPositions, poseMeters);
-    m_estimatedPose = poseMeters;
-    m_poseBuffer.clear();
+    odometry.resetPosition(gyroAngle, wheelPositions, poseMeters);
+    estimatedPose = poseMeters;
+    poseBuffer.clear();
   }
 
   public Pose2d getEstimatedPosition() {
-    return m_estimatedPose;
+    return estimatedPose;
   }
 
   /**
@@ -65,9 +65,9 @@ public class MecanumDrivePoseEstimator {
    */
   public Pose2d update(
       Rotation2d gyroAngle, MecanumDriveWheelPositions wheelPositions, double timestampSeconds) {
-    m_estimatedPose = m_odometry.update(gyroAngle, wheelPositions);
-    m_poseBuffer.addSample(timestampSeconds, m_estimatedPose);
-    return m_estimatedPose;
+    estimatedPose = odometry.update(gyroAngle, wheelPositions);
+    poseBuffer.addSample(timestampSeconds, estimatedPose);
+    return estimatedPose;
   }
 
   /**
@@ -79,14 +79,10 @@ public class MecanumDrivePoseEstimator {
    *     pipeline_latency).
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-    m_estimatedPose =
+    estimatedPose =
         VisionFusionHelper.applyVisionMeasurement(
-            visionRobotPoseMeters,
-            timestampSeconds,
-            m_estimatedPose,
-            m_poseBuffer,
-            m_visionStdDevs);
+            visionRobotPoseMeters, timestampSeconds, estimatedPose, poseBuffer, visionStdDevs);
 
-    m_odometry.resetTranslation(m_estimatedPose);
+    odometry.resetTranslation(estimatedPose);
   }
 }

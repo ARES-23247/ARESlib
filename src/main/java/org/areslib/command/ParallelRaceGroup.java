@@ -9,9 +9,9 @@ import java.util.Set;
  * and interrupting all the others.
  */
 public class ParallelRaceGroup extends Command {
-  private final Set<Command> m_commands = new HashSet<>();
-  private boolean m_finished = false;
-  private Command m_winner = null;
+  private final Set<Command> commands = new HashSet<>();
+  private boolean finished = false;
+  private Command winner = null;
 
   /**
    * Creates a new ParallelRaceGroup. The given commands will be executed simultaneously, and will
@@ -29,51 +29,51 @@ public class ParallelRaceGroup extends Command {
    * @param commands Commands to add.
    */
   public final void addCommands(Command... commands) {
-    if (m_finished) {
+    if (finished) {
       throw new IllegalStateException(
           "Commands cannot be added to a CommandGroup while the group is running");
     }
 
     for (Command command : commands) {
-      if (!Collections.disjoint(command.getRequirements(), m_requirements)) {
+      if (!Collections.disjoint(command.getRequirements(), requirements)) {
         throw new IllegalArgumentException(
             "Multiple commands in a parallel group cannot require the same subsystems");
       }
-      m_commands.add(command);
-      m_requirements.addAll(command.getRequirements());
+      this.commands.add(command);
+      requirements.addAll(command.getRequirements());
     }
   }
 
   @Override
   public void initialize() {
-    m_finished = false;
-    m_winner = null;
-    for (Command command : m_commands) {
+    finished = false;
+    winner = null;
+    for (Command command : commands) {
       command.initialize();
     }
   }
 
   @Override
   public void execute() {
-    for (Command command : m_commands) {
+    for (Command command : commands) {
       command.execute();
       if (command.isFinished()) {
-        m_finished = true;
-        m_winner = command;
+        finished = true;
+        winner = command;
       }
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    for (Command command : m_commands) {
+    for (Command command : commands) {
       // The winner finished naturally; all others are interrupted
-      command.end(interrupted || command != m_winner);
+      command.end(interrupted || command != winner);
     }
   }
 
   @Override
   public boolean isFinished() {
-    return m_finished;
+    return finished;
   }
 }

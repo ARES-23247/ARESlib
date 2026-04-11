@@ -68,20 +68,20 @@
 			<attribute name="version" value="unknown"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/4.2.2/95ed57493d79bcf1ee814f8c56c638d704019fcb/dyn4j-4.2.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/4.2.2/6b99ca683b5e9f1d43a06b82c6d41452394ce7e1/dyn4j-4.2.2-sources.jar">
-		<attributes>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.dyn4j"/>
-			<attribute name="artifactId" value="dyn4j"/>
-			<attribute name="version" value="4.2.2"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.0.1/1d7d28fa738bdbfe4fbd895d9486308999bdf440/httpclient-4.0.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.0.1/2480b1ac944ebdd15f5f7b6730e9a151d39f4d88/httpclient-4.0.1-sources.jar">
 		<attributes>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.apache.httpcomponents"/>
 			<attribute name="artifactId" value="httpclient"/>
 			<attribute name="version" value="4.0.1"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/5.0.2/6cac06979a26e2b7fa85ea09a9c72f4631ec248f/dyn4j-5.0.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.dyn4j/dyn4j/5.0.2/ad3a3db078324a8c1017d6793d3dc088b590a818/dyn4j-5.0.2-sources.jar">
+		<attributes>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.dyn4j"/>
+			<attribute name="artifactId" value="dyn4j"/>
+			<attribute name="version" value="5.0.2"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/david/dev/robotics/ftc/ARESLib/.gradle/ftc-jars/dashboard-0.5.1.jar">
@@ -196,94 +196,85 @@
 			<attribute name="version" value="1.1"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.12.19/178d26e6a95e50502ae16673e08269797f8b254a/byte-buddy-1.12.19.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.12.19/59e5349f04f4f8e0eaa9f0881f1f0ac5e9eea9da/byte-buddy-1.12.19-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.17.7/3856bfab61beb23e099a0d6629f2ba8de4b98ace/byte-buddy-1.17.7.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.17.7/f380f394d4455dc20375fab7d28b26aa727b5a1a/byte-buddy-1.17.7-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="net.bytebuddy"/>
 			<attribute name="artifactId" value="byte-buddy"/>
-			<attribute name="version" value="1.12.19"/>
+			<attribute name="version" value="1.17.7"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/28c11eb91f9b6d8e200631d46e20a7f407f2a046/opentest4j-1.2.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.2.0/41d55b3c2254de9837b4ec8923cbd371b8a7eab5/opentest4j-1.2.0-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.opentest4j"/>
-			<attribute name="artifactId" value="opentest4j"/>
-			<attribute name="version" value="1.2.0"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.9.1/3145f821b5cd10abcdc5f925baa5fffa6f1b628f/junit-platform-commons-1.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.9.1/5d2f1078b36f69b0cbacc1efdbf073517c0c7d33/junit-platform-commons-1.9.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.junit.platform"/>
-			<attribute name="artifactId" value="junit-platform-commons"/>
-			<attribute name="version" value="1.9.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.javaparser/javaparser-core/2.3.0/a0ff6b83141734b4f7df2c1a7b0fa2ad5dc67523/javaparser-core-2.3.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.javaparser/javaparser-core/2.3.0/3b8934addaefeb82860ebd403f3117a518b53910/javaparser-core-2.3.0-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="com.github.javaparser"/>
-			<attribute name="artifactId" value="javaparser-core"/>
-			<attribute name="version" value="2.3.0"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-inline/4.11.0/3d1dffee9a8a1998ec782383ca2f818848f2d5f1/mockito-inline-4.11.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-inline/4.11.0/3d1dffee9a8a1998ec782383ca2f818848f2d5f1/mockito-inline-4.11.0-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.mockito"/>
-			<attribute name="artifactId" value="mockito-inline"/>
-			<attribute name="version" value="4.11.0"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.9.1/7bb53fbc0173e9f6a9d21d58297af94b1f2f9ce1/junit-jupiter-api-5.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.9.1/ba8516b330a32b4957cdc6ad0cd1a594ec154fd2/junit-jupiter-api-5.9.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.junit.jupiter"/>
-			<attribute name="artifactId" value="junit-jupiter-api"/>
-			<attribute name="version" value="5.9.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fsparse/0.43.1/a059f579095b9841dbe32113b96450413b401db3/ejml-fsparse-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fsparse/0.43.1/1586c3f5bbca7198989e07bdc3efb153df4563ea/ejml-fsparse-0.43.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.ejml"/>
-			<attribute name="artifactId" value="ejml-fsparse"/>
-			<attribute name="version" value="0.43.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fdense/0.43.1/97806ca2f8df28a92152edee1cac17577b103582/ejml-fdense-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fdense/0.43.1/6a212f233a86691236294baac3ee50e052caf23c/ejml-fdense-0.43.1-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fdense/0.44.0/ba7f121f632e37b18cd49a1707384f02d58d5bbe/ejml-fdense-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fdense/0.44.0/840e0d1c02e35878231c3a23a0a30ef4dc64fe7b/ejml-fdense-0.44.0-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.ejml"/>
 			<attribute name="artifactId" value="ejml-fdense"/>
-			<attribute name="version" value="0.43.1"/>
+			<attribute name="version" value="0.44.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.8.1/1e362cbe6d0f225b066757865e233972557484/junit-platform-commons-1.8.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.8.1/386b61876dd33d0ef0381189d3c1db9455d99659/junit-platform-commons-1.8.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.junit.platform"/>
-			<attribute name="artifactId" value="junit-platform-commons"/>
-			<attribute name="version" value="1.8.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-ddense/0.43.1/a74df7b79121914a6921194b9a39d6c0a73b7744/ejml-ddense-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-ddense/0.43.1/422158a55cf12c82de98c5df0c4e7ccf13444e05/ejml-ddense-0.43.1-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-ddense/0.44.0/f0590aa927aaa74ce1e73ff34a8d6262e00de270/ejml-ddense-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-ddense/0.44.0/d9a02ca7cfa04fcf2802e17cf836fde4f7bf2b73/ejml-ddense-0.44.0-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.ejml"/>
 			<attribute name="artifactId" value="ejml-ddense"/>
-			<attribute name="version" value="0.43.1"/>
+			<attribute name="version" value="0.44.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-core/0.44.0/2450d402658e7907afa5fcf6c10b1ca2d9f30174/ejml-core-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-core/0.44.0/b61bbe0a97eaa29b248ab7808bcfe974157ebe54/ejml-core-0.44.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.ejml"/>
+			<attribute name="artifactId" value="ejml-core"/>
+			<attribute name="version" value="0.44.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-dsparse/0.44.0/6213b72811a9e41d8fdd94e4a578fa7002ae1add/ejml-dsparse-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-dsparse/0.44.0/b4437d7e76987707f8cbd69448e1af1c2d0df054/ejml-dsparse-0.44.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.ejml"/>
+			<attribute name="artifactId" value="ejml-dsparse"/>
+			<attribute name="version" value="0.44.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-cdense/0.44.0/40cbf22b2c5b05fd66735d7df456bb6314de05e6/ejml-cdense-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-cdense/0.44.0/65f92f8fec378a41f8469e94653c9e5e727d3a45/ejml-cdense-0.44.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.ejml"/>
+			<attribute name="artifactId" value="ejml-cdense"/>
+			<attribute name="version" value="0.44.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/6.0.3/1093a7faa2ba47c28aa83f378d9a2083463bb20c/junit-platform-commons-6.0.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/6.0.3/27e4015c025cc02ea68d71b799a84a1508d4f60e/junit-platform-commons-6.0.3-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.platform"/>
+			<attribute name="artifactId" value="junit-platform-commons"/>
+			<attribute name="version" value="6.0.3"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-zdense/0.44.0/57c4e5f8ec51688b58bb5e63b3b5f335de91ef31/ejml-zdense-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-zdense/0.44.0/6842a05bcca8f9898188102f1ea2b7bdf975e0ed/ejml-zdense-0.44.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.ejml"/>
+			<attribute name="artifactId" value="ejml-zdense"/>
+			<attribute name="version" value="0.44.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.7/fbf3d6d649ed37fc9e9c59480a05be0a26e3c2da/byte-buddy-agent-1.17.7.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.7/e3a6c5dbc289480b8602fab32e07ee3c3ff1151c/byte-buddy-agent-1.17.7-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="net.bytebuddy"/>
+			<attribute name="artifactId" value="byte-buddy-agent"/>
+			<attribute name="version" value="1.17.7"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/a231e0d844d2721b0fa1b238006d15c6ded6842a/apiguardian-api-1.1.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.1.2/e0787a997746ac32639e0bf3cb27af8dce8a3428/apiguardian-api-1.1.2-sources.jar">
@@ -295,49 +286,40 @@
 			<attribute name="version" value="1.1.2"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-dsparse/0.43.1/bb2e0d4410799f3e4f2ca6e1b870f2693f9f7ca3/ejml-dsparse-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-dsparse/0.43.1/4350e7ab2f7674c8ff6c29df4a58d2dec6f874d9/ejml-dsparse-0.43.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.ejml"/>
-			<attribute name="artifactId" value="ejml-dsparse"/>
-			<attribute name="version" value="0.43.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/4.11.0/ce5226440c2ee78915716d4ce3d10aed2dbf26fb/mockito-core-4.11.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/4.11.0/caa9afd0d62ce8c216eb10c76105bd9597ba03ae/mockito-core-4.11.0-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/5.23.0/a5cf3cf244300e4cd05f779827cf50d373a8460e/mockito-core-5.23.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/5.23.0/37d466cda6cf22f2675bcd0a041ee6a571ae923/mockito-core-5.23.0-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.mockito"/>
 			<attribute name="artifactId" value="mockito-core"/>
-			<attribute name="version" value="4.11.0"/>
+			<attribute name="version" value="5.23.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.9.1/ffcd1013edaeee112be11fcddeb38882d79238de/junit-jupiter-params-5.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.9.1/f48e6a3bc9ac5acdde88951f83beb44adc78c8c5/junit-jupiter-params-5.9.1-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.4.0/ef49991dd51392bb81b2b41d26ec3503f855e48/Jamepad-1.4.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.4.0/a1a5ce78aa7ffd1609fa6db8e06d5014a3f51e39/Jamepad-1.4.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="com.github.WilliamAHartman"/>
+			<attribute name="artifactId" value="Jamepad"/>
+			<attribute name="version" value="1.4.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/6.0.3/6cd3efadd171a3ddd70413868a9c3af988a45907/junit-jupiter-params-6.0.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/6.0.3/35ed7e38169e88e750d295b91ae465d18233b829/junit-jupiter-params-6.0.3-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.junit.jupiter"/>
 			<attribute name="artifactId" value="junit-jupiter-params"/>
-			<attribute name="version" value="5.9.1"/>
+			<attribute name="version" value="6.0.3"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.8.1/6538b88eb8bf8811bc7b6efb5246f835c15e0bfe/junit-jupiter-api-5.8.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.8.1/a3e13f34a2a47fb2c0d7385c5e6e0e8623194061/junit-jupiter-api-5.8.1-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.jspecify/jspecify/1.0.0/7425a601c1c7ec76645a78d22b8c6a627edee507/jspecify-1.0.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.jspecify/jspecify/1.0.0/f1a67bbcf2f9f282baf3821046563983f16ca9b2/jspecify-1.0.0-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.junit.jupiter"/>
-			<attribute name="artifactId" value="junit-jupiter-api"/>
-			<attribute name="version" value="5.8.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.19/450917cf3b358b691a824acf4c67aa89c826f67e/byte-buddy-agent-1.12.19.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.12.19/261284eb82c0c2280424cabfa00edbb713313217/byte-buddy-agent-1.12.19-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="net.bytebuddy"/>
-			<attribute name="artifactId" value="byte-buddy-agent"/>
-			<attribute name="version" value="1.12.19"/>
+			<attribute name="groupId" value="org.jspecify"/>
+			<attribute name="artifactId" value="jspecify"/>
+			<attribute name="version" value="1.0.0"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/3.3/1049c09f1de4331e8193e579448d0916d75b7631/objenesis-3.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/3.3/5fef34eeee6816b0ba2170755a8a9db7744990c3/objenesis-3.3-sources.jar">
@@ -349,94 +331,76 @@
 			<attribute name="version" value="3.3"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/4.11.0/6a2a2d138141e9c003451292348173c899450872/mockito-junit-jupiter-4.11.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/4.11.0/6aa189452f42167be3dc9ce5ac029df0f15ba0e5/mockito-junit-jupiter-4.11.0-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.mockito"/>
-			<attribute name="artifactId" value="mockito-junit-jupiter"/>
-			<attribute name="version" value="4.11.0"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.9.1/1bf771097bde296c3ab174861954e8aafaaf2e94/junit-jupiter-engine-5.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.9.1/bc082b8e8a1f40d6846fccb59867c6524bf08155/junit-jupiter-engine-5.9.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.junit.jupiter"/>
-			<attribute name="artifactId" value="junit-jupiter-engine"/>
-			<attribute name="version" value="5.9.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-zdense/0.43.1/5b8b11fd46abafe095c37e7926896adccd58277e/ejml-zdense-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-zdense/0.43.1/adfe4f983eb136a571d83508691d120df485302e/ejml-zdense-0.43.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.ejml"/>
-			<attribute name="artifactId" value="ejml-zdense"/>
-			<attribute name="version" value="0.43.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.3.2/9d1cbe9f52c863351faae2b05bb8fe3b316a21cf/Jamepad-1.3.2.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.github.WilliamAHartman/Jamepad/1.3.2/4d3584767b5e7c4ba133c7514dbb7af5f3c13394/Jamepad-1.3.2-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="com.github.WilliamAHartman"/>
-			<attribute name="artifactId" value="Jamepad"/>
-			<attribute name="version" value="1.3.2"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-core/0.43.1/378837ef010fedab1a8c25f19079503aaf054a81/ejml-core-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-core/0.43.1/dc8cfb8504de7c117d944fb7dfdece414a2d680a/ejml-core-0.43.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.ejml"/>
-			<attribute name="artifactId" value="ejml-core"/>
-			<attribute name="version" value="0.43.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.8.1/13afdb5d414cbe991fce3ef6b864de77c9644dae/junit-jupiter-params-5.8.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.8.1/d69300e26c3af1d798f412df28d060333e052472/junit-jupiter-params-5.8.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.junit.jupiter"/>
-			<attribute name="artifactId" value="junit-jupiter-params"/>
-			<attribute name="version" value="5.8.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-cdense/0.43.1/7be7e81513c630637fa97f621c6b076712e1ffb/ejml-cdense-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-cdense/0.43.1/11463e5e03f16609c27ed4993a91ccc0c19c1359/ejml-cdense-0.43.1-sources.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="org.ejml"/>
-			<attribute name="artifactId" value="ejml-cdense"/>
-			<attribute name="version" value="0.43.1"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-simple/0.43.1/14bdcf04ee68dbe6c4b57a7c465ef0c9194417ba/ejml-simple-0.43.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-simple/0.43.1/d900b99e9abc2d4bb3bf29b8b2447f65f251c3f3/ejml-simple-0.43.1-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-simple/0.44.0/ec12a889196aefed2d313af1c39892c9d15de8bf/ejml-simple-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-simple/0.44.0/d2e09f3edbadf216e84d143b8135300a8f06847a/ejml-simple-0.44.0-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.ejml"/>
 			<attribute name="artifactId" value="ejml-simple"/>
-			<attribute name="version" value="0.43.1"/>
+			<attribute name="version" value="0.44.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen/1.9.9/b2f322689cc3e4b14d49d4ea927538262c8ac1ab/gdx-jnigen-1.9.9.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-jnigen/1.9.9/775d43e4008689571599da424c6c75c6ca5eeeae/gdx-jnigen-1.9.9-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fsparse/0.44.0/3b8bcf72d264e981e43d83f27750fb4f7834cc5/ejml-fsparse-0.44.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.ejml/ejml-fsparse/0.44.0/95c6502f54eb0a599ec4f3fa13a4fd3b118d69cd/ejml-fsparse-0.44.0-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
-			<attribute name="groupId" value="com.badlogicgames.gdx"/>
-			<attribute name="artifactId" value="gdx-jnigen"/>
-			<attribute name="version" value="1.9.9"/>
+			<attribute name="groupId" value="org.ejml"/>
+			<attribute name="artifactId" value="ejml-fsparse"/>
+			<attribute name="version" value="0.44.0"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.9.1/83591e5089d6cea5f324aa3ecca9b19d5a275803/junit-platform-engine-1.9.1.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.9.1/bda902e43fe1f62674224452defd31f4c251e29d/junit-platform-engine-1.9.1-sources.jar">
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/6.0.3/e26f7e17d06cfc85ba7643b5ad00c87d5f2084dd/junit-jupiter-engine-6.0.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/6.0.3/2a30aff0a9a0d97c0728db5b3102658083f4d74b/junit-jupiter-engine-6.0.3-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-engine"/>
+			<attribute name="version" value="6.0.3"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/6.0.3/101305612e7daa4ce978d3ba73fd02dd4a5f22d9/junit-platform-engine-6.0.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/6.0.3/15cd543d3a2c2a9165ef6108b1bd7d31ec6e9356/junit-platform-engine-6.0.3-sources.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 			<attribute name="gradle.buildServer" value="true"/>
 			<attribute name="groupId" value="org.junit.platform"/>
 			<attribute name="artifactId" value="junit-platform-engine"/>
-			<attribute name="version" value="1.9.1"/>
+			<attribute name="version" value="6.0.3"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/6.0.3/2e6cfb62db85350179f0408ed5270f7cdf8cefda/junit-jupiter-api-6.0.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/6.0.3/281330ce99ad95c2ccc8492503fc5b945e73afb4/junit-jupiter-api-6.0.3-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.jupiter"/>
+			<attribute name="artifactId" value="junit-jupiter-api"/>
+			<attribute name="version" value="6.0.3"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/5.23.0/e66b5f34ffea58bf4388aba58f66a209daeba4fd/mockito-junit-jupiter-5.23.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-junit-jupiter/5.23.0/cec26ac190ce8f70b1d31ae02358eed43f34110c/mockito-junit-jupiter-5.23.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.mockito"/>
+			<attribute name="artifactId" value="mockito-junit-jupiter"/>
+			<attribute name="version" value="5.23.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.3.0/152ea56b3a72f655d4fd677fc0ef2596c3dd5e6e/opentest4j-1.3.0.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.3.0/afb8ff23cffb021c56f333953aebfe6e8818568e/opentest4j-1.3.0-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.opentest4j"/>
+			<attribute name="artifactId" value="opentest4j"/>
+			<attribute name="version" value="1.3.0"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-launcher/6.0.3/4a721cdd640ebdaa4c6850f5eee0b0377cf698b0/junit-platform-launcher-6.0.3.jar" sourcepath="C:/Users/david/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-launcher/6.0.3/1fe45dac052ad1139918482204196a29e13b212d/junit-platform-launcher-6.0.3-sources.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="gradle.buildServer" value="true"/>
+			<attribute name="groupId" value="org.junit.platform"/>
+			<attribute name="artifactId" value="junit-platform-launcher"/>
+			<attribute name="version" value="6.0.3"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin/default"/>

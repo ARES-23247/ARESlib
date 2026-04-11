@@ -29,12 +29,12 @@ import org.areslib.telemetry.AresAutoLogger;
  */
 public class TunableNumber {
 
-  private final String m_key;
-  private double m_value;
-  private double m_defaultValue;
+  private final String key;
+  private double value;
+  private double defaultValue;
 
   /** Per-consumer change tracking: maps consumer ID → last seen value. */
-  private final Map<Integer, Double> m_lastHasChangedValues = new HashMap<>();
+  private final Map<Integer, Double> lastHasChangedValues = new HashMap<>();
 
   /**
    * Constructs a TunableNumber with a dashboard key and default value.
@@ -43,12 +43,12 @@ public class TunableNumber {
    * @param defaultValue The initial value.
    */
   public TunableNumber(String key, double defaultValue) {
-    m_key = key;
-    m_value = defaultValue;
-    m_defaultValue = defaultValue;
+    this.key = key;
+    value = defaultValue;
+    this.defaultValue = defaultValue;
 
     // Publish the initial value
-    AresAutoLogger.recordOutput("Tunables/" + m_key, m_value);
+    AresAutoLogger.recordOutput("Tunables/" + key, value);
   }
 
   /**
@@ -57,7 +57,7 @@ public class TunableNumber {
    * @return The current tunable value.
    */
   public double get() {
-    return m_value;
+    return value;
   }
 
   /**
@@ -66,8 +66,8 @@ public class TunableNumber {
    * @param value The new value.
    */
   public void set(double value) {
-    m_value = value;
-    AresAutoLogger.recordOutput("Tunables/" + m_key, value);
+    this.value = value;
+    AresAutoLogger.recordOutput("Tunables/" + key, value);
   }
 
   /**
@@ -82,10 +82,10 @@ public class TunableNumber {
    * @return Whether the current value differs from the last value seen by this consumer.
    */
   public boolean hasChanged(int id) {
-    double currentValue = m_value;
-    Double lastValue = m_lastHasChangedValues.get(id);
+    double currentValue = value;
+    Double lastValue = lastHasChangedValues.get(id);
     if (lastValue == null || Math.abs(currentValue - lastValue) > 1e-12) {
-      m_lastHasChangedValues.put(id, currentValue);
+      lastHasChangedValues.put(id, currentValue);
       return true;
     }
     return false;
@@ -97,7 +97,7 @@ public class TunableNumber {
    * @return The default value.
    */
   public double getDefault() {
-    return m_defaultValue;
+    return defaultValue;
   }
 
   /**
@@ -106,11 +106,11 @@ public class TunableNumber {
    * @return The key.
    */
   public String getKey() {
-    return m_key;
+    return key;
   }
 
   @Override
   public String toString() {
-    return String.format("TunableNumber(%s=%.4f)", m_key, m_value);
+    return String.format("TunableNumber(%s=%.4f)", key, value);
   }
 }

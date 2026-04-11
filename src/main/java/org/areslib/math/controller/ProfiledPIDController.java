@@ -5,14 +5,14 @@ package org.areslib.math.controller;
  * and velocity limiting instead of aggressive snaps.
  */
 public class ProfiledPIDController {
-  private final PIDController m_controller;
-  private double m_maxVelocity;
-  private double m_maxAcceleration;
-  private double m_period;
+  private final PIDController controller;
+  private double maxVelocity;
+  private double maxAcceleration;
+  private double period;
 
-  private double m_goalPosition;
-  private double m_setpointPosition;
-  private double m_setpointVelocity;
+  private double goalPosition;
+  private double setpointPosition;
+  private double setpointVelocity;
 
   /**
    * @param kp The proportional coefficient.
@@ -36,10 +36,10 @@ public class ProfiledPIDController {
    */
   public ProfiledPIDController(
       double kp, double ki, double kd, double maxVelocity, double maxAcceleration, double period) {
-    m_controller = new PIDController(kp, ki, kd, period);
-    m_maxVelocity = maxVelocity;
-    m_maxAcceleration = maxAcceleration;
-    m_period = period;
+    controller = new PIDController(kp, ki, kd, period);
+    this.maxVelocity = maxVelocity;
+    this.maxAcceleration = maxAcceleration;
+    this.period = period;
   }
 
   /**
@@ -48,7 +48,7 @@ public class ProfiledPIDController {
    * @param goal The target position.
    */
   public void setGoal(double goal) {
-    m_goalPosition = goal;
+    goalPosition = goal;
   }
 
   /**
@@ -57,7 +57,7 @@ public class ProfiledPIDController {
    * @return The goal position.
    */
   public double getGoal() {
-    return m_goalPosition;
+    return goalPosition;
   }
 
   /**
@@ -67,8 +67,8 @@ public class ProfiledPIDController {
    * @param maxAcceleration Maximum acceleration
    */
   public void setConstraints(double maxVelocity, double maxAcceleration) {
-    this.m_maxVelocity = maxVelocity;
-    this.m_maxAcceleration = maxAcceleration;
+    this.maxVelocity = maxVelocity;
+    this.maxAcceleration = maxAcceleration;
   }
 
   /**
@@ -79,7 +79,7 @@ public class ProfiledPIDController {
    * @param maximumInput The maximum input value (e.g., Math.PI).
    */
   public void enableContinuousInput(double minimumInput, double maximumInput) {
-    m_controller.enableContinuousInput(minimumInput, maximumInput);
+    controller.enableContinuousInput(minimumInput, maximumInput);
   }
 
   /**
@@ -89,9 +89,9 @@ public class ProfiledPIDController {
    * @param currentVelocity The current velocity of the mechanism.
    */
   public void reset(double currentPosition, double currentVelocity) {
-    m_setpointPosition = currentPosition;
-    m_setpointVelocity = currentVelocity;
-    m_controller.reset();
+    setpointPosition = currentPosition;
+    setpointVelocity = currentVelocity;
+    controller.reset();
   }
 
   /**
@@ -101,43 +101,43 @@ public class ProfiledPIDController {
    * @return The control effort to apply.
    */
   public double calculate(double currentMeasurement) {
-    double dt = m_period;
+    double dt = period;
 
     if (dt <= 0.0) return 0.0; // Prevent divide by zero
 
     // 1. Calculate the distance left to the goal
-    double distanceToGo = m_goalPosition - m_setpointPosition;
+    double distanceToGo = goalPosition - setpointPosition;
 
     // 2. What velocity do we need to stop perfectly at the goal?
     // v^2 = 2 * a * d => v = sqrt(2 * a * d)
-    double maxReachableVelocity = Math.sqrt(2 * m_maxAcceleration * Math.abs(distanceToGo));
+    double maxReachableVelocity = Math.sqrt(2 * maxAcceleration * Math.abs(distanceToGo));
 
     // 3. Constrain desired velocity to our max velocity profile limit
-    double targetVelocity = Math.min(maxReachableVelocity, m_maxVelocity);
+    double targetVelocity = Math.min(maxReachableVelocity, maxVelocity);
 
     // Preserve Direction
     targetVelocity *= Math.signum(distanceToGo);
 
     // 4. Accelerate towards the target velocity using max acceleration
-    double velocityError = targetVelocity - m_setpointVelocity;
-    double maxVelocityStep = m_maxAcceleration * dt;
+    double velocityError = targetVelocity - setpointVelocity;
+    double maxVelocityStep = maxAcceleration * dt;
     double newVelocity =
-        m_setpointVelocity + Math.max(-maxVelocityStep, Math.min(maxVelocityStep, velocityError));
+        setpointVelocity + Math.max(-maxVelocityStep, Math.min(maxVelocityStep, velocityError));
 
     // 5. Integrate to find the current active setpoint
-    m_setpointPosition += newVelocity * dt;
-    m_setpointVelocity = newVelocity;
+    setpointPosition += newVelocity * dt;
+    setpointVelocity = newVelocity;
 
     // 6. The standard PID calculates against our *profiled* active setpoint, not the absolute final
     // goal.
-    return m_controller.calculate(currentMeasurement, m_setpointPosition);
+    return controller.calculate(currentMeasurement, setpointPosition);
   }
 
   public double getSetpointPosition() {
-    return m_setpointPosition;
+    return setpointPosition;
   }
 
   public double getSetpointVelocity() {
-    return m_setpointVelocity;
+    return setpointVelocity;
   }
 }

@@ -6,23 +6,23 @@ import org.junit.jupiter.api.Test;
 
 class Pose3dTest {
 
-  private static final double kEpsilon = 1e-6;
+  private static final double EPSILON = 1e-6;
 
   @Test
   void identityPose() {
     Pose3d p = new Pose3d();
-    assertEquals(0.0, p.getX(), kEpsilon);
-    assertEquals(0.0, p.getY(), kEpsilon);
-    assertEquals(0.0, p.getZ(), kEpsilon);
+    assertEquals(0.0, p.getX(), EPSILON);
+    assertEquals(0.0, p.getY(), EPSILON);
+    assertEquals(0.0, p.getZ(), EPSILON);
   }
 
   @Test
   void transformByIdentity() {
     Pose3d p = new Pose3d(1, 2, 3, new Rotation3d(0, 0, Math.PI / 4));
     Pose3d result = p.transformBy(new Transform3d());
-    assertEquals(p.getX(), result.getX(), kEpsilon);
-    assertEquals(p.getY(), result.getY(), kEpsilon);
-    assertEquals(p.getZ(), result.getZ(), kEpsilon);
+    assertEquals(p.getX(), result.getX(), EPSILON);
+    assertEquals(p.getY(), result.getY(), EPSILON);
+    assertEquals(p.getZ(), result.getZ(), EPSILON);
   }
 
   @Test
@@ -30,9 +30,9 @@ class Pose3dTest {
     Pose3d p = new Pose3d(0, 0, 0, new Rotation3d());
     Transform3d t = new Transform3d(new Translation3d(1, 2, 3), new Rotation3d());
     Pose3d result = p.transformBy(t);
-    assertEquals(1.0, result.getX(), kEpsilon);
-    assertEquals(2.0, result.getY(), kEpsilon);
-    assertEquals(3.0, result.getZ(), kEpsilon);
+    assertEquals(1.0, result.getX(), EPSILON);
+    assertEquals(2.0, result.getY(), EPSILON);
+    assertEquals(3.0, result.getZ(), EPSILON);
   }
 
   @Test
@@ -41,17 +41,17 @@ class Pose3dTest {
     Pose3d p = new Pose3d(0, 0, 0, new Rotation3d(0, 0, Math.PI / 2));
     Transform3d t = new Transform3d(new Translation3d(1, 0, 0), new Rotation3d());
     Pose3d result = p.transformBy(t);
-    assertEquals(0.0, result.getX(), kEpsilon); // 1m forward at 90° = +Y
-    assertEquals(1.0, result.getY(), kEpsilon);
+    assertEquals(0.0, result.getX(), EPSILON); // 1m forward at 90° = +Y
+    assertEquals(1.0, result.getY(), EPSILON);
   }
 
   @Test
   void relativeToSelf() {
     Pose3d p = new Pose3d(1, 2, 3, new Rotation3d(0.1, 0.2, 0.3));
     Transform3d result = p.relativeTo(p);
-    assertEquals(0.0, result.getX(), kEpsilon);
-    assertEquals(0.0, result.getY(), kEpsilon);
-    assertEquals(0.0, result.getZ(), kEpsilon);
+    assertEquals(0.0, result.getX(), EPSILON);
+    assertEquals(0.0, result.getY(), EPSILON);
+    assertEquals(0.0, result.getZ(), EPSILON);
   }
 
   @Test
@@ -60,18 +60,18 @@ class Pose3dTest {
     Pose3d b = new Pose3d(4, 5, 6, new Rotation3d(0.4, 0.5, 0.6));
     Transform3d aToB = b.relativeTo(a);
     Pose3d reconstructed = a.transformBy(aToB);
-    assertEquals(b.getX(), reconstructed.getX(), kEpsilon);
-    assertEquals(b.getY(), reconstructed.getY(), kEpsilon);
-    assertEquals(b.getZ(), reconstructed.getZ(), kEpsilon);
+    assertEquals(b.getX(), reconstructed.getX(), EPSILON);
+    assertEquals(b.getY(), reconstructed.getY(), EPSILON);
+    assertEquals(b.getZ(), reconstructed.getZ(), EPSILON);
   }
 
   @Test
   void toPose2d() {
     Pose3d p = new Pose3d(1, 2, 99, new Rotation3d(0, 0, Math.PI / 3));
     Pose2d p2d = p.toPose2d();
-    assertEquals(1.0, p2d.getX(), kEpsilon);
-    assertEquals(2.0, p2d.getY(), kEpsilon);
-    assertEquals(Math.PI / 3, p2d.getRotation().getRadians(), kEpsilon);
+    assertEquals(1.0, p2d.getX(), EPSILON);
+    assertEquals(2.0, p2d.getY(), EPSILON);
+    assertEquals(Math.PI / 3, p2d.getRotation().getRadians(), EPSILON);
   }
 
   @Test

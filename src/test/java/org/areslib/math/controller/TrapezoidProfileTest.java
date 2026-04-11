@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 class TrapezoidProfileTest {
 
-  private static final double kEpsilon = 1e-4;
-  private static final double kDt = 0.02; // 50Hz
+  private static final double EPSILON = 1e-4;
+  private static final double DT = 0.02; // 50Hz
 
   @Test
   void reachesGoalFromRest() {
@@ -19,13 +19,13 @@ class TrapezoidProfileTest {
 
     TrapezoidProfile.State state = null;
     for (int i = 0; i < 1000; i++) {
-      state = profile.calculate(kDt);
+      state = profile.calculate(DT);
       if (profile.isFinished()) break;
     }
 
     assertTrue(profile.isFinished(), "Profile should reach goal");
-    assertEquals(5.0, state.position, kEpsilon);
-    assertEquals(0.0, state.velocity, kEpsilon);
+    assertEquals(5.0, state.position, EPSILON);
+    assertEquals(0.0, state.velocity, EPSILON);
   }
 
   @Test
@@ -38,13 +38,13 @@ class TrapezoidProfileTest {
 
     double maxObservedVelocity = 0.0;
     for (int i = 0; i < 2000; i++) {
-      TrapezoidProfile.State state = profile.calculate(kDt);
+      TrapezoidProfile.State state = profile.calculate(DT);
       maxObservedVelocity = Math.max(maxObservedVelocity, Math.abs(state.velocity));
       if (profile.isFinished()) break;
     }
 
     assertTrue(
-        maxObservedVelocity <= 2.0 + kEpsilon,
+        maxObservedVelocity <= 2.0 + EPSILON,
         "Velocity should not exceed max: " + maxObservedVelocity);
   }
 
@@ -58,12 +58,12 @@ class TrapezoidProfileTest {
 
     double prevVelocity = 0.0;
     for (int i = 0; i < 2000; i++) {
-      TrapezoidProfile.State state = profile.calculate(kDt);
+      TrapezoidProfile.State state = profile.calculate(DT);
       // Skip the final step where the profile snaps to goal (discontinuous velocity change)
       if (!profile.isFinished()) {
-        double acceleration = Math.abs(state.velocity - prevVelocity) / kDt;
+        double acceleration = Math.abs(state.velocity - prevVelocity) / DT;
         assertTrue(
-            acceleration <= 1.0 + kEpsilon,
+            acceleration <= 1.0 + EPSILON,
             "Acceleration exceeded max at step " + i + ": " + acceleration);
       }
       prevVelocity = state.velocity;
@@ -81,12 +81,12 @@ class TrapezoidProfileTest {
 
     TrapezoidProfile.State state = null;
     for (int i = 0; i < 1000; i++) {
-      state = profile.calculate(kDt);
+      state = profile.calculate(DT);
       if (profile.isFinished()) break;
     }
 
     assertTrue(profile.isFinished());
-    assertEquals(-3.0, state.position, kEpsilon);
+    assertEquals(-3.0, state.position, EPSILON);
   }
 
   @Test
@@ -98,9 +98,9 @@ class TrapezoidProfileTest {
             new TrapezoidProfile.State(5.0, 0.0));
 
     assertTrue(profile.isFinished());
-    TrapezoidProfile.State state = profile.calculate(kDt);
-    assertEquals(5.0, state.position, kEpsilon);
-    assertEquals(0.0, state.velocity, kEpsilon);
+    TrapezoidProfile.State state = profile.calculate(DT);
+    assertEquals(5.0, state.position, EPSILON);
+    assertEquals(0.0, state.velocity, EPSILON);
   }
 
   @Test
@@ -113,12 +113,12 @@ class TrapezoidProfileTest {
             new TrapezoidProfile.State(0.0, 0.0));
 
     for (int i = 0; i < 100; i++) {
-      profile.calculate(kDt);
+      profile.calculate(DT);
       if (profile.isFinished()) break;
     }
 
     assertTrue(profile.isFinished());
-    assertTrue(profile.getState().position <= 0.01 + kEpsilon, "Should not overshoot");
+    assertTrue(profile.getState().position <= 0.01 + EPSILON, "Should not overshoot");
   }
 
   @Test
@@ -130,8 +130,8 @@ class TrapezoidProfileTest {
             new TrapezoidProfile.State(0.0, 0.0));
 
     TrapezoidProfile.State state = profile.calculate(0.0);
-    assertEquals(0.0, state.position, kEpsilon);
-    assertEquals(0.0, state.velocity, kEpsilon);
+    assertEquals(0.0, state.position, EPSILON);
+    assertEquals(0.0, state.velocity, EPSILON);
   }
 
   @Test
@@ -145,9 +145,9 @@ class TrapezoidProfileTest {
 
     double prevPosition = 0.0;
     for (int i = 0; i < 2000; i++) {
-      TrapezoidProfile.State state = profile.calculate(kDt);
+      TrapezoidProfile.State state = profile.calculate(DT);
       assertTrue(
-          state.position >= prevPosition - kEpsilon, "Position should be monotonically increasing");
+          state.position >= prevPosition - EPSILON, "Position should be monotonically increasing");
       prevPosition = state.position;
       if (profile.isFinished()) break;
     }

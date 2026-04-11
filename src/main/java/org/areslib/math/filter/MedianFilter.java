@@ -10,8 +10,8 @@ import java.util.List;
  * especially for robust signal isolation from large out-of-band spikes (like LiDAR readings).
  */
 public class MedianFilter {
-  private final int m_size;
-  private final ArrayDeque<Double> m_valueBuffer;
+  private final int size;
+  private final ArrayDeque<Double> valueBuffer;
 
   /**
    * Creates a new MedianFilter.
@@ -22,8 +22,8 @@ public class MedianFilter {
     if (size <= 0) {
       throw new IllegalArgumentException("Filter size must be strictly positive");
     }
-    m_size = size;
-    m_valueBuffer = new ArrayDeque<>(size + 1);
+    this.size = size;
+    valueBuffer = new ArrayDeque<>(size + 1);
   }
 
   /**
@@ -33,13 +33,13 @@ public class MedianFilter {
    * @return The median of the moving window, updated to include the next value.
    */
   public double calculate(double next) {
-    m_valueBuffer.add(next);
+    valueBuffer.add(next);
 
-    if (m_valueBuffer.size() > m_size) {
-      m_valueBuffer.removeFirst();
+    if (valueBuffer.size() > size) {
+      valueBuffer.removeFirst();
     }
 
-    List<Double> sortedBuffer = new ArrayList<>(m_valueBuffer);
+    List<Double> sortedBuffer = new ArrayList<>(valueBuffer);
     Collections.sort(sortedBuffer);
 
     int size = sortedBuffer.size();
@@ -52,6 +52,6 @@ public class MedianFilter {
 
   /** Resets the filter, clearing the window of all elements. */
   public void reset() {
-    m_valueBuffer.clear();
+    valueBuffer.clear();
   }
 }

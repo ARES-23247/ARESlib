@@ -25,7 +25,7 @@ public final class AresDiagnostics {
     throw new AssertionError("Utility class");
   }
 
-  private static final AresAlert diagnosticAlert =
+  private static final AresAlert DIAGNOSTIC_ALERT =
       new AresAlert("Pre-match diagnostics FAILED", AresAlert.AlertType.ERROR);
 
   /**
@@ -100,7 +100,7 @@ public final class AresDiagnostics {
       AresAutoLogger.recordOutput("Diagnostics/Failed/" + f, "FAIL");
     }
 
-    diagnosticAlert.set(!allPassed);
+    DIAGNOSTIC_ALERT.set(!allPassed);
 
     return allPassed;
   }

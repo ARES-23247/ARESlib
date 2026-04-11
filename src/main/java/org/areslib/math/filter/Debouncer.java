@@ -11,10 +11,10 @@ public class Debouncer {
     kBoth
   }
 
-  private final double m_debounceTimeSeconds;
-  private final DebounceType m_debounceType;
-  private boolean m_baseline;
-  private double m_elapsedTimeSeconds;
+  private final double debounceTimeSeconds;
+  private final DebounceType debounceType;
+  private boolean baseline;
+  private double elapsedTimeSeconds;
 
   /**
    * Creates a new Debouncer.
@@ -23,10 +23,10 @@ public class Debouncer {
    * @param type Which type of state change the debouncing will be performed on.
    */
   public Debouncer(double debounceTime, DebounceType type) {
-    m_debounceTimeSeconds = debounceTime;
-    m_debounceType = type;
-    m_baseline = false;
-    m_elapsedTimeSeconds = 0.0;
+    debounceTimeSeconds = debounceTime;
+    debounceType = type;
+    baseline = false;
+    elapsedTimeSeconds = 0.0;
   }
 
   /**
@@ -39,11 +39,11 @@ public class Debouncer {
   }
 
   private void resetTimer() {
-    m_elapsedTimeSeconds = 0.0;
+    elapsedTimeSeconds = 0.0;
   }
 
   private boolean hasElapsed() {
-    return m_elapsedTimeSeconds >= m_debounceTimeSeconds;
+    return elapsedTimeSeconds >= debounceTimeSeconds;
   }
 
   /**
@@ -54,22 +54,22 @@ public class Debouncer {
    * @return The debounced value of the input stream.
    */
   public boolean calculate(boolean input, double periodSeconds) {
-    if (input != m_baseline) {
-      m_elapsedTimeSeconds += periodSeconds;
+    if (input != baseline) {
+      elapsedTimeSeconds += periodSeconds;
     }
-    if (input == m_baseline) {
+    if (input == baseline) {
       resetTimer();
     }
 
     if (hasElapsed()) {
-      if (m_debounceType == DebounceType.kBoth
-          || (m_debounceType == DebounceType.kRising && input)
-          || (m_debounceType == DebounceType.kFalling && !input)) {
-        m_baseline = input;
-        return m_baseline;
+      if (debounceType == DebounceType.kBoth
+          || (debounceType == DebounceType.kRising && input)
+          || (debounceType == DebounceType.kFalling && !input)) {
+        baseline = input;
+        return baseline;
       }
     }
 
-    return m_baseline;
+    return baseline;
   }
 }

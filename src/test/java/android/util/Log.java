@@ -4,75 +4,75 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Log {
-  private static final Logger logger = Logger.getLogger("AndroidLog");
+  private static final Logger LOGGER = Logger.getLogger("AndroidLog");
 
   public static int v(String tag, String msg) {
-    logger.log(Level.FINE, tag + ": " + msg);
+    LOGGER.log(Level.FINE, tag + ": " + msg);
     return 0;
   }
 
   public static int v(String tag, String msg, Throwable tr) {
-    logger.log(Level.FINE, tag + ": " + msg, tr);
+    LOGGER.log(Level.FINE, tag + ": " + msg, tr);
     return 0;
   }
 
   public static int d(String tag, String msg) {
-    logger.log(Level.FINE, tag + ": " + msg);
+    LOGGER.log(Level.FINE, tag + ": " + msg);
     return 0;
   }
 
   public static int d(String tag, String msg, Throwable tr) {
-    logger.log(Level.FINE, tag + ": " + msg, tr);
+    LOGGER.log(Level.FINE, tag + ": " + msg, tr);
     return 0;
   }
 
   public static int i(String tag, String msg) {
-    logger.log(Level.INFO, tag + ": " + msg);
+    LOGGER.log(Level.INFO, tag + ": " + msg);
     return 0;
   }
 
   public static int i(String tag, String msg, Throwable tr) {
-    logger.log(Level.INFO, tag + ": " + msg, tr);
+    LOGGER.log(Level.INFO, tag + ": " + msg, tr);
     return 0;
   }
 
   public static int w(String tag, String msg) {
-    logger.log(Level.WARNING, tag + ": " + msg);
+    LOGGER.log(Level.WARNING, tag + ": " + msg);
     return 0;
   }
 
   public static int w(String tag, String msg, Throwable tr) {
-    logger.log(Level.WARNING, tag + ": " + msg, tr);
+    LOGGER.log(Level.WARNING, tag + ": " + msg, tr);
     return 0;
   }
 
   public static int w(String tag, Throwable tr) {
-    logger.log(Level.WARNING, tag, tr);
+    LOGGER.log(Level.WARNING, tag, tr);
     return 0;
   }
 
   public static int e(String tag, String msg) {
-    logger.log(Level.SEVERE, tag + ": " + msg);
+    LOGGER.log(Level.SEVERE, tag + ": " + msg);
     return 0;
   }
 
   public static int e(String tag, String msg, Throwable tr) {
-    logger.log(Level.SEVERE, tag + ": " + msg, tr);
+    LOGGER.log(Level.SEVERE, tag + ": " + msg, tr);
     return 0;
   }
 
   public static int wtf(String tag, String msg) {
-    logger.log(Level.SEVERE, "WTF/" + tag + ": " + msg);
+    LOGGER.log(Level.SEVERE, "WTF/" + tag + ": " + msg);
     return 0;
   }
 
   public static int wtf(String tag, Throwable tr) {
-    logger.log(Level.SEVERE, tag, tr);
+    LOGGER.log(Level.SEVERE, tag, tr);
     return 0;
   }
 
   public static int wtf(String tag, String msg, Throwable tr) {
-    logger.log(Level.SEVERE, "WTF/" + tag + ": " + msg, tr);
+    LOGGER.log(Level.SEVERE, "WTF/" + tag + ": " + msg, tr);
     return 0;
   }
 
@@ -85,7 +85,7 @@ public final class Log {
   }
 
   public static int println(int priority, String tag, String msg) {
-    logger.log(Level.INFO, tag + ": " + msg);
+    LOGGER.log(Level.INFO, tag + ": " + msg);
     return 0;
   }
 }

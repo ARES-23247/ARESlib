@@ -10,7 +10,7 @@ import org.areslib.pathplanner.dummy.DriverStation;
 
 /** Utility class for managing named commands */
 public class NamedCommands {
-  private static final HashMap<String, Command> namedCommands = new HashMap<>();
+  private static final HashMap<String, Command> NAMED_COMMANDS = new HashMap<>();
 
   /**
    * Registers a command with the given name.
@@ -19,7 +19,7 @@ public class NamedCommands {
    * @param command the command to register
    */
   public static void registerCommand(String name, Command command) {
-    namedCommands.put(name, command);
+    NAMED_COMMANDS.put(name, command);
   }
 
   /**
@@ -39,7 +39,7 @@ public class NamedCommands {
    * @param commands the map of commands to register
    */
   public static void registerCommands(Map<String, Command> commands) {
-    namedCommands.putAll(commands);
+    NAMED_COMMANDS.putAll(commands);
   }
 
   /**
@@ -49,7 +49,7 @@ public class NamedCommands {
    * @return true if a command with the given name has been registered, false otherwise
    */
   public static boolean hasCommand(String name) {
-    return namedCommands.containsKey(name);
+    return NAMED_COMMANDS.containsKey(name);
   }
 
   /**
@@ -61,7 +61,7 @@ public class NamedCommands {
    */
   public static Command getCommand(String name) {
     if (hasCommand(name)) {
-      return CommandUtil.wrappedEventCommand(namedCommands.get(name));
+      return CommandUtil.wrappedEventCommand(NAMED_COMMANDS.get(name));
     } else {
       DriverStation.reportWarning(
           "PathPlanner attempted to create a command '"

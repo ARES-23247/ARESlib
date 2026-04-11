@@ -14,10 +14,10 @@ package org.areslib.math;
  * sideways during aggressive teleop maneuvers.
  */
 public class TractionControlLimiter {
-  private final double m_maxAccelMetersPerSecSq;
-  private double m_lastVx = 0.0;
-  private double m_lastVy = 0.0;
-  private double m_lastTimeSeconds;
+  private final double maxAccelMetersPerSecSq;
+  private double lastVx = 0.0;
+  private double lastVy = 0.0;
+  private double lastTimeSeconds;
 
   /**
    * Initializes the 2D Traction Control limiter.
@@ -26,8 +26,8 @@ public class TractionControlLimiter {
    *     mecanum on foam tiles, typical values are 8.0 to 10.0 m/s^2.
    */
   public TractionControlLimiter(double maxAccelMetersPerSecSq) {
-    this.m_maxAccelMetersPerSecSq = maxAccelMetersPerSecSq;
-    this.m_lastTimeSeconds = System.nanoTime() / 1_000_000_000.0;
+    this.maxAccelMetersPerSecSq = maxAccelMetersPerSecSq;
+    this.lastTimeSeconds = System.nanoTime() / 1_000_000_000.0;
   }
 
   /**
@@ -39,45 +39,45 @@ public class TractionControlLimiter {
    */
   public double[] calculate(double targetVx, double targetVy) {
     double currentTime = System.nanoTime() / 1_000_000_000.0;
-    double dt = currentTime - m_lastTimeSeconds;
-    m_lastTimeSeconds = currentTime;
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
 
     // Prevent divide-by-zero on first loop
-    if (dt <= 0.0) return new double[] {m_lastVx, m_lastVy};
+    if (dt <= 0.0) return new double[] {lastVx, lastVy};
 
     // Calculate requested velocity change
-    double deltaVx = targetVx - m_lastVx;
-    double deltaVy = targetVy - m_lastVy;
+    double deltaVx = targetVx - lastVx;
+    double deltaVy = targetVy - lastVy;
     double deltaNorm = Math.sqrt(deltaVx * deltaVx + deltaVy * deltaVy);
 
     // Total acceleration required to achieve this change
     double currentAccel = deltaNorm / dt;
 
-    if (currentAccel > m_maxAccelMetersPerSecSq) {
+    if (currentAccel > maxAccelMetersPerSecSq) {
       // Scale down the change to exactly match peak acceleration
-      double scalar = m_maxAccelMetersPerSecSq / currentAccel;
+      double scalar = maxAccelMetersPerSecSq / currentAccel;
       deltaVx *= scalar;
       deltaVy *= scalar;
     }
 
-    m_lastVx += deltaVx;
-    m_lastVy += deltaVy;
+    lastVx += deltaVx;
+    lastVy += deltaVy;
 
     // Ensure we don't float slightly off 0.0 due to dt calculation margins
     double targetNorm = Math.sqrt(targetVx * targetVx + targetVy * targetVy);
-    double lastNorm = Math.sqrt(m_lastVx * m_lastVx + m_lastVy * m_lastVy);
+    double lastNorm = Math.sqrt(lastVx * lastVx + lastVy * lastVy);
     if (targetNorm == 0.0 && lastNorm < 0.05) {
-      m_lastVx = 0.0;
-      m_lastVy = 0.0;
+      lastVx = 0.0;
+      lastVy = 0.0;
     }
 
-    return new double[] {m_lastVx, m_lastVy};
+    return new double[] {lastVx, lastVy};
   }
 
   /** Resets the limiter state. Call when the robot transitions to a new operational mode. */
   public void reset() {
-    m_lastVx = 0.0;
-    m_lastVy = 0.0;
-    m_lastTimeSeconds = System.nanoTime() / 1_000_000_000.0;
+    lastVx = 0.0;
+    lastVy = 0.0;
+    lastTimeSeconds = System.nanoTime() / 1_000_000_000.0;
   }
 }

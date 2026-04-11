@@ -13,11 +13,11 @@ import org.areslib.math.kinematics.DifferentialDriveWheelPositions;
  * fusion.
  */
 public class DifferentialDrivePoseEstimator {
-  private final DifferentialDriveOdometry m_odometry;
-  private final TimeInterpolatableBuffer<Pose2d> m_poseBuffer;
+  private final DifferentialDriveOdometry odometry;
+  private final TimeInterpolatableBuffer<Pose2d> poseBuffer;
 
-  private Pose2d m_estimatedPose;
-  private double[] m_visionStdDevs = new double[] {0.1, 0.1, 0.1};
+  private Pose2d estimatedPose;
+  private double[] visionStdDevs = new double[] {0.1, 0.1, 0.1};
 
   /**
    * Constructs a DifferentialDrivePoseEstimator.
@@ -32,29 +32,29 @@ public class DifferentialDrivePoseEstimator {
       Rotation2d gyroAngle,
       DifferentialDriveWheelPositions wheelPositions,
       Pose2d initialPoseMeters) {
-    m_odometry =
+    odometry =
         new DifferentialDriveOdometry(kinematics, gyroAngle, wheelPositions, initialPoseMeters);
-    m_estimatedPose = initialPoseMeters;
+    estimatedPose = initialPoseMeters;
 
-    m_poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
+    poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
   }
 
   public void setVisionMeasurementStdDevs(double[] visionStdDevs) {
     if (visionStdDevs.length != 3) {
       throw new IllegalArgumentException("Standard deviations array must be of length 3");
     }
-    m_visionStdDevs = visionStdDevs;
+    this.visionStdDevs = visionStdDevs;
   }
 
   public void resetPosition(
       Rotation2d gyroAngle, DifferentialDriveWheelPositions wheelPositions, Pose2d poseMeters) {
-    m_odometry.resetPosition(gyroAngle, wheelPositions, poseMeters);
-    m_estimatedPose = poseMeters;
-    m_poseBuffer.clear();
+    odometry.resetPosition(gyroAngle, wheelPositions, poseMeters);
+    estimatedPose = poseMeters;
+    poseBuffer.clear();
   }
 
   public Pose2d getEstimatedPosition() {
-    return m_estimatedPose;
+    return estimatedPose;
   }
 
   /**
@@ -69,9 +69,9 @@ public class DifferentialDrivePoseEstimator {
       Rotation2d gyroAngle,
       DifferentialDriveWheelPositions wheelPositions,
       double timestampSeconds) {
-    m_estimatedPose = m_odometry.update(gyroAngle, wheelPositions);
-    m_poseBuffer.addSample(timestampSeconds, m_estimatedPose);
-    return m_estimatedPose;
+    estimatedPose = odometry.update(gyroAngle, wheelPositions);
+    poseBuffer.addSample(timestampSeconds, estimatedPose);
+    return estimatedPose;
   }
 
   /**
@@ -83,14 +83,10 @@ public class DifferentialDrivePoseEstimator {
    *     pipeline_latency).
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-    m_estimatedPose =
+    estimatedPose =
         VisionFusionHelper.applyVisionMeasurement(
-            visionRobotPoseMeters,
-            timestampSeconds,
-            m_estimatedPose,
-            m_poseBuffer,
-            m_visionStdDevs);
+            visionRobotPoseMeters, timestampSeconds, estimatedPose, poseBuffer, visionStdDevs);
 
-    m_odometry.resetTranslation(m_estimatedPose);
+    odometry.resetTranslation(estimatedPose);
   }
 }

@@ -38,11 +38,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     // more slowly because kG opposes the downward P-output. This is a safety feature —
     // it prevents free-fall if the P term underestimates gravity or the motor loses power.
     // Teams tuning for faster descent should increase kP, NOT remove kG.
-    double volts = (error * kP) + kG;
+    double volts = (error * P) + G;
 
-    if (inputs.positionMeters >= MAX_POSITION_METERS && volts > kG) {
+    if (inputs.positionMeters >= MAX_POSITION_METERS && volts > G) {
       // At upper limit: only apply gravity hold, don't push higher
-      volts = kG;
+      volts = G;
     } else if (inputs.positionMeters <= MIN_POSITION_METERS && error <= 0.0) {
       // At floor with no upward demand: zero output to prevent grinding into hard stop
       volts = 0.0;

@@ -13,6 +13,7 @@ You are an expert FTC Software Engineer for Team ARES. Before writing any code, 
 
 | Domain | Skill | Use When |
 |:---|:---|:---|
+| **Core Standards** | `areslib-core-standards` | Formatting, Never Nester rules, specific unit/variable naming, mathematics formatting |
 | **Architecture** | `areslib-architecture` | IO patterns, coordinate systems, scaffolding new subsystems |
 | **Drivetrain** | `areslib-drivetrain` | Swerve/mecanum/differential kinematics, odometry, drive tuning |
 | **Autonomous** | `areslib-autonomous` | Path following, ghost replay, shoot-on-the-move, dynamic avoidance |

@@ -12,8 +12,8 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     // Standard PID gains
-    public static final double kP = 50.0;
-    public static final double kG = 0.2; // Gravity feedforward
+    public static final double P = 50.0;
+    public static final double G = 0.2; // Gravity feedforward
 
     // Software limits
     public static final double MAX_POSITION_METERS = 1.0;
@@ -121,7 +121,7 @@ public final class Constants {
 
   public static final class AlignConstants {
     // Auto Align To Tag Gains
-    public static final double ALIGN_kPx = 0.05; // Tunes Strafe to zero out Tx error
-    public static final double ALIGN_kPy = 0.15; // Tunes Forward to zero out Ty area error
+    public static final double ALIGN_P_X = 0.05; // Tunes Strafe to zero out Tx error
+    public static final double ALIGN_P_Y = 0.15; // Tunes Forward to zero out Ty area error
   }
 }

@@ -2,7 +2,7 @@ package org.areslib.command;
 
 /** A Command that runs instantly; it will initialize, execute once, and finish immediately. */
 public class InstantCommand extends Command {
-  private final Runnable m_toRun;
+  private final Runnable toRun;
 
   /**
    * Creates a new InstantCommand that runs the given Runnable.
@@ -11,7 +11,7 @@ public class InstantCommand extends Command {
    * @param requirements the subsystems required by this command
    */
   public InstantCommand(Runnable toRun, Subsystem... requirements) {
-    m_toRun = toRun;
+    this.toRun = toRun;
     addRequirements(requirements);
   }
 
@@ -20,12 +20,12 @@ public class InstantCommand extends Command {
    * WaitCommand.
    */
   public InstantCommand() {
-    m_toRun = () -> {};
+    toRun = () -> {};
   }
 
   @Override
   public void initialize() {
-    m_toRun.run();
+    toRun.run();
   }
 
   @Override

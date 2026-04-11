@@ -8,8 +8,8 @@ package org.areslib.math.geometry;
  * operations.
  */
 public class Pose3d {
-  private final Translation3d m_translation;
-  private final Rotation3d m_rotation;
+  private final Translation3d translation;
+  private final Rotation3d rotation;
 
   /** Constructs the identity pose at the origin. */
   public Pose3d() {
@@ -23,8 +23,8 @@ public class Pose3d {
    * @param rotation The rotation offset.
    */
   public Pose3d(Translation3d translation, Rotation3d rotation) {
-    m_translation = translation;
-    m_rotation = rotation;
+    this.translation = translation;
+    this.rotation = rotation;
   }
 
   /**
@@ -42,23 +42,23 @@ public class Pose3d {
   // ── Accessors ──────────────────────────────────────────────────────────────
 
   public Translation3d getTranslation() {
-    return m_translation;
+    return translation;
   }
 
   public Rotation3d getRotation() {
-    return m_rotation;
+    return rotation;
   }
 
   public double getX() {
-    return m_translation.getX();
+    return translation.getX();
   }
 
   public double getY() {
-    return m_translation.getY();
+    return translation.getY();
   }
 
   public double getZ() {
-    return m_translation.getZ();
+    return translation.getZ();
   }
 
   // ── Operations ─────────────────────────────────────────────────────────────
@@ -73,9 +73,9 @@ public class Pose3d {
    * @return The transformed pose.
    */
   public Pose3d transformBy(Transform3d transform) {
-    Translation3d rotatedTranslation = transform.getTranslation().rotateBy(m_rotation);
+    Translation3d rotatedTranslation = transform.getTranslation().rotateBy(rotation);
     return new Pose3d(
-        m_translation.plus(rotatedTranslation), m_rotation.rotateBy(transform.getRotation()));
+        translation.plus(rotatedTranslation), rotation.rotateBy(transform.getRotation()));
   }
 
   /**
@@ -88,8 +88,8 @@ public class Pose3d {
    */
   public Transform3d relativeTo(Pose3d other) {
     Translation3d delta =
-        m_translation.minus(other.m_translation).rotateBy(other.m_rotation.unaryMinus());
-    Rotation3d deltaRotation = other.m_rotation.unaryMinus().rotateBy(m_rotation);
+        translation.minus(other.translation).rotateBy(other.rotation.unaryMinus());
+    Rotation3d deltaRotation = other.rotation.unaryMinus().rotateBy(rotation);
     return new Transform3d(delta, deltaRotation);
   }
 
@@ -101,7 +101,7 @@ public class Pose3d {
    * @return The projected 2D pose.
    */
   public Pose2d toPose2d() {
-    return new Pose2d(m_translation.getX(), m_translation.getY(), m_rotation.toRotation2d());
+    return new Pose2d(translation.getX(), translation.getY(), rotation.toRotation2d());
   }
 
   // ── Object overrides ───────────────────────────────────────────────────────
@@ -111,16 +111,16 @@ public class Pose3d {
     if (this == obj) return true;
     if (!(obj instanceof Pose3d)) return false;
     Pose3d other = (Pose3d) obj;
-    return m_translation.equals(other.m_translation) && m_rotation.equals(other.m_rotation);
+    return translation.equals(other.translation) && rotation.equals(other.rotation);
   }
 
   @Override
   public int hashCode() {
-    return m_translation.hashCode() * 31 + m_rotation.hashCode();
+    return translation.hashCode() * 31 + rotation.hashCode();
   }
 
   @Override
   public String toString() {
-    return String.format("Pose3d(%s, %s)", m_translation, m_rotation);
+    return String.format("Pose3d(%s, %s)", translation, rotation);
   }
 }

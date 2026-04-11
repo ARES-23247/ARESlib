@@ -25,9 +25,9 @@ public class AresHardwareManager {
   private static VoltageSensor batteryVoltageSensor;
   private static org.areslib.hardware.interfaces.AresAnalogSensor floodgateSensor;
 
-  private static final AresAlert warningAlert =
+  private static final AresAlert WARNING_ALERT =
       new AresAlert("Power Load Shedding: Voltage below 10.0V", AresAlert.AlertType.WARNING);
-  private static final AresAlert criticalAlert =
+  private static final AresAlert CRITICAL_ALERT =
       new AresAlert("Power Load Shedding: Voltage below 8.0V", AresAlert.AlertType.ERROR);
 
   /** The last measured system battery voltage. */
@@ -46,7 +46,7 @@ public class AresHardwareManager {
     public double masterPowerScale = 1.0;
   }
 
-  private static final AresPowerInputs powerInputs = new AresPowerInputs();
+  private static final AresPowerInputs POWER_INPUTS = new AresPowerInputs();
 
   /**
    * Retrieves the currently active SRS Coprocessor Hub, if configured.
@@ -157,18 +157,18 @@ public class AresHardwareManager {
 
     if (batteryVoltage > 0) {
       if (batteryVoltage < 8.0) {
-        warningAlert.set(true);
-        criticalAlert.set(true);
+        WARNING_ALERT.set(true);
+        CRITICAL_ALERT.set(true);
       } else if (batteryVoltage < 10.0) {
-        warningAlert.set(true);
-        criticalAlert.set(false);
+        WARNING_ALERT.set(true);
+        CRITICAL_ALERT.set(false);
       } else {
-        warningAlert.set(false);
-        criticalAlert.set(false);
+        WARNING_ALERT.set(false);
+        CRITICAL_ALERT.set(false);
       }
     } else {
-      warningAlert.set(false);
-      criticalAlert.set(false);
+      WARNING_ALERT.set(false);
+      CRITICAL_ALERT.set(false);
     }
 
     if (floodgateSensor != null) {
@@ -198,10 +198,10 @@ public class AresHardwareManager {
     masterPowerScale = Math.min(voltageScale, currentScale);
     masterPowerScale = Math.max(0.0, Math.min(1.0, masterPowerScale));
 
-    powerInputs.batteryVoltage = batteryVoltage;
-    powerInputs.totalCurrentAmps = totalCurrentAmps;
-    powerInputs.masterPowerScale = masterPowerScale;
-    AresAutoLogger.processInputs("Power", powerInputs);
+    POWER_INPUTS.batteryVoltage = batteryVoltage;
+    POWER_INPUTS.totalCurrentAmps = totalCurrentAmps;
+    POWER_INPUTS.masterPowerScale = masterPowerScale;
+    AresAutoLogger.processInputs("Power", POWER_INPUTS);
   }
 
   /** Called iteratively to update odometry coprocessors or vision pipelines asynchronously. */

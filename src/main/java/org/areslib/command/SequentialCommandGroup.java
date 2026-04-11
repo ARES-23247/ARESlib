@@ -9,8 +9,8 @@ import java.util.List;
  * <p>As a rule, CommandGroups require the union of the requirements of their component commands.
  */
 public class SequentialCommandGroup extends Command {
-  private final List<Command> m_commands = new ArrayList<>();
-  private int m_currentCommandIndex = -1;
+  private final List<Command> commands = new ArrayList<>();
+  private int currentCommandIndex = -1;
 
   /**
    * Creates a new SequentialCommandGroup. The given commands will be run sequentially, with the
@@ -23,41 +23,41 @@ public class SequentialCommandGroup extends Command {
   }
 
   public final void addCommands(Command... commands) {
-    if (m_currentCommandIndex != -1) {
+    if (currentCommandIndex != -1) {
       throw new IllegalStateException(
           "Commands cannot be added to a CommandGroup while the group is running");
     }
 
     for (Command command : commands) {
-      m_commands.add(command);
-      m_requirements.addAll(command.getRequirements());
+      this.commands.add(command);
+      requirements.addAll(command.getRequirements());
       // WPILib requires checking runWhenDisabled, simplifying here
     }
   }
 
   @Override
   public void initialize() {
-    m_currentCommandIndex = 0;
+    currentCommandIndex = 0;
 
-    if (!m_commands.isEmpty()) {
-      m_commands.get(0).initialize();
+    if (!commands.isEmpty()) {
+      commands.get(0).initialize();
     }
   }
 
   @Override
   public void execute() {
-    if (m_commands.isEmpty()) {
+    if (commands.isEmpty()) {
       return;
     }
 
-    Command currentCommand = m_commands.get(m_currentCommandIndex);
+    Command currentCommand = commands.get(currentCommandIndex);
 
     currentCommand.execute();
     if (currentCommand.isFinished()) {
       currentCommand.end(false);
-      m_currentCommandIndex++;
-      if (m_currentCommandIndex < m_commands.size()) {
-        m_commands.get(m_currentCommandIndex).initialize();
+      currentCommandIndex++;
+      if (currentCommandIndex < commands.size()) {
+        commands.get(currentCommandIndex).initialize();
       }
     }
   }
@@ -65,16 +65,16 @@ public class SequentialCommandGroup extends Command {
   @Override
   public void end(boolean interrupted) {
     if (interrupted
-        && !m_commands.isEmpty()
-        && m_currentCommandIndex > -1
-        && m_currentCommandIndex < m_commands.size()) {
-      m_commands.get(m_currentCommandIndex).end(true);
+        && !commands.isEmpty()
+        && currentCommandIndex > -1
+        && currentCommandIndex < commands.size()) {
+      commands.get(currentCommandIndex).end(true);
     }
-    m_currentCommandIndex = -1;
+    currentCommandIndex = -1;
   }
 
   @Override
   public boolean isFinished() {
-    return m_currentCommandIndex >= m_commands.size();
+    return currentCommandIndex >= commands.size();
   }
 }

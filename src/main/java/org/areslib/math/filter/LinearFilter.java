@@ -7,8 +7,8 @@ import java.util.ArrayDeque;
  * or low-pass filters.
  */
 public class LinearFilter {
-  private final int m_size;
-  private final ArrayDeque<Double> m_inputs;
+  private final int size;
+  private final ArrayDeque<Double> inputs;
 
   /**
    * Creates a moving average filter.
@@ -24,8 +24,8 @@ public class LinearFilter {
     if (size <= 0) {
       throw new IllegalArgumentException("Filter size must be strictly positive");
     }
-    m_size = size;
-    m_inputs = new ArrayDeque<>(size + 1);
+    this.size = size;
+    inputs = new ArrayDeque<>(size + 1);
   }
 
   /**
@@ -35,21 +35,21 @@ public class LinearFilter {
    * @return The filtered value.
    */
   public double calculate(double input) {
-    m_inputs.addFirst(input);
-    if (m_inputs.size() > m_size) {
-      m_inputs.removeLast();
+    inputs.addFirst(input);
+    if (inputs.size() > size) {
+      inputs.removeLast();
     }
 
     double sum = 0.0;
-    for (double val : m_inputs) {
+    for (double val : inputs) {
       sum += val;
     }
 
-    return sum / m_inputs.size();
+    return sum / inputs.size();
   }
 
   /** Resets the filter to an empty state. */
   public void reset() {
-    m_inputs.clear();
+    inputs.clear();
   }
 }

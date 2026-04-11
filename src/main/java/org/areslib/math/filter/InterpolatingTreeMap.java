@@ -13,14 +13,14 @@ import org.areslib.math.geometry.Interpolatable;
  * @param <V> The value type, must implement Interpolatable.
  */
 public class InterpolatingTreeMap<K extends Number, V extends Interpolatable<V>> {
-  private final TreeMap<Double, V> m_map = new TreeMap<>();
-  private final int m_maxSize;
+  private final TreeMap<Double, V> map = new TreeMap<>();
+  private final int maxSize;
 
   /**
    * @param maxSize The maximum number of entries to store.
    */
   public InterpolatingTreeMap(int maxSize) {
-    m_maxSize = maxSize;
+    this.maxSize = maxSize;
   }
 
   /**
@@ -30,15 +30,15 @@ public class InterpolatingTreeMap<K extends Number, V extends Interpolatable<V>>
    * @param value Value at the timestamp.
    */
   public void put(K key, V value) {
-    m_map.put(key.doubleValue(), value);
-    if (m_map.size() > m_maxSize) {
-      m_map.remove(m_map.firstKey());
+    map.put(key.doubleValue(), value);
+    if (map.size() > maxSize) {
+      map.remove(map.firstKey());
     }
   }
 
   /** Clears all elements from the map. */
   public void clear() {
-    m_map.clear();
+    map.clear();
   }
 
   /**
@@ -50,17 +50,17 @@ public class InterpolatingTreeMap<K extends Number, V extends Interpolatable<V>>
    */
   public V get(K key) {
     double dKey = key.doubleValue();
-    if (m_map.isEmpty()) {
+    if (map.isEmpty()) {
       return null;
     }
 
-    V exact = m_map.get(dKey);
+    V exact = map.get(dKey);
     if (exact != null) {
       return exact;
     }
 
-    Map.Entry<Double, V> lower = m_map.floorEntry(dKey);
-    Map.Entry<Double, V> upper = m_map.ceilingEntry(dKey);
+    Map.Entry<Double, V> lower = map.floorEntry(dKey);
+    Map.Entry<Double, V> upper = map.ceilingEntry(dKey);
 
     if (lower == null) {
       return upper.getValue();

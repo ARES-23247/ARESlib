@@ -12,12 +12,12 @@ import org.areslib.math.geometry.Translation2d;
  * visual/dead-wheel localizers (like PathPlanner) are disabled or unavailable.
  */
 public class AresOdometry {
-  private Pose2d m_pose;
-  private Rotation2d m_previousAngle;
+  private Pose2d pose;
+  private Rotation2d previousAngle;
 
   public AresOdometry(Pose2d initialPose) {
-    m_pose = initialPose;
-    m_previousAngle = initialPose.getRotation();
+    pose = initialPose;
+    previousAngle = initialPose.getRotation();
   }
 
   public AresOdometry() {
@@ -30,8 +30,8 @@ public class AresOdometry {
    * @param pose The new pose to reset to.
    */
   public void resetPosition(Pose2d pose) {
-    m_pose = pose;
-    m_previousAngle = pose.getRotation();
+    this.pose = pose;
+    previousAngle = pose.getRotation();
   }
 
   /**
@@ -44,7 +44,7 @@ public class AresOdometry {
    */
   public Pose2d update(Rotation2d gyroAngle, ChassisSpeeds speeds, double dtSeconds) {
     // Delta angle from gyro (more accurate than integrating wheel odometry omega)
-    double dtheta = gyroAngle.minus(m_previousAngle).getRadians();
+    double dtheta = gyroAngle.minus(previousAngle).getRadians();
 
     // Standard Pose Exponential Integration (dx, dy over an arc)
     double dx = speeds.vxMetersPerSecond * dtSeconds;
@@ -69,21 +69,21 @@ public class AresOdometry {
     }
 
     // Rotate the delta according to the previous heading to get field-centric changes
-    double pCos = m_previousAngle.getCos();
-    double pSin = m_previousAngle.getSin();
+    double pCos = previousAngle.getCos();
+    double pSin = previousAngle.getSin();
     double fieldDeltaX = deltaX * pCos - deltaY * pSin;
     double fieldDeltaY = deltaX * pSin + deltaY * pCos;
 
     // Update global pose (we still allocate one new Pose2d so callers don't get aliased references)
-    m_pose =
+    pose =
         new Pose2d(
-            new Translation2d(m_pose.getX() + fieldDeltaX, m_pose.getY() + fieldDeltaY), gyroAngle);
-    m_previousAngle = gyroAngle;
+            new Translation2d(pose.getX() + fieldDeltaX, pose.getY() + fieldDeltaY), gyroAngle);
+    previousAngle = gyroAngle;
 
-    return m_pose;
+    return pose;
   }
 
   public Pose2d getPose() {
-    return m_pose;
+    return pose;
   }
 }

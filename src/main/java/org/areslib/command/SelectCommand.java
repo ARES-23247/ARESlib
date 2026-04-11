@@ -10,9 +10,9 @@ import java.util.function.Supplier;
  * @param <K> The type of the key used to select the command.
  */
 public class SelectCommand<K> extends Command {
-  private final Map<K, Command> m_commands;
-  private final Supplier<K> m_selector;
-  private Command m_selectedCommand;
+  private final Map<K, Command> commands;
+  private final Supplier<K> selector;
+  private Command selectedCommand;
 
   /**
    * Creates a new SelectCommand.
@@ -21,21 +21,21 @@ public class SelectCommand<K> extends Command {
    * @param selector the selector that determines which command to run
    */
   public SelectCommand(Map<K, Command> commands, Supplier<K> selector) {
-    m_commands = commands;
-    m_selector = selector;
+    this.commands = commands;
+    this.selector = selector;
 
-    for (Command command : m_commands.values()) {
-      m_requirements.addAll(command.getRequirements());
+    for (Command command : commands.values()) {
+      requirements.addAll(command.getRequirements());
     }
   }
 
   @Override
   public void initialize() {
-    K key = m_selector.get();
-    m_selectedCommand = m_commands.get(key);
+    K key = selector.get();
+    selectedCommand = commands.get(key);
 
-    if (m_selectedCommand != null) {
-      m_selectedCommand.initialize();
+    if (selectedCommand != null) {
+      selectedCommand.initialize();
     } else {
       com.qualcomm.robotcore.util.RobotLog.e(
           String.valueOf("SelectCommand: No command found for key: " + key));
@@ -44,22 +44,22 @@ public class SelectCommand<K> extends Command {
 
   @Override
   public void execute() {
-    if (m_selectedCommand != null) {
-      m_selectedCommand.execute();
+    if (selectedCommand != null) {
+      selectedCommand.execute();
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    if (m_selectedCommand != null) {
-      m_selectedCommand.end(interrupted);
+    if (selectedCommand != null) {
+      selectedCommand.end(interrupted);
     }
   }
 
   @Override
   public boolean isFinished() {
-    if (m_selectedCommand != null) {
-      return m_selectedCommand.isFinished();
+    if (selectedCommand != null) {
+      return selectedCommand.isFinished();
     } else {
       return true; // Complete instantly if key is invalid
     }

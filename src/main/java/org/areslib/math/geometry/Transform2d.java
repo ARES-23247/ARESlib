@@ -7,8 +7,8 @@ import java.util.Objects;
  * representing a rigid body displacement.
  */
 public class Transform2d {
-  private final Translation2d m_translation;
-  private final Rotation2d m_rotation;
+  private final Translation2d translation;
+  private final Rotation2d rotation;
 
   /**
    * Constructs the transform that maps the initial pose to the final pose.
@@ -19,12 +19,12 @@ public class Transform2d {
   public Transform2d(Pose2d initial, Pose2d last) {
     // We are rotating the difference between the translations
     // using the inverse of the first rotation.
-    m_translation =
+    translation =
         last.getTranslation()
             .minus(initial.getTranslation())
             .rotateBy(initial.getRotation().unaryMinus());
 
-    m_rotation = last.getRotation().minus(initial.getRotation());
+    rotation = last.getRotation().minus(initial.getRotation());
   }
 
   /**
@@ -34,14 +34,14 @@ public class Transform2d {
    * @param rotation Rotational component of the transform.
    */
   public Transform2d(Translation2d translation, Rotation2d rotation) {
-    m_translation = translation;
-    m_rotation = rotation;
+    this.translation = translation;
+    this.rotation = rotation;
   }
 
   /** Constructs the identity transform -- an empty displacement. */
   public Transform2d() {
-    m_translation = new Translation2d();
-    m_rotation = new Rotation2d();
+    translation = new Translation2d();
+    rotation = new Rotation2d();
   }
 
   /**
@@ -51,7 +51,7 @@ public class Transform2d {
    * @return The scaled transform.
    */
   public Transform2d times(double scalar) {
-    return new Transform2d(m_translation.times(scalar), m_rotation.times(scalar));
+    return new Transform2d(translation.times(scalar), rotation.times(scalar));
   }
 
   /**
@@ -60,7 +60,7 @@ public class Transform2d {
    * @return The translational component of the transform.
    */
   public Translation2d getTranslation() {
-    return m_translation;
+    return translation;
   }
 
   /**
@@ -69,7 +69,7 @@ public class Transform2d {
    * @return The rotational component of the transform.
    */
   public Rotation2d getRotation() {
-    return m_rotation;
+    return rotation;
   }
 
   /**
@@ -89,11 +89,11 @@ public class Transform2d {
     if (this == obj) return true;
     if (!(obj instanceof Transform2d)) return false;
     Transform2d other = (Transform2d) obj;
-    return m_translation.equals(other.m_translation) && m_rotation.equals(other.m_rotation);
+    return translation.equals(other.translation) && rotation.equals(other.rotation);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(m_translation, m_rotation);
+    return Objects.hash(translation, rotation);
   }
 }

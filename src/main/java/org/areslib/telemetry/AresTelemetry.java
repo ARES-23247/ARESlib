@@ -11,7 +11,7 @@ import org.areslib.math.kinematics.SwerveModuleState;
  * (e.g., FtcDashboard, wpilog).
  */
 public class AresTelemetry {
-  private static final List<AresLoggerBackend> backends = new CopyOnWriteArrayList<>();
+  private static final List<AresLoggerBackend> BACKENDS = new CopyOnWriteArrayList<>();
 
   /**
    * Registers a new telemetry backend to receive data. Uses class-based deduplication so that
@@ -22,16 +22,16 @@ public class AresTelemetry {
    */
   public static void registerBackend(AresLoggerBackend backend) {
     // Remove any existing backend of the same class to prevent accumulation
-    backends.removeIf(existing -> existing.getClass().equals(backend.getClass()));
-    backends.add(backend);
+    BACKENDS.removeIf(existing -> existing.getClass().equals(backend.getClass()));
+    BACKENDS.add(backend);
   }
 
   /**
-   * Removes all registered backends. Should be called during scheduler reset to prevent stale
+   * Removes all registered BACKENDS. Should be called during scheduler reset to prevent stale
    * backend accumulation across OpMode transitions.
    */
   public static void clearBackends() {
-    backends.clear();
+    BACKENDS.clear();
   }
 
   /**
@@ -41,7 +41,7 @@ public class AresTelemetry {
    * @param value The value.
    */
   public static void putNumber(String key, double value) {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.putNumber(key, value);
     }
   }
@@ -53,7 +53,7 @@ public class AresTelemetry {
    * @param values The values array.
    */
   public static void putNumberArray(String key, double[] values) {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.putNumberArray(key, values);
     }
   }
@@ -65,7 +65,7 @@ public class AresTelemetry {
    * @param value The value.
    */
   public static void putString(String key, String value) {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.putString(key, value);
     }
   }
@@ -77,7 +77,7 @@ public class AresTelemetry {
    * @param value The value.
    */
   public static void putBoolean(String key, boolean value) {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.putBoolean(key, value);
     }
   }
@@ -89,7 +89,7 @@ public class AresTelemetry {
    * @param values The values array.
    */
   public static void putBooleanArray(String key, boolean[] values) {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.putBooleanArray(key, values);
     }
   }
@@ -101,14 +101,14 @@ public class AresTelemetry {
    * @param values The values array.
    */
   public static void putStringArray(String key, String[] values) {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.putStringArray(key, values);
     }
   }
 
-  /** Updates all registered backends. Should be called periodically. */
+  /** Updates all registered BACKENDS. Should be called periodically. */
   public static void update() {
-    for (AresLoggerBackend backend : backends) {
+    for (AresLoggerBackend backend : BACKENDS) {
       backend.update();
     }
   }

@@ -7,9 +7,9 @@ package org.areslib.math.geometry;
  * coordinate space.
  */
 public class Translation3d {
-  private final double m_x;
-  private final double m_y;
-  private final double m_z;
+  private final double x;
+  private final double y;
+  private final double z;
 
   /** Constructs the zero translation. */
   public Translation3d() {
@@ -24,23 +24,23 @@ public class Translation3d {
    * @param z The z component in meters.
    */
   public Translation3d(double x, double y, double z) {
-    m_x = x;
-    m_y = y;
-    m_z = z;
+    this.x = x;
+    this.y = y;
+    this.z = z;
   }
 
   // ── Accessors ──────────────────────────────────────────────────────────────
 
   public double getX() {
-    return m_x;
+    return x;
   }
 
   public double getY() {
-    return m_y;
+    return y;
   }
 
   public double getZ() {
-    return m_z;
+    return z;
   }
 
   /**
@@ -49,7 +49,7 @@ public class Translation3d {
    * @return The norm of the translation.
    */
   public double getNorm() {
-    return Math.sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
+    return Math.sqrt(x * x + y * y + z * z);
   }
 
   // ── Operations ─────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ public class Translation3d {
    * @return The sum translation.
    */
   public Translation3d plus(Translation3d other) {
-    return new Translation3d(m_x + other.m_x, m_y + other.m_y, m_z + other.m_z);
+    return new Translation3d(x + other.x, y + other.y, z + other.z);
   }
 
   /**
@@ -71,7 +71,7 @@ public class Translation3d {
    * @return The difference translation.
    */
   public Translation3d minus(Translation3d other) {
-    return new Translation3d(m_x - other.m_x, m_y - other.m_y, m_z - other.m_z);
+    return new Translation3d(x - other.x, y - other.y, z - other.z);
   }
 
   /**
@@ -81,7 +81,7 @@ public class Translation3d {
    * @return The scaled translation.
    */
   public Translation3d times(double scalar) {
-    return new Translation3d(m_x * scalar, m_y * scalar, m_z * scalar);
+    return new Translation3d(x * scalar, y * scalar, z * scalar);
   }
 
   /**
@@ -90,7 +90,7 @@ public class Translation3d {
    * @return The negated translation.
    */
   public Translation3d unaryMinus() {
-    return new Translation3d(-m_x, -m_y, -m_z);
+    return new Translation3d(-x, -y, -z);
   }
 
   /**
@@ -109,14 +109,14 @@ public class Translation3d {
 
     // Rodrigues' rotation via quaternion: p' = q * p * q*
     // Optimized form avoiding full quaternion multiply:
-    double tx = 2.0 * (qy * m_z - qz * m_y);
-    double ty = 2.0 * (qz * m_x - qx * m_z);
-    double tz = 2.0 * (qx * m_y - qy * m_x);
+    double tx = 2.0 * (qy * z - qz * y);
+    double ty = 2.0 * (qz * x - qx * z);
+    double tz = 2.0 * (qx * y - qy * x);
 
     return new Translation3d(
-        m_x + w * tx + (qy * tz - qz * ty),
-        m_y + w * ty + (qz * tx - qx * tz),
-        m_z + w * tz + (qx * ty - qy * tx));
+        x + w * tx + (qy * tz - qz * ty),
+        y + w * ty + (qz * tx - qx * tz),
+        z + w * tz + (qx * ty - qy * tx));
   }
 
   /**
@@ -125,7 +125,7 @@ public class Translation3d {
    * @return The 2D translation.
    */
   public Translation2d toTranslation2d() {
-    return new Translation2d(m_x, m_y);
+    return new Translation2d(x, y);
   }
 
   // ── Object overrides ───────────────────────────────────────────────────────
@@ -135,21 +135,21 @@ public class Translation3d {
     if (this == obj) return true;
     if (!(obj instanceof Translation3d)) return false;
     Translation3d other = (Translation3d) obj;
-    return Math.abs(m_x - other.m_x) < 1e-9
-        && Math.abs(m_y - other.m_y) < 1e-9
-        && Math.abs(m_z - other.m_z) < 1e-9;
+    return Math.abs(x - other.x) < 1e-9
+        && Math.abs(y - other.y) < 1e-9
+        && Math.abs(z - other.z) < 1e-9;
   }
 
   @Override
   public int hashCode() {
-    long xBits = Double.doubleToLongBits(Math.round(m_x * 1e9) / 1e9);
-    long yBits = Double.doubleToLongBits(Math.round(m_y * 1e9) / 1e9);
-    long zBits = Double.doubleToLongBits(Math.round(m_z * 1e9) / 1e9);
+    long xBits = Double.doubleToLongBits(Math.round(x * 1e9) / 1e9);
+    long yBits = Double.doubleToLongBits(Math.round(y * 1e9) / 1e9);
+    long zBits = Double.doubleToLongBits(Math.round(z * 1e9) / 1e9);
     return Long.hashCode(xBits) * 31 * 31 + Long.hashCode(yBits) * 31 + Long.hashCode(zBits);
   }
 
   @Override
   public String toString() {
-    return String.format("Translation3d(x=%.4f, y=%.4f, z=%.4f)", m_x, m_y, m_z);
+    return String.format("Translation3d(x=%.4f, y=%.4f, z=%.4f)", x, y, z);
   }
 }

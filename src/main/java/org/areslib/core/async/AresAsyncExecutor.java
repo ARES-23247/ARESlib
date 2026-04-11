@@ -26,7 +26,7 @@ public class AresAsyncExecutor {
     }
   }
 
-  private static final List<AsyncLoop> registeredLoops = new ArrayList<>();
+  private static final List<AsyncLoop> REGISTERED_LOOPS = new ArrayList<>();
 
   // Internal initialization state
   private static boolean isRunning = false;
@@ -55,7 +55,7 @@ public class AresAsyncExecutor {
             com.qualcomm.robotcore.util.RobotLog.e(String.valueOf(e));
           }
         };
-    registeredLoops.add(new AsyncLoop(safeTask, periodMs));
+    REGISTERED_LOOPS.add(new AsyncLoop(safeTask, periodMs));
   }
 
   /** Starts all registered async loops. This is automatically called by AresCommandOpMode. */
@@ -63,9 +63,9 @@ public class AresAsyncExecutor {
   public static void start() {
     if (isRunning) return;
 
-    executor = Executors.newScheduledThreadPool(Math.max(1, registeredLoops.size()));
+    executor = Executors.newScheduledThreadPool(Math.max(1, REGISTERED_LOOPS.size()));
 
-    for (AsyncLoop loop : registeredLoops) {
+    for (AsyncLoop loop : REGISTERED_LOOPS) {
       executor.scheduleAtFixedRate(loop.task, 0, loop.periodMs, TimeUnit.MILLISECONDS);
     }
 
@@ -92,7 +92,7 @@ public class AresAsyncExecutor {
     if (executor != null && !executor.isShutdown()) {
       executor.shutdownNow();
     }
-    registeredLoops.clear();
+    REGISTERED_LOOPS.clear();
     isRunning = false;
   }
 }

@@ -43,22 +43,22 @@ import java.util.function.BooleanSupplier;
  */
 public class StateMachine<S extends Enum<S>> {
 
-  private final String m_name;
-  private final Class<S> m_enumClass;
-  private S m_currentState;
-  private S m_previousState;
-  private double m_stateEntryTime;
-  private int m_totalTransitionCount;
+  private final String name;
+  private final Class<S> enumClass;
+  private S currentState;
+  private S previousState;
+  private double stateEntryTime;
+  private int totalTransitionCount;
 
-  private final Map<S, List<Runnable>> m_entryActions = new HashMap<>();
-  private final Map<S, List<Runnable>> m_exitActions = new HashMap<>();
-  private final Map<S, List<Runnable>> m_duringActions = new HashMap<>();
-  private final List<Transition<S>> m_transitions = new ArrayList<>();
+  private final Map<S, List<Runnable>> entryActions = new HashMap<>();
+  private final Map<S, List<Runnable>> exitActions = new HashMap<>();
+  private final Map<S, List<Runnable>> duringActions = new HashMap<>();
+  private final List<Transition<S>> transitions = new ArrayList<>();
 
   /** Validated transition table. Null means "allow all" (unvalidated mode). */
-  private Map<S, EnumSet<S>> m_validTransitions = null;
+  private Map<S, EnumSet<S>> validTransitions = null;
 
-  private BiConsumer<S, S> m_onTransitionCallback = (from, to) -> {};
+  private BiConsumer<S, S> onTransitionCallback = (from, to) -> {};
 
   /**
    * Constructs a StateMachine with a name, enum class, and initial state.
@@ -72,12 +72,12 @@ public class StateMachine<S extends Enum<S>> {
    * @param initialState The state the machine starts in.
    */
   public StateMachine(String name, Class<S> enumClass, S initialState) {
-    m_name = name;
-    m_enumClass = enumClass;
-    m_currentState = initialState;
-    m_previousState = initialState;
-    m_stateEntryTime = now();
-    m_totalTransitionCount = 0;
+    this.name = name;
+    this.enumClass = enumClass;
+    currentState = initialState;
+    previousState = initialState;
+    stateEntryTime = now();
+    totalTransitionCount = 0;
   }
 
   /**
@@ -98,8 +98,8 @@ public class StateMachine<S extends Enum<S>> {
   // ── Validated Transition Table ──────────────────────────────────────────────
 
   private void ensureTransitionMap() {
-    if (m_validTransitions == null) {
-      m_validTransitions = new HashMap<>();
+    if (validTransitions == null) {
+      validTransitions = new HashMap<>();
     }
   }
 
@@ -114,7 +114,7 @@ public class StateMachine<S extends Enum<S>> {
    */
   public void addTransition(S from, S to) {
     ensureTransitionMap();
-    m_validTransitions.computeIfAbsent(from, k -> EnumSet.noneOf(m_enumClass)).add(to);
+    validTransitions.computeIfAbsent(from, k -> EnumSet.noneOf(enumClass)).add(to);
   }
 
   /**
@@ -134,7 +134,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param targetState The state that all others can transition to.
    */
   public void addWildcardTo(S targetState) {
-    for (S state : m_enumClass.getEnumConstants()) {
+    for (S state : enumClass.getEnumConstants()) {
       addTransition(state, targetState);
     }
   }
@@ -145,7 +145,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param fromState The state that can go anywhere.
    */
   public void addWildcardFrom(S fromState) {
-    for (S state : m_enumClass.getEnumConstants()) {
+    for (S state : enumClass.getEnumConstants()) {
       addTransition(fromState, state);
     }
   }
@@ -157,9 +157,9 @@ public class StateMachine<S extends Enum<S>> {
    * @return {@code true} if the transition is legal (including self-transitions).
    */
   public boolean isTransitionLegal(S nextState) {
-    if (m_currentState == nextState) return true;
-    if (m_validTransitions == null) return true; // Unvalidated mode: all transitions allowed
-    EnumSet<S> valid = m_validTransitions.get(m_currentState);
+    if (currentState == nextState) return true;
+    if (validTransitions == null) return true; // Unvalidated mode: all transitions allowed
+    EnumSet<S> valid = validTransitions.get(currentState);
     return valid != null && valid.contains(nextState);
   }
 
@@ -172,7 +172,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param action The action.
    */
   public void onEntry(S state, Runnable action) {
-    m_entryActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
+    entryActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
   }
 
   /**
@@ -182,7 +182,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param action The action.
    */
   public void onExit(S state, Runnable action) {
-    m_exitActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
+    exitActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
   }
 
   /**
@@ -192,7 +192,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param action The action.
    */
   public void during(S state, Runnable action) {
-    m_duringActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
+    duringActions.computeIfAbsent(state, k -> new ArrayList<>()).add(action);
   }
 
   /**
@@ -203,7 +203,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param condition The condition that triggers the transition.
    */
   public void transition(S from, S to, BooleanSupplier condition) {
-    m_transitions.add(new Transition<>(from, to, condition));
+    transitions.add(new Transition<>(from, to, condition));
   }
 
   /**
@@ -215,7 +215,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param timeoutSeconds The time in seconds before auto-transitioning.
    */
   public void transitionAfter(S from, S to, double timeoutSeconds) {
-    m_transitions.add(new Transition<>(from, to, () -> getTimeInState() >= timeoutSeconds));
+    transitions.add(new Transition<>(from, to, () -> getTimeInState() >= timeoutSeconds));
   }
 
   /**
@@ -225,7 +225,7 @@ public class StateMachine<S extends Enum<S>> {
    * @param callback A {@link BiConsumer} that receives (fromState, toState).
    */
   public void setOnTransition(BiConsumer<S, S> callback) {
-    m_onTransitionCallback = callback;
+    onTransitionCallback = callback;
   }
 
   // ── Runtime ────────────────────────────────────────────────────────────────
@@ -233,15 +233,15 @@ public class StateMachine<S extends Enum<S>> {
   /** Evaluates transitions and executes state actions. Must be called every loop iteration. */
   public void update() {
     // Evaluate transitions (first match wins)
-    for (Transition<S> t : m_transitions) {
-      if (t.from == m_currentState && t.condition.getAsBoolean()) {
+    for (Transition<S> t : transitions) {
+      if (t.from == currentState && t.condition.getAsBoolean()) {
         requestTransition(t.to);
         break;
       }
     }
 
     // Execute during actions for the current state
-    List<Runnable> duringActions = m_duringActions.get(m_currentState);
+    List<Runnable> duringActions = this.duringActions.get(currentState);
     if (duringActions != null) {
       for (Runnable action : duringActions) {
         action.run();
@@ -257,12 +257,12 @@ public class StateMachine<S extends Enum<S>> {
    * @return {@code true} if the transition was accepted, {@code false} if rejected.
    */
   public boolean requestTransition(S newState) {
-    if (newState == m_currentState) return true;
+    if (newState == currentState) return true;
 
     if (!isTransitionLegal(newState)) {
       org.areslib.telemetry.AresAutoLogger.recordOutput(
-          "StateMachine/" + m_name + "/IllegalTransition",
-          m_currentState.name() + " -> " + newState.name());
+          "StateMachine/" + name + "/IllegalTransition",
+          currentState.name() + " -> " + newState.name());
       return false;
     }
 
@@ -277,13 +277,13 @@ public class StateMachine<S extends Enum<S>> {
    * @param newState The state to transition to.
    */
   public void forceState(S newState) {
-    if (newState == m_currentState) return;
+    if (newState == currentState) return;
     executeTransition(newState);
   }
 
   private void executeTransition(S newState) {
     // Run exit actions for old state
-    List<Runnable> exitActions = m_exitActions.get(m_currentState);
+    List<Runnable> exitActions = this.exitActions.get(currentState);
     if (exitActions != null) {
       for (Runnable action : exitActions) {
         action.run();
@@ -291,19 +291,18 @@ public class StateMachine<S extends Enum<S>> {
     }
 
     // Fire the transition callback
-    m_onTransitionCallback.accept(m_currentState, newState);
+    onTransitionCallback.accept(currentState, newState);
 
-    m_previousState = m_currentState;
-    m_currentState = newState;
-    m_stateEntryTime = now();
-    m_totalTransitionCount++;
+    previousState = currentState;
+    currentState = newState;
+    stateEntryTime = now();
+    totalTransitionCount++;
 
     // Log the transition
-    org.areslib.telemetry.AresAutoLogger.recordOutput(
-        "StateMachine/" + m_name, m_currentState.name());
+    org.areslib.telemetry.AresAutoLogger.recordOutput("StateMachine/" + name, currentState.name());
 
     // Run entry actions for new state
-    List<Runnable> entryActions = m_entryActions.get(m_currentState);
+    List<Runnable> entryActions = this.entryActions.get(currentState);
     if (entryActions != null) {
       for (Runnable action : entryActions) {
         action.run();
@@ -319,7 +318,7 @@ public class StateMachine<S extends Enum<S>> {
    * @return The current state.
    */
   public S getState() {
-    return m_currentState;
+    return currentState;
   }
 
   /**
@@ -328,7 +327,7 @@ public class StateMachine<S extends Enum<S>> {
    * @return The previous state.
    */
   public S getPreviousState() {
-    return m_previousState;
+    return previousState;
   }
 
   /**
@@ -338,7 +337,7 @@ public class StateMachine<S extends Enum<S>> {
    * @return True if in the given state.
    */
   public boolean isInState(S state) {
-    return m_currentState == state;
+    return currentState == state;
   }
 
   /**
@@ -347,7 +346,7 @@ public class StateMachine<S extends Enum<S>> {
    * @return Time in current state.
    */
   public double getTimeInState() {
-    return now() - m_stateEntryTime;
+    return now() - stateEntryTime;
   }
 
   /**
@@ -356,7 +355,7 @@ public class StateMachine<S extends Enum<S>> {
    * @return The machine name.
    */
   public String getName() {
-    return m_name;
+    return name;
   }
 
   /**
@@ -365,7 +364,7 @@ public class StateMachine<S extends Enum<S>> {
    * @return Cumulative transition count.
    */
   public int getTotalTransitionCount() {
-    return m_totalTransitionCount;
+    return totalTransitionCount;
   }
 
   private static double now() {

@@ -16,29 +16,29 @@ public final class CommandScheduler {
   private static CommandScheduler instance;
 
   // A set of all registered subsystems
-  private final Set<Subsystem> m_subsystems = new LinkedHashSet<>();
+  private final Set<Subsystem> subsystems = new LinkedHashSet<>();
   // Subsystem default commands
-  private final Map<Subsystem, Command> m_defaultCommands = new LinkedHashMap<>();
+  private final Map<Subsystem, Command> defaultCommands = new LinkedHashMap<>();
 
   // Commands currently executing
-  private final Set<Command> m_scheduledCommands = new LinkedHashSet<>();
+  private final Set<Command> scheduledCommands = new LinkedHashSet<>();
   // Subsystems required by currently executing commands
-  private final Map<Subsystem, Command> m_requirements = new LinkedHashMap<>();
+  private final Map<Subsystem, Command> requirements = new LinkedHashMap<>();
 
   // Buffer for commands scheduled during iteration
-  private final java.util.List<Command> m_toSchedule = new java.util.ArrayList<>();
+  private final java.util.List<Command> toSchedule = new java.util.ArrayList<>();
   // Buffer for commands cancelled during iteration
-  private final java.util.List<Command> m_toCancel = new java.util.ArrayList<>();
-  private boolean m_isIterating = false;
+  private final java.util.List<Command> toCancel = new java.util.ArrayList<>();
+  private boolean isIterating = false;
 
   // Loop boundary diagnostics
-  private static final org.areslib.faults.AresAlert loopTimeAlert =
+  private static final org.areslib.faults.AresAlert LOOP_TIME_ALERT =
       new org.areslib.faults.AresAlert(
           "Loop execution exceeding 10ms deadline!",
           org.areslib.faults.AresAlert.AlertType.WARNING);
 
   // Button bindings loops
-  private final java.util.List<Runnable> m_buttons =
+  private final java.util.List<Runnable> buttons =
       new java.util.concurrent.CopyOnWriteArrayList<>();
 
   private CommandScheduler() {}
@@ -49,7 +49,7 @@ public final class CommandScheduler {
    * @param button a Runnable representing the button's polling loop.
    */
   public void addButton(Runnable button) {
-    m_buttons.add(button);
+    buttons.add(button);
   }
 
   /**
@@ -71,7 +71,7 @@ public final class CommandScheduler {
    * @param subsystems the subsystem to register
    */
   public void registerSubsystem(Subsystem... subsystems) {
-    m_subsystems.addAll(Arrays.asList(subsystems));
+    this.subsystems.addAll(Arrays.asList(subsystems));
   }
 
   /**
@@ -81,7 +81,7 @@ public final class CommandScheduler {
    * @param subsystems the subsystem to un-register
    */
   public void unregisterSubsystem(Subsystem... subsystems) {
-    m_subsystems.removeAll(Arrays.asList(subsystems));
+    this.subsystems.removeAll(Arrays.asList(subsystems));
   }
 
   /**
@@ -91,7 +91,7 @@ public final class CommandScheduler {
    * @return The current value.
    */
   public java.util.Set<Subsystem> getSubsystems() {
-    return java.util.Collections.unmodifiableSet(m_subsystems);
+    return java.util.Collections.unmodifiableSet(subsystems);
   }
 
   /**
@@ -105,7 +105,7 @@ public final class CommandScheduler {
     if (!defaultCommand.getRequirements().contains(subsystem)) {
       defaultCommand.addRequirements(subsystem);
     }
-    m_defaultCommands.put(subsystem, defaultCommand);
+    defaultCommands.put(subsystem, defaultCommand);
   }
 
   /**
@@ -114,32 +114,32 @@ public final class CommandScheduler {
    * @param command the command to schedule
    */
   public void schedule(Command command) {
-    if (m_isIterating) {
-      m_toSchedule.add(command);
+    if (isIterating) {
+      toSchedule.add(command);
       return;
     }
 
-    if (m_scheduledCommands.contains(command)) {
+    if (scheduledCommands.contains(command)) {
       return; // Already scheduled
     }
 
     // Check requirements and interrupt conflicting commands
     Set<Subsystem> requirements = command.getRequirements();
     for (Subsystem requirement : requirements) {
-      if (m_requirements.containsKey(requirement)) {
-        Command conflicting = m_requirements.get(requirement);
+      if (this.requirements.containsKey(requirement)) {
+        Command conflicting = this.requirements.get(requirement);
         conflicting.end(true);
-        m_scheduledCommands.remove(conflicting);
+        scheduledCommands.remove(conflicting);
         for (Subsystem conflictingReq : conflicting.getRequirements()) {
-          m_requirements.remove(conflictingReq);
+          this.requirements.remove(conflictingReq);
         }
       }
     }
 
     command.initialize();
-    m_scheduledCommands.add(command);
+    scheduledCommands.add(command);
     for (Subsystem requirement : requirements) {
-      m_requirements.put(requirement, command);
+      this.requirements.put(requirement, command);
     }
   }
 
@@ -149,19 +149,19 @@ public final class CommandScheduler {
    * @param command the command to cancel
    */
   public void cancel(Command command) {
-    if (m_isIterating) {
-      m_toCancel.add(command);
+    if (isIterating) {
+      toCancel.add(command);
       return;
     }
 
-    if (!m_scheduledCommands.contains(command)) {
+    if (!scheduledCommands.contains(command)) {
       return;
     }
 
     command.end(true);
-    m_scheduledCommands.remove(command);
+    scheduledCommands.remove(command);
     for (Subsystem requirement : command.getRequirements()) {
-      m_requirements.remove(requirement);
+      requirements.remove(requirement);
     }
   }
 
@@ -176,7 +176,7 @@ public final class CommandScheduler {
    * @return True if the command is currently in the scheduled commands set.
    */
   public boolean isScheduled(Command command) {
-    return m_scheduledCommands.contains(command);
+    return scheduledCommands.contains(command);
   }
 
   /**
@@ -196,7 +196,7 @@ public final class CommandScheduler {
     long loopStart = System.nanoTime();
 
     // 1. Run subsystem periodics
-    for (Subsystem subsystem : m_subsystems) {
+    for (Subsystem subsystem : subsystems) {
       subsystem.periodic();
       // Only call simulationPeriodic from the scheduler if AresSimulator's
       // high-frequency physics thread is NOT running (avoids double-execution)
@@ -207,62 +207,62 @@ public final class CommandScheduler {
     }
 
     // 2. Schedule default commands
-    for (Subsystem subsystem : m_subsystems) {
-      if (!m_requirements.containsKey(subsystem) && m_defaultCommands.containsKey(subsystem)) {
-        schedule(m_defaultCommands.get(subsystem));
+    for (Subsystem subsystem : subsystems) {
+      if (!requirements.containsKey(subsystem) && defaultCommands.containsKey(subsystem)) {
+        schedule(defaultCommands.get(subsystem));
       }
     }
 
     // 3. Execute button loops
-    for (Runnable button : m_buttons) {
+    for (Runnable button : buttons) {
       button.run();
     }
 
     // 4. Execute commands
-    m_isIterating = true;
+    isIterating = true;
     Set<Command> commandsToRemove = new LinkedHashSet<>();
-    for (Command command : m_scheduledCommands) {
+    for (Command command : scheduledCommands) {
       command.execute();
       if (command.isFinished()) {
         command.end(false);
         commandsToRemove.add(command);
       }
     }
-    m_isIterating = false;
+    isIterating = false;
 
     // 5. Clean up finished commands
     for (Command command : commandsToRemove) {
-      m_scheduledCommands.remove(command);
+      scheduledCommands.remove(command);
       for (Subsystem req : command.getRequirements()) {
-        m_requirements.remove(req);
+        requirements.remove(req);
       }
     }
 
     // 6. Schedule buffered commands
-    for (Command command : m_toSchedule) {
+    for (Command command : toSchedule) {
       schedule(command);
     }
-    m_toSchedule.clear();
+    toSchedule.clear();
 
     // 7. Cancel buffered commands
-    for (Command command : m_toCancel) {
+    for (Command command : toCancel) {
       cancel(command);
     }
-    m_toCancel.clear();
+    toCancel.clear();
 
     // 8. Loop Timing Diagnostics
     double loopTimeMs = (System.nanoTime() - loopStart) / 1_000_000.0;
     org.areslib.telemetry.AresAutoLogger.recordOutput("Ares/LoopTime_ms", loopTimeMs);
-    loopTimeAlert.set(loopTimeMs > 10.0);
+    LOOP_TIME_ALERT.set(loopTimeMs > 10.0);
   }
 
   /** Cancels all currently-scheduled commands. */
   public void cancelAll() {
-    for (Command command : m_scheduledCommands) {
+    for (Command command : scheduledCommands) {
       command.end(true);
     }
-    m_scheduledCommands.clear();
-    m_requirements.clear();
+    scheduledCommands.clear();
+    requirements.clear();
   }
 
   /**
@@ -272,10 +272,10 @@ public final class CommandScheduler {
    */
   public void reset() {
     cancelAll();
-    m_subsystems.clear();
-    m_defaultCommands.clear();
-    m_buttons.clear();
-    m_toSchedule.clear();
-    m_toCancel.clear();
+    subsystems.clear();
+    defaultCommands.clear();
+    buttons.clear();
+    toSchedule.clear();
+    toCancel.clear();
   }
 }

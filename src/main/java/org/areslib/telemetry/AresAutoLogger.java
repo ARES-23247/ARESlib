@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AresAutoLogger {
 
   /** Per-class field layout cache — avoids repeated reflection after first access. */
-  private static final Map<Class<?>, Field[]> fieldCache = new ConcurrentHashMap<>();
+  private static final Map<Class<?>, Field[]> FIELD_CACHE = new ConcurrentHashMap<>();
 
   /**
    * Replicates AdvantageKit's @AutoLog by flattening all supported primitives inside the inputs.
@@ -27,7 +27,7 @@ public class AresAutoLogger {
 
     // Lazily cache the declared fields on first access for this class
     Field[] fields =
-        fieldCache.computeIfAbsent(
+        FIELD_CACHE.computeIfAbsent(
             clazz,
             c -> {
               Field[] flds = c.getDeclaredFields();

@@ -5,7 +5,7 @@ package org.areslib.command;
  * interrupted.
  */
 public class RunCommand extends Command {
-  private final Runnable m_toRun;
+  private final Runnable toRun;
 
   /**
    * Creates a new RunCommand. The Runnable will be run continuously until the command is
@@ -15,12 +15,12 @@ public class RunCommand extends Command {
    * @param requirements the subsystems required by this command
    */
   public RunCommand(Runnable toRun, Subsystem... requirements) {
-    m_toRun = toRun;
+    this.toRun = toRun;
     addRequirements(requirements);
   }
 
   @Override
   public void execute() {
-    m_toRun.run();
+    toRun.run();
   }
 }

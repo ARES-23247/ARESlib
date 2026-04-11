@@ -36,11 +36,11 @@ public class AlignToTagCommand extends Command {
 
       // tx is in DEGREES (±29.8° FOV). ALIGN_kPx converts degrees → m/s.
       // At max offset (29.8°): strafeCmd ≈ 29.8 * 0.05 = 1.49 m/s.
-      double strafeCmd = -tx * ALIGN_kPx;
+      double strafeCmd = -tx * ALIGN_P_X;
 
-      // ta is in PERCENT of image area. ALIGN_kPy converts area-error% → m/s.
-      // At 5% target with 0% actual: forwardCmd = 5.0 * 0.15 = 0.75 m/s.
-      double forwardCmd = (targetArea - ta) * ALIGN_kPy;
+      // Distance error (ta = percentage of image area)
+      // Moving closer increases ta. E.g. target area 2.0%, current 1.0% -> we need to move forward
+      double forwardCmd = (targetArea - ta) * ALIGN_P_Y;
 
       // Send autonomous velocities to drive base, zero rotation
       drive.drive(forwardCmd, strafeCmd, 0.0);

@@ -8,28 +8,28 @@ import org.areslib.math.geometry.Translation2d;
  * module states and vice versa.
  */
 public class SwerveDriveKinematics {
-  private final Translation2d[] m_modules;
-  private final double[][] m_inverseKinematics;
-  private final double[][] m_forwardKinematics;
+  private final Translation2d[] modules;
+  private final double[][] inverseKinematics;
+  private final double[][] forwardKinematics;
 
   public SwerveDriveKinematics(Translation2d... moduleTranslations) {
     if (moduleTranslations.length < 2) {
       throw new IllegalArgumentException("A swerve drive requires at least two modules");
     }
-    m_modules = moduleTranslations;
-    int numModules = m_modules.length;
+    modules = moduleTranslations;
+    int numModules = modules.length;
 
-    m_inverseKinematics = new double[numModules * 2][3];
+    inverseKinematics = new double[numModules * 2][3];
     for (int i = 0; i < numModules; i++) {
-      m_inverseKinematics[i * 2][0] = 1;
-      m_inverseKinematics[i * 2][1] = 0;
-      m_inverseKinematics[i * 2][2] = -m_modules[i].getY();
-      m_inverseKinematics[i * 2 + 1][0] = 0;
-      m_inverseKinematics[i * 2 + 1][1] = 1;
-      m_inverseKinematics[i * 2 + 1][2] = m_modules[i].getX();
+      inverseKinematics[i * 2][0] = 1;
+      inverseKinematics[i * 2][1] = 0;
+      inverseKinematics[i * 2][2] = -modules[i].getY();
+      inverseKinematics[i * 2 + 1][0] = 0;
+      inverseKinematics[i * 2 + 1][1] = 1;
+      inverseKinematics[i * 2 + 1][2] = modules[i].getX();
     }
 
-    m_forwardKinematics = InverseMatrixHelper.pseudoInverse(m_inverseKinematics);
+    forwardKinematics = InverseMatrixHelper.pseudoInverse(inverseKinematics);
   }
 
   /**
@@ -39,17 +39,17 @@ public class SwerveDriveKinematics {
    * @return Array of swerve module states.
    */
   public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds chassisSpeeds) {
-    SwerveModuleState[] states = new SwerveModuleState[m_modules.length];
-    for (int i = 0; i < m_modules.length; i++) {
+    SwerveModuleState[] states = new SwerveModuleState[modules.length];
+    for (int i = 0; i < modules.length; i++) {
       double vx =
-          chassisSpeeds.vxMetersPerSecond * m_inverseKinematics[i * 2][0]
-              + chassisSpeeds.vyMetersPerSecond * m_inverseKinematics[i * 2][1]
-              + chassisSpeeds.omegaRadiansPerSecond * m_inverseKinematics[i * 2][2];
+          chassisSpeeds.vxMetersPerSecond * inverseKinematics[i * 2][0]
+              + chassisSpeeds.vyMetersPerSecond * inverseKinematics[i * 2][1]
+              + chassisSpeeds.omegaRadiansPerSecond * inverseKinematics[i * 2][2];
 
       double vy =
-          chassisSpeeds.vxMetersPerSecond * m_inverseKinematics[i * 2 + 1][0]
-              + chassisSpeeds.vyMetersPerSecond * m_inverseKinematics[i * 2 + 1][1]
-              + chassisSpeeds.omegaRadiansPerSecond * m_inverseKinematics[i * 2 + 1][2];
+          chassisSpeeds.vxMetersPerSecond * inverseKinematics[i * 2 + 1][0]
+              + chassisSpeeds.vyMetersPerSecond * inverseKinematics[i * 2 + 1][1]
+              + chassisSpeeds.omegaRadiansPerSecond * inverseKinematics[i * 2 + 1][2];
 
       states[i] = new SwerveModuleState(Math.hypot(vx, vy), new Rotation2d(vx, vy));
     }
@@ -63,7 +63,7 @@ public class SwerveDriveKinematics {
    * @return The chassis speed.
    */
   public ChassisSpeeds toChassisSpeeds(SwerveModuleState... moduleStates) {
-    if (moduleStates.length != m_modules.length) {
+    if (moduleStates.length != modules.length) {
       throw new IllegalArgumentException("Number of module states must match number of modules");
     }
 
@@ -71,14 +71,13 @@ public class SwerveDriveKinematics {
     double vy = 0;
     double omega = 0;
 
-    for (int i = 0; i < m_modules.length; i++) {
+    for (int i = 0; i < modules.length; i++) {
       double moduleVx = moduleStates[i].speedMetersPerSecond * moduleStates[i].angle.getCos();
       double moduleVy = moduleStates[i].speedMetersPerSecond * moduleStates[i].angle.getSin();
 
-      vx += m_forwardKinematics[0][i * 2] * moduleVx + m_forwardKinematics[0][i * 2 + 1] * moduleVy;
-      vy += m_forwardKinematics[1][i * 2] * moduleVx + m_forwardKinematics[1][i * 2 + 1] * moduleVy;
-      omega +=
-          m_forwardKinematics[2][i * 2] * moduleVx + m_forwardKinematics[2][i * 2 + 1] * moduleVy;
+      vx += forwardKinematics[0][i * 2] * moduleVx + forwardKinematics[0][i * 2 + 1] * moduleVy;
+      vy += forwardKinematics[1][i * 2] * moduleVx + forwardKinematics[1][i * 2 + 1] * moduleVy;
+      omega += forwardKinematics[2][i * 2] * moduleVx + forwardKinematics[2][i * 2 + 1] * moduleVy;
     }
 
     return new ChassisSpeeds(vx, vy, omega);
@@ -113,12 +112,12 @@ public class SwerveDriveKinematics {
    */
   public org.areslib.math.geometry.Twist2d toTwist2d(
       SwerveModulePosition[] start, SwerveModulePosition[] end) {
-    if (start.length != m_modules.length || end.length != m_modules.length) {
+    if (start.length != modules.length || end.length != modules.length) {
       throw new IllegalArgumentException("Number of module positions must match number of modules");
     }
 
-    SwerveModuleState[] moduleDeltas = new SwerveModuleState[m_modules.length];
-    for (int i = 0; i < m_modules.length; i++) {
+    SwerveModuleState[] moduleDeltas = new SwerveModuleState[modules.length];
+    for (int i = 0; i < modules.length; i++) {
       moduleDeltas[i] =
           new SwerveModuleState(end[i].distanceMeters - start[i].distanceMeters, end[i].angle);
     }

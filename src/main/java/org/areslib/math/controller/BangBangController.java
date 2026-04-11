@@ -9,8 +9,8 @@ package org.areslib.math.controller;
  * don't want to actively brake a flywheel).
  */
 public class BangBangController {
-  private double m_tolerance;
-  private double m_setpoint;
+  private double tolerance;
+  private double setpoint;
 
   /**
    * Creates a new bang-bang controller.
@@ -20,7 +20,7 @@ public class BangBangController {
    * @param tolerance Tolerance for the controller.
    */
   public BangBangController(double tolerance) {
-    m_tolerance = Math.max(tolerance, 0.0);
+    this.tolerance = Math.max(tolerance, 0.0);
   }
 
   /** Creates a new bang-bang controller with a tolerance of 0.0. */
@@ -34,7 +34,7 @@ public class BangBangController {
    * @param setpoint The desired setpoint.
    */
   public void setSetpoint(double setpoint) {
-    m_setpoint = setpoint;
+    this.setpoint = setpoint;
   }
 
   /**
@@ -43,7 +43,7 @@ public class BangBangController {
    * @return The current setpoint.
    */
   public double getSetpoint() {
-    return m_setpoint;
+    return setpoint;
   }
 
   /**
@@ -52,7 +52,7 @@ public class BangBangController {
    * @param tolerance The maximum acceptable error.
    */
   public void setTolerance(double tolerance) {
-    m_tolerance = Math.max(tolerance, 0.0);
+    this.tolerance = Math.max(tolerance, 0.0);
   }
 
   /**
@@ -61,7 +61,7 @@ public class BangBangController {
    * @return The tolerance.
    */
   public double getTolerance() {
-    return m_tolerance;
+    return tolerance;
   }
 
   /**
@@ -72,7 +72,7 @@ public class BangBangController {
    * @return 1.0 if the measurement is below the setpoint, otherwise 0.0.
    */
   public double calculate(double measurement, double setpoint) {
-    m_setpoint = setpoint;
+    this.setpoint = setpoint;
     return calculate(measurement);
   }
 
@@ -83,7 +83,7 @@ public class BangBangController {
    * @return 1.0 if the measurement is below the setpoint, otherwise 0.0.
    */
   public double calculate(double measurement) {
-    if (measurement < (m_setpoint - m_tolerance)) {
+    if (measurement < (setpoint - tolerance)) {
       return 1.0;
     } else {
       return 0.0;
@@ -97,6 +97,6 @@ public class BangBangController {
    * @return True if the error is within the tolerance.
    */
   public boolean atSetpoint(double measurement) {
-    return Math.abs(m_setpoint - measurement) <= m_tolerance;
+    return Math.abs(setpoint - measurement) <= tolerance;
   }
 }

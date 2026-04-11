@@ -8,22 +8,22 @@ import java.util.Objects;
  * <p>This assumes that you are using standard FTC coordinate systems (x is forward, y is left).
  */
 public class Translation2d implements Interpolatable<Translation2d> {
-  private double m_x;
-  private double m_y;
+  private double x;
+  private double y;
 
   public Translation2d() {
-    m_x = 0.0;
-    m_y = 0.0;
+    x = 0.0;
+    y = 0.0;
   }
 
   public Translation2d(double x, double y) {
-    m_x = x;
-    m_y = y;
+    this.x = x;
+    this.y = y;
   }
 
   public Translation2d(double distance, Rotation2d angle) {
-    m_x = distance * angle.getCos();
-    m_y = distance * angle.getSin();
+    x = distance * angle.getCos();
+    y = distance * angle.getSin();
   }
 
   /**
@@ -31,71 +31,71 @@ public class Translation2d implements Interpolatable<Translation2d> {
    * overhead in tight loops.
    */
   public void set(double x, double y) {
-    m_x = x;
-    m_y = y;
+    this.x = x;
+    this.y = y;
   }
 
   /** Sets the coordinates equal to another Translation2d in-place. */
   public void set(Translation2d other) {
-    m_x = other.m_x;
-    m_y = other.m_y;
+    x = other.x;
+    y = other.y;
   }
 
   public double getX() {
-    return m_x;
+    return x;
   }
 
   public double getY() {
-    return m_y;
+    return y;
   }
 
   public double getDistance(Translation2d other) {
-    return Math.hypot(other.getX() - m_x, other.getY() - m_y);
+    return Math.hypot(other.getX() - x, other.getY() - y);
   }
 
   public double getNorm() {
-    return Math.hypot(m_x, m_y);
+    return Math.hypot(x, y);
   }
 
   public Rotation2d getAngle() {
-    return new Rotation2d(m_x, m_y);
+    return new Rotation2d(x, y);
   }
 
   public Translation2d rotateBy(Rotation2d other) {
     return new Translation2d(
-        m_x * other.getCos() - m_y * other.getSin(), m_x * other.getSin() + m_y * other.getCos());
+        x * other.getCos() - y * other.getSin(), x * other.getSin() + y * other.getCos());
   }
 
   public Translation2d plus(Translation2d other) {
-    return new Translation2d(m_x + other.m_x, m_y + other.m_y);
+    return new Translation2d(x + other.x, y + other.y);
   }
 
   public Translation2d minus(Translation2d other) {
-    return new Translation2d(m_x - other.m_x, m_y - other.m_y);
+    return new Translation2d(x - other.x, y - other.y);
   }
 
   public Translation2d unaryMinus() {
-    return new Translation2d(-m_x, -m_y);
+    return new Translation2d(-x, -y);
   }
 
   public Translation2d times(double scalar) {
-    return new Translation2d(m_x * scalar, m_y * scalar);
+    return new Translation2d(x * scalar, y * scalar);
   }
 
   public Translation2d div(double scalar) {
-    return new Translation2d(m_x / scalar, m_y / scalar);
+    return new Translation2d(x / scalar, y / scalar);
   }
 
   @Override
   public Translation2d interpolate(Translation2d endValue, double t) {
     if (t <= 0) return this;
     if (t >= 1) return endValue;
-    return new Translation2d(m_x + (endValue.m_x - m_x) * t, m_y + (endValue.m_y - m_y) * t);
+    return new Translation2d(x + (endValue.x - x) * t, y + (endValue.y - y) * t);
   }
 
   @Override
   public String toString() {
-    return String.format("Translation2d(X: %.2f, Y: %.2f)", m_x, m_y);
+    return String.format("Translation2d(X: %.2f, Y: %.2f)", x, y);
   }
 
   @Override
@@ -103,15 +103,15 @@ public class Translation2d implements Interpolatable<Translation2d> {
     if (this == obj) return true;
     if (!(obj instanceof Translation2d)) return false;
     Translation2d other = (Translation2d) obj;
-    return Math.abs(other.m_x - m_x) < 1e-9 && Math.abs(other.m_y - m_y) < 1e-9;
+    return Math.abs(other.x - x) < 1e-9 && Math.abs(other.y - y) < 1e-9;
   }
 
   @Override
   public int hashCode() {
     // Round to 1e-9 to match the epsilon tolerance used in equals().
     // Two Translation2d values that are equals() MUST produce the same hash.
-    long xHash = Math.round(m_x * 1e9);
-    long yHash = Math.round(m_y * 1e9);
+    long xHash = Math.round(x * 1e9);
+    long yHash = Math.round(y * 1e9);
     return Objects.hash(xHash, yHash);
   }
 }

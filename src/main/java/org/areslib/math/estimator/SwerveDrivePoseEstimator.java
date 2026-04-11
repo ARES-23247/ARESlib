@@ -12,11 +12,11 @@ import org.areslib.math.kinematics.SwerveModulePosition;
  * exact module position tracking and a History Buffer for true latency-compensating Vision fusion.
  */
 public class SwerveDrivePoseEstimator {
-  private final SwerveDriveOdometry m_odometry;
-  private final TimeInterpolatableBuffer<Pose2d> m_poseBuffer;
+  private final SwerveDriveOdometry odometry;
+  private final TimeInterpolatableBuffer<Pose2d> poseBuffer;
 
-  private Pose2d m_estimatedPose;
-  private double[] m_visionStdDevs = new double[] {0.1, 0.1, 0.1};
+  private Pose2d estimatedPose;
+  private double[] visionStdDevs = new double[] {0.1, 0.1, 0.1};
 
   /**
    * Constructs a SwerveDrivePoseEstimator.
@@ -31,29 +31,29 @@ public class SwerveDrivePoseEstimator {
       Rotation2d gyroAngle,
       SwerveModulePosition[] modulePositions,
       Pose2d initialPoseMeters) {
-    m_odometry = new SwerveDriveOdometry(kinematics, gyroAngle, modulePositions, initialPoseMeters);
-    m_estimatedPose = initialPoseMeters;
+    odometry = new SwerveDriveOdometry(kinematics, gyroAngle, modulePositions, initialPoseMeters);
+    estimatedPose = initialPoseMeters;
 
     // Elite teams track ~1.5s of history. 50 loops/sec * 1.5 = 75 loops.
-    m_poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
+    poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
   }
 
   public void setVisionMeasurementStdDevs(double[] visionStdDevs) {
     if (visionStdDevs.length != 3) {
       throw new IllegalArgumentException("Standard deviations array must be of length 3");
     }
-    m_visionStdDevs = visionStdDevs;
+    this.visionStdDevs = visionStdDevs;
   }
 
   public void resetPosition(
       Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, Pose2d poseMeters) {
-    m_odometry.resetPosition(gyroAngle, modulePositions, poseMeters);
-    m_estimatedPose = poseMeters;
-    m_poseBuffer.clear();
+    odometry.resetPosition(gyroAngle, modulePositions, poseMeters);
+    estimatedPose = poseMeters;
+    poseBuffer.clear();
   }
 
   public Pose2d getEstimatedPosition() {
-    return m_estimatedPose;
+    return estimatedPose;
   }
 
   /**
@@ -66,9 +66,9 @@ public class SwerveDrivePoseEstimator {
    */
   public Pose2d update(
       Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, double timestampSeconds) {
-    m_estimatedPose = m_odometry.update(gyroAngle, modulePositions);
-    m_poseBuffer.addSample(timestampSeconds, m_estimatedPose);
-    return m_estimatedPose;
+    estimatedPose = odometry.update(gyroAngle, modulePositions);
+    poseBuffer.addSample(timestampSeconds, estimatedPose);
+    return estimatedPose;
   }
 
   /**
@@ -80,7 +80,7 @@ public class SwerveDrivePoseEstimator {
    *     pipeline_latency).
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-    addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, m_visionStdDevs);
+    addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionStdDevs);
   }
 
   /**
@@ -94,11 +94,11 @@ public class SwerveDrivePoseEstimator {
    */
   public void addVisionMeasurement(
       Pose2d visionRobotPoseMeters, double timestampSeconds, double[] visionStdDevs) {
-    m_estimatedPose =
+    estimatedPose =
         VisionFusionHelper.applyVisionMeasurement(
-            visionRobotPoseMeters, timestampSeconds, m_estimatedPose, m_poseBuffer, visionStdDevs);
+            visionRobotPoseMeters, timestampSeconds, estimatedPose, poseBuffer, visionStdDevs);
 
     // Sync Odometry's internal pose without destroying wheel buffers:
-    m_odometry.resetTranslation(m_estimatedPose);
+    odometry.resetTranslation(estimatedPose);
   }
 }

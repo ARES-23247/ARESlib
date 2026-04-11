@@ -64,8 +64,8 @@ public class SysIdRoutine {
     }
   }
 
-  private final Config m_config;
-  private final Mechanism m_mechanism;
+  private final Config config;
+  private final Mechanism mechanism;
 
   /**
    * Creates a new System Identification routine factory for a specific mechanism.
@@ -74,8 +74,8 @@ public class SysIdRoutine {
    * @param mechanism The hardware IO binding for the target mechanism.
    */
   public SysIdRoutine(Config config, Mechanism mechanism) {
-    m_config = config;
-    m_mechanism = mechanism;
+    this.config = config;
+    this.mechanism = mechanism;
   }
 
   /**
@@ -86,7 +86,7 @@ public class SysIdRoutine {
    * @return The current value.
    */
   public org.areslib.command.Command quasistatic(Direction direction) {
-    return new SysIdCommand(m_config, m_mechanism, true, direction);
+    return new SysIdCommand(config, mechanism, true, direction);
   }
 
   /**
@@ -97,6 +97,6 @@ public class SysIdRoutine {
    * @return The current value.
    */
   public org.areslib.command.Command dynamic(Direction direction) {
-    return new SysIdCommand(m_config, m_mechanism, false, direction);
+    return new SysIdCommand(config, mechanism, false, direction);
   }
 }

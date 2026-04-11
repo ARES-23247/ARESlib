@@ -8,7 +8,7 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
+ * The above copyright notice and this permission notice shall be included in ALL
  * copies or substantial portions of the Software.
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -181,7 +181,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
       this.length = type.length;
     }
 
-    public static final Register[] all = Register.values();
+    public static final Register[] ALL = Register.values();
   }
 
   // --------------------------------------------------------------------------------------------------------------------------------
@@ -367,7 +367,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * A data block holding all encoder data; this block may be bulk read in one I2C operation. You
+   * A data block holding ALL encoder data; this block may be bulk read in one I2C operation. You
    * should check if the CRC is OK before using the data.
    */
   public static class EncoderDataBlock {
@@ -388,7 +388,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * Reads all encoder data from the OctoQuad, writing the data into an existing {@link
+   * Reads ALL encoder data from the OctoQuad, writing the data into an existing {@link
    * EncoderDataBlock} object. The previous values are destroyed.
    *
    * @param out the {@link EncoderDataBlock} object to fill with new data
@@ -414,7 +414,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * Reads all encoder data from the OctoQuad
+   * Reads ALL encoder data from the OctoQuad
    *
    * @return a {@link EncoderDataBlock} object with the new data
    */
@@ -471,7 +471,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
         Register.COMMAND, Register.COMMAND_DAT_0, new byte[] {CMD_RESET_ENCODERS, dat});
   }
 
-  /** Reset all encoder counts in the OctoQuad firmware */
+  /** Reset ALL encoder counts in the OctoQuad firmware */
   public void resetAllPositions() {
     verifyInitialization();
     writeContiguousRegisters(
@@ -865,7 +865,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * Set all localizer parameters with one function call
+   * Set ALL localizer parameters with one function call
    *
    * <p>NOTE: this will not take effect until a call to {@link #resetLocalizerAndCalibrateIMU()}
    *
@@ -981,7 +981,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * A data block holding all localizer data needed for navigation; this block may be bulk read in
+   * A data block holding ALL localizer data needed for navigation; this block may be bulk read in
    * one I2C read operation. You should check if the CRC is OK before using the data!
    */
   public static class LocalizerDataBlock {
@@ -1050,7 +1050,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * Bulk read all localizer data in one operation for maximum efficiency, writing the data into an
+   * Bulk read ALL localizer data in one operation for maximum efficiency, writing the data into an
    * existing {@link LocalizerDataBlock} object. The previous values are destroyed.
    *
    * @param out the {@link LocalizerDataBlock} object to fill with new data
@@ -1067,7 +1067,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * Bulk read all localizer data in one operation for maximum efficiency
+   * Bulk read ALL localizer data in one operation for maximum efficiency
    *
    * @return newly read localizer data
    */
@@ -1078,7 +1078,7 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   }
 
   /**
-   * Bulk read all localizer data and encoder data in one operation for maximum efficiency, writing
+   * Bulk read ALL localizer data and encoder data in one operation for maximum efficiency, writing
    * the data into existing objects. The previous values are destroyed.
    *
    * @param localizerOut the {@link LocalizerDataBlock} object to fill with new localizer data
@@ -1300,9 +1300,9 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   // PROFIBUS CRC
   // ---------------------------------------------------------------------------------------------------------------------------------
 
-  private static final short crc16_profibus_init = (short) 0xFFFF;
-  private static final short crc16_profibus_xor_out = (short) 0xFFFF;
-  private static final short[] crc16_profibus_table = {
+  private static final short CRC16_PROFIBUS_INIT = (short) 0xFFFF;
+  private static final short CRC16_PROFIBUS_XOR_OUT = (short) 0xFFFF;
+  private static final short[] CRC16_PROFIBUS_TABLE = {
     (short) 0x0000, (short) 0x1DCF, (short) 0x3B9E, (short) 0x2651, (short) 0x773C, (short) 0x6AF3,
         (short) 0x4CA2, (short) 0x516D,
     (short) 0xEE78, (short) 0xF3B7, (short) 0xD5E6, (short) 0xC829, (short) 0x9944, (short) 0x848B,
@@ -1370,14 +1370,14 @@ public class OctoQuadFWv3 extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
   };
 
   private static short calcCrc16Profibus(byte[] data, int len) {
-    short crc = crc16_profibus_init;
+    short crc = CRC16_PROFIBUS_INIT;
 
     for (int i = 0; i < len; i++) {
       // Need to & 0xFF because java 16-bit is signed
-      crc = (short) ((crc << 8) ^ crc16_profibus_table[((crc >> 8) ^ data[i & 0xFF]) & 0xFF]);
+      crc = (short) ((crc << 8) ^ CRC16_PROFIBUS_TABLE[((crc >> 8) ^ data[i & 0xFF]) & 0xFF]);
     }
 
-    return (short) (crc ^ crc16_profibus_xor_out);
+    return (short) (crc ^ CRC16_PROFIBUS_XOR_OUT);
   }
 
   private static short calcCrc16Profibus(byte[] data) {

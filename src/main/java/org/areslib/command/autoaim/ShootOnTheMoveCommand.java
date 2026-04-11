@@ -15,11 +15,11 @@ import org.areslib.math.kinematics.KinematicAiming;
  */
 public class ShootOnTheMoveCommand extends Command {
 
-  private final Supplier<Translation2d> m_robotPositionSupplier;
-  private final Supplier<ChassisSpeeds> m_robotVelocitySupplier;
-  private final Translation2d m_targetPosition;
-  private final double m_projectileSpeedMetersPerSec;
-  private final Consumer<Rotation2d> m_aimingOutput;
+  private final Supplier<Translation2d> robotPositionSupplier;
+  private final Supplier<ChassisSpeeds> robotVelocitySupplier;
+  private final Translation2d targetPosition;
+  private final double projectileSpeedMetersPerSec;
+  private final Consumer<Rotation2d> aimingOutput;
 
   /**
    * @param robotPositionSupplier Provides the robot's current pose.
@@ -37,26 +37,26 @@ public class ShootOnTheMoveCommand extends Command {
       Consumer<Rotation2d> aimingOutput,
       Subsystem... requirements) {
 
-    m_robotPositionSupplier = robotPositionSupplier;
-    m_robotVelocitySupplier = robotVelocitySupplier;
-    m_targetPosition = targetPosition;
-    m_projectileSpeedMetersPerSec = projectileSpeedMetersPerSec;
-    m_aimingOutput = aimingOutput;
+    this.robotPositionSupplier = robotPositionSupplier;
+    this.robotVelocitySupplier = robotVelocitySupplier;
+    this.targetPosition = targetPosition;
+    this.projectileSpeedMetersPerSec = projectileSpeedMetersPerSec;
+    this.aimingOutput = aimingOutput;
 
     addRequirements(requirements);
   }
 
   @Override
   public void execute() {
-    Translation2d currentPos = m_robotPositionSupplier.get();
-    ChassisSpeeds velocities = m_robotVelocitySupplier.get();
+    Translation2d currentPos = robotPositionSupplier.get();
+    ChassisSpeeds velocities = robotVelocitySupplier.get();
 
     KinematicAiming.AimResult result =
         KinematicAiming.calculateAim(
-            velocities, currentPos, m_targetPosition, m_projectileSpeedMetersPerSec);
+            velocities, currentPos, targetPosition, projectileSpeedMetersPerSec);
 
     // Always apply target, even if math falls back to direct line of sight.
-    m_aimingOutput.accept(result.requiredHeading);
+    aimingOutput.accept(result.requiredHeading);
   }
 
   @Override

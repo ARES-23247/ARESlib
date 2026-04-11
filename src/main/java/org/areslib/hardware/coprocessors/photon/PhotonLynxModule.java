@@ -39,7 +39,7 @@ public class PhotonLynxModule extends LynxModule {
   @Override
   public void sendCommand(LynxMessage command)
       throws InterruptedException, LynxUnsupportedCommandException {
-    if (!PhotonCore.instance.enabled.get()) {
+    if (!PhotonCore.INSTANCE.enabled.get()) {
       super.sendCommand(command);
       return;
     }
@@ -62,7 +62,7 @@ public class PhotonLynxModule extends LynxModule {
 
   @Override
   public void acquireNetworkTransmissionLock(LynxMessage message) throws InterruptedException {
-    if (!PhotonCore.instance.enabled.get()) {
+    if (!PhotonCore.INSTANCE.enabled.get()) {
       super.acquireNetworkTransmissionLock(message);
       return;
     }
@@ -81,7 +81,7 @@ public class PhotonLynxModule extends LynxModule {
 
   @Override
   public void releaseNetworkTransmissionLock(LynxMessage message) throws InterruptedException {
-    if (!PhotonCore.instance.enabled.get()) {
+    if (!PhotonCore.INSTANCE.enabled.get()) {
       super.releaseNetworkTransmissionLock(message);
       return;
     }

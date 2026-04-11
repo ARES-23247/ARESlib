@@ -7,10 +7,10 @@ import java.util.function.BooleanSupplier;
  * this command is initialized.
  */
 public class ConditionalCommand extends Command {
-  private final Command m_onTrue;
-  private final Command m_onFalse;
-  private final BooleanSupplier m_condition;
-  private Command m_selectedCommand;
+  private final Command onTrue;
+  private final Command onFalse;
+  private final BooleanSupplier condition;
+  private Command selectedCommand;
 
   /**
    * Creates a new ConditionalCommand.
@@ -20,36 +20,36 @@ public class ConditionalCommand extends Command {
    * @param condition the condition to evaluate
    */
   public ConditionalCommand(Command onTrue, Command onFalse, BooleanSupplier condition) {
-    m_onTrue = onTrue;
-    m_onFalse = onFalse;
-    m_condition = condition;
+    this.onTrue = onTrue;
+    this.onFalse = onFalse;
+    this.condition = condition;
 
-    m_requirements.addAll(m_onTrue.getRequirements());
-    m_requirements.addAll(m_onFalse.getRequirements());
+    requirements.addAll(onTrue.getRequirements());
+    requirements.addAll(onFalse.getRequirements());
   }
 
   @Override
   public void initialize() {
-    if (m_condition.getAsBoolean()) {
-      m_selectedCommand = m_onTrue;
+    if (condition.getAsBoolean()) {
+      selectedCommand = onTrue;
     } else {
-      m_selectedCommand = m_onFalse;
+      selectedCommand = onFalse;
     }
-    m_selectedCommand.initialize();
+    selectedCommand.initialize();
   }
 
   @Override
   public void execute() {
-    m_selectedCommand.execute();
+    selectedCommand.execute();
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_selectedCommand.end(interrupted);
+    selectedCommand.end(interrupted);
   }
 
   @Override
   public boolean isFinished() {
-    return m_selectedCommand.isFinished();
+    return selectedCommand.isFinished();
   }
 }

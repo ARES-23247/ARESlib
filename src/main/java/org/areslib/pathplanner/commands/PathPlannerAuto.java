@@ -46,12 +46,12 @@ public class PathPlannerAuto extends Command {
       // Fall back to a no-op command so the sim doesn't crash
       this.autoCommand = new org.areslib.command.InstantCommand(() -> {});
     }
-    m_requirements = autoCommand.getRequirements();
+    requirements = autoCommand.getRequirements();
     // setName(autoName);
     PPLibTelemetry.registerHotReloadAuto(autoName, this);
 
     instances++;
-    // (resourceType.kResourceType_PathPlannerAuto, instances);
+    // (resourceType.RESOURCE_TYPE_PATH_PLANNERAuto, instances);
   }
 
   /**
@@ -121,7 +121,7 @@ public class PathPlannerAuto extends Command {
    */
   public void hotReload(JSONObject autoJson) {
     autoCommand = AutoBuilder.getAutoCommandFromJson(autoJson);
-    m_requirements = autoCommand.getRequirements();
+    requirements = autoCommand.getRequirements();
   }
 
   @Override

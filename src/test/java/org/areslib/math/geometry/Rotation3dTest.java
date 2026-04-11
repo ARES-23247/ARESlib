@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Test;
 
 class Rotation3dTest {
 
-  private static final double kEpsilon = 1e-6;
+  private static final double EPSILON = 1e-6;
 
   @Test
   void identityRotation() {
     Rotation3d r = new Rotation3d();
-    assertEquals(1.0, r.getW(), kEpsilon);
-    assertEquals(0.0, r.getX(), kEpsilon);
-    assertEquals(0.0, r.getY(), kEpsilon);
-    assertEquals(0.0, r.getZ(), kEpsilon);
+    assertEquals(1.0, r.getW(), EPSILON);
+    assertEquals(0.0, r.getX(), EPSILON);
+    assertEquals(0.0, r.getY(), EPSILON);
+    assertEquals(0.0, r.getZ(), EPSILON);
   }
 
   @Test
@@ -23,25 +23,25 @@ class Rotation3dTest {
     double pitch = 0.5;
     double yaw = 1.2;
     Rotation3d r = new Rotation3d(roll, pitch, yaw);
-    assertEquals(roll, r.getRoll(), kEpsilon);
-    assertEquals(pitch, r.getPitch(), kEpsilon);
-    assertEquals(yaw, r.getYaw(), kEpsilon);
+    assertEquals(roll, r.getRoll(), EPSILON);
+    assertEquals(pitch, r.getPitch(), EPSILON);
+    assertEquals(yaw, r.getYaw(), EPSILON);
   }
 
   @Test
   void pureYaw() {
     Rotation3d r = new Rotation3d(0.0, 0.0, Math.PI / 2.0);
-    assertEquals(0.0, r.getRoll(), kEpsilon);
-    assertEquals(0.0, r.getPitch(), kEpsilon);
-    assertEquals(Math.PI / 2.0, r.getYaw(), kEpsilon);
+    assertEquals(0.0, r.getRoll(), EPSILON);
+    assertEquals(0.0, r.getPitch(), EPSILON);
+    assertEquals(Math.PI / 2.0, r.getYaw(), EPSILON);
   }
 
   @Test
   void quaternionNormalization() {
     // Non-unit quaternion should be normalized
     Rotation3d r = new Rotation3d(2.0, 0.0, 0.0, 0.0);
-    assertEquals(1.0, r.getW(), kEpsilon);
-    assertEquals(0.0, r.getX(), kEpsilon);
+    assertEquals(1.0, r.getW(), EPSILON);
+    assertEquals(0.0, r.getX(), EPSILON);
   }
 
   @Test
@@ -56,16 +56,16 @@ class Rotation3dTest {
     Rotation3d a = new Rotation3d(0.0, 0.0, Math.PI / 2.0); // 90° yaw
     Rotation3d b = new Rotation3d(0.0, 0.0, Math.PI / 2.0); // another 90°
     Rotation3d result = a.rotateBy(b);
-    assertEquals(Math.PI, Math.abs(result.getYaw()), kEpsilon); // 180° total
+    assertEquals(Math.PI, Math.abs(result.getYaw()), EPSILON); // 180° total
   }
 
   @Test
   void unaryMinusIsInverse() {
     Rotation3d r = new Rotation3d(0.1, 0.2, 0.3);
     Rotation3d identity = r.rotateBy(r.unaryMinus());
-    assertEquals(0.0, identity.getRoll(), kEpsilon);
-    assertEquals(0.0, identity.getPitch(), kEpsilon);
-    assertEquals(0.0, identity.getYaw(), kEpsilon);
+    assertEquals(0.0, identity.getRoll(), EPSILON);
+    assertEquals(0.0, identity.getPitch(), EPSILON);
+    assertEquals(0.0, identity.getYaw(), EPSILON);
   }
 
   @Test
@@ -73,7 +73,7 @@ class Rotation3dTest {
     double yaw = 1.5;
     Rotation3d r = new Rotation3d(0.0, 0.0, yaw);
     Rotation2d r2d = r.toRotation2d();
-    assertEquals(yaw, r2d.getRadians(), kEpsilon);
+    assertEquals(yaw, r2d.getRadians(), EPSILON);
   }
 
   @Test
@@ -86,6 +86,6 @@ class Rotation3dTest {
   @Test
   void degenerateQuaternion() {
     Rotation3d r = new Rotation3d(0.0, 0.0, 0.0, 0.0);
-    assertEquals(1.0, r.getW(), kEpsilon); // defaults to identity
+    assertEquals(1.0, r.getW(), EPSILON); // defaults to identity
   }
 }

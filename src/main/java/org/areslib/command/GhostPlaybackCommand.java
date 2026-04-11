@@ -12,11 +12,11 @@ import org.areslib.math.kinematics.ChassisSpeeds;
  */
 public class GhostPlaybackCommand extends Command {
 
-  private final String m_filePath;
-  private final GhostRecorder m_recorder;
+  private final String filePath;
+  private final GhostRecorder recorder;
 
-  private final Consumer<ChassisSpeeds> m_driveOutput;
-  private final Consumer<Boolean>[] m_booleanOutputs;
+  private final Consumer<ChassisSpeeds> driveOutput;
+  private final Consumer<Boolean>[] booleanOutputs;
 
   /**
    * Constructs a playback command.
@@ -33,45 +33,45 @@ public class GhostPlaybackCommand extends Command {
       GhostRecorder recorder,
       Consumer<ChassisSpeeds> driveOutput,
       Consumer<Boolean>... booleanOutputs) {
-    m_filePath = csvFilePath;
-    m_recorder = recorder;
-    m_driveOutput = driveOutput;
-    m_booleanOutputs = booleanOutputs;
+    filePath = csvFilePath;
+    this.recorder = recorder;
+    this.driveOutput = driveOutput;
+    this.booleanOutputs = booleanOutputs;
   }
 
   @Override
   public void initialize() {
-    boolean success = m_recorder.loadForPlayback(m_filePath);
+    boolean success = recorder.loadForPlayback(filePath);
     if (!success) {
-      com.qualcomm.robotcore.util.RobotLog.e("GhostPlaybackCommand failed to load: " + m_filePath);
+      com.qualcomm.robotcore.util.RobotLog.e("GhostPlaybackCommand failed to load: " + filePath);
     } else {
-      m_recorder.startPlayback();
+      recorder.startPlayback();
     }
   }
 
   @Override
   public void execute() {
-    if (!m_recorder.isPlaying()) return;
+    if (!recorder.isPlaying()) return;
 
     // Apply drive velocities
-    m_driveOutput.accept(m_recorder.getPlaybackSpeeds());
+    driveOutput.accept(recorder.getPlaybackSpeeds());
 
     // Apply boolean outputs inline
-    for (int i = 0; i < m_booleanOutputs.length; i++) {
-      m_booleanOutputs[i].accept(m_recorder.getPlaybackButton(i));
+    for (int i = 0; i < booleanOutputs.length; i++) {
+      booleanOutputs[i].accept(recorder.getPlaybackButton(i));
     }
   }
 
   @Override
   public boolean isFinished() {
-    return !m_recorder.isPlaying() || m_recorder.isPlaybackFinished();
+    return !recorder.isPlaying() || recorder.isPlaybackFinished();
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_recorder.stopPlayback();
-    m_driveOutput.accept(new ChassisSpeeds(0, 0, 0));
-    for (Consumer<Boolean> output : m_booleanOutputs) {
+    recorder.stopPlayback();
+    driveOutput.accept(new ChassisSpeeds(0, 0, 0));
+    for (Consumer<Boolean> output : booleanOutputs) {
       output.accept(false);
     }
   }

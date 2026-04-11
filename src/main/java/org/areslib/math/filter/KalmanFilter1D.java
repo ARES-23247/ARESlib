@@ -13,18 +13,18 @@ package org.areslib.math.filter;
 public class KalmanFilter1D {
 
   // State vector
-  private double m_pos = 0.0;
-  private double m_vel = 0.0;
+  private double pos = 0.0;
+  private double vel = 0.0;
 
   // State covariance matrix (2x2)
-  private double m_p00 = 1.0;
-  private double m_p01 = 0.0;
-  private double m_p10 = 0.0;
-  private double m_p11 = 1.0;
+  private double p00 = 1.0;
+  private double p01 = 0.0;
+  private double p10 = 0.0;
+  private double p11 = 1.0;
 
   // Process noise covariance (Q)
-  private double m_qPos;
-  private double m_qVel;
+  private double qPos;
+  private double qVel;
 
   /**
    * Constructs a 1D Kalman Filter.
@@ -33,8 +33,8 @@ public class KalmanFilter1D {
    * @param qVel Expected variance in the velocity model (e.g., 0.1).
    */
   public KalmanFilter1D(double qPos, double qVel) {
-    m_qPos = qPos;
-    m_qVel = qVel;
+    this.qPos = qPos;
+    this.qVel = qVel;
   }
 
   /**
@@ -44,12 +44,12 @@ public class KalmanFilter1D {
    * @param initialVel Initial velocity.
    */
   public void reset(double initialPos, double initialVel) {
-    m_pos = initialPos;
-    m_vel = initialVel;
-    m_p00 = 1.0;
-    m_p01 = 0.0;
-    m_p10 = 0.0;
-    m_p11 = 1.0;
+    pos = initialPos;
+    vel = initialVel;
+    p00 = 1.0;
+    p01 = 0.0;
+    p10 = 0.0;
+    p11 = 1.0;
   }
 
   /**
@@ -60,21 +60,21 @@ public class KalmanFilter1D {
    */
   public void predict(double dtSeconds) {
     // x_k|k-1 = A * x_k-1|k-1
-    m_pos += dtSeconds * m_vel;
-    // m_vel remains unchanged (constant velocity model)
+    pos += dtSeconds * vel;
+    // vel remains unchanged (constant velocity model)
 
     // P_k|k-1 = A * P_k-1|k-1 * A^T + Q
     // A = [1, dt]
     //     [0,  1]
-    double p00New = m_p00 + dtSeconds * (m_p10 + m_p01) + dtSeconds * dtSeconds * m_p11 + m_qPos;
-    double p01New = m_p01 + dtSeconds * m_p11;
-    double p10New = m_p10 + dtSeconds * m_p11;
-    double p11New = m_p11 + m_qVel;
+    double p00New = p00 + dtSeconds * (p10 + p01) + dtSeconds * dtSeconds * p11 + qPos;
+    double p01New = p01 + dtSeconds * p11;
+    double p10New = p10 + dtSeconds * p11;
+    double p11New = p11 + qVel;
 
-    m_p00 = p00New;
-    m_p01 = p01New;
-    m_p10 = p10New;
-    m_p11 = p11New;
+    p00 = p00New;
+    p01 = p01New;
+    p10 = p10New;
+    p11 = p11New;
   }
 
   /**
@@ -86,29 +86,29 @@ public class KalmanFilter1D {
   public void updatePosition(double measurement, double rVariance) {
     // H = [1, 0]
     // y = z - H * x
-    double y = measurement - m_pos;
+    double y = measurement - pos;
 
     // S = H * P * H^T + R
-    double s = m_p00 + rVariance;
+    double s = p00 + rVariance;
 
     // K = P * H^T * S^-1
-    double k0 = m_p00 / s;
-    double k1 = m_p10 / s;
+    double k0 = p00 / s;
+    double k1 = p10 / s;
 
     // x_k|k = x_k|k-1 + K * y
-    m_pos += k0 * y;
-    m_vel += k1 * y;
+    pos += k0 * y;
+    vel += k1 * y;
 
     // P_k|k = (I - K * H) * P_k|k-1
-    double p00New = (1 - k0) * m_p00;
-    double p01New = (1 - k0) * m_p01;
-    double p10New = -k1 * m_p00 + m_p10;
-    double p11New = -k1 * m_p01 + m_p11;
+    double p00New = (1 - k0) * p00;
+    double p01New = (1 - k0) * p01;
+    double p10New = -k1 * p00 + p10;
+    double p11New = -k1 * p01 + p11;
 
-    m_p00 = p00New;
-    m_p01 = p01New;
-    m_p10 = p10New;
-    m_p11 = p11New;
+    p00 = p00New;
+    p01 = p01New;
+    p10 = p10New;
+    p11 = p11New;
   }
 
   /**
@@ -120,29 +120,29 @@ public class KalmanFilter1D {
   public void updateVelocity(double measurement, double rVariance) {
     // H = [0, 1]
     // y = z - H * x
-    double y = measurement - m_vel;
+    double y = measurement - vel;
 
     // S = H * P * H^T + R
-    double s = m_p11 + rVariance;
+    double s = p11 + rVariance;
 
     // K = P * H^T * S^-1
-    double k0 = m_p01 / s;
-    double k1 = m_p11 / s;
+    double k0 = p01 / s;
+    double k1 = p11 / s;
 
     // x_k|k = x_k|k-1 + K * y
-    m_pos += k0 * y;
-    m_vel += k1 * y;
+    pos += k0 * y;
+    vel += k1 * y;
 
     // P_k|k = (I - K * H) * P_k|k-1
-    double p00New = m_p00 - k0 * m_p10;
-    double p01New = m_p01 - k0 * m_p11;
-    double p10New = (1 - k1) * m_p10;
-    double p11New = (1 - k1) * m_p11;
+    double p00New = p00 - k0 * p10;
+    double p01New = p01 - k0 * p11;
+    double p10New = (1 - k1) * p10;
+    double p11New = (1 - k1) * p11;
 
-    m_p00 = p00New;
-    m_p01 = p01New;
-    m_p10 = p10New;
-    m_p11 = p11New;
+    p00 = p00New;
+    p01 = p01New;
+    p10 = p10New;
+    p11 = p11New;
   }
 
   /**
@@ -151,7 +151,7 @@ public class KalmanFilter1D {
    * @return The optimally filtered position.
    */
   public double getPosition() {
-    return m_pos;
+    return pos;
   }
 
   /**
@@ -160,6 +160,6 @@ public class KalmanFilter1D {
    * @return The optimally filtered velocity.
    */
   public double getVelocity() {
-    return m_vel;
+    return vel;
   }
 }

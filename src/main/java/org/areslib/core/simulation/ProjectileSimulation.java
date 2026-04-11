@@ -74,11 +74,11 @@ public class ProjectileSimulation {
     double currentX = initialX + initialVelX * timeElapsedSec;
     double currentY = initialY + initialVelY * timeElapsedSec;
     // FTC field is +- 1.83m from center
-    final double EDGE_TOLERANCE = 0.5;
-    return currentX < (-1.83 - EDGE_TOLERANCE)
-        || currentX > (1.83 + EDGE_TOLERANCE)
-        || currentY < (-1.83 - EDGE_TOLERANCE)
-        || currentY > (1.83 + EDGE_TOLERANCE);
+    final double edgeTolerance = 0.5;
+    return currentX < (-1.83 - edgeTolerance)
+        || currentX > (1.83 + edgeTolerance)
+        || currentY < (-1.83 - edgeTolerance)
+        || currentY > (1.83 + edgeTolerance);
   }
 
   /**

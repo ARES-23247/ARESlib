@@ -10,8 +10,8 @@ import java.util.Optional;
 public class DriverStation {
   /** Dummy representation of an FRC Alliance color. */
   public static class Alliance {
-    public static final Alliance Red = new Alliance();
-    public static final Alliance Blue = new Alliance();
+    public static final Alliance RED = new Alliance();
+    public static final Alliance BLUE = new Alliance();
   }
 
   /**
@@ -20,7 +20,7 @@ public class DriverStation {
    * @return hardcoded Blue alliance for simulation stability.
    */
   public static Optional<Alliance> getAlliance() {
-    return Optional.of(Alliance.Blue);
+    return Optional.of(Alliance.BLUE);
   }
 
   /**

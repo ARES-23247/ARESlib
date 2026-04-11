@@ -33,27 +33,27 @@ public class GhostRecorder {
 
   private static final ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
 
-  private volatile boolean m_isRecording = false;
-  private volatile boolean m_isPlaying = false;
+  private volatile boolean isRecording = false;
+  private volatile boolean isPlaying = false;
 
-  private final Supplier<ChassisSpeeds> m_speedsSupplier;
-  private final Supplier<Boolean>[] m_booleanSuppliers;
+  private final Supplier<ChassisSpeeds> speedsSupplier;
+  private final Supplier<Boolean>[] booleanSuppliers;
 
   // --- Recording (thread-safe) ---
-  private final ConcurrentLinkedQueue<String> m_writeBuffer = new ConcurrentLinkedQueue<>();
-  private Thread m_writerThread;
+  private final ConcurrentLinkedQueue<String> writeBuffer = new ConcurrentLinkedQueue<>();
+  private Thread writerThread;
 
   @SuppressWarnings("PMD.AvoidStringBufferField")
-  private final StringBuilder m_rowBuilder = new StringBuilder(128);
+  private final StringBuilder rowBuilder = new StringBuilder(128);
 
-  private long m_recordStartNanos;
+  private long recordStartNanos;
 
   // --- Playback Cache ---
-  private final List<GhostFrame> m_frames = new ArrayList<>();
-  private int m_playIndex = 0;
-  private GhostFrame m_currentFrame = new GhostFrame();
-  private long m_playbackStartNanos;
-  private final ChassisSpeeds m_playbackSpeeds = new ChassisSpeeds();
+  private final List<GhostFrame> frames = new ArrayList<>();
+  private int playIndex = 0;
+  private GhostFrame currentFrame = new GhostFrame();
+  private long playbackStartNanos;
+  private final ChassisSpeeds playbackSpeeds = new ChassisSpeeds();
 
   /**
    * Constructs a Ghost Mode recorder/player.
@@ -65,8 +65,8 @@ public class GhostRecorder {
   @SafeVarargs
   public GhostRecorder(
       Supplier<ChassisSpeeds> speedsSupplier, Supplier<Boolean>... booleanSuppliers) {
-    m_speedsSupplier = speedsSupplier;
-    m_booleanSuppliers = booleanSuppliers;
+    this.speedsSupplier = speedsSupplier;
+    this.booleanSuppliers = booleanSuppliers;
   }
 
   // ── Recording ──────────────────────────────────────────────────────────────
@@ -78,19 +78,19 @@ public class GhostRecorder {
    */
   public void startRecording(String filePath) {
     // Safely terminate any previous writer thread
-    if (m_writerThread != null && m_writerThread.isAlive()) {
-      m_isRecording = false;
-      m_writerThread.interrupt();
+    if (writerThread != null && writerThread.isAlive()) {
+      isRecording = false;
+      writerThread.interrupt();
       try {
-        m_writerThread.join(100);
+        writerThread.join(100);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }
     }
 
-    m_isRecording = true;
-    m_writeBuffer.clear();
-    m_recordStartNanos = System.nanoTime();
+    isRecording = true;
+    writeBuffer.clear();
+    recordStartNanos = System.nanoTime();
     startWriterThread(new File(filePath));
     AresAutoLogger.recordOutput("GhostMode/Recording", 1.0);
   }
@@ -100,20 +100,20 @@ public class GhostRecorder {
    * to the lock-free write buffer — zero blocking on the main thread.
    */
   public void update() {
-    if (!m_isRecording) return;
+    if (!isRecording) return;
 
-    ChassisSpeeds speeds = m_speedsSupplier.get();
+    ChassisSpeeds speeds = speedsSupplier.get();
     int mask = 0;
-    for (int i = 0; i < m_booleanSuppliers.length; i++) {
-      if (m_booleanSuppliers[i].get()) {
+    for (int i = 0; i < booleanSuppliers.length; i++) {
+      if (booleanSuppliers[i].get()) {
         mask |= (1 << i);
       }
     }
 
-    double timeSecs = (System.nanoTime() - m_recordStartNanos) / 1_000_000_000.0;
+    double timeSecs = (System.nanoTime() - recordStartNanos) / 1_000_000_000.0;
 
-    m_rowBuilder.setLength(0);
-    m_rowBuilder
+    rowBuilder.setLength(0);
+    rowBuilder
         .append(Math.round(timeSecs * 1000.0) / 1000.0)
         .append(',')
         .append(Math.round(speeds.vxMetersPerSecond * 1000.0) / 1000.0)
@@ -124,12 +124,12 @@ public class GhostRecorder {
         .append(',')
         .append(mask);
 
-    m_writeBuffer.offer(m_rowBuilder.toString());
+    writeBuffer.offer(rowBuilder.toString());
   }
 
   /** Stops recording. The background writer thread drains remaining buffer entries and exits. */
   public void stopRecording() {
-    m_isRecording = false;
+    isRecording = false;
     AresAutoLogger.recordOutput("GhostMode/Recording", 0.0);
     // Writer thread will detect recording=false, drain, and exit
   }
@@ -143,8 +143,8 @@ public class GhostRecorder {
    * @return True if loading succeeded, false if the file is missing or corrupt.
    */
   public boolean loadForPlayback(String filePath) {
-    m_frames.clear();
-    m_playIndex = 0;
+    frames.clear();
+    playIndex = 0;
 
     try (BufferedReader br =
         Files.newBufferedReader(java.nio.file.Paths.get(filePath), StandardCharsets.UTF_8)) {
@@ -159,7 +159,7 @@ public class GhostRecorder {
         frame.vy = Double.parseDouble(v[2]);
         frame.omega = Double.parseDouble(v[3]);
         frame.buttonMask = Integer.parseInt(v[4]);
-        m_frames.add(frame);
+        frames.add(frame);
         line = br.readLine();
       }
     } catch (Exception e) {
@@ -167,16 +167,16 @@ public class GhostRecorder {
       return false;
     }
 
-    AresAutoLogger.recordOutput("GhostMode/FramesLoaded", m_frames.size());
-    return !m_frames.isEmpty();
+    AresAutoLogger.recordOutput("GhostMode/FramesLoaded", frames.size());
+    return !frames.isEmpty();
   }
 
   /** Starts playback of the loaded frames. Call {@link #loadForPlayback} first. */
   public void startPlayback() {
-    if (m_frames.isEmpty()) return;
-    m_isPlaying = true;
-    m_playIndex = 0;
-    m_playbackStartNanos = System.nanoTime();
+    if (frames.isEmpty()) return;
+    isPlaying = true;
+    playIndex = 0;
+    playbackStartNanos = System.nanoTime();
     AresAutoLogger.recordOutput("GhostMode/Playing", 1.0);
   }
 
@@ -186,20 +186,20 @@ public class GhostRecorder {
    * @return The current playback frame's ChassisSpeeds, or zero if not playing.
    */
   public ChassisSpeeds getPlaybackSpeeds() {
-    if (!m_isPlaying || m_frames.isEmpty()) return ZERO_SPEEDS;
+    if (!isPlaying || frames.isEmpty()) return ZERO_SPEEDS;
 
-    double t = (System.nanoTime() - m_playbackStartNanos) / 1_000_000_000.0;
+    double t = (System.nanoTime() - playbackStartNanos) / 1_000_000_000.0;
 
     // Fast-forward index to current playback time
-    while (m_playIndex < m_frames.size() - 1 && m_frames.get(m_playIndex + 1).time <= t) {
-      m_playIndex++;
+    while (playIndex < frames.size() - 1 && frames.get(playIndex + 1).time <= t) {
+      playIndex++;
     }
 
-    m_currentFrame = m_frames.get(m_playIndex);
-    m_playbackSpeeds.vxMetersPerSecond = m_currentFrame.vx;
-    m_playbackSpeeds.vyMetersPerSecond = m_currentFrame.vy;
-    m_playbackSpeeds.omegaRadiansPerSecond = m_currentFrame.omega;
-    return m_playbackSpeeds;
+    currentFrame = frames.get(playIndex);
+    playbackSpeeds.vxMetersPerSecond = currentFrame.vx;
+    playbackSpeeds.vyMetersPerSecond = currentFrame.vy;
+    playbackSpeeds.omegaRadiansPerSecond = currentFrame.omega;
+    return playbackSpeeds;
   }
 
   /**
@@ -209,35 +209,35 @@ public class GhostRecorder {
    * @return True if the button was pressed in the current playback frame.
    */
   public boolean getPlaybackButton(int buttonIndex) {
-    if (!m_isPlaying) return false;
-    return (m_currentFrame.buttonMask & (1 << buttonIndex)) != 0;
+    if (!isPlaying) return false;
+    return (currentFrame.buttonMask & (1 << buttonIndex)) != 0;
   }
 
   /** Returns true if playback has reached the end of the recorded frames. */
   public boolean isPlaybackFinished() {
-    return m_playIndex >= m_frames.size() - 1;
+    return playIndex >= frames.size() - 1;
   }
 
   /** Stops playback. */
   public void stopPlayback() {
-    m_isPlaying = false;
+    isPlaying = false;
     AresAutoLogger.recordOutput("GhostMode/Playing", 0.0);
   }
 
   /** Returns true if currently recording. */
   public boolean isRecording() {
-    return m_isRecording;
+    return isRecording;
   }
 
   /** Returns true if currently playing back. */
   public boolean isPlaying() {
-    return m_isPlaying;
+    return isPlaying;
   }
 
   // ── Background writer thread ───────────────────────────────────────────────
 
   private void startWriterThread(File file) {
-    m_writerThread =
+    writerThread =
         new Thread(
             () -> {
               try {
@@ -246,11 +246,11 @@ public class GhostRecorder {
                     new PrintWriter(
                         Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8))) {
                   pw.println("time,vx,vy,omega,buttons");
-                  while (m_isRecording || !m_writeBuffer.isEmpty()) {
-                    String line = m_writeBuffer.poll();
+                  while (isRecording || !writeBuffer.isEmpty()) {
+                    String line = writeBuffer.poll();
                     while (line != null) {
                       pw.println(line);
-                      line = m_writeBuffer.poll();
+                      line = writeBuffer.poll();
                     }
                     // Flush after each drain cycle to survive unexpected power-offs
                     pw.flush();
@@ -267,8 +267,8 @@ public class GhostRecorder {
               }
             },
             "GhostWriter");
-    m_writerThread.setDaemon(true);
-    m_writerThread.start();
+    writerThread.setDaemon(true);
+    writerThread.start();
   }
 
   // ── Internal types ─────────────────────────────────────────────────────────

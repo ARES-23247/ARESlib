@@ -11,11 +11,11 @@ import org.areslib.math.geometry.Twist2d;
  * rigid WPILib mechanical kinematics implementations.
  */
 public class AresHardwarePoseEstimator {
-  private final TimeInterpolatableBuffer<Pose2d> m_poseBuffer;
+  private final TimeInterpolatableBuffer<Pose2d> poseBuffer;
 
-  private Pose2d m_estimatedPose;
-  private Pose2d m_previousHardwarePose;
-  private double[] m_visionStdDevs = new double[] {0.1, 0.1, 0.1};
+  private Pose2d estimatedPose;
+  private Pose2d previousHardwarePose;
+  private double[] visionStdDevs = new double[] {0.1, 0.1, 0.1};
 
   /**
    * Constructs a generic Hardware Pose Estimator.
@@ -24,10 +24,10 @@ public class AresHardwarePoseEstimator {
    * @param initialEstimatedPose The starting pose of the robot on the field map.
    */
   public AresHardwarePoseEstimator(Pose2d initialHardwarePose, Pose2d initialEstimatedPose) {
-    m_previousHardwarePose = initialHardwarePose;
-    m_estimatedPose = initialEstimatedPose;
+    previousHardwarePose = initialHardwarePose;
+    estimatedPose = initialEstimatedPose;
     // Buffer up to 1.5 seconds of data dynamically at ~50Hz
-    m_poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
+    poseBuffer = TimeInterpolatableBuffer.createBuffer(75);
   }
 
   /**
@@ -39,7 +39,7 @@ public class AresHardwarePoseEstimator {
     if (visionStdDevs.length != 3) {
       throw new IllegalArgumentException("Standard deviations array must be of length 3");
     }
-    m_visionStdDevs = visionStdDevs;
+    this.visionStdDevs = visionStdDevs;
   }
 
   /**
@@ -49,9 +49,9 @@ public class AresHardwarePoseEstimator {
    * @param estimatedPose The global location where you physically want the robot set to.
    */
   public void resetPosition(Pose2d hardwarePose, Pose2d estimatedPose) {
-    m_previousHardwarePose = hardwarePose;
-    m_estimatedPose = estimatedPose;
-    m_poseBuffer.clear();
+    previousHardwarePose = hardwarePose;
+    this.estimatedPose = estimatedPose;
+    poseBuffer.clear();
   }
 
   /**
@@ -60,7 +60,7 @@ public class AresHardwarePoseEstimator {
    * @return The globally-corrected location.
    */
   public Pose2d getEstimatedPosition() {
-    return m_estimatedPose;
+    return estimatedPose;
   }
 
   /**
@@ -73,18 +73,18 @@ public class AresHardwarePoseEstimator {
    */
   public Pose2d update(Pose2d currentHardwarePose, double timestampSeconds) {
     // Find the exact geometric curve (Twist2d arc) mapping the last hardware loop to right now
-    Twist2d deltaTwist = m_previousHardwarePose.log(currentHardwarePose);
+    Twist2d deltaTwist = previousHardwarePose.log(currentHardwarePose);
 
     // Mathematically project that curve forward off of our corrected Vision origin map
-    m_estimatedPose = m_estimatedPose.exp(deltaTwist);
+    estimatedPose = estimatedPose.exp(deltaTwist);
 
     // Cache the hardware state locally for the next delta pull
-    m_previousHardwarePose = currentHardwarePose;
+    previousHardwarePose = currentHardwarePose;
 
     // Commit to JVM history timeline mapping for retro-play tracking
-    m_poseBuffer.addSample(timestampSeconds, m_estimatedPose);
+    poseBuffer.addSample(timestampSeconds, estimatedPose);
 
-    return m_estimatedPose;
+    return estimatedPose;
   }
 
   /**
@@ -96,7 +96,7 @@ public class AresHardwarePoseEstimator {
    *     delay.
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-    addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, m_visionStdDevs);
+    addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionStdDevs);
   }
 
   /**
@@ -108,8 +108,8 @@ public class AresHardwarePoseEstimator {
    */
   public void addVisionMeasurement(
       Pose2d visionRobotPoseMeters, double timestampSeconds, double[] visionStdDevs) {
-    m_estimatedPose =
+    estimatedPose =
         VisionFusionHelper.applyVisionMeasurement(
-            visionRobotPoseMeters, timestampSeconds, m_estimatedPose, m_poseBuffer, visionStdDevs);
+            visionRobotPoseMeters, timestampSeconds, estimatedPose, poseBuffer, visionStdDevs);
   }
 }

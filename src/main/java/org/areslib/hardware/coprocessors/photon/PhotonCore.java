@@ -46,7 +46,7 @@ import org.firstinspires.ftc.robotcore.internal.usb.exception.RobotUsbException;
  * documentation coverage.
  */
 public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications {
-  protected static final PhotonCore instance = new PhotonCore();
+  protected static final PhotonCore INSTANCE = new PhotonCore();
   protected AtomicBoolean enabled, threadEnabled;
 
   private List<LynxModule> modules;
@@ -90,7 +90,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
   }
 
   public static void enable() {
-    instance.enabled.set(true);
+    INSTANCE.enabled.set(true);
     if (controlHub != null && controlHub.getBulkCachingMode() == LynxModule.BulkCachingMode.OFF) {
       controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
     }
@@ -101,13 +101,13 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
   }
 
   public static void disable() {
-    instance.enabled.set(false);
+    INSTANCE.enabled.set(false);
   }
 
   @OnCreateEventLoop
   public static void attachEventLoop(Context context, FtcEventLoop eventLoop) {
-    eventLoop.getOpModeManager().registerListener(instance);
-    instance.opModeManager = eventLoop.getOpModeManager();
+    eventLoop.getOpModeManager().registerListener(INSTANCE);
+    INSTANCE.opModeManager = eventLoop.getOpModeManager();
   }
 
   protected static boolean registerSend(LynxCommand command)
@@ -115,11 +115,11 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
 
     PhotonLynxModule photonModule = (PhotonLynxModule) command.getModule();
 
-    if (!instance.usbDeviceMap.containsKey(photonModule)) {
+    if (!INSTANCE.usbDeviceMap.containsKey(photonModule)) {
       return false;
     }
 
-    synchronized (instance.messageSync) {
+    synchronized (INSTANCE.messageSync) {
       while (((PhotonLynxModule) photonModule).getUnfinishedCommands().size()
           > experimental.maximumParallelCommands.get()) {
         // Spinning waiting for parallel commands to finish
@@ -137,7 +137,7 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
         while (!noSimilar) {
           noSimilar = true;
           for (LynxRespondable respondable : photonModule.getUnfinishedCommands().values()) {
-            if (instance.isSimilar(respondable, command)) {
+            if (INSTANCE.isSimilar(respondable, command)) {
               noSimilar = false;
             }
           }
@@ -161,9 +161,9 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
         byte[] bytes = datagram.toByteArray();
 
         double msLatency = 0;
-        synchronized (instance.syncLock) {
+        synchronized (INSTANCE.syncLock) {
           long start = System.nanoTime();
-          instance.usbDeviceMap.get(photonModule).write(bytes);
+          INSTANCE.usbDeviceMap.get(photonModule).write(bytes);
           long stop = System.nanoTime();
           msLatency = (stop - start) * 1.0e-6;
         }
@@ -245,10 +245,10 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
       expansionHub = null;
     }
 
-    instance.modules = map.getAll(LynxModule.class);
+    INSTANCE.modules = map.getAll(LynxModule.class);
     ArrayList<String> moduleNames = new ArrayList<>();
     HashMap<LynxModule, PhotonLynxModule> replacements = new HashMap<>();
-    for (LynxModule module : instance.modules) {
+    for (LynxModule module : INSTANCE.modules) {
       moduleNames.add((String) map.getNamesOf(module).toArray()[0]);
     }
     LynxUsbDeviceImpl usbDevice = null, usbDevice1 = null;
@@ -427,6 +427,6 @@ public class PhotonCore implements Runnable, OpModeManagerNotifier.Notifications
   }
 
   public static AtomicBoolean isEnabled() {
-    return instance.enabled;
+    return INSTANCE.enabled;
   }
 }

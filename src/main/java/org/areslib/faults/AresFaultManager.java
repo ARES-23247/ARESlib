@@ -7,7 +7,7 @@ import org.areslib.hardware.wrappers.AresGamepad;
 import org.areslib.telemetry.AresTelemetry;
 
 /**
- * Manages all active alerts and hardware faults, dispatching them to telemetry and providing
+ * Manages all active ALERTS and hardware faults, dispatching them to telemetry and providing
  * haptic/visual feedback to the driver station.
  *
  * <p><b>Architecture Note -- Two-Layer Fault System:</b>
@@ -29,7 +29,7 @@ import org.areslib.telemetry.AresTelemetry;
  *   |  Classes: AresAlert, AresFaultManager, AresDiagnostics       |
  *   |  Role:    Manages alert lifecycle (active/inactive).          |
  *   |           Drives gamepad rumble + LED color feedback.          |
- *   |           Publishes categorized alerts to telemetry.           |
+ *   |           Publishes categorized ALERTS to telemetry.           |
  *   |           AresDiagnostics runs pre-match hardware scans.      |
  *   +--------------------------------------------------------------+
  * </pre>
@@ -38,7 +38,7 @@ import org.areslib.telemetry.AresTelemetry;
  * 2, triggering both AdvantageScope logging AND gamepad driver feedback.
  */
 public class AresFaultManager {
-  private static final List<AresAlert> alerts = new CopyOnWriteArrayList<>();
+  private static final List<AresAlert> ALERTS = new CopyOnWriteArrayList<>();
   private static AresGamepad driverGamepad;
 
   private static boolean wasError = false;
@@ -54,12 +54,12 @@ public class AresFaultManager {
     wasError = false;
   }
 
-  /** Resets the manager, clearing the gamepad reference but keeping registered alerts. */
+  /** Resets the manager, clearing the gamepad reference but keeping registered ALERTS. */
   public static void reset() {
     driverGamepad = null;
     wasError = false;
     hasNewError = false;
-    alerts.clear();
+    ALERTS.clear();
   }
 
   /**
@@ -78,8 +78,8 @@ public class AresFaultManager {
    * @param alert The alert to register.
    */
   public static void registerAlert(AresAlert alert) {
-    if (!alerts.contains(alert)) {
-      alerts.add(alert);
+    if (!ALERTS.contains(alert)) {
+      ALERTS.add(alert);
     }
   }
 
@@ -91,7 +91,7 @@ public class AresFaultManager {
 
     boolean hasError = false;
 
-    for (AresAlert alert : alerts) {
+    for (AresAlert alert : ALERTS) {
       if (alert.isActive()) {
         switch (alert.getType()) {
           case ERROR:

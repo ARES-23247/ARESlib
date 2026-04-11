@@ -6,11 +6,11 @@ package org.areslib.pathplanner.dummy;
  */
 public class FRCNetComm {
   public static class Instances {
-    public static final int kLanguage_Java = 1;
+    public static final int LANGUAGE_JAVA = 1;
   }
 
   public static class ResourceType {
-    public static final int kResourceType_PathPlanner = 1;
+    public static final int RESOURCE_TYPE_PATH_PLANNER = 1;
   }
 
   public static void frcNetworkCommunicationObserveUserProgramStarting() {}

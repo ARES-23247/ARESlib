@@ -13,10 +13,10 @@ import org.areslib.math.geometry.Twist2d;
  * eliminating jitter or dropped intervals from control cycle stutters.
  */
 public class SwerveDriveOdometry {
-  private final SwerveDriveKinematics m_kinematics;
-  private Pose2d m_pose;
-  private Rotation2d m_previousAngle;
-  private SwerveModulePosition[] m_previousModulePositions;
+  private final SwerveDriveKinematics kinematics;
+  private Pose2d pose;
+  private Rotation2d previousAngle;
+  private SwerveModulePosition[] previousModulePositions;
 
   /**
    * Constructs a SwerveDriveOdometry object.
@@ -31,13 +31,13 @@ public class SwerveDriveOdometry {
       Rotation2d gyroAngle,
       SwerveModulePosition[] modulePositions,
       Pose2d initialPose) {
-    m_kinematics = kinematics;
-    m_pose = initialPose;
-    m_previousAngle = gyroAngle;
+    this.kinematics = kinematics;
+    pose = initialPose;
+    previousAngle = gyroAngle;
 
-    m_previousModulePositions = new SwerveModulePosition[modulePositions.length];
+    previousModulePositions = new SwerveModulePosition[modulePositions.length];
     for (int i = 0; i < modulePositions.length; i++) {
-      m_previousModulePositions[i] =
+      previousModulePositions[i] =
           new SwerveModulePosition(modulePositions[i].distanceMeters, modulePositions[i].angle);
     }
   }
@@ -58,10 +58,10 @@ public class SwerveDriveOdometry {
    */
   public void resetPosition(
       Rotation2d gyroAngle, SwerveModulePosition[] modulePositions, Pose2d pose) {
-    m_pose = pose;
-    m_previousAngle = gyroAngle;
+    this.pose = pose;
+    previousAngle = gyroAngle;
     for (int i = 0; i < modulePositions.length; i++) {
-      m_previousModulePositions[i] =
+      previousModulePositions[i] =
           new SwerveModulePosition(modulePositions[i].distanceMeters, modulePositions[i].angle);
     }
   }
@@ -73,7 +73,7 @@ public class SwerveDriveOdometry {
    * @param pose The new pose of the robot.
    */
   public void resetTranslation(Pose2d pose) {
-    m_pose = pose;
+    this.pose = pose;
   }
 
   /**
@@ -82,7 +82,7 @@ public class SwerveDriveOdometry {
    * @return The estimated pose.
    */
   public Pose2d getPose() {
-    return m_pose;
+    return pose;
   }
 
   /**
@@ -94,24 +94,24 @@ public class SwerveDriveOdometry {
    * @return The new pose of the robot.
    */
   public Pose2d update(Rotation2d gyroAngle, SwerveModulePosition[] modulePositions) {
-    if (modulePositions.length != m_previousModulePositions.length) {
+    if (modulePositions.length != previousModulePositions.length) {
       throw new IllegalArgumentException("Number of modules must remain constant.");
     }
 
-    Twist2d twist = m_kinematics.toTwist2d(m_previousModulePositions, modulePositions);
+    Twist2d twist = kinematics.toTwist2d(previousModulePositions, modulePositions);
 
     // WPILib exact odometry substitution: Gyro defines absolute dtheta!
-    twist.dtheta = gyroAngle.minus(m_previousAngle).getRadians();
+    twist.dtheta = gyroAngle.minus(previousAngle).getRadians();
 
     // Exact exponential curve geometry mapping
-    m_pose = m_pose.exp(twist);
+    pose = pose.exp(twist);
 
-    m_previousAngle = gyroAngle;
+    previousAngle = gyroAngle;
     for (int i = 0; i < modulePositions.length; i++) {
-      m_previousModulePositions[i].distanceMeters = modulePositions[i].distanceMeters;
-      m_previousModulePositions[i].angle = modulePositions[i].angle;
+      previousModulePositions[i].distanceMeters = modulePositions[i].distanceMeters;
+      previousModulePositions[i].angle = modulePositions[i].angle;
     }
 
-    return m_pose;
+    return pose;
   }
 }

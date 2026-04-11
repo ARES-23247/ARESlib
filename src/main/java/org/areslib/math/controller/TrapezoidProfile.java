@@ -71,9 +71,9 @@ public class TrapezoidProfile {
     }
   }
 
-  private final Constraints m_constraints;
-  private State m_current;
-  private final State m_goal;
+  private final Constraints constraints;
+  private State current;
+  private final State goal;
 
   /**
    * Constructs a new TrapezoidProfile.
@@ -83,9 +83,9 @@ public class TrapezoidProfile {
    * @param initial The starting state.
    */
   public TrapezoidProfile(Constraints constraints, State goal, State initial) {
-    m_constraints = constraints;
-    m_goal = new State(goal.position, goal.velocity);
-    m_current = new State(initial.position, initial.velocity);
+    this.constraints = constraints;
+    this.goal = new State(goal.position, goal.velocity);
+    this.current = new State(initial.position, initial.velocity);
   }
 
   /**
@@ -105,51 +105,49 @@ public class TrapezoidProfile {
    * @return The profiled state at the new time.
    */
   public State calculate(double dt) {
-    if (dt <= 0) return m_current;
+    if (dt <= 0) return current;
 
-    double direction = Math.signum(m_goal.position - m_current.position);
+    double direction = Math.signum(goal.position - current.position);
 
     // If we're close enough and velocity is near zero, snap to goal
-    if (Math.abs(m_goal.position - m_current.position) < 1e-9
-        && Math.abs(m_current.velocity) < 1e-9) {
-      m_current.position = m_goal.position;
-      m_current.velocity = m_goal.velocity;
-      return m_current;
+    if (Math.abs(goal.position - current.position) < 1e-9 && Math.abs(current.velocity) < 1e-9) {
+      current.position = goal.position;
+      current.velocity = goal.velocity;
+      return current;
     }
 
     // Handle direction: work in the positive direction, flip at the end
-    double distanceToGo = Math.abs(m_goal.position - m_current.position);
+    double distanceToGo = Math.abs(goal.position - current.position);
 
     // Velocity needed to decelerate to goal velocity from current v
     // v² = v_goal² + 2*a*d  =>  v_decel = sqrt(v_goal² + 2*a*d)
     double maxReachableVelocity =
-        Math.sqrt(
-            m_goal.velocity * m_goal.velocity + 2.0 * m_constraints.maxAcceleration * distanceToGo);
+        Math.sqrt(goal.velocity * goal.velocity + 2.0 * constraints.maxAcceleration * distanceToGo);
 
     // Constrain to max velocity
-    double targetVelocity = Math.min(maxReachableVelocity, m_constraints.maxVelocity);
+    double targetVelocity = Math.min(maxReachableVelocity, constraints.maxVelocity);
     targetVelocity *= direction;
 
     // Accelerate towards target velocity
-    double velocityError = targetVelocity - m_current.velocity;
-    double maxVelocityStep = m_constraints.maxAcceleration * dt;
+    double velocityError = targetVelocity - current.velocity;
+    double maxVelocityStep = constraints.maxAcceleration * dt;
     double newVelocity =
-        m_current.velocity + Math.max(-maxVelocityStep, Math.min(maxVelocityStep, velocityError));
+        current.velocity + Math.max(-maxVelocityStep, Math.min(maxVelocityStep, velocityError));
 
     // Integrate position
-    m_current.position += newVelocity * dt;
-    m_current.velocity = newVelocity;
+    current.position += newVelocity * dt;
+    current.velocity = newVelocity;
 
     // Prevent overshooting the goal
-    if (direction > 0 && m_current.position > m_goal.position) {
-      m_current.position = m_goal.position;
-      m_current.velocity = m_goal.velocity;
-    } else if (direction < 0 && m_current.position < m_goal.position) {
-      m_current.position = m_goal.position;
-      m_current.velocity = m_goal.velocity;
+    if (direction > 0 && current.position > goal.position) {
+      current.position = goal.position;
+      current.velocity = goal.velocity;
+    } else if (direction < 0 && current.position < goal.position) {
+      current.position = goal.position;
+      current.velocity = goal.velocity;
     }
 
-    return m_current;
+    return current;
   }
 
   /**
@@ -158,7 +156,7 @@ public class TrapezoidProfile {
    * @return The current state.
    */
   public State getState() {
-    return m_current;
+    return current;
   }
 
   /**
@@ -167,7 +165,7 @@ public class TrapezoidProfile {
    * @return The goal state.
    */
   public State getGoal() {
-    return m_goal;
+    return goal;
   }
 
   /**
@@ -176,7 +174,7 @@ public class TrapezoidProfile {
    * @return true if finished, false otherwise.
    */
   public boolean isFinished() {
-    return Math.abs(m_current.position - m_goal.position) < 1e-6
-        && Math.abs(m_current.velocity - m_goal.velocity) < 1e-6;
+    return Math.abs(current.position - goal.position) < 1e-6
+        && Math.abs(current.velocity - goal.velocity) < 1e-6;
   }
 }

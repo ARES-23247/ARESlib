@@ -19,15 +19,23 @@
         </module>
         <module name="LocalFinalVariableName"/>
         <module name="MemberName">
-            <property name="format" value="^m_[a-z][a-zA-Z0-9]*$|^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+            <property name="format" value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
         </module>
         <module name="MethodName"/>
         <module name="PackageName"/>
         <module name="ParameterName">
             <property name="format" value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
         </module>
-        <module name="StaticVariableName"/>
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
         <module name="TypeName"/>
+        <module name="NestedIfDepth">
+            <property name="max" value="3"/>
+        </module>
 
         <!-- Checks for imports -->
         <module name="AvoidStarImport">

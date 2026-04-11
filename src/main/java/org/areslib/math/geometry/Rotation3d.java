@@ -7,17 +7,17 @@ package org.areslib.math.geometry;
  * AprilTag 3D pose estimation, camera mount transforms, and AdvantageScope 3D field visualization.
  */
 public class Rotation3d {
-  private final double m_w;
-  private final double m_x;
-  private final double m_y;
-  private final double m_z;
+  private final double w;
+  private final double x;
+  private final double y;
+  private final double z;
 
   /** Constructs the identity rotation (no rotation). */
   public Rotation3d() {
-    m_w = 1.0;
-    m_x = 0.0;
-    m_y = 0.0;
-    m_z = 0.0;
+    w = 1.0;
+    x = 0.0;
+    y = 0.0;
+    z = 0.0;
   }
 
   /**
@@ -32,15 +32,15 @@ public class Rotation3d {
     double norm = Math.sqrt(w * w + x * x + y * y + z * z);
     if (norm < 1e-12) {
       // Degenerate — default to identity
-      m_w = 1.0;
-      m_x = 0.0;
-      m_y = 0.0;
-      m_z = 0.0;
+      this.w = 1.0;
+      this.x = 0.0;
+      this.y = 0.0;
+      this.z = 0.0;
     } else {
-      m_w = w / norm;
-      m_x = x / norm;
-      m_y = y / norm;
-      m_z = z / norm;
+      this.w = w / norm;
+      this.x = x / norm;
+      this.y = y / norm;
+      this.z = z / norm;
     }
   }
 
@@ -68,28 +68,28 @@ public class Rotation3d {
     double z = cr * cp * sy - sr * sp * cy;
 
     double norm = Math.sqrt(w * w + x * x + y * y + z * z);
-    m_w = w / norm;
-    m_x = x / norm;
-    m_y = y / norm;
-    m_z = z / norm;
+    this.w = w / norm;
+    this.x = x / norm;
+    this.y = y / norm;
+    this.z = z / norm;
   }
 
   // ── Accessors ──────────────────────────────────────────────────────────────
 
   public double getW() {
-    return m_w;
+    return w;
   }
 
   public double getX() {
-    return m_x;
+    return x;
   }
 
   public double getY() {
-    return m_y;
+    return y;
   }
 
   public double getZ() {
-    return m_z;
+    return z;
   }
 
   /**
@@ -98,8 +98,8 @@ public class Rotation3d {
    * @return The roll in radians.
    */
   public double getRoll() {
-    double sinr = 2.0 * (m_w * m_x + m_y * m_z);
-    double cosr = 1.0 - 2.0 * (m_x * m_x + m_y * m_y);
+    double sinr = 2.0 * (w * x + y * z);
+    double cosr = 1.0 - 2.0 * (x * x + y * y);
     return Math.atan2(sinr, cosr);
   }
 
@@ -109,7 +109,7 @@ public class Rotation3d {
    * @return The pitch in radians.
    */
   public double getPitch() {
-    double sinp = 2.0 * (m_w * m_y - m_z * m_x);
+    double sinp = 2.0 * (w * y - z * x);
     // Clamp to avoid NaN from floating point drift
     sinp = Math.max(-1.0, Math.min(1.0, sinp));
     return Math.asin(sinp);
@@ -121,8 +121,8 @@ public class Rotation3d {
    * @return The yaw in radians.
    */
   public double getYaw() {
-    double siny = 2.0 * (m_w * m_z + m_x * m_y);
-    double cosy = 1.0 - 2.0 * (m_y * m_y + m_z * m_z);
+    double siny = 2.0 * (w * z + x * y);
+    double cosy = 1.0 - 2.0 * (y * y + z * z);
     return Math.atan2(siny, cosy);
   }
 
@@ -136,10 +136,10 @@ public class Rotation3d {
    */
   public Rotation3d rotateBy(Rotation3d other) {
     return new Rotation3d(
-        m_w * other.m_w - m_x * other.m_x - m_y * other.m_y - m_z * other.m_z,
-        m_w * other.m_x + m_x * other.m_w + m_y * other.m_z - m_z * other.m_y,
-        m_w * other.m_y - m_x * other.m_z + m_y * other.m_w + m_z * other.m_x,
-        m_w * other.m_z + m_x * other.m_y - m_y * other.m_x + m_z * other.m_w);
+        w * other.w - x * other.x - y * other.y - z * other.z,
+        w * other.x + x * other.w + y * other.z - z * other.y,
+        w * other.y - x * other.z + y * other.w + z * other.x,
+        w * other.z + x * other.y - y * other.x + z * other.w);
   }
 
   /**
@@ -148,7 +148,7 @@ public class Rotation3d {
    * @return The inverse rotation.
    */
   public Rotation3d unaryMinus() {
-    return new Rotation3d(m_w, -m_x, -m_y, -m_z);
+    return new Rotation3d(w, -x, -y, -z);
   }
 
   /**
@@ -168,18 +168,18 @@ public class Rotation3d {
     if (!(obj instanceof Rotation3d)) return false;
     Rotation3d other = (Rotation3d) obj;
     // Two quaternions q and -q represent the same rotation
-    double dot = m_w * other.m_w + m_x * other.m_x + m_y * other.m_y + m_z * other.m_z;
+    double dot = w * other.w + x * other.x + y * other.y + z * other.z;
     return Math.abs(Math.abs(dot) - 1.0) < 1e-9;
   }
 
   @Override
   public int hashCode() {
     // Canonical form: ensure w >= 0
-    double sign = m_w >= 0 ? 1.0 : -1.0;
-    long wBits = Double.doubleToLongBits(Math.round(sign * m_w * 1e9) / 1e9);
-    long xBits = Double.doubleToLongBits(Math.round(sign * m_x * 1e9) / 1e9);
-    long yBits = Double.doubleToLongBits(Math.round(sign * m_y * 1e9) / 1e9);
-    long zBits = Double.doubleToLongBits(Math.round(sign * m_z * 1e9) / 1e9);
+    double sign = w >= 0 ? 1.0 : -1.0;
+    long wBits = Double.doubleToLongBits(Math.round(sign * w * 1e9) / 1e9);
+    long xBits = Double.doubleToLongBits(Math.round(sign * x * 1e9) / 1e9);
+    long yBits = Double.doubleToLongBits(Math.round(sign * y * 1e9) / 1e9);
+    long zBits = Double.doubleToLongBits(Math.round(sign * z * 1e9) / 1e9);
     return Long.hashCode(wBits) * 31 * 31 * 31
         + Long.hashCode(xBits) * 31 * 31
         + Long.hashCode(yBits) * 31
@@ -188,6 +188,6 @@ public class Rotation3d {
 
   @Override
   public String toString() {
-    return String.format("Rotation3d(w=%.4f, x=%.4f, y=%.4f, z=%.4f)", m_w, m_x, m_y, m_z);
+    return String.format("Rotation3d(w=%.4f, x=%.4f, y=%.4f, z=%.4f)", w, x, y, z);
   }
 }

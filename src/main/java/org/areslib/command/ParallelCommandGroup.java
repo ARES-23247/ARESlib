@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class ParallelCommandGroup extends Command {
   // Map of commands to whether they have finished
-  private final Map<Command, Boolean> m_commands = new HashMap<>();
+  private final Map<Command, Boolean> commands = new HashMap<>();
 
   /**
    * Creates a new ParallelCommandGroup. The given commands will be executed simultaneously. The
@@ -24,24 +24,24 @@ public class ParallelCommandGroup extends Command {
   }
 
   public final void addCommands(Command... commands) {
-    if (!m_commands.isEmpty() && isRunning()) {
+    if (!this.commands.isEmpty() && isRunning()) {
       throw new IllegalStateException(
           "Commands cannot be added to a CommandGroup while the group is running");
     }
 
     for (Command command : commands) {
-      if (!Collections.disjoint(command.getRequirements(), m_requirements)) {
+      if (!Collections.disjoint(command.getRequirements(), requirements)) {
         throw new IllegalArgumentException(
             "Multiple commands in a parallel group cannot require the same subsystems");
       }
-      m_commands.put(command, false);
-      m_requirements.addAll(command.getRequirements());
+      this.commands.put(command, false);
+      requirements.addAll(command.getRequirements());
     }
   }
 
   private boolean isRunning() {
     // Simple check just to prevent adding commands while active
-    for (Boolean finished : m_commands.values()) {
+    for (Boolean finished : commands.values()) {
       if (!finished) return true; // If any are not finished, assume active if we passed init
     }
     return false;
@@ -49,7 +49,7 @@ public class ParallelCommandGroup extends Command {
 
   @Override
   public void initialize() {
-    for (Map.Entry<Command, Boolean> commandRun : m_commands.entrySet()) {
+    for (Map.Entry<Command, Boolean> commandRun : commands.entrySet()) {
       commandRun.getKey().initialize();
       commandRun.setValue(false);
     }
@@ -57,7 +57,7 @@ public class ParallelCommandGroup extends Command {
 
   @Override
   public void execute() {
-    for (Map.Entry<Command, Boolean> commandRun : m_commands.entrySet()) {
+    for (Map.Entry<Command, Boolean> commandRun : commands.entrySet()) {
       if (!commandRun.getValue()) {
         commandRun.getKey().execute();
         if (commandRun.getKey().isFinished()) {
@@ -71,7 +71,7 @@ public class ParallelCommandGroup extends Command {
   @Override
   public void end(boolean interrupted) {
     if (interrupted) {
-      for (Map.Entry<Command, Boolean> commandRun : m_commands.entrySet()) {
+      for (Map.Entry<Command, Boolean> commandRun : commands.entrySet()) {
         if (!commandRun.getValue()) {
           commandRun.getKey().end(true);
         }
@@ -81,7 +81,7 @@ public class ParallelCommandGroup extends Command {
 
   @Override
   public boolean isFinished() {
-    for (Boolean finished : m_commands.values()) {
+    for (Boolean finished : commands.values()) {
       if (!finished) {
         return false;
       }

@@ -4,32 +4,32 @@ import java.util.Objects;
 
 /** A rotation in a 2D coordinate frame represented a point on the unit circle (cosine and sine). */
 public class Rotation2d implements Interpolatable<Rotation2d> {
-  private double m_value;
-  private double m_cos;
-  private double m_sin;
+  private double value;
+  private double cos;
+  private double sin;
 
   public Rotation2d() {
-    m_value = 0.0;
-    m_cos = 1.0;
-    m_sin = 0.0;
+    value = 0.0;
+    cos = 1.0;
+    sin = 0.0;
   }
 
   public Rotation2d(double value) {
-    m_value = value;
-    m_cos = Math.cos(value);
-    m_sin = Math.sin(value);
+    this.value = value;
+    cos = Math.cos(value);
+    sin = Math.sin(value);
   }
 
   public Rotation2d(double x, double y) {
     double magnitude = Math.hypot(x, y);
     if (magnitude > 1e-6) {
-      m_sin = y / magnitude;
-      m_cos = x / magnitude;
+      sin = y / magnitude;
+      cos = x / magnitude;
     } else {
-      m_sin = 0.0;
-      m_cos = 1.0;
+      sin = 0.0;
+      cos = 1.0;
     }
-    m_value = Math.atan2(m_sin, m_cos);
+    value = Math.atan2(sin, cos);
   }
 
   /**
@@ -37,16 +37,16 @@ public class Rotation2d implements Interpolatable<Rotation2d> {
    * tight loops.
    */
   public void set(double value) {
-    m_value = value;
-    m_cos = Math.cos(value);
-    m_sin = Math.sin(value);
+    this.value = value;
+    cos = Math.cos(value);
+    sin = Math.sin(value);
   }
 
   /** Sets the rotation equal to another Rotation2d in-place. */
   public void set(Rotation2d other) {
-    m_value = other.m_value;
-    m_cos = other.m_cos;
-    m_sin = other.m_sin;
+    value = other.value;
+    cos = other.cos;
+    sin = other.sin;
   }
 
   public static Rotation2d fromDegrees(double degrees) {
@@ -54,19 +54,19 @@ public class Rotation2d implements Interpolatable<Rotation2d> {
   }
 
   public double getRadians() {
-    return m_value;
+    return value;
   }
 
   public double getDegrees() {
-    return Math.toDegrees(m_value);
+    return Math.toDegrees(value);
   }
 
   public double getCos() {
-    return m_cos;
+    return cos;
   }
 
   public double getSin() {
-    return m_sin;
+    return sin;
   }
 
   public Rotation2d plus(Rotation2d other) {
@@ -78,16 +78,15 @@ public class Rotation2d implements Interpolatable<Rotation2d> {
   }
 
   public Rotation2d unaryMinus() {
-    return new Rotation2d(-m_value);
+    return new Rotation2d(-value);
   }
 
   public Rotation2d times(double scalar) {
-    return new Rotation2d(m_value * scalar);
+    return new Rotation2d(value * scalar);
   }
 
   public Rotation2d rotateBy(Rotation2d other) {
-    return new Rotation2d(
-        m_cos * other.m_cos - m_sin * other.m_sin, m_cos * other.m_sin + m_sin * other.m_cos);
+    return new Rotation2d(cos * other.cos - sin * other.sin, cos * other.sin + sin * other.cos);
   }
 
   @Override
@@ -100,7 +99,7 @@ public class Rotation2d implements Interpolatable<Rotation2d> {
 
   @Override
   public String toString() {
-    return String.format("Rotation2d(Rads: %.2f, Deg: %.2f)", m_value, Math.toDegrees(m_value));
+    return String.format("Rotation2d(Rads: %.2f, Deg: %.2f)", value, Math.toDegrees(value));
   }
 
   @Override
@@ -108,15 +107,15 @@ public class Rotation2d implements Interpolatable<Rotation2d> {
     if (this == obj) return true;
     if (!(obj instanceof Rotation2d)) return false;
     Rotation2d other = (Rotation2d) obj;
-    return Math.hypot(m_cos - other.m_cos, m_sin - other.m_sin) < 1e-9;
+    return Math.hypot(cos - other.cos, sin - other.sin) < 1e-9;
   }
 
   @Override
   public int hashCode() {
     // Round to 1e-9 to match the epsilon tolerance used in equals().
     // Two Rotation2d values that are equals() MUST produce the same hash.
-    long cosHash = Math.round(m_cos * 1e9);
-    long sinHash = Math.round(m_sin * 1e9);
+    long cosHash = Math.round(cos * 1e9);
+    long sinHash = Math.round(sin * 1e9);
     return Objects.hash(cosHash, sinHash);
   }
 }

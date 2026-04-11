@@ -150,4 +150,16 @@ All tunable parameters should be centralized. Never hard-code magic numbers in s
 
 ---
 
+## 8. Elite Coding Standards
+
+We enforce championship-grade formatting and logic structuring. Your agents and pull requests will be rejected if you violate these rules:
+
+- **Never Nester:** Deeply nested conditional loops are banned. Force early returns and immediate guard clauses.
+- **WPILib Units:** Leverage `edu.wpi.first.units` where applicable. If storing physics values in a primitive `double`, the unit suffix MUST be explicit in the variable name (e.g., `double velocityMetersPerSecond`, `double accelerationNewtons`, NOT `double vel`).
+- **No Hungarian Notation:** Strip prefixes like `m_` from variables.
+- **Explicit Descriptions:** Ensure all mathematical bounds variables are descriptive and explicit. Exclude single character names except inside standard increment iterations (`for (int i = 0...`).
+- **Citation Required:** Mathematical equations in algorithms or kinematics must carry a JavaDoc class/inline URL reference indicating the text/math paper they implement.
+
+---
+
 Happy Coding! 🚀

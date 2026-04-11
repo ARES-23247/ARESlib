@@ -14,9 +14,9 @@ public final class Units {
 
   // ── Length ──────────────────────────────────────────────────────────────────
 
-  private static final double kMetersPerInch = 0.0254;
-  private static final double kMetersPerFoot = 0.3048;
-  private static final double kMetersPerMillimeter = 0.001;
+  private static final double METERS_PER_INCH = 0.0254;
+  private static final double METERS_PER_FOOT = 0.3048;
+  private static final double METERS_PER_MILLIMETER = 0.001;
 
   /**
    * Converts inches to meters.
@@ -25,7 +25,7 @@ public final class Units {
    * @return The meters value.
    */
   public static double inchesToMeters(double inches) {
-    return inches * kMetersPerInch;
+    return inches * METERS_PER_INCH;
   }
 
   /**
@@ -35,7 +35,7 @@ public final class Units {
    * @return The inches value.
    */
   public static double metersToInches(double meters) {
-    return meters / kMetersPerInch;
+    return meters / METERS_PER_INCH;
   }
 
   /**
@@ -45,7 +45,7 @@ public final class Units {
    * @return The meters value.
    */
   public static double feetToMeters(double feet) {
-    return feet * kMetersPerFoot;
+    return feet * METERS_PER_FOOT;
   }
 
   /**
@@ -55,7 +55,7 @@ public final class Units {
    * @return The feet value.
    */
   public static double metersToFeet(double meters) {
-    return meters / kMetersPerFoot;
+    return meters / METERS_PER_FOOT;
   }
 
   /**
@@ -65,7 +65,7 @@ public final class Units {
    * @return The meters value.
    */
   public static double millimetersToMeters(double mm) {
-    return mm * kMetersPerMillimeter;
+    return mm * METERS_PER_MILLIMETER;
   }
 
   /**
@@ -75,7 +75,7 @@ public final class Units {
    * @return The millimeters value.
    */
   public static double metersToMillimeters(double meters) {
-    return meters / kMetersPerMillimeter;
+    return meters / METERS_PER_MILLIMETER;
   }
 
   // ── Angle ──────────────────────────────────────────────────────────────────

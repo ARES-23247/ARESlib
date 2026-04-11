@@ -9,9 +9,9 @@ import java.util.Map;
  * "deadline") ends, interrupting all other commands that are still running at that point.
  */
 public class ParallelDeadlineGroup extends Command {
-  private final Map<Command, Boolean> m_commands = new HashMap<>();
-  private Command m_deadline;
-  private boolean m_finished = false;
+  private final Map<Command, Boolean> commands = new HashMap<>();
+  private Command deadline;
+  private boolean finished = false;
 
   /**
    * Creates a new ParallelDeadlineGroup. The given commands will be executed simultaneously. The
@@ -21,7 +21,7 @@ public class ParallelDeadlineGroup extends Command {
    * @param commands The other commands to be executed.
    */
   public ParallelDeadlineGroup(Command deadline, Command... commands) {
-    m_deadline = deadline;
+    this.deadline = deadline;
     addCommands(deadline);
     addCommands(commands);
   }
@@ -32,18 +32,18 @@ public class ParallelDeadlineGroup extends Command {
    * @param commands Commands to add.
    */
   public final void addCommands(Command... commands) {
-    if (m_finished) {
+    if (finished) {
       throw new IllegalStateException(
           "Commands cannot be added to a CommandGroup while the group is running");
     }
 
     for (Command command : commands) {
-      if (!Collections.disjoint(command.getRequirements(), m_requirements)) {
+      if (!Collections.disjoint(command.getRequirements(), requirements)) {
         throw new IllegalArgumentException(
             "Multiple commands in a parallel group cannot require the same subsystems");
       }
-      m_commands.put(command, false);
-      m_requirements.addAll(command.getRequirements());
+      this.commands.put(command, false);
+      requirements.addAll(command.getRequirements());
     }
   }
 
@@ -53,16 +53,16 @@ public class ParallelDeadlineGroup extends Command {
    * @param deadline the command that determines when the group ends.
    */
   public void setDeadline(Command deadline) {
-    if (!m_commands.containsKey(deadline)) {
+    if (!this.commands.containsKey(deadline)) {
       addCommands(deadline);
     }
-    m_deadline = deadline;
+    this.deadline = deadline;
   }
 
   @Override
   public void initialize() {
-    m_finished = false;
-    for (Map.Entry<Command, Boolean> entry : m_commands.entrySet()) {
+    finished = false;
+    for (Map.Entry<Command, Boolean> entry : commands.entrySet()) {
       entry.getKey().initialize();
       entry.setValue(false);
     }
@@ -70,15 +70,15 @@ public class ParallelDeadlineGroup extends Command {
 
   @Override
   public void execute() {
-    for (Map.Entry<Command, Boolean> entry : m_commands.entrySet()) {
+    for (Map.Entry<Command, Boolean> entry : commands.entrySet()) {
       if (entry.getValue()) {
         continue; // Already finished, skip
       }
       Command command = entry.getKey();
       command.execute();
       if (command.isFinished()) {
-        if (command == m_deadline) {
-          m_finished = true;
+        if (command == deadline) {
+          finished = true;
         } else {
           // Non-deadline command finished naturally
           command.end(false);
@@ -90,10 +90,10 @@ public class ParallelDeadlineGroup extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    for (Map.Entry<Command, Boolean> entry : m_commands.entrySet()) {
+    for (Map.Entry<Command, Boolean> entry : commands.entrySet()) {
       if (!entry.getValue()) {
         Command command = entry.getKey();
-        if (command == m_deadline) {
+        if (command == deadline) {
           // Deadline finished naturally (or group was interrupted)
           command.end(interrupted);
         } else {
@@ -106,6 +106,6 @@ public class ParallelDeadlineGroup extends Command {
 
   @Override
   public boolean isFinished() {
-    return m_finished;
+    return finished;
   }
 }

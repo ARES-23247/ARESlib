@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class KinematicAimingTest {
 
-  private static final double kEpsilon = 1e-4;
+  private static final double EPSILON = 1e-4;
 
   @Test
   void testStationaryRobot() {
@@ -20,10 +20,10 @@ class KinematicAimingTest {
         KinematicAiming.calculateAim(zeroSpeed, robotPos, targetPos, 20.0);
 
     assertTrue(result.isValid);
-    assertEquals(0.5, result.timeOfFlight, kEpsilon); // 10m / 20m/s
-    assertEquals(0.0, result.requiredHeading.getRadians(), kEpsilon); // Aim exactly at target
-    assertEquals(10.0, result.virtualTarget.getX(), kEpsilon);
-    assertEquals(0.0, result.virtualTarget.getY(), kEpsilon);
+    assertEquals(0.5, result.timeOfFlight, EPSILON); // 10m / 20m/s
+    assertEquals(0.0, result.requiredHeading.getRadians(), EPSILON); // Aim exactly at target
+    assertEquals(10.0, result.virtualTarget.getX(), EPSILON);
+    assertEquals(0.0, result.virtualTarget.getY(), EPSILON);
   }
 
   @Test

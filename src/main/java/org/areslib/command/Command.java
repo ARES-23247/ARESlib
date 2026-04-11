@@ -10,7 +10,7 @@ import java.util.Set;
  * multi-step actions without the need to write a state machine.
  */
 public abstract class Command {
-  protected Set<Subsystem> m_requirements = new HashSet<>();
+  protected Set<Subsystem> requirements = new HashSet<>();
 
   protected Command() {}
 
@@ -44,7 +44,7 @@ public abstract class Command {
    * @param requirements the subsystems the command requires
    */
   public final void addRequirements(Subsystem... requirements) {
-    m_requirements.addAll(Arrays.asList(requirements));
+    this.requirements.addAll(Arrays.asList(requirements));
   }
 
   /**
@@ -53,7 +53,7 @@ public abstract class Command {
    * @return the set of required subsystems
    */
   public Set<Subsystem> getRequirements() {
-    return m_requirements;
+    return requirements;
   }
 
   /**

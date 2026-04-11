@@ -13,7 +13,7 @@ import java.util.Locale;
  */
 public class SysIdJSONExporter {
 
-  private static final List<TestRecord> records = new ArrayList<>();
+  private static final List<TestRecord> RECORDS = new ArrayList<>();
 
   public static class TestRecord {
     public final String testName;
@@ -47,7 +47,7 @@ public class SysIdJSONExporter {
    */
   public static TestRecord startTest(String testName) {
     TestRecord record = new TestRecord(testName);
-    records.add(record);
+    RECORDS.add(record);
     return record;
   }
 
@@ -63,8 +63,8 @@ public class SysIdJSONExporter {
     sb.append("  \"units\": \"Meters\",\n");
     sb.append("  \"data\": [\n");
 
-    for (int i = 0; i < records.size(); i++) {
-      TestRecord rec = records.get(i);
+    for (int i = 0; i < RECORDS.size(); i++) {
+      TestRecord rec = RECORDS.get(i);
       sb.append("    {\n");
       sb.append("      \"test\": \"").append(rec.testName).append("\",\n");
       sb.append("      \"data\": [");
@@ -74,7 +74,7 @@ public class SysIdJSONExporter {
       }
       sb.append("]\n");
       sb.append("    }");
-      if (i < records.size() - 1) sb.append(",");
+      if (i < RECORDS.size() - 1) sb.append(",");
       sb.append("\n");
     }
     sb.append("  ]\n");

@@ -26,7 +26,7 @@ import org.areslib.command.WaitCommand;
  */
 public class AutoBuilder {
 
-  protected final List<Command> m_commands = new ArrayList<>();
+  protected final List<Command> commands = new ArrayList<>();
 
   /**
    * Appends a driving command to the sequence.
@@ -35,7 +35,7 @@ public class AutoBuilder {
    * @return This builder for chaining.
    */
   public AutoBuilder drive(Command driveCommand) {
-    m_commands.add(driveCommand);
+    commands.add(driveCommand);
     return this;
   }
 
@@ -46,7 +46,7 @@ public class AutoBuilder {
    * @return This builder for chaining.
    */
   public AutoBuilder runAction(Command action) {
-    m_commands.add(action);
+    commands.add(action);
     return this;
   }
 
@@ -57,7 +57,7 @@ public class AutoBuilder {
    * @return This builder for chaining.
    */
   public AutoBuilder runOnce(Runnable action) {
-    m_commands.add(new InstantCommand(action));
+    commands.add(new InstantCommand(action));
     return this;
   }
 
@@ -68,7 +68,7 @@ public class AutoBuilder {
    * @return This builder for chaining.
    */
   public AutoBuilder waitSeconds(double seconds) {
-    m_commands.add(new WaitCommand(seconds));
+    commands.add(new WaitCommand(seconds));
     return this;
   }
 
@@ -83,7 +83,7 @@ public class AutoBuilder {
    * @return This builder for chaining.
    */
   public AutoBuilder runParallel(Command deadline, Command... actions) {
-    m_commands.add(new ParallelDeadlineGroup(deadline, actions));
+    commands.add(new ParallelDeadlineGroup(deadline, actions));
     return this;
   }
 
@@ -93,6 +93,6 @@ public class AutoBuilder {
    * @return The complete autonomous command.
    */
   public Command build() {
-    return new SequentialCommandGroup(m_commands.toArray(new Command[0]));
+    return new SequentialCommandGroup(commands.toArray(new Command[0]));
   }
 }

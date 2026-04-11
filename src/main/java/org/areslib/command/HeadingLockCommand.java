@@ -26,15 +26,15 @@ import org.areslib.math.controller.PIDController;
  */
 public class HeadingLockCommand extends Command {
 
-  private final DoubleSupplier m_rotationInput;
-  private final DoubleSupplier m_gyroHeading;
-  private final DoubleConsumer m_omegaOutput;
-  private final PIDController m_headingPID;
-  private final double m_deadband;
+  private final DoubleSupplier rotationInput;
+  private final DoubleSupplier gyroHeading;
+  private final DoubleConsumer omegaOutput;
+  private final PIDController headingPID;
+  private final double deadband;
 
-  private boolean m_isLocked = false;
-  private double m_lockedHeading = 0.0;
-  private int m_idleCount = 0;
+  private boolean isLocked = false;
+  private double lockedHeading = 0.0;
+  private int idleCount = 0;
   private static final int IDLE_LOOPS_TO_LOCK = 5; // 100ms at 50Hz
 
   /**
@@ -56,47 +56,47 @@ public class HeadingLockCommand extends Command {
       double kI,
       double kD,
       double deadband) {
-    m_rotationInput = rotationInput;
-    m_gyroHeading = gyroHeading;
-    m_omegaOutput = omegaOutput;
-    m_headingPID = new PIDController(kP, kI, kD);
-    m_headingPID.enableContinuousInput(-Math.PI, Math.PI);
-    m_deadband = deadband;
+    this.rotationInput = rotationInput;
+    this.gyroHeading = gyroHeading;
+    this.omegaOutput = omegaOutput;
+    headingPID = new PIDController(kP, kI, kD);
+    headingPID.enableContinuousInput(-Math.PI, Math.PI);
+    this.deadband = deadband;
   }
 
   @Override
   public void initialize() {
-    m_isLocked = false;
-    m_idleCount = 0;
-    m_headingPID.reset();
+    isLocked = false;
+    idleCount = 0;
+    headingPID.reset();
   }
 
   @Override
   public void execute() {
-    double rotInput = m_rotationInput.getAsDouble();
-    double currentHeading = m_gyroHeading.getAsDouble();
+    double rotInput = rotationInput.getAsDouble();
+    double currentHeading = gyroHeading.getAsDouble();
 
-    if (Math.abs(rotInput) > m_deadband) {
+    if (Math.abs(rotInput) > deadband) {
       // Driver is actively rotating — pass through raw input
-      m_isLocked = false;
-      m_idleCount = 0;
-      m_headingPID.reset();
-      m_omegaOutput.accept(rotInput);
+      isLocked = false;
+      idleCount = 0;
+      headingPID.reset();
+      omegaOutput.accept(rotInput);
     } else {
-      m_idleCount++;
+      idleCount++;
 
-      if (!m_isLocked && m_idleCount >= IDLE_LOOPS_TO_LOCK) {
+      if (!isLocked && idleCount >= IDLE_LOOPS_TO_LOCK) {
         // Lock the heading after being idle for enough loops
-        m_isLocked = true;
-        m_lockedHeading = currentHeading;
+        isLocked = true;
+        lockedHeading = currentHeading;
       }
 
-      if (m_isLocked) {
+      if (isLocked) {
         // Apply PID correction to hold locked heading
-        double correction = m_headingPID.calculate(currentHeading, m_lockedHeading);
-        m_omegaOutput.accept(correction);
+        double correction = headingPID.calculate(currentHeading, lockedHeading);
+        omegaOutput.accept(correction);
       } else {
-        m_omegaOutput.accept(0.0);
+        omegaOutput.accept(0.0);
       }
     }
   }
@@ -107,6 +107,6 @@ public class HeadingLockCommand extends Command {
    * @return The current value.
    */
   public boolean isLocked() {
-    return m_isLocked;
+    return isLocked;
   }
 }

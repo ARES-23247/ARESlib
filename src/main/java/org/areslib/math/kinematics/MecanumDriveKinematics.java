@@ -3,8 +3,8 @@ package org.areslib.math.kinematics;
 import org.areslib.math.geometry.Translation2d;
 
 public class MecanumDriveKinematics {
-  private final double[][] m_inverseKinematics;
-  private final double[][] m_forwardKinematics;
+  private final double[][] inverseKinematics;
+  private final double[][] forwardKinematics;
 
   public MecanumDriveKinematics(
       Translation2d frontLeftWheelMeters,
@@ -12,57 +12,57 @@ public class MecanumDriveKinematics {
       Translation2d rearLeftWheelMeters,
       Translation2d rearRightWheelMeters) {
 
-    m_inverseKinematics = new double[4][3];
-    m_inverseKinematics[0][0] = 1;
-    m_inverseKinematics[0][1] = -1;
-    m_inverseKinematics[0][2] = -(frontLeftWheelMeters.getX() + frontLeftWheelMeters.getY());
-    m_inverseKinematics[1][0] = 1;
-    m_inverseKinematics[1][1] = 1;
-    m_inverseKinematics[1][2] = frontRightWheelMeters.getX() - frontRightWheelMeters.getY();
-    m_inverseKinematics[2][0] = 1;
-    m_inverseKinematics[2][1] = 1;
-    m_inverseKinematics[2][2] = rearLeftWheelMeters.getX() - rearLeftWheelMeters.getY();
-    m_inverseKinematics[3][0] = 1;
-    m_inverseKinematics[3][1] = -1;
-    m_inverseKinematics[3][2] = -(rearRightWheelMeters.getX() + rearRightWheelMeters.getY());
+    inverseKinematics = new double[4][3];
+    inverseKinematics[0][0] = 1;
+    inverseKinematics[0][1] = -1;
+    inverseKinematics[0][2] = -(frontLeftWheelMeters.getX() + frontLeftWheelMeters.getY());
+    inverseKinematics[1][0] = 1;
+    inverseKinematics[1][1] = 1;
+    inverseKinematics[1][2] = frontRightWheelMeters.getX() - frontRightWheelMeters.getY();
+    inverseKinematics[2][0] = 1;
+    inverseKinematics[2][1] = 1;
+    inverseKinematics[2][2] = rearLeftWheelMeters.getX() - rearLeftWheelMeters.getY();
+    inverseKinematics[3][0] = 1;
+    inverseKinematics[3][1] = -1;
+    inverseKinematics[3][2] = -(rearRightWheelMeters.getX() + rearRightWheelMeters.getY());
 
-    m_forwardKinematics = InverseMatrixHelper.pseudoInverse(m_inverseKinematics);
+    forwardKinematics = InverseMatrixHelper.pseudoInverse(inverseKinematics);
   }
 
   public MecanumDriveWheelSpeeds toWheelSpeeds(ChassisSpeeds chassisSpeeds) {
     return new MecanumDriveWheelSpeeds(
-        chassisSpeeds.vxMetersPerSecond * m_inverseKinematics[0][0]
-            + chassisSpeeds.vyMetersPerSecond * m_inverseKinematics[0][1]
-            + chassisSpeeds.omegaRadiansPerSecond * m_inverseKinematics[0][2],
-        chassisSpeeds.vxMetersPerSecond * m_inverseKinematics[1][0]
-            + chassisSpeeds.vyMetersPerSecond * m_inverseKinematics[1][1]
-            + chassisSpeeds.omegaRadiansPerSecond * m_inverseKinematics[1][2],
-        chassisSpeeds.vxMetersPerSecond * m_inverseKinematics[2][0]
-            + chassisSpeeds.vyMetersPerSecond * m_inverseKinematics[2][1]
-            + chassisSpeeds.omegaRadiansPerSecond * m_inverseKinematics[2][2],
-        chassisSpeeds.vxMetersPerSecond * m_inverseKinematics[3][0]
-            + chassisSpeeds.vyMetersPerSecond * m_inverseKinematics[3][1]
-            + chassisSpeeds.omegaRadiansPerSecond * m_inverseKinematics[3][2]);
+        chassisSpeeds.vxMetersPerSecond * inverseKinematics[0][0]
+            + chassisSpeeds.vyMetersPerSecond * inverseKinematics[0][1]
+            + chassisSpeeds.omegaRadiansPerSecond * inverseKinematics[0][2],
+        chassisSpeeds.vxMetersPerSecond * inverseKinematics[1][0]
+            + chassisSpeeds.vyMetersPerSecond * inverseKinematics[1][1]
+            + chassisSpeeds.omegaRadiansPerSecond * inverseKinematics[1][2],
+        chassisSpeeds.vxMetersPerSecond * inverseKinematics[2][0]
+            + chassisSpeeds.vyMetersPerSecond * inverseKinematics[2][1]
+            + chassisSpeeds.omegaRadiansPerSecond * inverseKinematics[2][2],
+        chassisSpeeds.vxMetersPerSecond * inverseKinematics[3][0]
+            + chassisSpeeds.vyMetersPerSecond * inverseKinematics[3][1]
+            + chassisSpeeds.omegaRadiansPerSecond * inverseKinematics[3][2]);
   }
 
   public ChassisSpeeds toChassisSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
     double vx =
-        m_forwardKinematics[0][0] * wheelSpeeds.frontLeftMetersPerSecond
-            + m_forwardKinematics[0][1] * wheelSpeeds.frontRightMetersPerSecond
-            + m_forwardKinematics[0][2] * wheelSpeeds.rearLeftMetersPerSecond
-            + m_forwardKinematics[0][3] * wheelSpeeds.rearRightMetersPerSecond;
+        forwardKinematics[0][0] * wheelSpeeds.frontLeftMetersPerSecond
+            + forwardKinematics[0][1] * wheelSpeeds.frontRightMetersPerSecond
+            + forwardKinematics[0][2] * wheelSpeeds.rearLeftMetersPerSecond
+            + forwardKinematics[0][3] * wheelSpeeds.rearRightMetersPerSecond;
 
     double vy =
-        m_forwardKinematics[1][0] * wheelSpeeds.frontLeftMetersPerSecond
-            + m_forwardKinematics[1][1] * wheelSpeeds.frontRightMetersPerSecond
-            + m_forwardKinematics[1][2] * wheelSpeeds.rearLeftMetersPerSecond
-            + m_forwardKinematics[1][3] * wheelSpeeds.rearRightMetersPerSecond;
+        forwardKinematics[1][0] * wheelSpeeds.frontLeftMetersPerSecond
+            + forwardKinematics[1][1] * wheelSpeeds.frontRightMetersPerSecond
+            + forwardKinematics[1][2] * wheelSpeeds.rearLeftMetersPerSecond
+            + forwardKinematics[1][3] * wheelSpeeds.rearRightMetersPerSecond;
 
     double omega =
-        m_forwardKinematics[2][0] * wheelSpeeds.frontLeftMetersPerSecond
-            + m_forwardKinematics[2][1] * wheelSpeeds.frontRightMetersPerSecond
-            + m_forwardKinematics[2][2] * wheelSpeeds.rearLeftMetersPerSecond
-            + m_forwardKinematics[2][3] * wheelSpeeds.rearRightMetersPerSecond;
+        forwardKinematics[2][0] * wheelSpeeds.frontLeftMetersPerSecond
+            + forwardKinematics[2][1] * wheelSpeeds.frontRightMetersPerSecond
+            + forwardKinematics[2][2] * wheelSpeeds.rearLeftMetersPerSecond
+            + forwardKinematics[2][3] * wheelSpeeds.rearRightMetersPerSecond;
 
     return new ChassisSpeeds(vx, vy, omega);
   }

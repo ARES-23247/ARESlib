@@ -9,10 +9,10 @@ import org.areslib.math.filter.InterpolatingTreeMap;
  * <p>Commonly used for Vision Latency Compensation (keeping a history of Pose2d).
  */
 public class TimeInterpolatableBuffer<T extends Interpolatable<T>> {
-  private final InterpolatingTreeMap<Double, T> m_buffer;
+  private final InterpolatingTreeMap<Double, T> buffer;
 
   private TimeInterpolatableBuffer(int historySize) {
-    m_buffer = new InterpolatingTreeMap<>(historySize);
+    buffer = new InterpolatingTreeMap<>(historySize);
   }
 
   /**
@@ -34,7 +34,7 @@ public class TimeInterpolatableBuffer<T extends Interpolatable<T>> {
    * @param sample The observation.
    */
   public void addSample(double timeSeconds, T sample) {
-    m_buffer.put(timeSeconds, sample);
+    buffer.put(timeSeconds, sample);
   }
 
   /**
@@ -44,11 +44,11 @@ public class TimeInterpolatableBuffer<T extends Interpolatable<T>> {
    * @return The interpolated sample, or null if the buffer is empty.
    */
   public T getSample(double timeSeconds) {
-    return m_buffer.get(timeSeconds);
+    return buffer.get(timeSeconds);
   }
 
   /** Clears the buffer. */
   public void clear() {
-    m_buffer.clear();
+    buffer.clear();
   }
 }

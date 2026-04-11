@@ -25,15 +25,15 @@ import org.areslib.math.kinematics.ChassisSpeeds;
  */
 public class AlignToPoseCommand extends Command {
 
-  private final Pose2d m_targetPose;
-  private final Supplier<Pose2d> m_poseSupplier;
-  private final Consumer<ChassisSpeeds> m_output;
-  private final ProfiledPIDController m_xController;
-  private final ProfiledPIDController m_yController;
-  private final ProfiledPIDController m_thetaController;
-  private final double m_xTolerance;
-  private final double m_yTolerance;
-  private final double m_thetaTolerance;
+  private final Pose2d targetPose;
+  private final Supplier<Pose2d> poseSupplier;
+  private final Consumer<ChassisSpeeds> output;
+  private final ProfiledPIDController xController;
+  private final ProfiledPIDController yController;
+  private final ProfiledPIDController thetaController;
+  private final double xTolerance;
+  private final double yTolerance;
+  private final double thetaTolerance;
 
   /**
    * Constructs an AlignToPoseCommand using Profiled PID controllers for smooth snapping.
@@ -59,56 +59,56 @@ public class AlignToPoseCommand extends Command {
       double xTolerance,
       double yTolerance,
       double thetaTolerance) {
-    m_targetPose = targetPose;
-    m_poseSupplier = poseSupplier;
-    m_output = output;
-    m_xController = xController;
-    m_yController = yController;
-    m_thetaController = thetaController;
-    m_xTolerance = xTolerance;
-    m_yTolerance = yTolerance;
-    m_thetaTolerance = thetaTolerance;
+    this.targetPose = targetPose;
+    this.poseSupplier = poseSupplier;
+    this.output = output;
+    this.xController = xController;
+    this.yController = yController;
+    this.thetaController = thetaController;
+    this.xTolerance = xTolerance;
+    this.yTolerance = yTolerance;
+    this.thetaTolerance = thetaTolerance;
   }
 
   @Override
   public void initialize() {
-    Pose2d current = m_poseSupplier.get();
+    Pose2d current = poseSupplier.get();
     // Reset the profiles to our starting position so we don't aggressively lurch
-    m_xController.reset(current.getX(), 0.0);
-    m_yController.reset(current.getY(), 0.0);
-    m_thetaController.reset(current.getRotation().getRadians(), 0.0);
+    xController.reset(current.getX(), 0.0);
+    yController.reset(current.getY(), 0.0);
+    thetaController.reset(current.getRotation().getRadians(), 0.0);
 
-    m_xController.setGoal(m_targetPose.getX());
-    m_yController.setGoal(m_targetPose.getY());
-    m_thetaController.setGoal(m_targetPose.getRotation().getRadians());
+    xController.setGoal(targetPose.getX());
+    yController.setGoal(targetPose.getY());
+    thetaController.setGoal(targetPose.getRotation().getRadians());
   }
 
   @Override
   public void execute() {
-    Pose2d current = m_poseSupplier.get();
+    Pose2d current = poseSupplier.get();
 
-    double xSpeed = m_xController.calculate(current.getX());
-    double ySpeed = m_yController.calculate(current.getY());
-    double omegaSpeed = m_thetaController.calculate(current.getRotation().getRadians());
+    double xSpeed = xController.calculate(current.getX());
+    double ySpeed = yController.calculate(current.getY());
+    double omegaSpeed = thetaController.calculate(current.getRotation().getRadians());
 
-    m_output.accept(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed));
+    output.accept(new ChassisSpeeds(xSpeed, ySpeed, omegaSpeed));
   }
 
   @Override
   public boolean isFinished() {
-    Pose2d current = m_poseSupplier.get();
-    double xError = Math.abs(current.getX() - m_targetPose.getX());
-    double yError = Math.abs(current.getY() - m_targetPose.getY());
+    Pose2d current = poseSupplier.get();
+    double xError = Math.abs(current.getX() - targetPose.getX());
+    double yError = Math.abs(current.getY() - targetPose.getY());
     double thetaError =
         Math.abs(
             org.areslib.math.MathUtil.angleModulus(
-                current.getRotation().getRadians() - m_targetPose.getRotation().getRadians()));
+                current.getRotation().getRadians() - targetPose.getRotation().getRadians()));
 
-    return xError <= m_xTolerance && yError <= m_yTolerance && thetaError <= m_thetaTolerance;
+    return xError <= xTolerance && yError <= yTolerance && thetaError <= thetaTolerance;
   }
 
   @Override
   public void end(boolean interrupted) {
-    m_output.accept(new ChassisSpeeds(0, 0, 0));
+    output.accept(new ChassisSpeeds(0, 0, 0));
   }
 }

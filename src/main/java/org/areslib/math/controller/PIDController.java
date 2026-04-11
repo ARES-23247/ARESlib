@@ -8,7 +8,7 @@ public class PIDController {
   private double integral;
   private boolean continuous;
   private double minimumInput, maximumInput;
-  private double m_period;
+  private double period;
 
   /**
    * Constructs a PIDController with the given constants. Default period is 0.02s (20ms).
@@ -33,7 +33,7 @@ public class PIDController {
     this.kP = kP;
     this.kI = kI;
     this.kD = kD;
-    this.m_period = period;
+    this.period = period;
   }
 
   /**
@@ -91,11 +91,11 @@ public class PIDController {
     }
 
     // Apply time-aware exact calculus implementations
-    integral += error * m_period;
+    integral += error * period;
 
     double derivative = 0;
-    if (m_period > 0) {
-      derivative = (error - prevError) / m_period;
+    if (period > 0) {
+      derivative = (error - prevError) / period;
     }
 
     prevError = error;
