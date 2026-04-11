@@ -108,8 +108,8 @@ public class SwerveDriveOdometry {
 
     m_previousAngle = gyroAngle;
     for (int i = 0; i < modulePositions.length; i++) {
-      m_previousModulePositions[i] =
-          new SwerveModulePosition(modulePositions[i].distanceMeters, modulePositions[i].angle);
+      m_previousModulePositions[i].distanceMeters = modulePositions[i].distanceMeters;
+      m_previousModulePositions[i].angle = modulePositions[i].angle;
     }
 
     return m_pose;

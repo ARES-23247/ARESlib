@@ -112,6 +112,13 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
   private final SlewRateLimiter strLimiter;
   private final SlewRateLimiter rotLimiter;
 
+  // Pre-allocated caches to avoid per-loop heap allocations in periodic() and drive()
+  private final SwerveModuleState[] cachedActualStates = new SwerveModuleState[4];
+  private final SwerveModuleState[] cachedOptimizedStates = new SwerveModuleState[4];
+  private final Rotation2d[] cachedModuleRotations = new Rotation2d[4];
+  private final SwerveModuleIO[] modules;
+  private final SwerveModuleIO.SwerveModuleInputs[] inputsArray;
+
   private Body simChassis = null;
 
   /**
@@ -133,6 +140,16 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
     this.frontRight = frontRight;
     this.backLeft = backLeft;
     this.backRight = backRight;
+
+    this.modules = new SwerveModuleIO[] {frontLeft, frontRight, backLeft, backRight};
+    this.inputsArray =
+        new SwerveModuleIO.SwerveModuleInputs[] {flInputs, frInputs, blInputs, brInputs};
+
+    for (int i = 0; i < 4; i++) {
+      cachedActualStates[i] = new SwerveModuleState();
+      cachedOptimizedStates[i] = new SwerveModuleState();
+      cachedModuleRotations[i] = new Rotation2d();
+    }
 
     this.maxSpeedMps = config.maxModuleSpeedMps;
     this.turnKs = config.turnKs;
@@ -188,18 +205,13 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
     AresAutoLogger.processInputs("Swerve/BackLeft", blInputs);
     AresAutoLogger.processInputs("Swerve/BackRight", brInputs);
 
-    SwerveModuleState[] actualStates =
-        new SwerveModuleState[] {
-          new SwerveModuleState(
-              flInputs.driveVelocityMps, new Rotation2d(flInputs.turnAbsolutePositionRad)),
-          new SwerveModuleState(
-              frInputs.driveVelocityMps, new Rotation2d(frInputs.turnAbsolutePositionRad)),
-          new SwerveModuleState(
-              blInputs.driveVelocityMps, new Rotation2d(blInputs.turnAbsolutePositionRad)),
-          new SwerveModuleState(
-              brInputs.driveVelocityMps, new Rotation2d(brInputs.turnAbsolutePositionRad)),
-        };
-    AresTelemetry.logSwerveStates("Robot/SwerveActual", actualStates);
+    SwerveModuleIO.SwerveModuleInputs[] allInputs = {flInputs, frInputs, blInputs, brInputs};
+    for (int i = 0; i < 4; i++) {
+      cachedModuleRotations[i] = new Rotation2d(allInputs[i].turnAbsolutePositionRad);
+      cachedActualStates[i].speedMetersPerSecond = allInputs[i].driveVelocityMps;
+      cachedActualStates[i].angle = cachedModuleRotations[i];
+    }
+    AresTelemetry.logSwerveStates("Robot/SwerveActual", cachedActualStates);
   }
 
   @Override
@@ -283,26 +295,24 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
 
     AresTelemetry.logSwerveStates("Robot/SwerveTarget", states);
 
-    SwerveModuleIO[] modules = {frontLeft, frontRight, backLeft, backRight};
-    SwerveModuleIO.SwerveModuleInputs[] inputs = {flInputs, frInputs, blInputs, brInputs};
-
     for (int i = 0; i < 4; i++) {
-      SwerveModuleState optimizedState =
-          SwerveModuleState.optimize(states[i], new Rotation2d(inputs[i].turnAbsolutePositionRad));
+      cachedModuleRotations[i] = new Rotation2d(inputsArray[i].turnAbsolutePositionRad);
+      SwerveModuleState.optimize(states[i], cachedModuleRotations[i], cachedOptimizedStates[i]);
 
-      double targetSpeedMps = optimizedState.speedMetersPerSecond;
-      double targetAngleRad = optimizedState.angle.getRadians();
+      double targetSpeedMps = cachedOptimizedStates[i].speedMetersPerSecond;
+      double targetAngleRad = cachedOptimizedStates[i].angle.getRadians();
 
       // Prevent snapping back to 0 degrees when stopping
       if (Math.abs(targetSpeedMps) <= 0.01) {
-        targetAngleRad = inputs[i].turnAbsolutePositionRad;
+        targetAngleRad = inputsArray[i].turnAbsolutePositionRad;
         targetSpeedMps = 0.0;
       }
 
       double feedforwardVolts = driveFeedforward.calculate(targetSpeedMps);
-      double drivePidOut = drivePids[i].calculate(inputs[i].driveVelocityMps, targetSpeedMps);
+      double drivePidOut = drivePids[i].calculate(inputsArray[i].driveVelocityMps, targetSpeedMps);
 
-      double turnPidOut = turnPids[i].calculate(inputs[i].turnAbsolutePositionRad, targetAngleRad);
+      double turnPidOut =
+          turnPids[i].calculate(inputsArray[i].turnAbsolutePositionRad, targetAngleRad);
 
       // Apply static friction feedforward (Ks) in the direction of the PID output
       double turnFFOut = 0.0;

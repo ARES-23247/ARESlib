@@ -54,4 +54,43 @@ public class SwerveModuleState {
 
     return new SwerveModuleState(targetSpeed, new Rotation2d(targetAngle));
   }
+
+  /**
+   * Mutable-output variant of {@link #optimize} that writes into an existing object, avoiding heap
+   * allocations in hot loops. The {@code output} object's fields are mutated in-place.
+   *
+   * @param desiredState The desired state.
+   * @param currentAngle The current module angle.
+   * @param output A pre-allocated SwerveModuleState to write results into.
+   */
+  public static void optimize(
+      SwerveModuleState desiredState, Rotation2d currentAngle, SwerveModuleState output) {
+    double targetAngle = desiredState.angle.getRadians();
+    double currentAngleRad = currentAngle.getRadians();
+
+    double delta = targetAngle - currentAngleRad;
+
+    // Wrap to [-pi, pi]
+    delta = delta % (2.0 * Math.PI);
+    if (delta > Math.PI) {
+      delta -= 2.0 * Math.PI;
+    } else if (delta < -Math.PI) {
+      delta += 2.0 * Math.PI;
+    }
+
+    targetAngle = currentAngleRad + delta;
+
+    double targetSpeed = desiredState.speedMetersPerSecond;
+
+    if (delta > Math.PI / 2.0) {
+      targetAngle -= Math.PI;
+      targetSpeed = -targetSpeed;
+    } else if (delta < -Math.PI / 2.0) {
+      targetAngle += Math.PI;
+      targetSpeed = -targetSpeed;
+    }
+
+    output.speedMetersPerSecond = targetSpeed;
+    output.angle = new Rotation2d(targetAngle);
+  }
 }

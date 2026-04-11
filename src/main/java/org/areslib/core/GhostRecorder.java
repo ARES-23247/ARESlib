@@ -31,6 +31,8 @@ import org.areslib.telemetry.AresAutoLogger;
  */
 public class GhostRecorder {
 
+  private static final ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
+
   private volatile boolean m_isRecording = false;
   private volatile boolean m_isPlaying = false;
 
@@ -51,6 +53,7 @@ public class GhostRecorder {
   private int m_playIndex = 0;
   private GhostFrame m_currentFrame = new GhostFrame();
   private long m_playbackStartNanos;
+  private final ChassisSpeeds m_playbackSpeeds = new ChassisSpeeds();
 
   /**
    * Constructs a Ghost Mode recorder/player.
@@ -183,7 +186,7 @@ public class GhostRecorder {
    * @return The current playback frame's ChassisSpeeds, or zero if not playing.
    */
   public ChassisSpeeds getPlaybackSpeeds() {
-    if (!m_isPlaying || m_frames.isEmpty()) return new ChassisSpeeds();
+    if (!m_isPlaying || m_frames.isEmpty()) return ZERO_SPEEDS;
 
     double t = (System.nanoTime() - m_playbackStartNanos) / 1_000_000_000.0;
 
@@ -193,7 +196,10 @@ public class GhostRecorder {
     }
 
     m_currentFrame = m_frames.get(m_playIndex);
-    return new ChassisSpeeds(m_currentFrame.vx, m_currentFrame.vy, m_currentFrame.omega);
+    m_playbackSpeeds.vxMetersPerSecond = m_currentFrame.vx;
+    m_playbackSpeeds.vyMetersPerSecond = m_currentFrame.vy;
+    m_playbackSpeeds.omegaRadiansPerSecond = m_currentFrame.omega;
+    return m_playbackSpeeds;
   }
 
   /**

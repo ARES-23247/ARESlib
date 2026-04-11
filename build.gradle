@@ -11,7 +11,7 @@ plugins {
 }
 
 testlogger {
-    theme 'mocha'
+    theme = 'mocha'
     showExceptions = true
     showStackTraces = true
     showFullStackTraces = false

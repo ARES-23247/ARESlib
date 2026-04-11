@@ -1,8 +1,6 @@
 package org.areslib.math;
 
 import org.areslib.math.geometry.Pose2d;
-import org.areslib.math.geometry.Rotation2d;
-import org.areslib.math.geometry.Translation2d;
 import org.areslib.math.kinematics.ChassisSpeeds;
 
 /**
@@ -110,7 +108,7 @@ public class EliteShooterMath {
     double virtualShotX = (dx - vx * t) / t;
     double virtualShotY = (dy - vy * t) / t;
 
-    Rotation2d virtualTargetRotation = new Rotation2d(Math.atan2(virtualShotY, virtualShotX));
+    double virtualTargetYawRad = Math.atan2(virtualShotY, virtualShotX);
     double xyVel = Math.sqrt(virtualShotX * virtualShotX + virtualShotY * virtualShotY);
 
     // Apply gravity and lift compensation
@@ -120,20 +118,19 @@ public class EliteShooterMath {
     double pitchAngleRads = Math.atan2((dz - drop) / t, xyVel);
     double adjustedVShot = Math.sqrt((dz - drop) * (dz - drop) / (t * t) + xyVel * xyVel);
 
-    // Compute Chassis Aim and Feedforward
-    double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+    // Compute Chassis Aim and Feedforward (use distSq directly — avoids sqrt only to re-square)
+    double distSq = dx * dx + dy * dy;
 
-    double chassisAngularFF = (dy * vx - dx * vy) / (distanceToTarget * distanceToTarget);
+    double chassisAngularFF = (dy * vx - dx * vy) / distSq;
 
     // Project robot velocity into the target frame for hood feed-forward
-    Translation2d velocityVec = new Translation2d(vx, vy);
-    double cosAngle = Math.cos(virtualTargetRotation.getRadians());
-    double sinAngle = Math.sin(virtualTargetRotation.getRadians());
-    double projectedX = velocityVec.getX() * cosAngle + velocityVec.getY() * sinAngle;
+    double cosAngle = Math.cos(virtualTargetYawRad);
+    double sinAngle = Math.sin(virtualTargetYawRad);
+    double projectedX = vx * cosAngle + vy * sinAngle;
 
-    double hoodFF = projectedX * -dz / (distanceToTarget * distanceToTarget + dz * dz);
+    double hoodFF = projectedX * -dz / (distSq + dz * dz);
 
-    setpoint.robotAimYawRadians = virtualTargetRotation.getRadians();
+    setpoint.robotAimYawRadians = virtualTargetYawRad;
     setpoint.chassisAngularFeedforward = chassisAngularFF;
     setpoint.hoodRadians = pitchAngleRads;
     setpoint.hoodFeedforward = hoodFF;
