@@ -21,6 +21,7 @@ You are an expert FTC Software Engineer for Team ARES. Before writing any code, 
 | **Simulation** | `areslib-simulation` | dyn4j physics, `AresPhysicsWorld`, field obstacles, game pieces, LiDAR |
 | **Vision** | `areslib-vision` | AprilTag pipelines, `VisionIO`, pose injection, camera fusion |
 | **Commands** | `areslib-commands` | WPILib-style commands, button bindings, scheduling, subsystem requirements |
+| **Bindings** | `areslib-bindings` | AresGamepad bind hooks, controller HTML/MD doc generation, binding registration |
 | **State Machines** | `areslib-statemachine` | Enum-based `StateMachine` for multi-phase subsystem logic |
 | **Math & Control** | `areslib-math` | PID, feedforward, motion profiles, filters, geometry, pose estimation |
 | **Hardware** | `areslib-hardware` | Motor/sensor wrappers, odometry pods, coprocessor interfaces, `IOReal` |

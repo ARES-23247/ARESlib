@@ -2,7 +2,7 @@ package org.areslib.core;
 
 /** Global utility class representing robot state. */
 public class AresRobot {
-  private static boolean isSimulation = false;
+  private static volatile boolean isSimulation = false;
 
   /**
    * Standard loop execution period for the robot (20ms) used in controllers and simulation physics.

@@ -279,5 +279,6 @@ public final class CommandScheduler {
     buttons.clear();
     toSchedule.clear();
     toCancel.clear();
+    commandsToRemove.clear();
   }
 }

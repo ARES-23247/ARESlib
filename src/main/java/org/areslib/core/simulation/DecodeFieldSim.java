@@ -17,6 +17,11 @@ public class DecodeFieldSim {
   /**
    * Initializes the DECODE field constraints, bounds, and game objects into the shared physics
    * world.
+   *
+   * <p><b>Ordering Contract:</b> This method calls {@link AresPhysicsWorld#reset()}, which destroys
+   * ALL existing bodies and listeners. Subsystems that register their own physics bodies (e.g.,
+   * chassis, mechanism colliders) <b>must</b> do so <b>after</b> this method returns. {@code
+   * AresSimulator.startPhysicsSim()} enforces this ordering automatically.
    */
   public static void buildField() {
     AresPhysicsWorld worldWrapper = AresPhysicsWorld.getInstance();

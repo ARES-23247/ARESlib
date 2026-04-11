@@ -117,14 +117,15 @@ public class AresFaultManager {
     AresTelemetry.putStringArray("Alerts/Warnings", CACHED_WARNINGS.toArray(new String[0]));
     AresTelemetry.putStringArray("Alerts/Infos", CACHED_INFOS.toArray(new String[0]));
 
+    // Edge detection for error state transitions — works even without a gamepad
+    if (hasError && !wasError) {
+      hasNewError = true;
+    }
+
     if (driverGamepad != null) {
       if (hasError) {
         // If there's an active error, turn the controller red
         driverGamepad.setLedColor(1.0, 0.0, 0.0, 100);
-
-        if (!wasError) {
-          hasNewError = true;
-        }
       } else if (wasError) {
         // Issue resolved, reset to green
         driverGamepad.setLedColor(0.0, 1.0, 0.0, 1000);
