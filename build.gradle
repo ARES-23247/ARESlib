@@ -99,7 +99,7 @@ dependencies {
     implementation 'org.dyn4j:dyn4j:5.0.2'
 
     // Error Prone
-    errorprone "com.google.errorprone:error_prone_core:2.49.0"
+    errorprone "com.google.errorprone:error_prone_core:2.24.1"
 
     // Dashboard AAR
     ftcAars 'com.acmerobotics.dashboard:dashboard:0.5.1@aar'
@@ -113,11 +113,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.3'
     testImplementation 'com.google.code.gson:gson:2.10.1'
     testImplementation 'com.github.WilliamAHartman:Jamepad:1.4.0'
     testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.23.0'
-    testImplementation 'org.mockito:mockito-inline:5.23.0'
 
     // Offline SysId tuner (desktop-only, linear algebra regression)
     testImplementation 'org.ejml:ejml-simple:0.44.0'
