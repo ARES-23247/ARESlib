@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The ARESLib Standard — Elite FTC Coding</title>
+    <link rel="stylesheet" href="areslib-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        main { max-width: 1000px; margin: 4rem auto; padding: 2rem; }
+        .rule-card { background: var(--card-bg); padding: 2rem; border-radius: 20px; margin-bottom: 2rem; border-left: 6px solid var(--primary-color); }
+        .rule-card h3 { color: var(--primary-color); margin-bottom: 1rem; }
+        .code-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+        .code-block { background: #0c0c0c; padding: 1rem; border-radius: 12px; font-family: monospace; font-size: 0.9rem; }
+        .bad { border-top: 3px solid #ff4444; }
+        .good { border-top: 3px solid #44ff44; }
+        .bad::before { content: '❌ DO NOT'; color: #ff4444; display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        .good::before { content: '✅ PREFERRED'; color: #44ff44; display: block; margin-bottom: 0.5rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="stars-container"></div>
+    <main>
+        <h1 class="hero-title" style="font-size: 3rem;">The ARESLib Standard</h1>
+        <p style="color: var(--text-dim); margin-bottom: 3rem;">Coding rules for championship-grade FTC software. Compliance is mandatory.</p>
+
+        <div class="rule-card">
+            <h3>1. Zero-Allocation Periodic</h3>
+            <p>Allocating objects inside <code>update()</code> or <code>periodic()</code> is strictly forbidden. This prevents Garbage Collection jitter in high-frequency control loops.</p>
+            <div class="code-comparison">
+                <div class="code-block bad">
+void update() {<br>
+&nbsp;&nbsp;Vector2d pos = new Vector2d(x, y);<br>
+&nbsp;&nbsp;process(pos);<br>
+}
+                </div>
+                <div class="code-block good">
+private final Vector2d pos = new Vector2d();<br><br>
+void update() {<br>
+&nbsp;&nbsp;pos.setX(x); pos.setY(y);<br>
+&nbsp;&nbsp;process(pos);<br>
+}
+                </div>
+            </div>
+        </div>
+
+        <div class="rule-card">
+            <h3>2. Never Nester</h3>
+            <p>Avoid deep logic nesting. Use Guard Clauses (early returns) to keep the primary execution path at the lowest indentation level possible.</p>
+            <div class="code-comparison">
+                <div class="code-block bad">
+if (isEnabled) {<br>
+&nbsp;&nbsp;if (hasTarget) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;runMechanism();<br>
+&nbsp;&nbsp;}<br>
+}
+                </div>
+                <div class="code-block good">
+if (!isEnabled || !hasTarget) return;<br><br>
+runMechanism();
+                </div>
+            </div>
+        </div>
+
+        <div class="rule-card">
+            <h3>3. Unit Safety</h3>
+            <p>Explicitly document and use standard units (Meters, Radians, Volts). Avoid raw motor "power" percentages in core algorithms.</p>
+        </div>
+
+        <div class="rule-card">
+            <h3>4. Deterministic Logging</h3>
+            <p>All subsystem inputs must be logged via <code>AresAutoLogger</code> to enable frame-accurate log replay.</p>
+        </div>
+    </main>
+
+    <script>
+        const container = document.getElementById('stars-container');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+            container.appendChild(star);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "areslib-documentation",
+  "version": "1.0.0",
+  "description": "Documentation hub management and tutorial standards for ARESLib (FTC).",
+  "entrypoint": "SKILL.md"
+}

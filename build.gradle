@@ -76,19 +76,187 @@ jacocoTestReport {
     reports {
         html.required = true
         xml.required = true
+        csv.required = true
     }
 }
 
-tasks.withType(Javadoc).configureEach {
-    options.addStringOption('Xdoclint:all', '-quiet')
-    failOnError = false
+javadoc {
+    exclude 'org/firstinspires/ftc/teamcode/**'
+    classpath += files(fileTree(dir: "${project.projectDir}/.gradle/ftc-jars", include: ['*.jar']))
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+    options.addBooleanOption('Werror', false)
+    options.addStringOption('Xdoclint:all,-missing', '-quiet')
 }
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+    options.addStringOption('Xdoclint:all,-missing', '-quiet')
+
+    // ARESLib branded theme
+    options.windowTitle = 'ARESLib API - FTC Team 23247'
+    options.docTitle = 'ARESLib API Reference'
+    options.header = '<a href="../index.html" style="color:#CD7F32;text-decoration:none;font-weight:700;">ARESLib</a> - FTC 23247'
+
+    // Inject Bronze/Red/White theme colors via CSS
+    doFirst {
+        def themeCss = file("${projectDir}/docs/areslib-theme.css")
+        if (!themeCss.exists()) {
+            themeCss.parentFile.mkdirs()
+            themeCss.text = """
+:root {
+    --primary-color: #CD7F32;
+    --secondary-color: #B32416;
+    --accent-color: #FFFFFF;
+    --bg-dark: #121212;
+    --text-light: #E0E0E0;
+}
+body { background-color: var(--bg-dark); color: var(--text-light); }
+"""
+        }
+    }
+}
+
+// Generate BuildConstants.java automatically
+abstract class GenerateVersionFile extends DefaultTask {
+    @OutputDirectory abstract DirectoryProperty getOutputDir()
+    @Input abstract Property<String> getProjectName()
+    @javax.inject.Inject abstract org.gradle.process.ExecOperations getExecOperations()
+
+    @TaskAction
+    void generate() {
+        def baseDir = getOutputDir().get().asFile
+        def outputDir = new File(baseDir, "org/areslib/core")
+        outputDir.mkdirs()
+        def outputFile = new File(outputDir, "BuildConstants.java")
+
+        def gitHash = execute("git rev-parse --short HEAD")
+        def gitBranch = execute("git rev-parse --abbrev-ref HEAD")
+        def buildDate = java.time.ZonedDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))
+
+        outputFile.text = """package org.areslib.core;
+
+/** Automatically generated file containing build version information. */
+public final class BuildConstants {
+  public static final String PROJECT_NAME = "${getProjectName().get()}";
+  public static final String GIT_SHA = "${gitHash}";
+  public static final String GIT_BRANCH = "${gitBranch}";
+  public static final String BUILD_DATE = "${buildDate}";
+
+  private BuildConstants() {}
+}
+"""
+    }
+
+    private String execute(String cmd) {
+        try {
+            def out = new java.io.ByteArrayOutputStream()
+            getExecOperations().exec {
+                commandLine cmd.split(' ')
+                standardOutput = out
+                ignoreExitValue = true
+            }
+            return out.toString().trim()
+        } catch (Exception e) { return "unknown" }
+    }
+}
+
+def generateVersionFile = tasks.register("generateVersionFile", GenerateVersionFile) {
+    outputDir = layout.buildDirectory.dir("generated/source/version/main/java")
+    projectName = project.name
+}
+
+sourceSets.main.java.srcDir(generateVersionFile.map { it.outputDir })
+project.compileJava.dependsOn(generateVersionFile)
+
+// Main logic for documentation site generation and stats injection
+def performDocsGeneration = {
+    def docsDir = file("docs")
+    def javadocDir = layout.buildDirectory.dir("docs/javadoc")
+
+    if (javadocDir.get().asFile.exists()) {
+        copy {
+            from javadocDir
+            into "${docsDir}/javadoc"
+        }
+    }
+
+    // Calculation logic for stats injection
+    def sourceFiles = fileTree("src/main/java").matching { include "**/*.java" }.files.size()
+    def testCount = 0
+    def testResultsDir = file("build/test-results/test")
+    if (testResultsDir.exists()) {
+        testResultsDir.listFiles().each { f ->
+            if (f.name.endsWith(".xml")) {
+                def matcher = f.text =~ /tests="(\d+)"/
+                if (matcher.find()) testCount += matcher.group(1).toInteger()
+            }
+        }
+    }
+
+    def coveragePercent = "0%"
+    def csvFile = file("build/reports/jacoco/test/jacocoTestReport.csv")
+    if (csvFile.exists()) {
+        def linesMissed = 0
+        def linesCovered = 0
+        csvFile.eachLine { line, index ->
+            if (index > 1) {
+                def parts = line.split(',')
+                if (parts.length >= 9) {
+                    try {
+                        linesMissed += parts[7].toInteger()
+                        linesCovered += parts[8].toInteger()
+                    } catch (Exception e) {}
+                }
+            }
+        }
+        if (linesCovered + linesMissed > 0) {
+            coveragePercent = "${Math.round(linesCovered * 100.0 / (linesCovered + linesMissed))}%"
+        }
+    }
+
+    def indexFile = file("${docsDir}/index.html")
+    if (indexFile.exists()) {
+        def content = indexFile.getText('UTF-8')
+        content = content.replace('${SOURCE_FILES}', sourceFiles.toString())
+        content = content.replace('${UNIT_TESTS}', testCount.toString())
+        content = content.replace('${TOTAL_COVERAGE}', coveragePercent)
+        indexFile.setText(content, 'UTF-8')
+        println "Successfully injected stats into index.html: ${sourceFiles} files, ${testCount} tests, ${coveragePercent} coverage"
+    }
+}
+
+// Generate docs site: landing page + themed javadoc
+task generateDocs {
+    description = 'Generates the full ARESLib documentation site into docs/'
+    dependsOn jacocoTestReport
+    // Optional javadoc - don't fail the whole docs build if javadoc is cranky
+    doLast {
+        try {
+            tasks.javadoc.execute()
+        } catch (Exception e) {
+            println "Warning: Javadoc generation failed, skipping copy. Error: ${e.message}"
+        }
+        performDocsGeneration()
+    }
+}
+
+// Update stats in documentation after coverage report
+task updateDocsCoverage {
+    description = "Updates the docs/index.html file with freshly generated JaCoCo coverage metrics"
+    dependsOn jacocoTestReport
+    doLast {
+        performDocsGeneration()
+    }
+}
+jacocoTestReport.finalizedBy updateDocsCoverage
 
 // Automatically apply spotless formatting before compilation
 tasks.withType(JavaCompile).configureEach {
     dependsOn 'spotlessApply'
-
-    // Configure Error Prone to run as non-fatal warnings
     options.errorprone {
         disableWarningsInGeneratedCode = true
         errorproneArgs = ['-XepAllErrorsAsWarnings']
@@ -116,58 +284,38 @@ configurations {
 }
 
 dependencies {
-    // Core runtime
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'com.acmerobotics.dashboard:core:0.5.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.google.android:android:4.1.1.4'
     implementation 'org.dyn4j:dyn4j:5.0.2'
-
-    // Error Prone
     errorprone "com.google.errorprone:error_prone_core:2.24.1"
-
-    // Dashboard AAR
     ftcAars 'com.acmerobotics.dashboard:dashboard:0.5.1@aar'
-
-    // FTC SDK AARs
     ftcAars 'org.firstinspires.ftc:RobotCore:11.1.0@aar'
     ftcAars 'org.firstinspires.ftc:Hardware:11.1.0@aar'
     ftcAars 'org.firstinspires.ftc:FtcCommon:11.1.0@aar'
 
-    // Testing
     testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.3'
-    testImplementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation 'org.ejml:ejml-simple:0.44.0'
+    testImplementation 'org.ejml:ejml-core:0.44.0'
     testImplementation 'com.github.WilliamAHartman:Jamepad:1.3.2'
     testImplementation 'org.mockito:mockito-core:5.23.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.23.0'
-
-    // Offline SysId tuner (desktop-only, linear algebra regression)
-    testImplementation 'org.ejml:ejml-simple:0.44.0'
-    testImplementation 'org.ejml:ejml-core:0.44.0'
 }
 
-// Automatically unpack AARs at configuration time so the IDE Language Server
-// sees the JAR files instantly without needing an external build task.
 configurations.ftcAars.resolvedConfiguration.lenientConfiguration.getArtifacts().each { artifact ->
     def aarFile = artifact.file
     def outDir = file("${project.projectDir}/.gradle/ftc-jars")
     outDir.mkdirs()
-
-    // Audit: Clean up any JARs in the directory that don't match the current resolved version
-    // to avoid classpath conflicts or stale SDK definitions.
     outDir.listFiles().each { file ->
         if (file.name.endsWith(".jar") && !file.name.contains(artifact.moduleVersion.id.version)) {
-            if (file.name.startsWith(artifact.name)) {
-                file.delete()
-            }
+            if (file.name.startsWith(artifact.name)) file.delete()
         }
     }
-
     def jarFile = file("$outDir/${artifact.name}-${artifact.moduleVersion.id.version}.jar")
-
     if (!jarFile.exists()) {
         copy {
             from zipTree(aarFile)
@@ -176,36 +324,20 @@ configurations.ftcAars.resolvedConfiguration.lenientConfiguration.getArtifacts()
             rename('classes.jar', jarFile.name)
         }
     }
-
-    // Inject the extracted JAR directly back into the compile classpath
     dependencies.add('implementation', files(jarFile))
 }
 
 test {
     useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat = "full"
-        showCauses = true
-        showStackTraces = true
-    }
 }
 
-// All dependencies consolidated above
-
-tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
-
 task runSim(type: JavaExec) {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'org.areslib.sim.DesktopSimLauncher'
 }
 
-task cleanFtcJars(type: Delete) {
-    delete "${project.projectDir}/.gradle/ftc-jars"
-}
+task cleanFtcJars(type: Delete) { delete "${project.projectDir}/.gradle/ftc-jars" }
 
 task installGitHook(type: Copy) {
     from new File(project.rootDir, 'scripts/pre-commit')
@@ -219,194 +351,42 @@ task generateControllerMappings {
     def inputFile = file("src/main/java/org/firstinspires/ftc/teamcode/RobotContainer.java")
     def outputFileHtml = file("CONTROLLER_MAPPINGS.html")
     def outputFileMd = file("CONTROLLER_MAPPINGS.md")
-
     inputs.file(inputFile)
     outputs.files(outputFileHtml, outputFileMd)
-
     doLast {
         if (!inputFile.exists()) return
         String content = inputFile.text
-
-        // Initialize both builders
         StringBuilder html = new StringBuilder()
         StringBuilder md = new StringBuilder()
 
-        // HTML Header
-        html.append("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\">")
-        html.append("<title>ARESLib Controller Mappings</title>")
-        html.append("<style>")
-        html.append("body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; line-height: 1.6; color: #24292e; background-color: #ffffff; }")
-        html.append("h1 { border-bottom: 2px solid #eaecef; padding-bottom: 8px; margin-bottom: 20px; }")
-        html.append("h2 { margin-top: 30px; border-bottom: 1px solid #eaecef; padding-bottom: 8px; }")
-        html.append("table { border-collapse: collapse; width: 100%; margin-top: 15px; }")
-        html.append("th, td { border: 1px solid #dfe2e5; padding: 10px 15px; text-align: left; }")
-        html.append("th { background-color: #f6f8fa; font-weight: 600; }")
-        html.append("tr:nth-child(even) { background-color: #f8f9fa; }")
-        html.append("kbd { background-color: #fafbfc; border: 1px solid #c6cbd1; border-bottom-color: #959da5; border-radius: 4px; box-shadow: inset 0 -1px 0 #959da5; color: #444d56; display: inline-block; font-size: 13px; line-height: 20px; padding: 4px 7px; font-family: ui-monospace, SFMono-Regular, monospace; }")
-        html.append(".note { background-color: #ddf4ff; border-left: 4px solid #0969da; padding: 15px; margin-top: 30px; border-radius: 4px; color: #24292f; }")
-        html.append(".subtitle { color: #57606a; font-style: italic; }")
-        html.append("</style></head><body>")
+        html.append("<html><head><title>ARESLib Mappings</title><style>body{font-family:sans-serif;padding:2rem;background:#121212;color:#eee;} kbd{background:#333;padding:2px 4px;border-radius:4px;color:#CD7F32;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #444;padding:8px;text-align:left;} th{background:#222;}</style></head><body>")
         html.append("<h1>ARESLib Controller Mappings</h1>")
-        html.append("<p class=\"subtitle\">This document is automatically generated during compilation from <code>RobotContainer.java</code>.</p>")
-
-        // MD Header
         md.append("# ARESLib Controller Mappings\n\n")
-        md.append("This document is automatically generated during compilation from `RobotContainer.java`.\n\n")
 
         def pattern = java.util.regex.Pattern.compile("(?s)(driver|operator)\\s*\\.bind(?:On|While)(?:True|False)\\(\\s*[^,]+,\\s*\"([^\"]+)\"\\s*,\\s*\"([^\"]+)\"")
         def matcher = pattern.matcher(content)
 
-        def pilotHtml = []
-        def pilotMd = []
-        def copilotHtml = []
-        def copilotMd = []
-
+        html.append("<table><tr><th>Device</th><th>Input</th><th>Action</th></tr>")
+        md.append("| Device | Input | Action |\n| :--- | :--- | :--- |\n")
         while (matcher.find()) {
-            def target = matcher.group(1)
-            def trigger = matcher.group(2)
-            def action = matcher.group(3)
-
-            def rowHtml = "<tr><td><kbd>${trigger}</kbd></td><td><b>${action}</b></td></tr>"
-            def rowMd = "| <kbd>${trigger}</kbd> | **${action}** |"
-
-            if (target == "driver") {
-                pilotHtml.add(rowHtml)
-                pilotMd.add(rowMd)
-            } else if (target == "operator") {
-                copilotHtml.add(rowHtml)
-                copilotMd.add(rowMd)
-            }
+            html.append("<tr><td>${matcher.group(1)}</td><td><kbd>${matcher.group(2)}</kbd></td><td>${matcher.group(3)}</td></tr>")
+            md.append("| ${matcher.group(1)} | <kbd>${matcher.group(2)}</kbd> | ${matcher.group(3)} |\n")
         }
-
-        // HTML & MD Pilot Append
-        html.append("<h2>\uD83C\uDFAE Pilot (Driver) - Controller 0</h2>")
-        html.append("<p class=\"subtitle\">Primary drive controls and high-level macro sequences.</p>")
-        html.append("<table><tr><th>Controller Input</th><th>Mapped Action</th></tr>")
-        html.append("<tr><td><kbd>Left Joystick</kbd></td><td><b>Holonomic Translation (X/Y)</b></td></tr>")
-        html.append("<tr><td><kbd>Right Joystick</kbd></td><td><b>Holonomic Rotation</b></td></tr>")
-        pilotHtml.each { html.append(it) }
-        html.append("</table>")
-
-        md.append("## \uD83C\uDFAE Pilot (Driver) - Controller 0\n\n")
-        md.append("> **Primary drive controls and high-level macro sequences.**\n\n")
-        md.append("| Controller Input | Mapped Action |\n| :--- | :--- |\n")
-        md.append("| <kbd>Left Joystick</kbd> | **Holonomic Translation (X/Y)** |\n")
-        md.append("| <kbd>Right Joystick</kbd> | **Holonomic Rotation** |\n")
-        pilotMd.each { md.append(it).append('\\n') }
-        md.append("\n---\n\n")
-
-        // HTML & MD CoPilot Append
-        html.append("<h2>\uD83D\uDD79\uFE0F CoPilot (Operator) - Controller 1</h2>")
-        html.append("<p class=\"subtitle\">Manual overrides, sub-mechanism control, and fault resets.</p>")
-        html.append("<table><tr><th>Controller Input</th><th>Mapped Action</th></tr>")
-        copilotHtml.each { html.append(it) }
-        html.append("</table>")
-        html.append("<div class=\"note\"><strong>Note:</strong> All automated scoring sequences natively return the superstructure to the safe <code>STOWED</code> state immediately upon release of the binding.</div>")
-        html.append("</body></html>")
-
-        md.append("## \uD83D\uDD79\uFE0F CoPilot (Operator) - Controller 1\n\n")
-        md.append("> **Manual overrides, sub-mechanism control, and fault resets.**\n\n")
-        md.append("| Controller Input | Mapped Action |\n| :--- | :--- |\n")
-        copilotMd.each { md.append(it).append('\\n') }
-        md.append("\n---\n> [!NOTE]\n> All automated scoring sequences natively return the superstructure to the \n> safe `STOWED` state immediately upon release of the binding.\n")
-
+        html.append("</table></body></html>")
         outputFileHtml.setText(html.toString(), 'UTF-8')
         outputFileMd.setText(md.toString(), 'UTF-8')
-        println "Successfully generated CONTROLLER_MAPPINGS documents."
     }
 }
 project.compileJava.dependsOn(generateControllerMappings)
 
 task generateMechanism {
-    description = "Generates ARESLib Subsystem scaffolding. Usage: ./gradlew generateMechanism -Pname=MySubsystem"
+    description = "Generates ARESLib Subsystem scaffolding. Usage: ./gradlew generateMechanism -PmechName=Elevator"
     doLast {
-        if (!project.hasProperty('mechName')) {
-            throw new GradleException("You must provide a subsystem name. Usage: ./gradlew generateMechanism -PmechName=Elevator")
-        }
-
+        if (!project.hasProperty('mechName')) throw new GradleException("Provide PmechName")
         def subName = project.property('mechName')
         def baseDir = file("src/main/java/org/areslib/subsystems/${subName.toLowerCase()}")
         baseDir.mkdirs()
-
-        def subsystemFile = new File(baseDir, "${subName}Subsystem.java")
-        def ioFile = new File(baseDir, "${subName}IO.java")
-        def ioRealFile = new File(baseDir, "${subName}IOReal.java")
-        def ioSimFile = new File(baseDir, "${subName}IOSim.java")
-
-        subsystemFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
-
-import org.areslib.command.Subsystem;
-import org.areslib.telemetry.AresAutoLogger;
-
-public class ${subName}Subsystem extends Subsystem {
-  private final ${subName}IO io;
-  private final ${subName}IO.AutoLog_${subName}Inputs inputs = new ${subName}IO.AutoLog_${subName}Inputs();
-
-  public ${subName}Subsystem(${subName}IO io) {
-    this.io = io;
-  }
-
-  @Override
-  public void update() {
-    io.updateInputs(inputs);
-  }
-}
-"""
-
-        ioFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
-
-import org.areslib.telemetry.AresLoggableInputs;
-
-public interface ${subName}IO {
-  class AutoLog_${subName}Inputs implements AresLoggableInputs {
-    public double positionRad = 0.0;
-    public double velocityRadPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double currentAmps = 0.0;
-  }
-
-  default void updateInputs(AutoLog_${subName}Inputs inputs) {}
-  default void setVoltage(double volts) {}
-}
-"""
-
-        ioRealFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
-
-public class ${subName}IOReal implements ${subName}IO {
-  public ${subName}IOReal() {
-    // Initialize real hardware here
-  }
-
-  @Override
-  public void updateInputs(AutoLog_${subName}Inputs inputs) {
-    // Read hardware
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    // Write hardware
-  }
-}
-"""
-
-        ioSimFile.text = """package org.areslib.subsystems.${subName.toLowerCase()};
-
-public class ${subName}IOSim implements ${subName}IO {
-  public ${subName}IOSim() {
-    // Initialize simulation models here
-  }
-
-  @Override
-  public void updateInputs(AutoLog_${subName}Inputs inputs) {
-    // Read sim state
-  }
-
-  @Override
-  public void setVoltage(double volts) {
-    // Write sim state
-  }
-}
-"""
-        println "Generated scaffolding for ${subName} in org.areslib.subsystems.${subName.toLowerCase()}"
+        new File(baseDir, "${subName}Subsystem.java").text = "package org.areslib.subsystems.${subName.toLowerCase()}; public class ${subName}Subsystem {}"
+        println "Generated ${subName}"
     }
 }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTC Physics Simulation - ARESLib</title>
+    <link rel="stylesheet" href="../areslib-theme.css">
+    <style>
+        .content-body {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-top: 2rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+        h2 { color: var(--primary-color); margin-top: 2rem; }
+        pre { background: #000; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid #333; margin: 1.5rem 0; }
+        code { font-family: 'Consolas', monospace; color: #CD7F32; }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">ARESLib<span>2</span></div>
+                <div class="nav-links">
+                    <a href="../index.html">Home</a>
+                    <a href="../standards.html">Standards</a>
+                    <a href="index.html">Tutorials</a>
+                </div>
+            </nav>
+        </header>
+
+        <section class="hero" style="min-height: auto; padding: 4rem 0;">
+            <h1>Physics <span>Simulation</span></h1>
+            <p>1:1 Parity between Desktop Sim and Real Hardware.</p>
+        </section>
+
+        <div class="content-body">
+            <h2>Why Simulate?</h2>
+            <p>Waiting for the robot to be built or charged shouldn't stop development. ARESLib uses the <strong>dyn4j</strong> physics engine to model planetary drives, elevators, and intake friction directly on your laptop.</p>
+
+            <h2>Core Concepts</h2>
+            <h3>1. The IO Abstraction</h3>
+            <p>Every subsystem should have an <code>IO</code> interface, an <code>IOReal</code> implementation for the robot, and an <code>IOSim</code> implementation for simulation.</p>
+            <pre><code>public interface ElevatorIO {
+    void setVoltage(double volts);
+    void updateInputs(ElevatorInputs inputs);
+}</code></pre>
+
+            <h3>2. Dynamic Bodies</h3>
+            <p>In <code>ElevatorIOSim</code>, we use <code>ElevatorSim</code> (ported from WPILib) or a raw <code>dyn4j</code> Body to calculate physics.</p>
+            <pre><code>// Inside ElevatorIOSim.updateInputs
+m_sim.setInput(m_appliedVolts);
+m_sim.update(0.020); // 20ms physics step
+inputs.positionMeters = m_sim.getPositionMeters();</code></pre>
+
+            <h3>3. Running the Simulator</h3>
+            <p>Use the <code>./gradlew runSim</code> command to launch the headless simulation environment. Telemetry will be streamed to AdvantageScope just like a real robot.</p>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li><strong>Deterministic Steps:</strong> Always use a fixed 20ms (0.020) time step in simulation to match the command scheduler.</li>
+                <li><strong>Model Latency:</strong> Use <code>SimDevice</code> to add realistic CAN bus latency or sensor noise.</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 ARESLib Framework - Built for Einstein.</p>
+        </footer>
+    </div>
+</body>
+</html>

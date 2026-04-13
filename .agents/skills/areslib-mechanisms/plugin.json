@@ -1,0 +1,6 @@
+{
+  "name": "areslib-mechanisms",
+  "version": "1.0.0",
+  "description": "Mechanism scaffolding and IO patterns for ARESLib (FTC).",
+  "entrypoint": "SKILL.md"
+}

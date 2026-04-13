@@ -89,6 +89,30 @@
     {
       "name": "areslib-bindings",
       "source": "./areslib-bindings"
+    },
+    {
+      "name": "areslib-audit",
+      "source": "./areslib-audit"
+    },
+    {
+      "name": "areslib-led",
+      "source": "./areslib-led"
+    },
+    {
+      "name": "areslib-power",
+      "source": "./areslib-power"
+    },
+    {
+      "name": "areslib-mechanisms",
+      "source": "./areslib-mechanisms"
+    },
+    {
+      "name": "areslib-documentation",
+      "source": "./areslib-documentation"
+    },
+    {
+      "name": "areslib-javadoc",
+      "source": "./areslib-javadoc"
     }
   ]
 }

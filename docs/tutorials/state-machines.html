@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Machine Logic - ARESLib</title>
+    <link rel="stylesheet" href="../areslib-theme.css">
+    <style>
+        .content-body {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-top: 2rem;
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+        h2 { color: var(--primary-color); margin-top: 2rem; }
+        pre { background: #000; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid #333; margin: 1.5rem 0; }
+        code { font-family: 'Consolas', monospace; color: #CD7F32; }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">ARESLib<span>2</span></div>
+                <div class="nav-links">
+                    <a href="../index.html">Home</a>
+                    <a href="../standards.html">Standards</a>
+                    <a href="index.html">Tutorials</a>
+                </div>
+            </nav>
+        </header>
+
+        <section class="hero" style="min-height: auto; padding: 4rem 0;">
+            <h1>State Machine <span>Logic</span></h1>
+            <p>Managing complexity with clean, enum-based transitions.</p>
+        </section>
+
+        <div class="content-body">
+            <h2>The Problem</h2>
+            <p>Robots often perform complex sequences: "Intake -> Retract -> Sort -> Score". Using raw <code>if/else</code> statements in your periodic loop quickly leads to "spaghetti code" that is hard to debug and impossible to test.</p>
+
+            <h2>The ARESLib Solution</h2>
+            <p>The <code>StateMachine</code> framework provides a structured way to define states and transitions.</p>
+
+            <pre><code>public enum IntakeState {
+    IDLE,
+    INTAKING,
+    REVERSING,
+    FULL
+}
+
+private StateMachine&lt;IntakeState&gt; stateMachine = new StateMachine&lt;&gt;(IntakeState.IDLE);</code></pre>
+
+            <h3>Defining Transitions</h3>
+            <p>Use the <code>onEnter</code>, <code>onExit</code>, and <code>whileIn</code> methods to define behavior.</p>
+            <pre><code>stateMachine.onEnter(IntakeState.INTAKING, () -> {
+    intakeMotor.setVoltage(12.0);
+});
+
+stateMachine.onWhile(IntakeState.INTAKING, () -> {
+    if (sensor.isTriggered()) {
+        stateMachine.setState(IntakeState.FULL);
+    }
+});</code></pre>
+
+            <h2>Visualizing States</h2>
+            <p>ARESLib automatically exports state machine graphs to AdvantageScope. You can see real-time transitions in the "State Machine" tab of the simulator.</p>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 ARESLib Framework - Built for Einstein.</p>
+        </footer>
+    </div>
+</body>
+</html>

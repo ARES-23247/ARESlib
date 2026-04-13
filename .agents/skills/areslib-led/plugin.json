@@ -1,0 +1,6 @@
+{
+  "name": "areslib-led",
+  "version": "1.0.0",
+  "description": "Visual feedback and LED pattern management for ARESLib (FTC).",
+  "entrypoint": "SKILL.md"
+}

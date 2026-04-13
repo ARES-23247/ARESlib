@@ -1,0 +1,6 @@
+{
+  "name": "areslib-javadoc",
+  "version": "1.0.0",
+  "description": "Themed Javadoc management and API standards for ARESLib (FTC).",
+  "entrypoint": "SKILL.md"
+}

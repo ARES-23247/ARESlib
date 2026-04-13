@@ -1,0 +1,6 @@
+{
+  "name": "areslib-power",
+  "version": "1.0.0",
+  "description": "Power management and voltage regulation for ARESLib (FTC).",
+  "entrypoint": "SKILL.md"
+}

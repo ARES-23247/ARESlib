@@ -1,0 +1,6 @@
+{
+  "name": "areslib-audit",
+  "version": "1.0.0",
+  "description": "Championship-grade code audit and reliability enforcement for ARESLib (FTC).",
+  "entrypoint": "SKILL.md"
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARESLib — FTC Team 23247 Software Framework</title>
+    <link rel="stylesheet" href="areslib-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="stars-container"></div>
+
+    <header>
+        <div class="hero-icon">🦅</div>
+        <h1 class="hero-title">ARESLib</h1>
+        <p class="hero-subtitle">A championship-grade, zero-allocation FTC software framework designed for absolute determinism and simulation parity.</p>
+        <div class="hero-cta">
+            <a href="javadoc/index.html" class="btn-primary">Explore API Reference</a>
+            <a href="tutorials.html" class="btn-secondary" style="margin-left: 1rem; color: #A0A0A0;">View Tutorials</a>
+        </div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">267</div>
+            <div class="stat-label">Source Files</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">681</div>
+            <div class="stat-label">Unit Tests</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">0%</div>
+            <div class="stat-label">Total Coverage</div>
+        </div>
+    </div>
+
+    <section id="features">
+        <div class="section-title">
+            <h2>Framework Features</h2>
+            <p style="color: var(--text-dim);">Engineered for the most demanding FTC competition environments.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Zero-Allocation</h3>
+                <p>The 20ms control loop is guaranteed to never trigger a Garbage Collector pause. All math objects are pre-allocated and pooled.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>High-Fidelity Sim</h3>
+                <p>Built-in <code>dyn4j</code> physics engine allows you to test autonomous routines, mechanism collisions, and sensor fusion without a robot.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>AdvantageKit-Style Logging</h3>
+                <p>Deterministic log replay and tele-op recording allow you to debug technical failures with frame-by-frame precision.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Fault Management</h3>
+                <p>Continuous hardware health monitoring and automated subsystem fallback ensures the robot keeps moving despite sensor failure.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>State Machines</h3>
+                <p>Manage complex mechanism interactions with a robust, enum-driven state machine framework that prevents illegal configurations.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧪</div>
+                <h3>Headless Testing</h3>
+                <p>Verify your algorithms with pure JUnit 5 tests. Run thousands of simulation cycles in seconds on your dev machine.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Create premium star background
+        const container = document.getElementById('stars-container');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+            star.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(star);
+        }
+    </script>
+</body>
+</html>
