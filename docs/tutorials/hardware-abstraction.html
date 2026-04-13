@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: Hardware Abstraction (HAL) — ARESLib</title>
+    <link rel="stylesheet" href="../areslib-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<div id="stars-container"></div>
+<div id="header-placeholder"></div>
+
+<div class="page-wrapper">
+    <div class="container">
+        <a href="index.html" class="back-link">← BACK TO TUTORIALS</a>
+        
+        <div style="text-align: center; margin-bottom: 60px;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🔧</div>
+            <h1 class="hero-title">Hardware Abstraction (HAL)</h1>
+            <p class="hero-subtitle">Decoupling logic from electronics for 100% simulation parity.</p>
+        </div>
+
+        <section>
+            <p>One of the core tenets of ARESLib is that <strong>Robot Logic should never know what motor it's talking to</strong>. By using the Hardware Abstraction Layer (HAL) and the <code>IO</code> pattern, we can run the exact same subsystem code on a real Control Hub, a desktop simulator, or a unit test.</p>
+
+            <h2>1. The Blueprint: Logic -> Interface -> Impl</h2>
+            <p>Every subsystem in ARESLib is built using three distinct layers:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 30px 0;">
+                <div style="background: rgba(205,127,50,0.1); padding: 20px; border-radius: 8px; border: 1px solid rgba(205,127,50,0.3);">
+                    <h4 style="margin-top:0;">1. The Subsystem</h4>
+                    <p style="font-size:0.85rem;">Contains the "Brain." Calculates PID, State Machines, and Kinematics.</p>
+                </div>
+                <div style="background: rgba(179,36,22,0.1); padding: 20px; border-radius: 8px; border: 1px solid rgba(179,36,22,0.3);">
+                    <h4 style="margin-top:0;">2. The IO Interface</h4>
+                    <p style="font-size:0.85rem;">The "Contract." Defines what data goes in (volts) and what comes out (position).</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h4 style="margin-top:0;">3. The Implementation</h4>
+                    <p style="font-size:0.85rem;">The "Muscle." Either <code>IOReal</code> (REV/CANCoder) or <code>IOSim</code> (Physics).</p>
+                </div>
+            </div>
+
+            <h2>2. Why No <code>DcMotor</code>?</h2>
+            <p>Directly using <code>DcMotor</code> or <code>Servo</code> classes in your subsystem makes it impossible to unit test. In ARESLib, we use standardized wrappers:</p>
+            
+            <pre><code class="language-java">// The Interface (IO Contract)
+public interface DriveIO {
+    @AutoLog // Automatically generates Telemetry/Replay fields
+    public static class DriveIOInputs {
+        public double leftPositionMeters = 0.0;
+        public double leftVelocityMetersPerSec = 0.0;
+        public double appliedVolts = 0.0;
+    }
+    
+    public default void updateInputs(DriveIOInputs inputs) {}
+    public default void setVoltage(double volts) {}
+}</code></pre>
+
+            <h2>3. Implementing IOReal</h2>
+            <p>For actual competition, we implement the contract by wrapping the FTC SDK classes. This is the only place in the entire framework where <code>hardwareMap</code> should be touched.</p>
+
+            <pre><code class="language-java">public class DriveIOReal implements DriveIO {
+    private final DcMotorEx leftMotor;
+
+    public DriveIOReal(HardwareMap hwMap) {
+        leftMotor = hwMap.get(DcMotorEx.class, "left_drive");
+    }
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        inputs.leftPositionMeters = leftMotor.getCurrentPosition() * GEAR_RATIO;
+        inputs.leftVelocityMetersPerSec = leftMotor.getVelocity() * GEAR_RATIO;
+    }
+}</code></pre>
+
+            <h2>4. Implementing IOSim</h2>
+            <p>For simulation, we implement the same contract but use a **Physics Model** instead of a physical motor. This allows us to practice driving and test autonomous paths without a robot.</p>
+            
+            <div class="callout">
+                <h4>1:1 Parity</h4>
+                <p>Because the Subsystem only sees the <code>DriveIO</code> interface, it behaves identically whether it's getting data from a real encoder or a mathematical model. This is the key to <strong>"Code in Sim, Save at Comp."</strong></p>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../assets/js/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</body>
+</html>

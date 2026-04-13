@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: SysId & Continuous Tuning — ARESLib</title>
+    <link rel="stylesheet" href="../areslib-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<div id="stars-container"></div>
+<div id="header-placeholder"></div>
+
+<div class="page-wrapper">
+    <div class="container">
+        <a href="index.html" class="back-link">← BACK TO TUTORIALS</a>
+        
+        <div style="text-align: center; margin-bottom: 60px;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📈</div>
+            <h1 class="hero-title">SysId & Continuous Tuning</h1>
+            <p class="hero-subtitle">Achieving perfect feedforward through system identification.</p>
+        </div>
+
+        <section>
+            <p>PID controllers are powerful, but they are reactive. To achieve truly championship-grade motion, you need <strong>Feedforward</strong>—the ability to predict the voltage required to achieve a target velocity. ARESLib provides a specialized <code>SysId</code> suite to calculate these constants automatically.</p>
+
+            <h2>1. Understanding kS, kV, and kA</h2>
+            <p>ARESLib uses the standard WPILib-style Feedforward model:</p>
+            <ul>
+                <li><strong>kS (Static)</strong>: The voltage required to overcome static friction and just start the motor moving.</li>
+                <li><strong>kV (Velocity)</strong>: The voltage required to maintain a steady state velocity (proportional to speed).</li>
+                <li><strong>kA (Acceleration)</strong>: The voltage required to change velocity (proportional to acceleration).</li>
+            </ul>
+            
+            <div class="callout">
+                <h4>Voltage = (kS * sgn(v)) + (kV * v) + (kA * a)</h4>
+                <p>By calculating these values, your robot can hit its targets instantly without waiting for the PID loop to "catch up" to the error.</p>
+            </div>
+
+            <h2>2. Continuous SysId Tuning</h2>
+            <p>FTC batteries are notorious for "voltage sag," and mechanical friction changes as bearings wear down. ARESLib features a <strong>Continuous Tuner</strong> that runs in the background during practice to refine these constants.</p>
+            
+            <pre><code class="language-java">// Example: Initializing a Continuous Tuner for a Flywheel
+private final ContinuousSysIdTuner m_tuner = new ContinuousSysIdTuner(
+    "ShooterFlywheel",
+    (volts) -> m_io.setVoltage(volts),
+    () -> m_io.getVelocityMetersPerSec()
+);
+
+@Override
+public void periodic() {
+    if (m_isTuning) {
+        m_tuner.update(); // Records data points automatically
+    }
+}</code></pre>
+
+            <h2>3. Running a SysId Routine</h2>
+            <p>For one-time characterization, use the <code>SysIdRoutine</code> command. This will execute the "Quasistatic" and "Dynamic" ramps required for the SysId analysis tool.</p>
+            
+            <ol>
+                <li><strong>Quasistatic</strong>: The motor voltage slowly ramps up linearly. This isolates the **kV** and **kS** values.</li>
+                <li><strong>Dynamic</strong>: The motor is blasted with full voltage. This isolates the **kA** (inertia) value.</li>
+            </ol>
+
+            <pre><code class="language-java">// Command-based SysId implementation
+public Command getSysIdCommand() {
+    return new SysIdRoutine(
+        new Config(),
+        new Mechanism(
+            (volts) -> m_drive.setVoltage(volts),
+            null, // No logging needed, handled by @AutoLog
+            this
+        )
+    ).quasistatic(Direction.kForward);
+}</code></pre>
+
+            <h2>4. Exporting to Desktop</h2>
+            <p>Once raw data is collected, ARESLib can export it as a <strong>SysId JSON</strong> file. This file can be imported directly into the FRC/FTC SysId GUI tool to generate the optimal gains.</p>
+            
+            <div class="callout-warning">
+                <h4>Safety First</h4>
+                <p>Always run SysId routines with the robot on blocks before testing on the ground. A failed characterization can result in sudden, full-speed uncontrolled movement.</p>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../assets/js/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</body>
+</html>

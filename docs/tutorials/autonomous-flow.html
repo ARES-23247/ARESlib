@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: Autonomous Flow — ARESLib</title>
+    <link rel="stylesheet" href="../areslib-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<div id="stars-container"></div>
+<div id="header-placeholder"></div>
+
+<div class="page-wrapper">
+    <div class="container">
+        <a href="index.html" class="back-link">← BACK TO TUTORIALS</a>
+        
+        <div style="text-align: center; margin-bottom: 60px;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🚀</div>
+            <h1 class="hero-title">Autonomous Flow</h1>
+            <p class="hero-subtitle">Orchestrating paths and commands with PathPlanner and AD* avoidance.</p>
+        </div>
+
+        <section>
+            <p>Moving from A to B is easy. Moving from A to B while avoiding unexpected game pieces, scoring intake-to-outtake sequences, and maintaining 1:1 odometry parity is what separates average teams from championship contenders. ARESLib leverages an elite port of **PathPlanner** to manage this complexity.</p>
+
+            <h2>1. The AutoBuilder Philosophy</h2>
+            <p>Instead of hard-coding every movement, we use a central **AutoBuilder**. This registry maps string names (e.g., <code>"IntakeDown"</code>) to actual Command objects. This allows drivers to "paint" autonomous routines in the PathPlanner GUI and have them execute seamlessly on the robot.</p>
+            
+            <pre><code class="language-java">// Example: Registering Named Commands
+NamedCommands.registerCommand("ScoreL3", new ScoringCommand(m_arm, m_outtake));
+NamedCommands.registerCommand("IntakeExtend", m_intake.extendCommand());
+
+// Initializing the AutoBuilder
+AutoBuilder.configureSwerve(
+    m_poseEstimator::getLatestPose,
+    m_poseEstimator::resetPose,
+    m_drive::getRobotRelativeSpeeds,
+    m_drive::driveRobotRelative,
+    new HolonomicPathFollowerConfig(...),
+    m_drive
+);</code></pre>
+
+            <h2>2. Dynamic Pathfinding (AD*)</h2>
+            <p>ARESLib includes a **Local AD*** implementation. If a robot is driving a pre-planned path and encounters an unexpected obstacle (detected via ToF Laser Sensors), it will dynamically route <i>around</i> the obstacle without stopping, then merge back onto the original trajectory.</p>
+            
+            <div class="callout">
+                <h4>Anytime Dynamic A*</h4>
+                <p>Unlike standard A*, AD* is an anytime algorithm. It provides an "optimal enough" path instantly and continues to refine it while the robot is already moving. This allows for collision avoidance at 4+ m/s.</p>
+            </div>
+
+            <h2>3. Event Markers (Micro-SOTM)</h2>
+            <p>You can trigger logic based on the robot's progress along a path. Common uses in ARESLib:</p>
+            <ul>
+                <li><strong>Spinning up the flywheel</strong> 1000ms before reaching the shot location.</li>
+                <li><strong>Deploying the intake</strong> while rounding a corner to minimize cycle time.</li>
+                <li><strong>Seeding the IMU</strong> when passing a known landmark or AprilTag.</li>
+            </ul>
+
+            <pre><code class="language-java">// Retrieving a path from memory
+PathPlannerPath taxiPath = PathPlannerPath.fromPathFile("MainTaxi");
+
+// Converting it to a full autonomous sequence
+Command autoCommand = AutoBuilder.buildAuto("3-Piece-Clear-Side");</code></pre>
+
+            <div class="callout-warning">
+                <h4>Simulation Parity</h4>
+                <p>Paths designed in PathPlanner can be tested in the ARESLib desktop simulator. If the robot "skids" or misses a turn in sim, adjust your <strong>Maximum Angular Velocity</strong> and **Module Friction** models in <code>ChassisConfig</code>.</p>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../assets/js/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</body>
+</html>

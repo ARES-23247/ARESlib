@@ -17,7 +17,12 @@ const SEARCH_INDEX = [
     { title: 'SOTM Solver', desc: 'Elite Shooting while moving', url: 'tutorials/sotm.html', keywords: 'sotm elite shooting kinematics aim' },
     { title: 'Vision Fusion', desc: 'MegaTag 2.0 and pose estimation', url: 'tutorials/vision-fusion.html', keywords: 'vision apriltag fusion megatag localization' },
     { title: 'Swerve Kinematics', desc: 'Vector summation and discretization', url: 'tutorials/swerve-kinematics.html', keywords: 'swerve kinematics vector math discretization' },
-    { title: 'Championship Testing', desc: 'Headless JUnit 5 and IO mocking', url: 'tutorials/championship-testing.html', keywords: 'testing junit unit headless coverage' }
+    { title: 'Championship Testing', desc: 'Headless JUnit 5 and IO mocking', url: 'tutorials/championship-testing.html', keywords: 'testing junit unit headless coverage' },
+    { title: 'SysId Tuning', desc: 'Characterization and feedforward', url: 'tutorials/sysid-tuning.html', keywords: 'sysid feedforward tuning ks kv ka' },
+    { title: 'Autonomous Flow', desc: 'PathPlanner and dynamic avoidance', url: 'tutorials/autonomous-flow.html', keywords: 'auto autonomous pathplanner path adstar avoidance' },
+    { title: 'Fault Resilience', desc: 'Hardware health and driver alerts', url: 'tutorials/fault-resilience.html', keywords: 'faults health alert diagnostics rumble' },
+    { title: 'Hardware Abstraction (HAL)', desc: 'Decoupling logic from electronics', url: 'tutorials/hardware-abstraction.html', keywords: 'hal io abstraction motor real sim' },
+    { title: 'Power Management', desc: 'Battery sag and load shedding', url: 'tutorials/power-management.html', keywords: 'power battery voltage current shedding' }
 ];
 
 function injectHeader() {

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: Power Management — ARESLib</title>
+    <link rel="stylesheet" href="../areslib-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<div id="stars-container"></div>
+<div id="header-placeholder"></div>
+
+<div class="page-wrapper">
+    <div class="container">
+        <a href="index.html" class="back-link">← BACK TO TUTORIALS</a>
+        
+        <div style="text-align: center; margin-bottom: 60px;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🔋</div>
+            <h1 class="hero-title">Power Management</h1>
+            <p class="hero-subtitle">Surviving the 2:30 mark with dynamic load shedding and sag compensation.</p>
+        </div>
+
+        <section>
+            <p>Robots don't just run on code; they run on **electricity**. In the final 30 seconds of a match, your battery voltage drops, mechanisms slow down, and aggressive maneuvers can cause a "brownout" (reboot). ARESLib's Power Management system ensures your robot remains stable even at low voltage.</p>
+
+            <h2>1. Voltage Compensation</h2>
+            <p>As the battery drops from 13.5V to 10.0V, your motor's <code>kV</code> (velocity per volt) remains the same, but the available "ceiling" decreases. ARESLib automatically scales your feedforward and PID outputs based on the instantaneous battery voltage.</p>
+            
+            <pre><code class="language-java">// Inside DriveIOReal.java
+double voltage = AresHardwareManager.getBatteryVoltage();
+m_leftMotor.setPower(commandedVolts / voltage);</code></pre>
+
+            <h2>2. Dynamic Load Shedding</h2>
+            <p>If the battery drops below a safety threshold (e.g., 9.0V), ARESLib begins **Load Shedding**. It calculates a <code>masterPowerScale</code> that smoothly throttles non-essential actuators to ensure the Control Hub doesn't reboot.</p>
+            
+            <div class="callout">
+                <h4>Voltage & Current Safety</h4>
+                <p>The <code>AresHardwareManager</code> monitors both a <strong>Voltage Sensor</strong> and an optional <strong>Floodgate Current Sensor</strong> to compute the safest power multiplier.</p>
+            </div>
+
+            <pre><code class="language-java">// Scaling logic in AresHardwareManager
+if (batteryVoltage < 9.0) {
+    // Linearly scale from 100% to 0% power between 9V and 7V
+    voltageScale = (batteryVoltage - 7.0) / 2.0;
+}
+masterPowerScale = Math.min(voltageScale, currentScale);</code></pre>
+
+            <h2>3. EMA Smoothing</h2>
+            <p>Motor startups cause massive, multi-millisecond current spikes that can jitter your sensors. ARESLib uses an **Exponential Moving Average (EMA)** filter on its current and voltage monitoring to ensure it reacts to trends, not noise.</p>
+
+            <h2>4. Mechanism-Specific Limits</h2>
+            <p>You can use <code>calculateLoadSheddedLimit</code> to define custom behavior for mechanisms like intakes or scoring arms during low-power states.</p>
+
+            <pre><code class="language-java">// Example: Limiting Arm Current when battery is low
+double currentLimit = AresHardwareManager.calculateLoadSheddedLimit(
+    40.0, // Max Amps (Nominal)
+    20.0, // Min Amps (Low Power)
+    12.0, // Nominal Voltage
+    9.0   // Critical Voltage
+);
+m_armMotor.setCurrentLimit(currentLimit);</code></pre>
+
+            <div class="callout-warning">
+                <h4>The "Brownout" Cliff</h4>
+                <p>The REV Control Hub reboots at ~6.5V. If your load shedding isn't aggressive enough, a simultaneous swerve sprint + arm deployment will reset your robot mid-match. <strong>Always test with a partially discharged battery!</strong></p>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="../assets/js/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</body>
+</html>
