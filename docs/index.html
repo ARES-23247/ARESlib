@@ -11,60 +11,62 @@
     <div id="header-placeholder"></div>
     <div id="stars-container"></div>
 
-    <section class="hero">
-        <div class="hero-icon">🦅</div>
-        <h1 class="hero-title">ARESLib <span>2</span></h1>
-        <p class="hero-subtitle">The zero-allocation, high-fidelity FTC framework. Built for Einstein performance and diagnostic mastery.</p>
-        <div style="display: flex; gap: 1.5rem;">
-            <a href="tutorials/index.html" class="btn-primary">View Training Hub</a>
-            <a href="standards.html" class="btn-primary" style="background: transparent; border: 2px solid var(--primary-color);">Our Standards</a>
-        </div>
-    </section>
+    <div class="page-wrapper">
+        <section class="hero">
+            <div class="hero-icon">🦅</div>
+            <h1 class="hero-title">ARESLib <span>2</span></h1>
+            <p class="hero-subtitle">The zero-allocation, high-fidelity FTC framework. Built for Championship performance and diagnostic mastery.</p>
+            <div style="display: flex; gap: 1.5rem;">
+                <a href="tutorials/index.html" class="btn-primary">View Training Hub</a>
+                <a href="standards.html" class="btn-primary" style="background: transparent; border: 2px solid var(--primary-color);">Our Standards</a>
+            </div>
+        </section>
 
-    <!-- Detailed Features Grid -->
-    <section class="container" style="padding-top: 0;">
-        <div class="section-title">
-            <h2>Framework Core</h2>
-            <p>Advanced features ported from elite FRC patterns (MARSLib) and optimized for the FTC SDK.</p>
-        </div>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Zero-Allocation Periodic</h3>
-                <p>Guaranteed deterministic performance. Our control loops never trigger the GC during match play, ensuring stable 20ms cycles.</p>
+        <!-- Detailed Features Grid -->
+        <section class="container" style="padding-top: 0;">
+            <div class="section-title">
+                <h2>Framework Core</h2>
+                <p>Advanced features ported from elite FRC patterns (MARSLib) and optimized for the FTC SDK.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔮</div>
-                <h3>High-Fidelity Simulation</h3>
-                <p>Integrated dyn4j physics engine. Test mechanisms, odometry, and autonomous paths without physical hardware.</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Zero-Allocation Periodic</h3>
+                    <p>Guaranteed deterministic performance. Our control loops never trigger the GC during match play, ensuring stable 20ms cycles.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <h3>High-Fidelity Simulation</h3>
+                    <p>Integrated dyn4j physics engine. Test mechanisms, odometry, and autonomous paths without physical hardware.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>AdvantageScope Logging</h3>
+                    <p>@AutoLog everything. Frame-accurate 3D telemetry and log replay for the fastest debugging in FTC.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>AdvantageScope Logging</h3>
-                <p>@AutoLog everything. Frame-accurate 3D telemetry and log replay for the fastest debugging in FTC.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Live Performance Stats (Injected via Gradle/Git) -->
-    <section class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">124</div>
-                <div class="stat-label">Source Files</div>
+        <!-- Live Performance Stats -->
+        <section class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">124</div>
+                    <div class="stat-label">Source Files</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">86</div>
+                    <div class="stat-label">Unit Tests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">74%</div>
+                    <div class="stat-label">Code Coverage</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value">86</div>
-                <div class="stat-label">Unit Tests</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">74%</div>
-                <div class="stat-label">Code Coverage</div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <div id="footer-placeholder"></div>
+        <div id="footer-placeholder"></div>
+    </div>
 
     <script src="assets/js/common.js"></script>
 </body>

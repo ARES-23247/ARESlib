@@ -22,32 +22,33 @@
     <div id="header-placeholder"></div>
     <div id="stars-container"></div>
 
-    <main class="container" style="max-width: 900px; padding-top: 10rem;">
-        <h1 class="hero-title" style="font-size: clamp(2.5rem, 8vw, 4rem); text-align: left;">The ARESLib Standard</h1>
-        <p style="color: var(--text-light); font-size: 1.25rem; font-weight: 500; margin-bottom: 3rem; opacity: 0.8;">Championship-grade FTC software must be deterministic, efficient, and readable. Compliance with these rules is mandatory for all core framework contributions.</p>
+    <div class="page-wrapper">
+        <main class="container" style="max-width: 900px;">
+            <h1 class="hero-title" style="font-size: clamp(2.5rem, 8vw, 4rem); text-align: left;">The ARESLib Standard</h1>
+            <p style="color: var(--text-light); font-size: 1.25rem; font-weight: 500; margin-bottom: 3rem; opacity: 0.8;">Championship-grade FTC software must be deterministic, efficient, and readable. Compliance with these rules is mandatory for all core framework contributions.</p>
 
-        <div class="rule-card">
-            <h3>1. Zero-Allocation Periodic</h3>
-            <p>Code running in <code>periodic()</code> or <code>teleopPeriodic()</code> MUST NOT allocate memory on the heap. Use <code>static</code> pre-allocated objects or the <code>AresPool</code> for geometry and math operations.</p>
-        </div>
+            <div class="rule-card">
+                <h3>1. Zero-Allocation Periodic</h3>
+                <p>Code running in <code>periodic()</code> or <code>teleopPeriodic()</code> MUST NOT allocate memory on the heap. Use <code>static</code> pre-allocated objects or the <code>AresPool</code> for geometry and math operations.</p>
+            </div>
 
-        <div class="rule-card">
-            <h3>2. Unit-Explicit Interfaces</h3>
-            <p>All method signatures and variables must explicitly state their units. Avoid <code>double distance</code>; use <code>double distanceMeters</code> or the WPILib <code>Unit</code> classes.</p>
-        </div>
+            <div class="rule-card">
+                <h3>2. Unit-Explicit Interfaces</h3>
+                <p>All method signatures and variables must explicitly state their units. Avoid <code>double distance</code>; use <code>double distanceMeters</code> or the WPILib <code>Unit</code> classes.</p>
+            </div>
 
-        <div class="rule-card">
-            <h3>3. Fail-Safe Hardware</h3>
-            <p>Hardware IO must be isolated behind <code>IO</code> interfaces. Every subsystem must have an <code>IOSim</code> implementation to ensure simulation parity.</p>
-        </div>
+            <div class="rule-card">
+                <h3>3. Fail-Safe Hardware</h3>
+                <p>Hardware IO must be isolated behind <code>IO</code> interfaces. Every subsystem must have an <code>IOSim</code> implementation to ensure simulation parity.</p>
+            </div>
 
-        <div class="rule-card">
-            <h3>4. Deterministic Logging</h3>
-            <p>All subsystem inputs must be logged via <code>AresAutoLogger</code> to enable frame-accurate log replay.</p>
-        </div>
-    </main>
-
-    <div id="footer-placeholder"></div>
+            <div class="rule-card">
+                <h3>4. Deterministic Logging</h3>
+                <p>All subsystem inputs must be logged via <code>AresAutoLogger</code> to enable frame-accurate log replay.</p>
+            </div>
+        </main>
+        <div id="footer-placeholder"></div>
+    </div>
 
     <script src="assets/js/common.js"></script>
 </body>

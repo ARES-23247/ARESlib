@@ -58,6 +58,9 @@ body {
     background: rgba(18, 18, 18, 0.8);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    height: 70px; /* Fixed height for consistency */
+    display: flex;
+    align-items: center;
 }
 
 nav {
@@ -113,6 +116,88 @@ nav {
     background: rgba(205, 127, 50, 0.15);
     border-color: var(--primary-color);
     box-shadow: 0 0 10px var(--glow-primary);
+}
+
+/* Search Bar Styles */
+.nav-search {
+    position: relative;
+    margin-left: 2rem;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(205, 127, 50, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#search-results {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1001;
+    display: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    list-style: none;
+}
+
+.search-result-item {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.search-result-item:hover {
+    background: rgba(205, 127, 50, 0.1);
+}
+
+.search-result-item .title {
+    display: block;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.search-result-item .desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+/* Layout Stabilization */
+.page-wrapper {
+    padding-top: 100px; /* Exact offset for 70px header + breath room */
+    min-height: 100vh;
+    width: 100%;
 }
 
 .container {

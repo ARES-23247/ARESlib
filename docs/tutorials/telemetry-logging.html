@@ -23,36 +23,36 @@
     <div id="header-placeholder"></div>
     <div id="stars-container"></div>
 
-    <div class="container" style="padding-top: 10rem;">
-        <h1 class="hero-title" style="text-align: left;">Automated Telemetry</h1>
-        <p style="color: var(--text-light); font-size: 1.25rem;">Visualizing robot state is critical for debugging. This tutorial explains the <code>@AutoLog</code> pattern and AdvantageScope integration.</p>
-    </div>
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="hero-title" style="text-align: left;">Automated Telemetry</h1>
+            <p style="color: var(--text-light); font-size: 1.25rem;">Visualizing robot state is critical for debugging. This tutorial explains the <code>@AutoLog</code> pattern and AdvantageScope integration.</p>
 
-    <div class="content-body">
-        <h2>AdvantageKit Pattern</h2>
-        <p>ARESLib implements its own version of the FRC <strong>AdvantageKit</strong> @AutoLog pattern. Instead of manual <code>telemetry.addData()</code> calls, you define your inputs in a structured way.</p>
+            <div class="content-body">
+                <h2>AdvantageKit Pattern</h2>
+                <p>ARESLib implements its own version of the FRC <strong>AdvantageKit</strong> @AutoLog pattern. Instead of manual <code>telemetry.addData()</code> calls, you define your inputs in a structured way.</p>
 
-        <h3>1. Define Inputs</h3>
-        <pre><code>@AutoLog
+                <h3>1. Define Inputs</h3>
+                <pre><code>@AutoLog
 public static class DriveIOInputs {
     public double leftPositionRad = 0.0;
     public double rightPositionRad = 0.0;
     public double gyroYawDeg = 0.0;
 }</code></pre>
 
-            <h3>2. Automated Logging</h3>
-            <p>The <code>AresAutoLogger</code> automatically picks up any field in your <code>Inputs</code> objects and sends it to the configured backend (USB Log, Dashboard, or Rlog Server).</p>
+                <h3>2. Automated Logging</h3>
+                <p>The <code>AresAutoLogger</code> automatically picks up any field in your <code>Inputs</code> objects and sends it to the configured backend (USB Log, Dashboard, or Rlog Server).</p>
 
-            <h2>Visualizing in 3D</h2>
-            <p>Using <strong>AdvantageScope</strong>, you can drag your <code>Odometry</code> data directly into a 3D field view. ARESLib provides built-in 3D model support for standard FTC game pieces.</p>
+                <h2>Visualizing in 3D</h2>
+                <p>Using <strong>AdvantageScope</strong>, you can drag your <code>Odometry</code> data directly into a 3D field view. ARESLib provides built-in 3D model support for standard FTC game pieces.</p>
 
-            <h2>Log Replay</h2>
-            <p>Because input is decoupled from logic, you can feed a log file back into the robot code (even on your laptop) to reproduce bugs that happened during a real match. This is the ultimate "time travel" debugging tool.</p>
+                <h2>Log Replay</h2>
+                <p>Because input is decoupled from logic, you can feed a log file back into the robot code (even on your laptop) to reproduce bugs that happened during a real match. This is the ultimate "time travel" debugging tool.</p>
+            </div>
         </div>
-
-        <footer>
-            <p>&copy; 2026 ARESLib Framework - Built for Einstein.</p>
-        </footer>
+        <div id="footer-placeholder"></div>
     </div>
+
+    <script src="../assets/js/common.js"></script>
 </body>
 </html>

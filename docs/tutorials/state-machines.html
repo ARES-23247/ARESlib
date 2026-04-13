@@ -20,6 +20,23 @@
     </style>
 </head>
 <body>
+    <div id="header-placeholder"></div>
+    <div id="stars-container"></div>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="hero-title" style="text-align: left;">State Machine Logic</h1>
+            <p style="color: var(--text-light); font-size: 1.25rem;">Complex robot behaviors shouldn't be a mess of nested if-statements. Use the ARESLib StateMachine framework.</p>
+
+            <div class="content-body">
+                <h2>Why State Machines?</h2>
+                <p>A State Machine ensures your robot is only ever in one well-defined state (e.g., <code>INTAKING</code>, <code>SCORING</code>, <code>IDLE</code>). This eliminates "ghost bugs" where the robot tries to intake while the arm is up.</p>
+
+                <h2>Core Implementation</h2>
+                <h3>1. Define Your States</h3>
+                <p>Create an <code>enum</code> to represent every possible state of your subsystem.</p>
+                <pre><code>public enum IntakeState {
+    IDLE,
     INTAKING,
     REVERSING,
     FULL
@@ -27,9 +44,9 @@
 
 private StateMachine&lt;IntakeState&gt; stateMachine = new StateMachine&lt;&gt;(IntakeState.IDLE);</code></pre>
 
-            <h3>Defining Transitions</h3>
-            <p>Use the <code>onEnter</code>, <code>onExit</code>, and <code>whileIn</code> methods to define behavior.</p>
-            <pre><code>stateMachine.onEnter(IntakeState.INTAKING, () -> {
+                <h3>2. Defining Transitions</h3>
+                <p>Use the <code>onEnter</code>, <code>onExit</code>, and <code>onWhile</code> methods to define behavior.</p>
+                <pre><code>stateMachine.onEnter(IntakeState.INTAKING, () -> {
     intakeMotor.setVoltage(12.0);
 });
 
@@ -39,13 +56,13 @@ stateMachine.onWhile(IntakeState.INTAKING, () -> {
     }
 });</code></pre>
 
-            <h2>Visualizing States</h2>
-            <p>ARESLib automatically exports state machine graphs to AdvantageScope. You can see real-time transitions in the "State Machine" tab of the simulator.</p>
+                <h2>Visualizing States</h2>
+                <p>ARESLib automatically exports state machine graphs to AdvantageScope. You can see real-time transitions in the "State Machine" tab of the simulator.</p>
+            </div>
         </div>
-
-        <footer>
-            <p>&copy; 2026 ARESLib Framework - Built for Einstein.</p>
-        </footer>
+        <div id="footer-placeholder"></div>
     </div>
+
+    <script src="../assets/js/common.js"></script>
 </body>
 </html>

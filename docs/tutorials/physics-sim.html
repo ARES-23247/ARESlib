@@ -23,47 +23,43 @@
     <div id="header-placeholder"></div>
     <div id="stars-container"></div>
 
-    <div class="container" style="padding-top: 10rem;">
-        <h1 class="hero-title" style="text-align: left;">FTC Physics Simulation</h1>
-        <p style="color: var(--text-light); font-size: 1.25rem;">Test your code before the robot is built. This tutorial explains the ARESLib integration with <code>dyn4j</code>.</p>
-    </div>
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="hero-title" style="text-align: left;">FTC Physics Simulation</h1>
+            <p style="color: var(--text-light); font-size: 1.25rem;">Test your code before the robot is built. This tutorial explains the ARESLib integration with <code>dyn4j</code>.</p>
 
-    <div id="footer-placeholder"></div>
+            <div class="content-body">
+                <h2>Why Simulate?</h2>
+                <p>Waiting for the robot to be built or charged shouldn't stop development. ARESLib uses the <strong>dyn4j</strong> physics engine to model planetary drives, elevators, and intake friction directly on your laptop.</p>
 
-    <script src="../assets/js/common.js"></script>
-</body>
-        <div class="content-body">
-            <h2>Why Simulate?</h2>
-            <p>Waiting for the robot to be built or charged shouldn't stop development. ARESLib uses the <strong>dyn4j</strong> physics engine to model planetary drives, elevators, and intake friction directly on your laptop.</p>
-
-            <h2>Core Concepts</h2>
-            <h3>1. The IO Abstraction</h3>
-            <p>Every subsystem should have an <code>IO</code> interface, an <code>IOReal</code> implementation for the robot, and an <code>IOSim</code> implementation for simulation.</p>
-            <pre><code>public interface ElevatorIO {
+                <h2>Core Concepts</h2>
+                <h3>1. The IO Abstraction</h3>
+                <p>Every subsystem should have an <code>IO</code> interface, an <code>IOReal</code> implementation for the robot, and an <code>IOSim</code> implementation for simulation.</p>
+                <pre><code>public interface ElevatorIO {
     void setVoltage(double volts);
     void updateInputs(ElevatorInputs inputs);
 }</code></pre>
 
-            <h3>2. Dynamic Bodies</h3>
-            <p>In <code>ElevatorIOSim</code>, we use <code>ElevatorSim</code> (ported from WPILib) or a raw <code>dyn4j</code> Body to calculate physics.</p>
-            <pre><code>// Inside ElevatorIOSim.updateInputs
+                <h3>2. Dynamic Bodies</h3>
+                <p>In <code>ElevatorIOSim</code>, we use <code>ElevatorSim</code> (ported from WPILib) or a raw <code>dyn4j</code> Body to calculate physics.</p>
+                <pre><code>// Inside ElevatorIOSim.updateInputs
 m_sim.setInput(m_appliedVolts);
 m_sim.update(0.020); // 20ms physics step
 inputs.positionMeters = m_sim.getPositionMeters();</code></pre>
 
-            <h3>3. Running the Simulator</h3>
-            <p>Use the <code>./gradlew runSim</code> command to launch the headless simulation environment. Telemetry will be streamed to AdvantageScope just like a real robot.</p>
+                <h3>3. Running the Simulator</h3>
+                <p>Use the <code>./gradlew runSim</code> command to launch the headless simulation environment. Telemetry will be streamed to AdvantageScope just like a real robot.</p>
 
-            <h2>Best Practices</h2>
-            <ul>
-                <li><strong>Deterministic Steps:</strong> Always use a fixed 20ms (0.020) time step in simulation to match the command scheduler.</li>
-                <li><strong>Model Latency:</strong> Use <code>SimDevice</code> to add realistic CAN bus latency or sensor noise.</li>
-            </ul>
+                <h2>Best Practices</h2>
+                <ul>
+                    <li><strong>Deterministic Steps:</strong> Always use a fixed 20ms (0.020) time step in simulation to match the command scheduler.</li>
+                    <li><strong>Model Latency:</strong> Use <code>SimDevice</code> to add realistic CAN bus latency or sensor noise.</li>
+                </ul>
+            </div>
         </div>
-
-        <footer>
-            <p>&copy; 2026 ARESLib Framework - Built for Einstein.</p>
-        </footer>
+        <div id="footer-placeholder"></div>
     </div>
+
+    <script src="../assets/js/common.js"></script>
 </body>
 </html>

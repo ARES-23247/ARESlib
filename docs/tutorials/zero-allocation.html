@@ -37,37 +37,32 @@
     <div id="header-placeholder"></div>
     <div id="stars-container"></div>
 
-    <div class="container" style="padding-top: 10rem;">
-        <h1 class="hero-title" style="text-align: left;">Zero-Allocation Standard</h1>
-        <p style="color: var(--text-light); font-size: 1.25rem;">Deterministic performance requires avoiding the heap. This tutorial covers object pooling and static memory management.</p>
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="hero-title" style="text-align: left;">Zero-Allocation Standard</h1>
+            <p style="color: var(--text-light); font-size: 1.25rem;">Deterministic performance requires avoiding the heap. This tutorial covers object pooling and static memory management.</p>
 
-        <section style="margin-top: 3rem;">
-            <h2>The Problem with <code>new</code></h2>
-            <p>In FTC, the Java Garbage Collector (GC) can trigger at any time. If it triggers during a tight control loop, your 20ms loop might balloon to 50ms or more, causing "jitter" in your odometry and PID controllers.</p>
-        </section>
-    </div>
+            <section style="margin-top: 3rem;">
+                <h2>The Problem with <code>new</code></h2>
+                <p>In FTC, the Java Garbage Collector (GC) can trigger at any time. If it triggers during a tight control loop, your 20ms loop might balloon to 50ms or more, causing "jitter" in your odometry and PID controllers.</p>
+                
+                <div class="success-box">
+                    <strong>The ARESLib Rule:</strong> No objects may be instantiated (using <code>new</code>) inside any method called by <code>OpMode.loop()</code> or <code>Command.execute()</code>.
+                </div>
 
-    <div id="footer-placeholder"></div>
-
-    <script src="../assets/js/common.js"></script>
-</body>
-<div class="success-box">
-                <strong>The ARESLib Rule:</strong> No objects may be instantiated (using <code>new</code>) inside any method called by <code>OpMode.loop()</code> or <code>Command.execute()</code>.
-            </div>
-
-            <h2>How to achieve zero-allocation?</h2>
-            
-            <h3>1. Use Pre-allocated Static Constants</h3>
-            <p>Instead of creating new Pose2d or Rotation2d objects every tick, use static constants or pre-allocated buffers.</p>
-            <pre><code>// BAD: Creates a new object every 20ms
+                <h2>How to achieve zero-allocation?</h2>
+                
+                <h3>1. Use Pre-allocated Static Constants</h3>
+                <p>Instead of creating new Pose2d or Rotation2d objects every tick, use static constants or pre-allocated buffers.</p>
+                <pre><code>// BAD: Creates a new object every 20ms
 Rotation2d angle = new Rotation2d(Math.toRadians(90));
 
 // GOOD: Reusable constant
 private static final Rotation2d NINETY_DEGREES = Rotation2d.fromDegrees(90);</code></pre>
 
-            <h3>2. Object Pooling & Static Buffers</h3>
-            <p>For mathematical operations, use "Copy" or "Set" methods instead of creating new results.</p>
-            <pre><code>// BAD
+                <h3>2. Object Pooling & Static Buffers</h3>
+                <p>For mathematical operations, use "Copy" or "Set" methods instead of creating new results.</p>
+                <pre><code>// BAD
 Pose2d current = odometry.getPose();
 Pose2d next = current.plus(transform); // Creates new Pose2d
 
@@ -77,16 +72,16 @@ private final Pose2d poseBuffer = new Pose2d();
 Pose2d current = odometry.getPose();
 poseBuffer.set(current.getX(), current.getY(), current.getRotation());</code></pre>
 
-            <h3>3. Avoid List Allocations</h3>
-            <p>Don't use <code>Stream</code>, <code>ArrayList.addAll()</code>, or any lambda that captures variables inside the hot path.</p>
-            
-            <h2>Verification</h2>
-            <p>To verify your code is zero-allocation, use the <code>areslib-audit</code> skill or run a Profiler (like Android Studio Profiler) and look for a flat "Memory Allocation" graph during your 30-second teleop run.</p>
+                <h3>3. Avoid List Allocations</h3>
+                <p>Don't use <code>Stream</code>, <code>ArrayList.addAll()</code>, or any lambda that captures variables inside the hot path.</p>
+                
+                <h2>Verification</h2>
+                <p>To verify your code is zero-allocation, run a Profiler (like Android Studio Profiler) and look for a flat "Memory Allocation" graph during your run.</p>
+            </section>
         </div>
-
-        <footer>
-            <p>&copy; 2026 ARESLib Framework - Built for Einstein.</p>
-        </footer>
+        <div id="footer-placeholder"></div>
     </div>
+
+    <script src="../assets/js/common.js"></script>
 </body>
 </html>
