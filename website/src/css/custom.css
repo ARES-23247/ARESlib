@@ -1,0 +1,46 @@
+/**
+ * Any CSS included here will be global. The toolkit-cleaner
+ * will use these variables to brand the site.
+ */
+
+/* Orbitron for headers, Inter for body */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@400;700;800;900&display=swap');
+
+:root {
+  --ifm-color-primary: #CD7F32; /* Bronze */
+  --ifm-color-primary-dark: #b36b28;
+  --ifm-color-primary-darker: #a86526;
+  --ifm-color-primary-darkest: #8a531f;
+  --ifm-color-primary-light: #d69557;
+  --ifm-color-primary-lighter: #da9f66;
+  --ifm-color-primary-lightest: #e5b98f;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* ARES specific */
+  --ares-red: #B32416;
+  --ares-bronze: #CD7F32;
+  --ares-bg-dark: #121212;
+}
+
+/* For readability on dark background */
+[data-theme='dark'] {
+  --ifm-color-primary: #CD7F32;
+  --ifm-color-primary-dark: #b36b28;
+  --ifm-color-primary-darker: #a86526;
+  --ifm-color-primary-darkest: #8a531f;
+  --ifm-color-primary-light: #d69557;
+  --ifm-color-primary-lighter: #da9f66;
+  --ifm-color-primary-lightest: #e5b98f;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+h1, h2, h3, h4, .navbar__title {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}

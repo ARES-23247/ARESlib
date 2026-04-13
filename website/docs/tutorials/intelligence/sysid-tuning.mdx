@@ -1,0 +1,50 @@
+# SysId Tuning
+
+Stop guessing PID constants. ARESLib features automated **System Identification (SysId)** for calculating perfect feedforward constants ($kS, kV, kA$).
+
+:::important Championship Precision
+To achieve perfect movement, you must understand the physics of your robot. SysId mathematically characterizes your motors, gears, and mechanism weight.
+:::
+
+## 1. What is SysId?
+
+SysId is a tool developed by WPILib (and integrated into ARESLib) that runs specialized tests on your robot:
+-   **Quasistatic Tests**: Slowly ramps up voltage to find the minimum power needed to overcome friction ($kS$) and the velocity constant ($kV$).
+-   **Dynamic Tests**: Applies a step-voltage for a short burst to measure acceleration ($kA$).
+
+## 2. Running a Test
+
+ARESLib subsystems include built-in SysId routines. You can trigger them from the Driver Station or through our simulation environment.
+
+```java
+// Logic inside a Subsystem
+public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+}
+```
+
+### Procedure
+1.  **Clear the Area**: Ensure the robot has at least 3 meters of open floor (for drivetrains) or full range of motion (for arms).
+2.  **Deploy Code**: Flash the SysId-enabled OpMode.
+3.  **Run Tests**: Execute the 4 tests (Forward/Reverse Quasistatic, Forward/Reverse Dynamic).
+4.  **Export Log**: The `AresAutoLogger` will save a `.wpilog` file to your Control Hub.
+
+## 3. Analyzing the Results
+
+Open the **SysId Tool** on your laptop and load the `.wpilog` file. The tool will generate a "Best Fit" regression for your motor's behavior.
+
+### Understanding the Constants
+-   **$kS$ (Static Friction)**: The "deadband" voltage. The energy required to start moving.
+-   **$kV$ (Velocity)**: The voltage required to sustain a specific speed. ($V = kV \times velocity$).
+-   **$kA$ (Acceleration)**: The voltage required to change speed. ($V = kA \times acceleration$).
+
+## 4. Applying the Constants
+
+Once you have your constants, plug them into the ARESLib `Feedforward` classes:
+
+```java
+private final ElevatorFeedforward feedforward = 
+    new ElevatorFeedforward(kS, kG, kV, kA);
+```
+
+By combining these physics constants with a minor PID loop, your robot will reach targets with absolute precision and zero overshoot.

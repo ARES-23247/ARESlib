@@ -1,0 +1,52 @@
+# Championship Testing
+
+Writing headless JUnit 5 tests to verify robot logic without physical hardware. In ARESLib, **Testing is not optional**; it's how we guarantee software reliability on Einstein.
+
+:::tip Physics-First Testing
+Because of the [Hardware Abstraction Layer](/docs/tutorials/foundation/hardware-abstraction), we can run our actual robot commands against a virtual physics environment in milliseconds.
+:::
+
+## 1. Why Unit Test Robot Code?
+
+Physical testing is slow, expensive, and dangerous. Unit testing allows you to:
+-   **Verify State Machines**: Ensure your arm never enters a "self-collision" state.
+-   **Test Edge Cases**: What happens if the battery sag reaches 6V? What if a sensor returns `NaN`?
+-   **Prevent Regressions**: Ensure a fix for the intake doesn't accidentally break the shooter code.
+
+## 2. Writing a Command Test
+
+ARESLib uses **JUnit 5** for testing. Here is a standard test for a Scoring command:
+
+```java
+@Test
+void testScoringSequence() {
+    // 1. Initialize Subsystem in SIM mode
+    ArmSubsystem arm = new ArmSubsystem(new ArmIOSim());
+    
+    // 2. Schedule the Command
+    Command scoreCommand = arm.scoreSequence();
+    scoreCommand.initialize();
+    
+    // 3. Simulate 5 seconds of robot time
+    for (int i = 0; i < 250; i++) {
+        scoreCommand.execute();
+        arm.periodic();
+        AresSimDriver.update(0.020); // Advance 20ms
+    }
+    
+    // 4. Assert the final state
+    assertEquals(ArmState.STOWED, arm.getState());
+    assertTrue(arm.getPosition() < 0.1);
+}
+```
+
+## 3. Headless Simulation
+
+You don't need a robot, a Control Hub, or even a monitor to run these tests. They run in **Headless Mode** on your laptop or in GitHub Actions. This allows for:
+-   **CI Integration**: Every time you push code, GitHub automatically runs your 200+ tests.
+-   **Failure Alerts**: If a test fails, you get an immediate notification before the code ever touches a real robot.
+
+## 4. Best Practices
+
+-   **Mocking Failures**: Use your `IOSim` implementations to simulate physical failures (like a motor reporting 0 velocity while 12V is applied) and verify that your `FaultManager` triggers the correct driver alerts.
+-   **Coverage**: Aim for 100% logic coverage in complex state machines and kinematics solvers.

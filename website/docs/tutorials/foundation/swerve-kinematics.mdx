@@ -1,0 +1,53 @@
+import AresSwerveSim from '@site/src/components/AresSwerveSim';
+
+# Swerve Kinematics
+
+Vector addition and chassis discretization for independent steering and translation. This is the mathematical foundation of high-performance drivetrains in ARESLib.
+
+:::tip Multi-Directional Mobility
+Swerve kinematics allows a robot to translate in any direction while simultaneously rotating. This is achieved by calculating target states for each module independently.
+:::
+
+## 1. The Inverse Kinematics Problem
+
+Given a desired Chassis Velocity ($V_x, V_y, \omega$), we need to calculate the target velocity and angle for each individual module ($V_m, \theta_m$).
+
+The velocity of any module is the vector sum of two components:
+1.  **Translation Component:** The overall movement of the chassis.
+2.  **Rotation Component:** The tangential velocity caused by the chassis' spinning.
+
+### Interactive Kinematics Simulator
+Adjust the chassis velocities to see how individual module states are derived.
+
+<AresSwerveSim />
+
+## 2. The Math behind the Vectors
+
+### Transnational Component
+Every module receives the same translation vector $(V_x, V_y)$.
+
+### Rotational Component
+The rotational component for a module at position $(r_x, r_y)$ is perpendicular to the vector from the center of rotation.
+$$V_{rot\_x} = -\omega \times r_y$$
+$$V_{rot\_y} = \omega \times r_x$$
+
+### Resultant Module State
+We sum these components to get the final module velocity vector.
+$$V_{module\_x} = V_x + V_{rot\_x}$$
+$$V_{module\_y} = V_y + V_{rot\_y}$$
+
+Final module speed ($V_m$) and angle ($\theta_m$) are found using Pythagorean theorem and arctan:
+$$V_m = \sqrt{V_{module\_x}^2 + V_{module\_y}^2}$$
+$$\theta_m = \operatorname{atan2}(V_{module\_y}, V_{module\_x})$$
+
+## 3. Discretization
+
+To avoid "buffeting" or curved paths at high speeds, ARESLib applies **Chassis Discretization**. This technique predicts where the robot will be after one control cycle (20ms) and adjusts the module states to compensate for the continuous movement during that delta.
+
+```java
+// Logic inside AresSwerveKinematics
+ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(
+    targetSpeeds, 
+    0.020 // 20ms cycle time
+);
+```

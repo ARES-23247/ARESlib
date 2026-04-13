@@ -1,0 +1,68 @@
+# Hardware Abstraction (HAL)
+
+Decoupling logic from electronics for 100% simulation parity. One of the core tenets of ARESLib is that **Robot Logic should never know what motor it's talking to**.
+
+:::important The IO Pattern
+By using the Hardware Abstraction Layer (HAL) and the `IO` pattern, we can run the exact same subsystem code on a real Control Hub, a desktop simulator, or a unit test.
+:::
+
+## 1. The Blueprint: Logic ➔ Interface ➔ Impl
+
+Every subsystem in ARESLib is built using three distinct layers:
+
+1.  **The Subsystem (The Brain)**
+    - Contains the logic, PID loops, state machines, and kinematics.
+    - Communicates *only* with the IO Interface.
+2.  **The IO Interface (The Contract)**
+    - Defines exactly what data goes in (e.g., voltages) and what comes out (e.g., encoder positions).
+    - Uses `@AutoLog` to ensure deterministic logging and replay.
+3.  **The Implementation (The Muscle)**
+    - `IOReal`: Wraps actual FTC SDK classes (`DcMotorEx`, `IMU`) for competition.
+    - `IOSim`: Wraps physics models (`FlywheelSim`, `ElevatorSim`) for desktop development.
+
+## 2. Why No `DcMotor`?
+
+Directly using `DcMotor` or `Servo` classes in your subsystem makes it impossible to unit test. In ARESLib, we use standardized wrappers:
+
+```java
+// The Interface (IO Contract)
+public interface DriveIO {
+    @AutoLog // Automatically generates Telemetry/Replay fields
+    public static class DriveIOInputs {
+        public double leftPositionMeters = 0.0;
+        public double leftVelocityMetersPerSec = 0.0;
+        public double appliedVolts = 0.0;
+    }
+    
+    public default void updateInputs(DriveIOInputs inputs) {}
+    public default void setVoltage(double volts) {}
+}
+```
+
+## 3. Implementing IOReal
+
+For actual competition, we implement the contract by wrapping the FTC SDK classes. This is the **only place** in the entire framework where `hardwareMap` should be touched.
+
+```java
+public class DriveIOReal implements DriveIO {
+    private final DcMotorEx leftMotor;
+
+    public DriveIOReal(HardwareMap hwMap) {
+        leftMotor = hwMap.get(DcMotorEx.class, "left_drive");
+    }
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        inputs.leftPositionMeters = leftMotor.getCurrentPosition() * GEAR_RATIO;
+        inputs.leftVelocityMetersPerSec = leftMotor.getVelocity() * GEAR_RATIO;
+    }
+}
+```
+
+## 4. Implementing IOSim
+
+For simulation, we implement the same contract but use a **Physics Model** instead of a physical motor. This allows us to practice driving and test autonomous paths without a physical robot.
+
+:::tip 1:1 Parity
+Because the Subsystem only sees the `DriveIO` interface, it behaves identically whether it's getting data from a real encoder or a mathematical model. This is the key to **"Code in Sim, Save at Comp."**
+:::

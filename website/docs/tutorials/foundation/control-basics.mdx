@@ -1,0 +1,47 @@
+import AresElevatorPidSim from '@site/src/components/AresElevatorPidSim';
+
+# Control Theory Basics
+
+If you tell an elevator motor, "Go up at 6 Volts," when does it know to stop? If it reaches the target and instantly cuts voltage to zero, gravity will pull the heavy elevator right back down. We need **Closed-Loop Control**.
+
+:::tip The Golden Rule of Tuning
+Always tune Feedforward (FF) first. PID should only be correcting minor disturbances, not doing the heavy lifting of fighting gravity or friction.
+:::
+
+## 1. PID Control
+
+The standard algorithm for reaching a target is **PID** (Proportional, Integral, Derivative).
+
+-   **kP (Proportional)**: This measures your "Error" (Target minus Current Position). The further you are from the target, the harder it pushes.
+-   **kD (Derivative)**: Think of this as the "Brakes." It slows the mechanism down as you approach the target so you don't aggressively overshoot it.
+-   **kI (Integral)**: Cleans up the "Steady State Error." If the robot is 1cm off but doesn't have enough power to move, kI slowly builds up until the robot reaches the target.
+
+### Interactive PID Simulator
+Experiment with tuning an elevator. Try increasing **kP** without **kD** to see oscillation!
+
+<AresElevatorPidSim />
+
+## 2. FeedForward (FF)
+
+PID is reactive. It only applies voltage if there is an existing Error. Why is this bad? If an elevator needs 1 Volt just to hold its heavy weight against gravity, a pure PID loop will droop down, generate Error, push up, reach the target, cut power, droop down... bouncing forever!
+
+Instead, we proactively "Feed Forward" physics math into the motor before PID even calculates.
+
+-   **kS (Static Friction)**: Motors are sticky. It takes some voltage just to overcome internal friction.
+-   **kG (Gravity)**: We calculate the physical weight of the mechanism and permanently apply exactly enough voltage to make it "weightless" in the air.
+
+## 3. Implementation
+
+In ARESLib, we wrap these concepts into the `AresPIDController` classes:
+
+```java
+// Logic inside a Subsystem
+double pidOutput = controller.calculate(measurement, setpoint);
+double ffOutput = feedforward.calculate(setpoint);
+
+motor.setVoltage(pidOutput + ffOutput);
+```
+
+:::info Next Steps
+Once you master basic PID, transition to our [Advanced Control Theory](/docs/tutorials/intelligence/sysid-tuning) guide to learn how to automate finding these constants using SysId.
+:::

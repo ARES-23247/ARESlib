@@ -1,0 +1,63 @@
+# Fault Resilience
+
+High-fidelity health monitoring and driver alerting systems. On Einstein or at the Championship level, a single wire coming loose can lose a match.
+
+:::tip Military-Grade Reliability
+ARESLib features a two-layer fault system designed to detect failures, protect hardware, and immediately notify the driver via haptics and LEDs.
+:::
+
+## 1. The Two-Layer Architecture
+
+Fault monitoring is split into two distinct layers to ensure zero-latency detection:
+
+### Layer 1: IO-Level Health (Hardware)
+Living inside the Hardware Wrapper (e.g., `AresMotorIO`), this layer monitors raw sensor data for red flags:
+- **I2C Timeouts**: Detecting dead color/distance sensors.
+- **Current Spikes**: Detecting stalled mechanisms or carpet snags.
+- **Stale Data**: Detecting encoder/IMU disconnects.
+
+### Layer 2: Global Management (Software)
+The `AresFaultManager` coordinates these low-level errors and propagates them to the human team via the Driver Station and AdvantageScope.
+
+## 2. The AresAlert System
+
+Instead of logging strings, ARESLib uses **AresAlert** objects. These objects maintain state and can be triggered by logic or hardware monitors.
+
+```java
+// Persistent alert declared in a Subsystem
+private final AresAlert m_stallAlert = new AresAlert("Arm Motor Stalled!", AresAlert.Type.ERROR);
+
+@Override
+public void periodic() {
+    // Logic to detect a stall
+    boolean isStalled = getAmps() > 40.0 && Math.abs(getVelocity()) < 0.1;
+    m_stallAlert.set(isStalled);
+}
+```
+
+## 3. Driver Haptic Feedback
+
+In the heat of a match, drivers aren't looking at the telemetry screen. ARESLib bridges the gap using Gamepad rumble and LED feedback.
+
+| Severity | Feedback | Meaning |
+| :--- | :--- | :--- |
+| **CRITICAL** | Red LED + Heavy Rumble | Hardware Failure (Motor disconnected, IMU lost). |
+| **WARNING** | Yellow LED + Pulse | Non-critical issue (Vision disconnected, hitting soft limits). |
+| **HEALED** | Green LED (Brief) | System Self-Healed or Diagnostics Passed. |
+
+```java
+// Logic inside AresFaultManager
+if (hasError) {
+    // Turn controller RED if there's an active error
+    driverGamepad.setLedColor(1.0, 0.0, 0.0, 100);
+    driverGamepad.rumble(0.5);
+}
+```
+
+## 4. Pre-Match Diagnostics
+
+ARESLib includes `AresDiagnostics`, which runs a "sweep" of all registered mechanisms in the pits. It stresses the arm, drives the chassis 10cm, and spins the intake at 10% power to verify that no cables were loosened during transport.
+
+:::caution Safety Shutdowns
+If a critical error is detected (like an over-current spike), ARESLib's high-level controllers will automatically scale back voltage commands to prevent permanent motor burnout.
+:::

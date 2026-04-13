@@ -1,0 +1,17 @@
+{
+  "name": "areslib-core-standards",
+  "version": "1.0.0",
+  "description": "ARESLib areslib-core-standards - Elite coding requirements and zero-allocation rules",
+  "author": {
+    "name": "Team ARES",
+    "url": "https://github.com/ARESLib"
+  },
+  "repository": "https://github.com/ARESLib/ARESLib",
+  "license": "MIT",
+  "keywords": [
+    "ftc",
+    "areslib",
+    "standards",
+    "zero-allocation"
+  ]
+}

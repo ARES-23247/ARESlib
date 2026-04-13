@@ -31,6 +31,10 @@
       "source": "./areslib-commands"
     },
     {
+      "name": "areslib-core-standards",
+      "source": "./areslib-core-standards"
+    },
+    {
       "name": "areslib-drivetrain",
       "source": "./areslib-drivetrain"
     },

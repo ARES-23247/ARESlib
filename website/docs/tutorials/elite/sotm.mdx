@@ -1,0 +1,49 @@
+import AresSotmSim from '@site/src/components/AresSotmSim';
+
+# Elite Shooting (SOTM)
+
+Physics-based compensation for launching game pieces while maintaining full-speed chassis maneuvers. This "Shoot-On-The-Move" (SOTM) capability is what separates elite scoring robots from the rest of the field.
+
+:::important The Inertia Problem
+When you launch a game piece while moving at 2 m/s to the right, the projectile inherits that 2 m/s sideway velocity. If you aim directly at the goal, you will miss by over a meter.
+:::
+
+## 1. Vector Drift Compensation
+
+To hit the target while moving, the robot must aim at a **Virtual Target**. This virtual target is the physical goal's location shifted in the direction opposite to the robot's velocity, by an amount equal to the projectile's time-of-flight (TOF).
+
+### Interactive SOTM Simulator
+Observe how the robot must aim "behind" or "ahead" of its movement to land a perfect shot.
+
+<AresSotmSim />
+
+## 2. The Iterative Solver
+
+Calculating the exact TOF is difficult because the distance to the goal changes *during* the compensation. ARESLib uses an **Iterative Convergence Solver**:
+
+1.  **Initial Guess**: Calculate TOF based on static distance to the goal.
+2.  **Translate Target**: Shift the goal based on (Initial TOF * Robot Velocity).
+3.  **Recalculate**: Compute new TOF based on the distance to the *shifted* target.
+4.  **Converge**: Repeat 3 times. This converges to a sub-millimeter solution in under 1ms of CPU time.
+
+## 3. Implementation in ARESLib
+
+The `AresSotmHelper` handles these calculations automatically. You simply provide the robot's current pose, velocity, and the goal location.
+
+```java
+// Logic inside a RobotContainer or Command
+Pose2d aimPose = AresSotmHelper.calculate(
+    chassis.getPose(),
+    chassis.getVelocity(),
+    FieldConstants.GOAL_LOCATION,
+    PROJECTILE_VELOCITY
+);
+
+// Feed the resulting heading into the drivetrain
+chassis.drive(vx, vy, aimPose.getRotation());
+```
+
+## 4. Best Practices
+
+-   **High-Frequency Odometry**: SOTM requires extremely accurate, high-frequency pose data. Ensure your [Vision Fusion](/docs/tutorials/elite/vision-fusion) is tuned before relying on SOTM.
+-   **Projectile Velocity Tuning**: The most important constant is your actual exit velocity. Use a high-speed camera or distance sensors to measure this precisely; even a 5% error will cause misses at long range.

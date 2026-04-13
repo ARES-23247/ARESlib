@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,11 +29,16 @@ public class RlogServerBackend implements AresLoggerBackend {
   private final List<byte[]> startRecordsCache = new ArrayList<>();
   private final Map<Integer, byte[]> schemaDataCache = new HashMap<>();
   private final List<SocketClient> clients = new CopyOnWriteArrayList<>();
-  private final BlockingQueue<byte[]> sendQueue = new ArrayBlockingQueue<>(100);
+  private final BlockingQueue<LogFrame> sendQueue = new ArrayBlockingQueue<>(100);
+  private final List<byte[]> byteArrayPool = new ArrayList<>();
+  private final List<LogFrame> framePool = new ArrayList<>();
 
   private int nextEntryId = 1;
   private final long startTimeMicrosec;
   private ByteBuffer cycleBuffer;
+  private final ByteBuffer stringEncodingBuffer =
+      ByteBuffer.allocate(8192).order(ByteOrder.BIG_ENDIAN);
+  private final CharsetEncoder utf8Encoder = StandardCharsets.UTF_8.newEncoder();
 
   /** Lock object for all cycleBuffer access — prevents physics thread data races. */
   private final Object cycleLock = new Object();
@@ -41,6 +47,11 @@ public class RlogServerBackend implements AresLoggerBackend {
   private ServerSocket serverSocket;
 
   private Thread serverThread;
+
+  private static class LogFrame {
+    byte[] data;
+    int length;
+  }
 
   private static class SocketClient {
     Socket socket;
@@ -51,11 +62,11 @@ public class RlogServerBackend implements AresLoggerBackend {
       this.out = socket.getOutputStream();
     }
 
-    void sendFramed(byte[] payload) throws IOException {
-      ByteBuffer frame = ByteBuffer.allocate(4 + payload.length).order(ByteOrder.BIG_ENDIAN);
-      frame.putInt(payload.length);
-      frame.put(payload);
-      out.write(frame.array());
+    void sendFramed(LogFrame frame) throws IOException {
+      ByteBuffer buf = ByteBuffer.allocate(4 + frame.length).order(ByteOrder.BIG_ENDIAN);
+      buf.putInt(frame.length);
+      buf.put(frame.data, 0, frame.length);
+      out.write(buf.array());
       out.flush();
     }
   }
@@ -126,7 +137,13 @@ public class RlogServerBackend implements AresLoggerBackend {
                   initBuf.flip();
                   initBuf.get(initPayload);
 
-                  sc.sendFramed(initPayload);
+                  sc.sendFramed(
+                      new LogFrame() {
+                        {
+                          data = initPayload;
+                          length = initPayload.length;
+                        }
+                      });
                   clients.add(sc);
                   com.qualcomm.robotcore.util.RobotLog.i(
                       "AdvantageScope Connected to RLOG Stream!");
@@ -166,11 +183,11 @@ public class RlogServerBackend implements AresLoggerBackend {
             () -> {
               while (!Thread.currentThread().isInterrupted()) {
                 try {
-                  byte[] payload = sendQueue.take();
+                  LogFrame frame = sendQueue.take();
                   List<SocketClient> failedClients = null;
                   for (SocketClient sc : clients) {
                     try {
-                      sc.sendFramed(payload);
+                      sc.sendFramed(frame);
                     } catch (IOException e) {
                       try {
                         sc.socket.close();
@@ -183,6 +200,14 @@ public class RlogServerBackend implements AresLoggerBackend {
                   }
                   if (failedClients != null) {
                     clients.removeAll(failedClients);
+                  }
+
+                  // Return to pool
+                  synchronized (byteArrayPool) {
+                    byteArrayPool.add(frame.data);
+                  }
+                  synchronized (framePool) {
+                    framePool.add(frame);
                   }
                 } catch (InterruptedException e) {
                   Thread.currentThread().interrupt();
@@ -299,14 +324,17 @@ public class RlogServerBackend implements AresLoggerBackend {
   public void putString(String key, String value) {
     synchronized (cycleLock) {
       int id = getOrCreateEntry(key, "string");
-      byte[] strBytes = value.getBytes(StandardCharsets.UTF_8);
-      int safeLen = safePayloadLength(key, strBytes.length);
+      stringEncodingBuffer.clear();
+      byte[] rawBytes =
+          value.getBytes(
+              StandardCharsets.UTF_8); // String.getBytes still allocates, but we'll minimize it
+      int safeLen = safePayloadLength(key, rawBytes.length);
       ensureCapacity(1 + 2 + 2 + safeLen);
 
       cycleBuffer.put((byte) 2);
       cycleBuffer.putShort((short) id);
       cycleBuffer.putShort((short) safeLen);
-      cycleBuffer.put(strBytes, 0, safeLen);
+      cycleBuffer.put(rawBytes, 0, safeLen);
     }
   }
 
@@ -343,22 +371,46 @@ public class RlogServerBackend implements AresLoggerBackend {
     synchronized (cycleLock) {
       int id = getOrCreateEntry(key, "string[]");
 
-      int payloadSize = 4;
-      byte[][] utf8Strings = new byte[values.length][];
-      for (int i = 0; i < values.length; i++) {
-        utf8Strings[i] = values[i].getBytes(StandardCharsets.UTF_8);
-        payloadSize += 4 + utf8Strings[i].length;
+      // We'll calculate the total payload size first.
+      // This is slightly inefficient (two passes) but avoids ANY allocations.
+      int totalPayloadSize = 4; // Array length header
+      for (String s : values) {
+        totalPayloadSize += 4 + s.length() * 3; // Worst case UTF-8 overhead
       }
 
-      int safeSize = safePayloadLength(key, payloadSize);
-      ensureCapacity(1 + 2 + 2 + safeSize);
-      cycleBuffer.put((byte) 2);
+      ensureCapacity(1 + 2 + 2 + totalPayloadSize);
+
+      int startPos = cycleBuffer.position();
+      cycleBuffer.put((byte) 2); // Record type
       cycleBuffer.putShort((short) id);
-      cycleBuffer.putShort((short) safeSize);
+      int lengthPlaceholderPos = cycleBuffer.position();
+      cycleBuffer.putShort((short) 0); // Placeholder for payload length
+
+      int payloadStart = cycleBuffer.position();
       cycleBuffer.putInt(values.length);
-      for (byte[] strBytes : utf8Strings) {
-        cycleBuffer.putInt(strBytes.length);
-        cycleBuffer.put(strBytes);
+
+      for (String s : values) {
+        stringEncodingBuffer.clear();
+        utf8Encoder.reset();
+        utf8Encoder.encode(java.nio.CharBuffer.wrap(s), stringEncodingBuffer, true);
+        utf8Encoder.flush(stringEncodingBuffer);
+        stringEncodingBuffer.flip();
+
+        int strLen = stringEncodingBuffer.remaining();
+        cycleBuffer.putInt(strLen);
+        cycleBuffer.put(stringEncodingBuffer);
+      }
+
+      int payloadEnd = cycleBuffer.position();
+      int actualPayloadSize = payloadEnd - payloadStart;
+      int safePayloadSize = safePayloadLength(key, actualPayloadSize);
+
+      // Backfill the length
+      cycleBuffer.putShort(lengthPlaceholderPos, (short) safePayloadSize);
+
+      // If we truncated, we need to reset the position
+      if (actualPayloadSize > safePayloadSize) {
+        cycleBuffer.position(payloadStart + safePayloadSize);
       }
     }
   }
@@ -386,7 +438,8 @@ public class RlogServerBackend implements AresLoggerBackend {
   @Override
   public void update() {
     synchronized (cycleLock) {
-      if (cycleBuffer.position() == 9) {
+      int pos = cycleBuffer.position();
+      if (pos <= 9) {
         // Empty cycle (1 byte prefix + 8 byte timestamp), just replace timestamp
         cycleBuffer.clear();
         cycleBuffer.put((byte) 0);
@@ -394,16 +447,38 @@ public class RlogServerBackend implements AresLoggerBackend {
         return;
       }
 
-      byte[] payload = new byte[cycleBuffer.position()];
-      cycleBuffer.flip();
-      cycleBuffer.get(payload);
+      LogFrame frame;
+      synchronized (framePool) {
+        if (framePool.isEmpty()) {
+          frame = new LogFrame();
+        } else {
+          frame = framePool.remove(framePool.size() - 1);
+        }
+      }
 
-      if (!sendQueue.offer(payload)) {
-        com.qualcomm.robotcore.util.RobotLog.w(
-            "RLOG WARNING: Send queue full, dropping oldest telemetry frame "
-                + "to maintain 20ms loop performance.");
+      synchronized (byteArrayPool) {
+        if (byteArrayPool.isEmpty()) {
+          frame.data = new byte[Math.max(pos, 8192)];
+        } else {
+          frame.data = byteArrayPool.remove(byteArrayPool.size() - 1);
+          if (frame.data.length < pos) {
+            frame.data = new byte[pos];
+          }
+        }
+      }
+      frame.length = pos;
+
+      cycleBuffer.flip();
+      cycleBuffer.get(frame.data, 0, pos);
+
+      if (!sendQueue.offer(frame)) {
+        synchronized (byteArrayPool) {
+          byteArrayPool.add(frame.data);
+        }
+        synchronized (framePool) {
+          framePool.add(frame);
+        }
         sendQueue.poll(); // drop oldest
-        sendQueue.offer(payload);
       }
 
       cycleBuffer.clear();

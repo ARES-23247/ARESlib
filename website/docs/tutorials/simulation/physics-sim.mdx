@@ -1,0 +1,58 @@
+# FTC Physics Simulation
+
+Test your code before the robot is built. ARESLib provides 1:1 parity between code and reality using the **dyn4j** physics engine.
+
+:::tip Code Once, Run Anywhere
+Because ARESLib uses the [Hardware Abstraction Layer (HAL)](/docs/tutorials/foundation/hardware-abstraction), you can run the exact same subsystem code on your laptop's physics simulator as you do on the real robot.
+:::
+
+## Why Simulate?
+
+Waiting for the robot to be built or batteries to charge shouldn't stop development. ARESLib's internal simulation engine allows you to:
+-   **Tune PID & Feedforwards**: Perfect your control constants safely.
+-   **Debug Autonomous Paths**: Verify your PathPlanner trajectories without damaging physical hardware.
+-   **Practice Driving**: Use a USB controller on your PC to practice maneuvering the 3D model.
+
+## Core Concepts
+
+### 1. The IOSim Implementation
+For every subsystem, we implement an `IOSim` version of the hardware contract. Instead of talking to a motor controller, we talk to a mathematical model.
+
+```java
+public class ElevatorIOSim implements ElevatorIO {
+    // Ported from WPILib's high-fidelity physics models
+    private final ElevatorSim m_sim = new ElevatorSim(
+        DCMotor.getGoBILDA5202Series(435),
+        GEAR_RATIO,
+        CARRIAGE_MASS,
+        DRUM_RADIUS,
+        MIN_HEIGHT,
+        MAX_HEIGHT,
+        true // Add gravity
+    );
+
+    @Override
+    public void updateInputs(ElevatorInputs inputs) {
+        m_sim.update(0.020); // Advance 20ms physics step
+        inputs.positionMeters = m_sim.getPositionMeters();
+    }
+}
+```
+
+### 2. dyn4j Physics
+For complex field interactions (like game piece collisions), ARESLib uses the **dyn4j** engine. This allows the robot to "push" obstacles and interact with the field environment in real-time.
+
+## Running the Simulator
+
+Launch the headless simulation environment from your terminal:
+
+```bash
+./gradlew runSim
+```
+
+Once running, telemetry will be streamed to **AdvantageScope** automatically, allowing you to visualize the robot's movement in a high-fidelity 3D environment.
+
+## Best Practices
+
+-   **Deterministic Steps**: Always use a fixed 20ms (0.020) time step in simulation to guarantee stability.
+-   **Model Latency**: Use the `SimDevice` utilities to add realistic CAN bus latency or sensor noise, ensuring your code is robust against real-world imperfections.

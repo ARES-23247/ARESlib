@@ -1,0 +1,62 @@
+import AresPowerSim from '@site/src/components/AresPowerSim';
+
+# Power Management
+
+Survive the 2:30 mark with dynamic load shedding and battery sag compensation. In FTC, managing the electrical budget is the difference between winning and a Control Hub disconnect.
+
+:::warning Control Hub Brownout
+The REV Control Hub will disconnect/reset if voltage drops below approximately 6.5V - 7.0V. Competitive 4-motor drivetrains can easily cause this sag on a partially drained battery.
+:::
+
+## The Voltage Sag Problem
+
+Every Ampere drawn from the battery causes a voltage drop across the battery's internal resistance ($V_{drop} = I \times R_{internal}$). When you accelerate a mecanum drive and extend a heavy viper slide simultaneously, the current spike can exceed 80A, dropping a 12V battery down to 8V or lower.
+
+### Interactive Resilience Simulator
+Test how different mechanism loads impact System Voltage.
+
+<AresPowerSim />
+
+## Dynamic Load Shedding
+
+ARESLib implements a multi-tier priority system for power management. When the system detects voltage dropping toward the brownout threshold, it automatically "sheds" non-critical loads.
+
+### Priority Tiers
+
+1.  **Tier 1: Propulsion (Critical)**
+    - *Hardware:* Drivetrain Motors (Mecanum/Swerve).
+    - *Action:* Never shed. Power must be maintained for control.
+2.  **Tier 2: Scoring (High Priority)**
+    - *Hardware:* Viper Slides, Outtake Servos.
+    - *Action:* Reduce peak acceleration or velocity when voltage < 8.5V.
+3.  **Tier 3: Utility (Low Priority)**
+    - *Hardware:* Intake Motors, Indicator LEDs, Non-essential Sensors.
+    - *Action:* Disable or throttle significantly when voltage < 8.0V.
+
+## Implementation Example
+
+You can configure the `PowerManager` in your `RobotContainer`:
+
+```java
+public class RobotContainer {
+  public RobotContainer() {
+    // Configures the PowerManager to monitor voltage and signal sub-systems
+    AresPowerManager.getInstance().configure(
+        nominalVoltage -> 12.0,
+        criticalThreshold -> 7.5,
+        sheddingThreshold -> 8.5
+    );
+  }
+}
+```
+
+Then, in your Subsystem:
+
+```java
+@Override
+public void periodic() {
+    double limit = AresPowerManager.getInstance().getPowerLimit();
+    // Throttle intake motor if power is scarce
+    intakeMotor.set(requestedPower * limit);
+}
+```

@@ -1,0 +1,47 @@
+# Autonomous Flow
+
+Orchestrating paths and commands using **PathPlanner** and **AD*** dynamic avoidance. In ARESLib, autonomous is not a set of hardcoded delays, but a reactive state machine of commands.
+
+:::tip Dynamic Navigation
+ARESLib moves beyond static lines. By integrating **AD*** pathfinding, your robot can orbit around teammates and dynamic obstacles in real-time.
+:::
+
+## 1. The PathPlanner Integration
+
+ARESLib natively supports **PathPlanner 2025**. You can design complex splines on your laptop and sync them directly to the robot's secondary storage.
+
+### Key Features
+-   **On-the-fly Generation**: Generate paths during the match to respond to game piece locations.
+-   **Event Markers**: Trigger robot actions (like starting an intake) at specific physical locations along a path.
+-   **Holonomic Logic**: Full support for Mecanum and Swerve headings independent of travel direction.
+
+## 2. Command-Based Orchestration
+
+Autonomous routines in ARESLib are built as a sequence of **Commands**.
+
+```java
+public Command getAutonomousCommand() {
+    return new SequentialCommandGroup(
+        new DriveToSetpoint(pose_score),
+        new ParallelCommandGroup(
+            new IntakeCommand(),
+            new PathPlannerTrajectory("ScoreToIntake")
+        ),
+        new ScoreCommand()
+    );
+}
+```
+
+## 3. Dynamic Obstacle Avoidance
+
+While PathPlanner handles the global trajectory, the **AD*** (Adaptive A*) layer handles local obstacles. If a teammate gets stuck in your path, ARESLib will:
+1.  Detect the collision risk using distance sensors/cameras.
+2.  Pause the global path.
+3.  Calculate a local "Orbit" around the obstacle.
+4.  Merge back into the original path once the area is clear.
+
+## 4. Tuning for Success
+
+-   **Lookahead Distance**: For FTC-sized robots, a lookahead of 0.4 - 0.6 meters is usually optimal for stability.
+-   **Correction Gains**: Use a conservative `kP` for translation correction to avoid oscillation at the end of high-speed paths.
+-   **Discretization**: Ensure chassis discretization is enabled to keep the robot on the planned spline during high-omega rotations.

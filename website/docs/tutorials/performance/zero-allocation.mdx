@@ -1,0 +1,52 @@
+import AresZeroAllocationSim from '@site/src/components/AresZeroAllocationSim';
+
+# Zero-Allocation Standard
+
+Deterministic performance requires avoiding the heap. This tutorial covers object pooling and static memory management for high-frequency FTC control loops.
+
+:::important The ARESLib Rule
+No objects may be instantiated (using `new`) inside any method called by `OpMode.loop()` or `Command.execute()`.
+:::
+
+## The Problem with `new`
+
+In FTC, the Java Garbage Collector (GC) can trigger at any time. If it triggers during a tight control loop, your 20ms loop might balloon to 50ms or more, causing "jitter" in your odometry and PID controllers. This is especially critical on the Android-based REV Control Hub.
+
+### Interactive GC Simulator
+Observe how object allocation frequency impacts loop stability.
+
+<AresZeroAllocationSim />
+
+## How to achieve zero-allocation?
+
+### 1. Use Pre-allocated Static Constants
+Instead of creating new `Pose2d` or `Rotation2d` objects every tick, use static constants or pre-allocated buffers.
+
+```java
+// BAD: Creates a new object every 20ms
+Rotation2d angle = new Rotation2d(Math.toRadians(90));
+
+// GOOD: Reusable constant
+private static final Rotation2d NINETY_DEGREES = Rotation2d.fromDegrees(90);
+```
+
+### 2. Object Pooling & Static Buffers
+For mathematical operations, use "Copy" or "Set" methods instead of creating new results.
+
+```java
+// BAD
+Pose2d current = odometry.getPose();
+Pose2d next = current.plus(transform); // Creates new Pose2d
+
+// GOOD (ARESLib Pattern)
+private final Pose2d poseBuffer = new Pose2d();
+// ... inside loop ...
+Pose2d current = odometry.getPose();
+poseBuffer.set(current.getX(), current.getY(), current.getRotation());
+```
+
+### 3. Avoid List Allocations
+Don't use `Stream`, `ArrayList.addAll()`, or any lambda that captures variables inside the hot path. These are hidden sources of garbage that will trigger the GC at the worst possible time.
+
+## Verification
+To verify your code is zero-allocation, run the **Android Studio Profiler** and look for a flat "Memory Allocation" graph during your OpMode run. If you see "saw-tooth" patterns, objects are being allocated and collected.

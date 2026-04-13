@@ -22,7 +22,8 @@ const SEARCH_INDEX = [
     { title: 'Autonomous Flow', desc: 'PathPlanner and dynamic avoidance', url: 'tutorials/autonomous-flow.html', keywords: 'auto autonomous pathplanner path adstar avoidance' },
     { title: 'Fault Resilience', desc: 'Hardware health and driver alerts', url: 'tutorials/fault-resilience.html', keywords: 'faults health alert diagnostics rumble' },
     { title: 'Hardware Abstraction (HAL)', desc: 'Decoupling logic from electronics', url: 'tutorials/hardware-abstraction.html', keywords: 'hal io abstraction motor real sim' },
-    { title: 'Power Management', desc: 'Battery sag and load shedding', url: 'tutorials/power-management.html', keywords: 'power battery voltage current shedding' }
+    { title: 'Power Management', desc: 'Battery sag and load shedding', url: 'tutorials/power-management.html', keywords: 'power battery voltage current shedding' },
+    { title: 'AI Agents & Skills', desc: 'AI index definitions for intelligent agents', url: 'tutorials/index.html#ai-skills', keywords: 'ai agents skills marketplace plugin' }
 ];
 
 function injectHeader() {
@@ -41,7 +42,8 @@ function injectHeader() {
                 <div class="nav-links">
                     <a href="${basePath}index.html" class="${activePage === 'index.html' && !isSubdir ? 'active' : ''}">Home</a>
                     <a href="${basePath}standards.html" class="${activePage === 'standards.html' ? 'active' : ''}">Standards</a>
-                    <a href="${basePath}tutorials/index.html" class="${isSubdir ? 'active' : ''}">Tutorials</a>
+                    <a href="${basePath}tutorials/index.html" class="${isSubdir && activePage !== 'ai-skills.html' ? 'active' : ''}">TUTORIALS</a>
+                    <a href="${basePath}tutorials/index.html#ai-skills" class="${activePage === 'ai-skills.html' ? 'active' : ''}">AI Agents & Skills</a>
                 </div>
 
                 <div class="nav-search">

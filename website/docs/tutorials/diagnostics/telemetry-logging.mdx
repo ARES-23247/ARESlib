@@ -1,0 +1,43 @@
+# Automated Telemetry
+
+Visualizing robot state is critical for debugging. ARESLib implements a championship-grade telemetry pipeline based on the "Log-Ready" architecture.
+
+:::tip @AutoLog Pattern
+Instead of manual `telemetry.addData()` calls, ARESLib uses structured introspection to log entire state objects with zero overhead.
+:::
+
+## Structured Logging
+
+ARESLib implements its own version of the FRC **AdvantageKit** pattern. Interaction with hardware is decoupled from the robot's logic using an "Inputs" abstraction.
+
+### 1. Define Inputs
+You define your sensor data in a structured way using the `@AutoLog` annotation.
+
+```java
+@AutoLog
+public static class DriveIOInputs {
+    public double leftPositionRad = 0.0;
+    public double rightPositionRad = 0.0;
+    public double gyroYawDeg = 0.0;
+}
+```
+
+### 2. Automated Logging
+The `AresAutoLogger` automatically picks up any field in your `Inputs` objects and sends it to the configured backends:
+- **USB Log**: High-speed binary logging to a flash drive.
+- **Rlog Server**: Real-time streaming to a laptop (AdvantageScope).
+- **Driver Station**: Essential telemetry for the human team.
+
+## Visualizing in 3D
+
+Using [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope), you can drag your `Odometry` data directly into a 3-Dimensional Field view. ARESLib provides built-in 3D model support for standard FTC robots and field elements.
+
+## Log Replay
+
+Because input is decoupled from logic, you can perform **Log Replay**:
+1. Record a match or practice session to a log file.
+2. Transfer the log to your laptop.
+3. Run your robot code in "Replay Mode" using the log file as the input source.
+4. Step through the code line-by-line in your IDE to reproduce bugs that happened on the physical robot.
+
+This is the ultimate "time travel" debugging tool for elite-tier teams.

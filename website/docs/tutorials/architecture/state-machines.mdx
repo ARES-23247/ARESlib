@@ -1,0 +1,54 @@
+# State Machine Logic
+
+Complex robot behaviors shouldn't be a mess of nested if-statements. ARESLib provides a specialized StateMachine framework to ensure your robot is always in a well-defined state.
+
+:::tip Determinism
+A State Machine ensures that your robot is only ever in one well-defined state (e.g., `INTAKING`, `SCORING`, `IDLE`). This eliminates "ghost bugs" where the robot tries to intake while the arm is in the wrong position.
+:::
+
+## 1. Why State Machines?
+
+In competitive FTC, scoring sequences are complex. For example:
+1.  Extend Arm.
+2.  Open Intake.
+3.  Wait for Sensor.
+4.  Retract Arm.
+5.  Close Intake.
+
+Implementing this with `if` statements leads to "Spaghetti Code." ARESLib's `AresStateMachine` allows you to define these transitions clearly and safely.
+
+## 2. Core Implementation
+
+### Define Your States
+Create an `enum` to represent every possible state of your subsystem.
+
+```java
+public enum IntakeState {
+    IDLE,
+    INTAKING,
+    REVERSING,
+    FULL
+}
+
+private AresStateMachine<IntakeState> stateMachine = 
+    new AresStateMachine<>(IntakeState.IDLE);
+```
+
+### Defining Behavior
+Use the `onEnter`, `onExit`, and `onWhile` methods to define what happens during each state.
+
+```java
+stateMachine.onEnter(IntakeState.INTAKING, () -> {
+    intakeMotor.setVoltage(12.0);
+});
+
+stateMachine.onWhile(IntakeState.INTAKING, () -> {
+    if (sensor.isTriggered()) {
+        stateMachine.transitionTo(IntakeState.FULL);
+    }
+});
+```
+
+## 3. Visualizing States
+
+ARESLib automatically exports state machine graphs to **AdvantageScope**. You can see real-time transitions in the "State Machine" tab of the dashboard, making it easy to identify exactly where a sequence is getting stuck during a match.
