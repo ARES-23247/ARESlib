@@ -19,6 +19,7 @@ import org.areslib.telemetry.AresAutoLogger;
  * @see VisionIO
  * @see AresSensorFusionSubsystem
  */
+@SuppressWarnings("AutoLog")
 public class AresVisionSubsystem extends SubsystemBase {
 
   private final VisionIO io;
@@ -61,7 +62,6 @@ public class AresVisionSubsystem extends SubsystemBase {
    * Constructs a core vision subsystem, parameterized for specific game or camera heuristics.
    *
    * @param io The hardware IO interface (e.g., LimelightVisionWrapper).
-   * @param minTargetAreaPercent Absolute minimum target size (% of image) to be considered valid.
    * @param maxTrustAreaPercent Target size (% of image) corresponding to 100% confidence.
    */
   public AresVisionSubsystem(VisionIO io, double maxTrustAreaPercent) {

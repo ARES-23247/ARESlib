@@ -33,14 +33,15 @@ public class AresLogUploader {
   private static final long FILE_MODIFIED_DEBOUNCE_MS = 10000;
   private static final int UPLOAD_BUFFER_SIZE = 8192;
 
-  /** Starts the background daemon thread. Safe to call multiple times. */
+  @SuppressWarnings("FutureReturnValueIgnored")
   public static void startDaemon() {
     if (IS_UPLOADING.compareAndSet(false, true)) {
-      EXECUTOR.scheduleWithFixedDelay(
-          AresLogUploader::scanAndUpload,
-          UPLOAD_INITIAL_DELAY_SEC,
-          UPLOAD_PERIOD_SEC,
-          TimeUnit.SECONDS);
+      var unused =
+          EXECUTOR.scheduleWithFixedDelay(
+              AresLogUploader::scanAndUpload,
+              UPLOAD_INITIAL_DELAY_SEC,
+              UPLOAD_PERIOD_SEC,
+              TimeUnit.SECONDS);
     }
   }
 

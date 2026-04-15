@@ -6,6 +6,7 @@ package org.areslib.subsystems.drive;
  * <p>This class uses a simple first-order kinematic model to approximate motor velocities based on
  * commanded voltages, integrating those velocities to track simulated positional state.
  */
+@SuppressWarnings("AutoLog")
 public class DifferentialDriveIOSim implements DifferentialDriveIO {
   private static final double DRIVE_KV = 3.0; // meters per sec per volt
 

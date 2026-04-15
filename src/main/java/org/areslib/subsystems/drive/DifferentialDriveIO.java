@@ -15,6 +15,7 @@ public interface DifferentialDriveIO {
    * Data object containing all inputs retrieved from the physical or simulated differential drive
    * motors. These values will be serialized via AdvKit telemetry.
    */
+  @org.areslib.telemetry.AresAutoLogger.AutoLog
   class DifferentialDriveInputs implements AresLoggableInputs {
     /** Integrated encoder position of the left driveline in meters. */
     public double leftPositionMeters = 0.0;

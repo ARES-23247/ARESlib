@@ -51,22 +51,18 @@ public class SysIdRoutineTest {
 
     quasistaticCmd.initialize();
 
-    try {
-      // Step 1: Wait roughly 50ms
-      Thread.sleep(50);
-      quasistaticCmd.execute();
+    // Step 1: Wait roughly 50ms
+    java.util.concurrent.locks.LockSupport.parkNanos(50L * 1000000L);
+    quasistaticCmd.execute();
 
-      // Since time is dynamic, just assert voltage is actively ramping
-      assertTrue(appliedVoltage.get() > 0.0, "Voltage should be ramping up");
-      assertFalse(quasistaticCmd.isFinished());
+    // Since time is dynamic, just assert voltage is actively ramping
+    assertTrue(appliedVoltage.get() > 0.0, "Voltage should be ramping up");
+    assertFalse(quasistaticCmd.isFinished());
 
-      // Advance past timeout (5.0 seconds timeout -> sleep ~5050ms)
-      Thread.sleep(5050);
-      quasistaticCmd.execute();
-      assertTrue(quasistaticCmd.isFinished());
-    } catch (InterruptedException e) {
-      fail("Test interrupted");
-    }
+    // Advance past timeout (5.0 seconds timeout -> sleep ~5050ms)
+    java.util.concurrent.locks.LockSupport.parkNanos(5050L * 1000000L);
+    quasistaticCmd.execute();
+    assertTrue(quasistaticCmd.isFinished());
 
     quasistaticCmd.end(false);
     assertEquals(0.0, appliedVoltage.get(), 1e-6); // Must set hardware to 0
