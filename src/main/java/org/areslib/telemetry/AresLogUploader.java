@@ -53,7 +53,11 @@ public class AresLogUploader {
 
     String patToken;
     try {
-      patToken = new String(Files.readAllBytes(Paths.get(PAT_FILE_PATH))).trim();
+      patToken =
+          new String(
+                  Files.readAllBytes(Paths.get(PAT_FILE_PATH)),
+                  java.nio.charset.StandardCharsets.UTF_8)
+              .trim();
     } catch (IOException e) {
       return;
     }
@@ -96,9 +100,8 @@ public class AresLogUploader {
               + "\",\"name\":\"AutoUpload-"
               + file.getName()
               + "\"}";
-      releaseConn.setDoOutput(true);
       try (OutputStream os = releaseConn.getOutputStream()) {
-        os.write(releaseBody.getBytes());
+        os.write(releaseBody.getBytes(java.nio.charset.StandardCharsets.UTF_8));
       }
       int releaseCode = releaseConn.getResponseCode();
       if (releaseCode != HttpURLConnection.HTTP_CREATED) {

@@ -16,15 +16,20 @@ public class DifferentialDriveIOSim implements DifferentialDriveIO {
   private double leftVelocityMps = 0.0;
   private double rightPositionMeters = 0.0;
   private double rightVelocityMps = 0.0;
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   @Override
   public void updateInputs(DifferentialDriveInputs inputs) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
     // Integrate physics
     leftVelocityMps = leftAppliedVolts * DRIVE_KV;
-    leftPositionMeters += leftVelocityMps * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    leftPositionMeters += leftVelocityMps * dt;
 
     rightVelocityMps = rightAppliedVolts * DRIVE_KV;
-    rightPositionMeters += rightVelocityMps * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    rightPositionMeters += rightVelocityMps * dt;
 
     // Populate inputs
     inputs.leftPositionMeters = leftPositionMeters;

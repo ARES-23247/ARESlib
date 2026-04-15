@@ -1,0 +1,60 @@
+---
+title: Autonomous Flow
+description: Orchestrating paths and commands with PathPlanner and AD* avoidance.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Moving from A to B is easy. Moving from A to B while avoiding unexpected game pieces, scoring intake-to-outtake sequences, and maintaining 1:1 odometry parity is what separates average teams from championship contenders. ARESLib leverages an elite port of **PathPlanner** to manage this complexity.
+
+## <span class="ares-num">01</span> The AutoBuilder Philosophy
+
+Instead of hard-coding every movement, we use a central **AutoBuilder**. This registry maps string names (e.g., `"IntakeDown"`) to actual Command objects. This allows drivers to "paint" autonomous routines in the PathPlanner GUI and have them execute seamlessly on the robot.
+
+```java
+// Example: Registering Named Commands
+NamedCommands.registerCommand("ScoreL3", new ScoringCommand(m_arm, m_outtake));
+NamedCommands.registerCommand("IntakeExtend", m_intake.extendCommand());
+
+// Initializing the AutoBuilder
+AutoBuilder.configureSwerve(
+    m_poseEstimator::getLatestPose,
+    m_poseEstimator::resetPose,
+    m_drive::getRobotRelativeSpeeds,
+    m_drive::driveRobotRelative,
+    new HolonomicPathFollowerConfig(...),
+    m_drive
+);
+```
+
+---
+
+## <span class="ares-num">02</span> Dynamic Pathfinding (AD*)
+
+ARESLib includes a **Local AD*** implementation. If a robot is driving a pre-planned path and encounters an unexpected obstacle (detected via ToF Laser Sensors), it will dynamically route *around* the obstacle without stopping, then merge back onto the original trajectory.
+
+<Aside title="Anytime Dynamic A*">
+Unlike standard A*, AD* is an anytime algorithm. It provides an "optimal enough" path instantly and continues to refine it while the robot is already moving. This allows for collision avoidance at 4+ m/s.
+</Aside>
+
+---
+
+## <span class="ares-num">03</span> Event Markers (Micro-SOTM)
+
+You can trigger logic based on the robot's progress along a path. Common uses in ARESLib:
+
+- **Spinning up the flywheel** 1000ms before reaching the shot location.
+- **Deploying the intake** while rounding a corner to minimize cycle time.
+- **Seeding the IMU** when passing a known landmark or AprilTag.
+
+```java
+// Retrieving a path from memory
+PathPlannerPath taxiPath = PathPlannerPath.fromPathFile("MainTaxi");
+
+// Converting it to a full autonomous sequence
+Command autoCommand = AutoBuilder.buildAuto("3-Piece-Clear-Side");
+```
+
+<Aside type="caution" title="Simulation Parity">
+Paths designed in PathPlanner can be tested in the ARESLib desktop simulator. If the robot "skids" or misses a turn in sim, adjust your **Maximum Angular Velocity** and **Module Friction** models in `ChassisConfig`.
+</Aside>

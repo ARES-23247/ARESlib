@@ -35,15 +35,20 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
   private double turnAbsolutePositionRad = 0.0;
   private double turnVelocityRadPerSec = 0.0;
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   @Override
   public void updateInputs(SwerveModuleInputs inputs) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
     // Integrate basic physics
     driveVelocityMps = driveAppliedVolts * DRIVE_KV;
-    drivePositionMeters += driveVelocityMps * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    drivePositionMeters += driveVelocityMps * dt;
 
     turnVelocityRadPerSec = turnAppliedVolts * TURN_KV;
-    turnAbsolutePositionRad += turnVelocityRadPerSec * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    turnAbsolutePositionRad += turnVelocityRadPerSec * dt;
 
     // Wrap turn position to [-pi, pi] — handles any magnitude, not just single overflow
     turnAbsolutePositionRad = MathUtil.angleModulus(turnAbsolutePositionRad);

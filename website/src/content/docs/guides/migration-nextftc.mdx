@@ -1,0 +1,473 @@
+---
+title: Migrating from NextFTC
+description: Guide for teams moving from NextFTC's command-based framework to ARESLib.
+---
+
+# Migrating from NextFTC
+
+NextFTC teams will find many familiar concepts in ARESLib, with significant enhancements in performance, simulation, and enterprise features. This guide leverages your existing NextFTC knowledge while showing you ARESLib's advanced capabilities.
+
+## Key Differences
+
+| Feature | NextFTC | ARESLib |
+|---------|---------|---------|
+| **Architecture** | Command-based | Command-based + IO Pattern |
+| **Loop Timing** | Variable | Deterministic 250Hz |
+| **Path Following** | Pedro Pathing | PathPlanner + Custom |
+| **Simulation** | Basic sim | Full physics engine |
+| **Telemetry** | Basic logging | @AutoLog + AdvantageScope |
+| **Testing** | Hardware required | Headless JUnit tests |
+
+## Concept Mapping
+
+### Subsystems
+
+**NextFTC:**
+```java
+public class DriveSubsystem extends Subsystem {
+    private final PedroPathingFollower follower;
+    private final Motor[] motors;
+
+    public DriveSubsystem() {
+        motors = new Motor[]{
+            new Motor("left_front"),
+            new Motor("left_rear"),
+            new Motor("right_front"),
+            new Motor("right_rear")
+        };
+        follower = new PedroPathingFollower();
+    }
+
+    @Override
+    public void periodic() {
+        follower.update();
+        // Manual telemetry
+        telemetry.addData("Pose", getPose());
+    }
+}
+```
+
+**ARESLib:**
+```java
+public class DriveSubsystem extends SubsystemBase {
+    private final DriveIO io;
+    private final DriveIOInputs inputs = new DriveIOInputs();
+    private final AresFollower follower;
+
+    public DriveSubsystem(DriveIO io) {
+        this.io = io;
+        this.follower = new AresFollower();
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs); // Auto-logged
+        follower.update(inputs.pose);
+    }
+}
+```
+
+## Path Following Migration
+
+### NextFTC Pedro Pathing
+
+**Creating Paths:**
+```java
+// NextFTC - Manual path creation
+PathChain path = new PathChain();
+    .addPath(
+        new BezierCurve(
+            new Point(0, 0),
+            new Point(30, 0),
+            new Point(60, 0)
+        )
+    );
+follower.followPath(path);
+```
+
+### ARESLib PathPlanner
+
+**Creating Paths:**
+```java
+// ARESLib - PathPlanner GUI + library
+// Use PathPlanner GUI to create paths visually
+PathPlannerTrajectory trajectory = PathPlanner.loadPath("ScoreHigh", 3.0, 2.0);
+
+// Or create programmatically
+List<Translation2d> waypoints = Arrays.asList(
+    new Translation2d(0, 0),
+    new Translation2d(1.0, 0),
+    new Translation2d(2.0, 0)
+);
+
+PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+    new PathConstraints(3.0, 2.0, Math.PI, Math.PI),
+    waypoints
+);
+```
+
+### Path Following Commands
+
+**NextFTC:**
+```java
+public class FollowPathCommand extends Command {
+    private final PathChain path;
+
+    public FollowPathCommand(DriveSubsystem drive, PathChain path) {
+        this.drive = drive;
+        this.path = path;
+        addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+        drive.followPath(path);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return drive.isPathFinished();
+    }
+}
+```
+
+**ARESLib:**
+```java
+public class FollowPathCommand extends Command {
+    private final DriveSubsystem drive;
+    private final PathPlannerTrajectory trajectory;
+    private final Timer timer = new Timer();
+
+    public FollowPathCommand(DriveSubsystem drive, String pathName) {
+        this.drive = drive;
+        this.trajectory = PathPlanner.loadPath(pathName, 3.0, 2.0);
+        addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+        timer.reset();
+        timer.start();
+        drive.followTrajectory(trajectory);
+    }
+
+    @Override
+    public void execute() {
+        PathPlannerState targetState = trajectory.sample(timer.get());
+        drive.driveToState(targetState);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return timer.hasElapsed(trajectory.getTotalTimeSeconds());
+    }
+}
+```
+
+## Hardware Abstraction
+
+### NextFTC Motor Wrappers
+
+**NextFTC:**
+```java
+// Direct motor access through wrapper
+Motor motor = new Motor("intake");
+motor.set(0.8);
+double velocity = motor.getVelocity();
+```
+
+**ARESLib:**
+```java
+// IO abstraction
+public interface IntakeIO {
+    @AutoLog
+    public static class IntakeIOInputs {
+        public double velocityRadPerSec = 0.0;
+        public double appliedVolts = 0.0;
+    }
+
+    void updateInputs(IntakeIOInputs inputs);
+    void setVoltage(double volts);
+}
+
+// Usage
+IntakeSubsystem intake = new IntakeSubsystem(
+    new IntakeIOReal(hardwareMap)
+);
+intake.setPower(0.8);
+```
+
+## Gamepad Controls
+
+### NextFTC GamepadEx
+
+**NextFTC:**
+```java
+GamepadEx driver = new GamepadEx(gamepad1);
+
+// Button bindings
+driver.getGamepadButton(GamepadKeys.Button.A)
+    .whileHeld(new IntakeCommand(intake));
+
+// Trigger axes
+driver.getGamepadButton(GamepadKeys.Trigger.RIGHT_TRIGGER)
+    .whileHeld(new ShootCommand(shooter));
+
+// POV
+driver.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+    .whenPressed(new ElevatorUpCommand(elevator));
+```
+
+### ARESLib AresGamepad
+
+**ARESLib:**
+```java
+AresGamepad driver = new AresGamepad(gamepad1);
+
+// Button bindings - cleaner syntax
+driver.button(Button.A).whileTrue(new IntakeCommand(intake));
+driver.rightTrigger().whileTrue(new ShootCommand(shooter));
+driver.povUp().onTrue(new ElevatorUpCommand(elevator));
+
+// Advanced features
+driver.button(Button.Y)
+    .whileTrue(new IntakeCommand(intake))
+    .onFalse(new StopIntakeCommand(intake)); // Chain commands
+```
+
+## Autonomous Architecture
+
+### NextFTC Auto
+
+**NextFTC:**
+```java
+public class Autonomous extends LinearOpMode {
+    @Override
+    public void runOpMode() {
+        DriveSubsystem drive = new DriveSubsystem(hardwareMap);
+
+        waitForStart();
+
+        // Sequential execution
+        drive.followPath(path1);
+        while (!isStopRequested() && drive.isPathFollowing()) {
+            drive.update();
+        }
+
+        intake.setIntakePower(1.0);
+        sleep(1000);
+        intake.setIntakePower(0);
+
+        drive.followPath(path2);
+        // ... more manual sequencing
+    }
+}
+```
+
+### ARESLib Auto
+
+**ARESLib:**
+```java
+public class Autonomous extends AresCommandOpMode {
+    private RobotContainer robot;
+
+    @Override
+    public void robotInit() {
+        robot = new RobotContainer();
+    }
+
+    @Override
+    public void autonomousInit() {
+        robot.setAutoRoutine();
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+}
+
+// In RobotContainer
+public Command getAutoRoutine() {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> drive.resetOdometry(startPose)),
+        new FollowPathCommand(drive, "Preload"),
+        new InstantCommand(() -> intake.setPower(1.0)),
+        new WaitCommand(1.0),
+        new InstantCommand(() -> intake.setPower(0)),
+        new FollowPathCommand(drive, "Score"),
+        new ShootCommand(shooter)
+    );
+}
+```
+
+## State Machine Migration
+
+### NextFTC State Machine
+
+**NextFTC:**
+```java
+public enum IntakeState {
+    IDLE, INTAKING, OUTTAKING, STOWED
+}
+
+public class IntakeSubsystem extends Subsystem {
+    private IntakeState state = IntakeState.IDLE;
+
+    public void setState(IntakeState newState) {
+        state = newState;
+        switch(state) {
+            case INTAKING:
+                motor.set(1.0);
+                break;
+            case OUTTAKING:
+                motor.set(-1.0);
+                break;
+            case STOWED:
+                motor.set(0);
+                servo.setPosition(0.5);
+                break;
+        }
+    }
+}
+```
+
+### ARESLib State Machine
+
+**ARESLib:**
+```java
+public enum IntakeState {
+    IDLE(0, 0),
+    INTAKING(12.0, 0),
+    OUTTAKING(-12.0, 0),
+    STOWED(0, 0.5);
+
+    final double volts;
+    final double servoPosition;
+
+    IntakeState(double volts, double servoPosition) {
+        this.volts = volts;
+        this.servoPosition = servoPosition;
+    }
+
+    public void execute(IntakeIO io) {
+        io.setVoltage(volts);
+        io.setServoPosition(servoPosition);
+    }
+}
+
+public class IntakeStateMachine extends StateMachine<IntakeState> {
+    public IntakeStateMachine(IntakeSubsystem intake) {
+        super(IntakeState.IDLE, intake);
+
+        // Define transitions
+        addTransition(IntakeState.IDLE, IntakeState.INTAKING,
+            () -> intake.gamepad.button(Button.A).getAsBoolean());
+
+        addTransition(IntakeState.INTAKING, IntakeState.STOWED,
+            () -> intake.hasGamepiece() || intake.timeout(3.0));
+    }
+}
+```
+
+## Telemetry & Logging
+
+### NextFTC Telemetry
+
+**NextFTC:**
+```java
+@Override
+public void periodic() {
+    telemetry.addData("Pose", getPose());
+    telemetry.addData("Velocity", getVelocity());
+    telemetry.addData("Current", getCurrent());
+    telemetry.update();
+}
+```
+
+### ARESLib @AutoLog
+
+**ARESLib:**
+```java
+public interface DriveIO {
+    @AutoLog
+    public static class DriveIOInputs {
+        public Pose2d pose = new Pose2d();
+        public double velocity = 0.0;
+        public double[] currentAmps = new double[4];
+        // Everything automatically logged to AdvantageScope
+    }
+
+    void updateInputs(DriveIOInputs inputs);
+}
+
+// No manual telemetry needed!
+```
+
+## Simulation Features
+
+### NextFTC Simulation
+
+- Basic pose estimation
+- Limited physics
+- Manual state management
+
+### ARESLib Physics Simulation
+
+```java
+public class DriveIOSim implements DriveIO {
+    private final MecanumDriveSim sim = new MecanumDriveSim();
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        sim.update(0.020); // Physics step
+        inputs.pose = sim.getPose();
+        inputs.velocity = sim.getVelocity();
+        inputs.currentAmps = sim.getCurrentDraw();
+    }
+
+    @Override
+    public void setVoltage(double[] volts) {
+        sim.setVoltage(volts);
+    }
+}
+
+// Test autonomous without robot!
+./gradlew runSim
+```
+
+## Migration Benefits
+
+### Performance Improvements
+- **10x faster loop rate**: 250Hz vs ~25Hz
+- **Zero GC pauses**: No heap allocation in hot path
+- **Better control**: Deterministic timing
+
+### Developer Experience
+- **Better testing**: Unit tests without hardware
+- **Easier debugging**: Bit-perfect replay with @AutoLog
+- **Faster iteration**: Test code in simulation
+
+### Competition Advantages
+- **More reliable**: Fault management system
+- **Better autonomous**: PathPlanner + state machines
+- **Data-driven**: Comprehensive telemetry for analysis
+
+## Quick Reference
+
+| NextFTC Concept | ARESLib Equivalent |
+|-----------------|-------------------|
+| `Subsystem` | `SubsystemBase` |
+| `Command` | `Command` |
+| `PedroPathingFollower` | `AresFollower` + PathPlanner |
+| `GamepadEx` | `AresGamepad` |
+| `Motor` | `IOReal` implementation |
+| `LinearOpMode` | `AresCommandOpMode` |
+| `telemetry` | `@AutoLog` + AdvantageScope |
+
+## Resources
+
+- [Hardware Abstraction](/tutorials/hardware-abstraction/)
+- [Path Following](/tutorials/smart-assist-align/)
+- [State Machines](/tutorials/state-machines/)
+- [Physics Simulation](/tutorials/physics-sim/)

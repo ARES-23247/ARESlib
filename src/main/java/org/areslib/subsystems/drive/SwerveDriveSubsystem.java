@@ -112,6 +112,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
   private final SwerveModuleIO.SwerveModuleInputs[] inputsArray;
 
   private Body simChassis = null;
+  private double lastDriveTimeSeconds;
 
   public SwerveDriveSubsystem(
       Config config,
@@ -234,13 +235,14 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
   }
 
   public void drive(double forwardMetersPerSec, double strafeMetersPerSec, double turnRadPerSec) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastDriveTimeSeconds;
+    lastDriveTimeSeconds = currentTime;
+
     if (fwdLimiter != null) {
-      forwardMetersPerSec =
-          fwdLimiter.calculate(forwardMetersPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
-      strafeMetersPerSec =
-          strLimiter.calculate(strafeMetersPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
-      turnRadPerSec =
-          rotLimiter.calculate(turnRadPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+      forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
+      strafeMetersPerSec = strLimiter.calculate(strafeMetersPerSec);
+      turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
     }
 
     this.commandedVxMps = forwardMetersPerSec;
@@ -248,11 +250,7 @@ public class SwerveDriveSubsystem extends SubsystemBase implements AresDrivetrai
     this.commandedOmegaRadPerSec = turnRadPerSec;
 
     ChassisSpeeds.discretize(
-        forwardMetersPerSec,
-        strafeMetersPerSec,
-        turnRadPerSec,
-        org.areslib.core.AresRobot.LOOP_PERIOD_SECS,
-        discreteChassisSpeeds);
+        forwardMetersPerSec, strafeMetersPerSec, turnRadPerSec, dt, discreteChassisSpeeds);
 
     kinematics.toSwerveModuleStates(discreteChassisSpeeds, cachedTargetStates);
     SwerveDriveKinematics.desaturateWheelSpeeds(cachedTargetStates, maxSpeedMps);

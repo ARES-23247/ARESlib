@@ -1,0 +1,58 @@
+---
+title: State Machine Logic
+description: Complex robot behaviors shouldn't be a mess of nested if-statements. Use the ARESLib StateMachine framework.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Complex robot behaviors shouldn't be a mess of nested if-statements. A State Machine ensures your robot is only ever in one well-defined state (e.g., `INTAKING`, `SCORING`, `IDLE`). This eliminates "ghost bugs" where the robot tries to intake while the arm is up.
+
+## <span class="ares-num">01</span> Why State Machines?
+
+State Machines provide predictability. By defining explicit states and transitions, you guarantee that:
+- Code only runs when it's supposed to.
+- Transitions are validated (e.g., you can't go from `STOWED` to `SCORING` without passing through `LIFTING`).
+- Telemetry is deterministic.
+
+---
+
+## <span class="ares-num">02</span> Core Implementation
+
+### <span class="ares-num">2.1</span> Define Your States
+Create an `enum` to represent every possible state of your subsystem.
+
+```java
+public enum IntakeState {
+    IDLE,
+    INTAKING,
+    REVERSING,
+    FULL
+}
+
+private StateMachine<IntakeState> stateMachine = new StateMachine<>(IntakeState.IDLE);
+```
+
+### <span class="ares-num">2.2</span> Defining Transitions
+Use the `onEnter`, `onExit`, and `onWhile` methods to define behavior.
+
+```java
+stateMachine.onEnter(IntakeState.INTAKING, () -> {
+    intakeMotor.setVoltage(12.0);
+});
+
+stateMachine.onWhile(IntakeState.INTAKING, () -> {
+    if (sensor.isTriggered()) {
+        stateMachine.setState(IntakeState.FULL);
+    }
+});
+```
+
+---
+
+## <span class="ares-num">03</span> Visualizing States
+
+ARESLib automatically exports state machine graphs to **AdvantageScope**. You can see real-time transitions in the "State Machine" tab of the simulator, allowing for deep debugging of sequential logic.
+
+<Aside title="The Error State">
+Always include an `ERROR` or `FAULT` state in your state machine. If a hardware fault is detected via the [Fault Resilience](/tutorials/fault-resilience) system, your state machine should automatically transition to a safe state.
+</Aside>

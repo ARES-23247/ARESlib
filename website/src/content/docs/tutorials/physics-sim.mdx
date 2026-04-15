@@ -5,13 +5,15 @@ description: Test your code before the robot is built with dyn4j integration.
 
 Test your code before the robot is built. This tutorial explains the ARESLib integration with the **dyn4j** physics engine.
 
-## Why Simulate?
+## <span class="ares-num">01</span> Why Simulate?
 
 Waiting for the robot to be built or charged shouldn't stop development. ARESLib uses the **dyn4j** physics engine to model swerve drives, elevators, and intake friction directly on your laptop.
 
-## Core Concepts
+---
 
-### 1. The IO Abstraction
+## <span class="ares-num">02</span> Core Concepts
+
+### <span class="ares-num">2.1</span> The IO Abstraction
 Every subsystem should have an `IO` interface, an `IOReal` implementation for the robot, and an `IOSim` implementation for simulation.
 
 ```java
@@ -21,7 +23,7 @@ public interface ElevatorIO {
 }
 ```
 
-### 2. Dynamic Bodies
+### <span class="ares-num">2.2</span> Dynamic Bodies
 In `ElevatorIOSim`, we use `ElevatorSim` (ported from WPILib) or a raw `dyn4j` Body to calculate physics.
 
 ```java
@@ -31,10 +33,12 @@ m_sim.update(0.020); // 20ms physics step
 inputs.positionMeters = m_sim.getPositionMeters();
 ```
 
-### 3. Running the Simulator
+### <span class="ares-num">2.3</span> Running the Simulator
 Use the `./gradlew runSim` command (or the **ARESLib VS Code** play button) to launch the headless simulation environment. Telemetry will be streamed to **AdvantageScope** just like a real robot.
 
-## Best Practices
+---
+
+## <span class="ares-num">03</span> Best Practices
 
 - **Deterministic Steps:** Always use a fixed 20ms (0.020) time step in simulation to match the command scheduler.
 - **Model Latency:** Use `SimDevice` wrappers to add realistic CAN bus latency or sensor noise.

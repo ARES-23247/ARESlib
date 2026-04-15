@@ -34,7 +34,11 @@ public class TeleopDriveMath {
       return 0.0;
     }
     // Rescale so the output is 0.0 at the edge of the deadband and 1.0 at max input
-    return Math.signum(value) * ((Math.abs(value) - deadband) / (1.0 - deadband));
+    double divisor = 1.0 - deadband;
+    if (org.areslib.math.MathUtil.epsilonCheck(divisor)) {
+      return 0.0;
+    }
+    return Math.signum(value) * ((Math.abs(value) - deadband) / divisor);
   }
 
   /**
@@ -90,10 +94,21 @@ public class TeleopDriveMath {
     }
 
     // Rescale magnitude from deadband edge
-    double rescaled = (magnitude - deadband) / (1.0 - deadband);
+    double divisor = 1.0 - deadband;
+    if (org.areslib.math.MathUtil.epsilonCheck(divisor)) {
+      cache[0] = 0.0;
+      cache[1] = 0.0;
+      return cache;
+    }
+    double rescaled = (magnitude - deadband) / divisor;
     double curved = Math.pow(Math.min(rescaled, 1.0), exponent);
 
     // Maintain original direction, apply curved magnitude
+    if (org.areslib.math.MathUtil.epsilonCheck(magnitude)) {
+      cache[0] = 0.0;
+      cache[1] = 0.0;
+      return cache;
+    }
     double scale = curved * maxSpeedMps / magnitude;
     cache[0] = rawX * scale;
     cache[1] = rawY * scale;

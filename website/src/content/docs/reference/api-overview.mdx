@@ -1,0 +1,619 @@
+---
+title: API Overview
+description: Complete overview of ARESLib's public API and core components.
+---
+
+# API Overview
+
+Complete reference for ARESLib's public API, organized by functional area. For detailed Javadoc, see the [API Reference](https://ARES-23247.github.io/ARESLib/javadoc/index.html).
+
+## Core Components
+
+### Command System
+
+**CommandScheduler**
+```java
+// Schedule and run commands
+CommandScheduler.getInstance().schedule(command);
+CommandScheduler.getInstance().run();
+CommandScheduler.getInstance().cancel(command);
+```
+
+**Command**
+```java
+// Base command class
+public class MyCommand extends Command {
+    public MyCommand(Subsystem subsystem) {
+        addRequirements(subsystem);
+    }
+
+    @Override
+    public void initialize() { }
+
+    @Override
+    public void execute() { }
+
+    @Override
+    public boolean isFinished() { return false; }
+
+    @Override
+    public void end(boolean interrupted) { }
+}
+```
+
+**Command Groups**
+```java
+// Sequential execution
+new SequentialCommandGroup(
+    new CommandA(),
+    new CommandB(),
+    new CommandC()
+);
+
+// Parallel execution
+new ParallelCommandGroup(
+    new CommandA(),
+    new CommandB()
+);
+
+// Conditional execution
+new ConditionalCommand(
+    new CommandA(),  // if true
+    new CommandB(),  // if false
+    () -> condition()
+);
+```
+
+---
+
+### Subsystem Base
+
+**SubsystemBase**
+```java
+public class MySubsystem extends SubsystemBase {
+    private final MyIO io;
+    private final MyIO.MyIOInputs inputs = new MyIO.MyIOInputs();
+
+    public MySubsystem(MyIO io) {
+        this.io = io;
+        // Register with scheduler
+        register();
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        // Subsystem logic here
+    }
+
+    public void setDefaultCommand(Command command) {
+        CommandScheduler.getInstance().setDefaultCommand(this, command);
+    }
+}
+```
+
+---
+
+### IO Pattern
+
+**IO Interface**
+```java
+public interface MyIO {
+    @AresAutoLog
+    public static class MyIOInputs {
+        public double value = 0.0;
+        public boolean state = false;
+    }
+
+    void setOutput(double value);
+    void updateInputs(MyIOInputs inputs);
+}
+```
+
+**IOReal Implementation**
+```java
+public class MyIOReal implements MyIO {
+    private final DcMotorEx motor;
+
+    public MyIOReal(HardwareMap hardwareMap) {
+        motor = hardwareMap.get(DcMotorEx.class, "motor");
+    }
+
+    @Override
+    public void setOutput(double value) {
+        motor.setPower(value);
+    }
+
+    @Override
+    public void updateInputs(MyIOInputs inputs) {
+        inputs.value = motor.getCurrentPosition();
+        inputs.state = motor.getMode() == DcMotorEx.RunMode.RUN_USING_ENCODER;
+    }
+}
+```
+
+**IOSim Implementation**
+```java
+public class MyIOSim implements MyIO {
+    private double value = 0.0;
+
+    @Override
+    public void setOutput(double value) {
+        this.value = value;
+    }
+
+    @Override
+    public void updateInputs(MyIOInputs inputs) {
+        inputs.value = value;
+        inputs.state = true;
+    }
+}
+```
+
+---
+
+## Math Library
+
+### Geometry
+
+**Pose2d**
+```java
+// Create poses
+Pose2d pose = new Pose2d(1.0, 2.0, new Rotation2d(Math.PI / 4));
+
+// Transform poses
+Pose2d transformed = pose.exp(new Twist2d(1.0, 0.0, 0.0));
+
+// Calculate distance
+double distance = pose.getTranslation().getDistance(new Translation2d(0, 0));
+
+// Interpolate
+Pose2d interpolated = pose.interpolate(otherPose, 0.5);
+```
+
+**Translation2d**
+```java
+// Create translations
+Translation2d translation = new Translation2d(1.0, 2.0);
+
+// Operations
+Translation2d sum = translation.plus(new Translation2d(0.5, 0.5));
+Translation2d rotated = translation.rotateBy(new Rotation2d(Math.PI / 4));
+
+// Calculate distance and angle
+double distance = translation.getDistance(new Translation2d(0, 0));
+double angle = translation.getAngle();
+```
+
+**Rotation2d**
+```java
+// Create rotations
+Rotation2d rotation = new Rotation2d(Math.PI / 4);
+
+// Operations
+Rotation2d sum = rotation.plus(new Rotation2d(Math.PI / 4));
+Rotation2d difference = rotation.minus(new Rotation2d(Math.PI / 8));
+
+// Trigonometry
+double cos = rotation.getCos();
+double sin = rotation.getSin();
+double radians = rotation.getRadians();
+double degrees = rotation.getDegrees();
+```
+
+---
+
+### Kinematics
+
+**Mecanum Drive Kinematics**
+```java
+// Create kinematics object
+MecanumDriveKinematics kinematics = new MecanumDriveKinematics(
+    new Translation2d(0.3, 0.3),  // Front left
+    new Translation2d(0.3, -0.3),  // Front right
+    new Translation2d(-0.3, 0.3),  // Back left
+    new Translation2d(-0.3, -0.3)  // Back right
+);
+
+// Convert chassis speeds to wheel speeds
+ChassisSpeeds speeds = new ChassisSpeeds(1.0, 0.0, 0.5);
+MecanumDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+
+// Convert wheel speeds to chassis speeds
+ChassisSpeeds fromWheels = kinematics.toChassisSpeeds(wheelSpeeds);
+```
+
+**Swerve Drive Kinematics**
+```java
+// Create kinematics object
+SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+    new Translation2d(0.3, 0.3),
+    new Translation2d(0.3, -0.3),
+    new Translation2d(-0.3, 0.3),
+    new Translation2d(-0.3, -0.3)
+);
+
+// Convert chassis speeds to module states
+ChassisSpeeds speeds = new ChassisSpeeds(1.0, 0.0, 0.5);
+SwerveModuleState[] moduleStates = kinematics.toModuleStates(speeds);
+
+// Convert module states to chassis speeds
+ChassisSpeeds fromModules = kinematics.toChassisSpeeds(moduleStates);
+
+// Desaturate wheel speeds
+SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, 3.0);
+```
+
+---
+
+### Odometry
+
+**Mecanum Odometry**
+```java
+// Create odometry object
+MecanumDriveOdometry odometry = new MecanumDriveOdometry(
+    kinematics,
+    new Rotation2d(),  // Gyro heading
+    new Pose2d()       // Initial pose
+);
+
+// Update odometry
+odometry.update(
+    new Rotation2d(gyroHeading),  // Current gyro heading
+    new MecanumDriveWheelPositions(
+        frontLeftPosition,
+        frontRightPosition,
+        backLeftPosition,
+        backRightPosition
+    )
+);
+
+// Get current pose
+Pose2d currentPose = odometry.getPose();
+
+// Reset pose
+odometry.resetPosition(new Rotation2d(), new Pose2d(1.0, 2.0, new Rotation2d()));
+```
+
+**Swerve Odometry**
+```java
+// Create odometry object
+SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+    kinematics,
+    new Rotation2d(),
+    new Pose2d()
+);
+
+// Update odometry
+odometry.update(
+    new Rotation2d(gyroHeading),
+    new SwerveModulePosition[] {
+        new SwerveModulePosition(frontLeftDist, frontLeftAngle),
+        new SwerveModulePosition(frontRightDist, frontRightAngle),
+        new SwerveModulePosition(backLeftDist, backLeftAngle),
+        new SwerveModulePosition(backRightDist, backRightAngle)
+    }
+);
+```
+
+---
+
+### Control Theory
+
+**PID Controller**
+```java
+// Create PID controller
+PIDController controller = new PIDController(1.0, 0.0, 0.1);
+
+// Calculate output
+double output = controller.calculate(measurement, setpoint);
+
+// Enable continuous input
+controller.enableContinuousInput(-Math.PI, Math.PI);
+
+// Set tolerance
+controller.setTolerance(0.1);
+
+// At setpoint?
+boolean atSetpoint = controller.atSetpoint();
+```
+
+**Profiled PID Controller**
+```java
+// Create profiled PID controller
+ProfiledPIDController controller = new ProfiledPIDController(
+    1.0, 0.0, 0.1,
+    new TrapezoidProfile.Constraints(1.0, 2.0)  // max velocity, max acceleration
+);
+
+// Calculate output
+double output = controller.calculate(measurement, goal);
+
+// Set goal
+controller.setGoal(1.0);  // Position goal
+controller.setGoal(new TrapezoidProfile.State(1.0, 0.5));  // Position and velocity goal
+```
+
+**Feedforward**
+```java
+// Simple motor feedforward
+SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
+    0.5,  // kS - static voltage
+    0.1,  // kV - velocity voltage
+    0.01  // kA - acceleration voltage
+);
+
+// Calculate feedforward voltage
+double voltage = feedforward.calculate(velocityRadPerSec);
+double voltageWithAccel = feedforward.calculateWithVelocities(
+    currentVelocity,
+    nextVelocity
+);
+
+// Arm feedforward
+ArmFeedforward armFeedforward = new ArmFeedforward(
+    0.5,  // kS
+    0.1,  // kCos
+    0.01, // kV
+    0.001 // kA
+);
+
+double armVoltage = armFeedforward.calculate(
+    angleRad,
+    velocityRadPerSec,
+    accelRadPerSecSq
+);
+
+// Elevator feedforward
+ElevatorFeedforward elevatorFeedforward = new ElevatorFeedforward(
+    0.5,  // kS
+    0.1,  // kG (gravity)
+    0.01, // kV
+    0.001 // kA
+);
+
+double elevatorVoltage = elevatorFeedforward.calculate(
+    velocityMetersPerSec,
+    accelMetersPerSecSq
+);
+```
+
+---
+
+## Telemetry
+
+### @AresAutoLog Annotation
+
+```java
+public interface MyIO {
+    @AresAutoLog
+    public static class MyIOInputs {
+        // Primitive types
+        public double doubleValue = 0.0;
+        public int intValue = 0;
+        public boolean booleanValue = false;
+
+        // WPILib geometry types
+        public Pose2d pose = new Pose2d();
+        public Translation2d translation = new Translation2d();
+        public Rotation2d rotation = new Rotation2d();
+
+        // Arrays
+        public double[] doubleArray = new double[4];
+
+        // Nested objects
+        public NestedObject nested = new NestedObject();
+    }
+
+    public static class NestedObject {
+        public double value = 0.0;
+        public boolean state = false;
+    }
+
+    void updateInputs(MyIOInputs inputs);
+}
+```
+
+---
+
+## Utility Classes
+
+### Timer
+
+```java
+// Create timer
+Timer timer = new Timer();
+
+// Start/reset
+timer.reset();
+timer.start();
+
+// Check elapsed time
+boolean hasElapsed = timer.hasElapsed(2.0);
+double seconds = timer.get();
+
+// Stop
+timer.stop();
+```
+
+### Filters
+
+**Median Filter**
+```java
+// Create median filter
+MedianFilter filter = new MedianFilter(5);  // Window size
+
+// Calculate filtered value
+double filtered = filter.calculate(rawValue);
+```
+
+**Linear Digital Filter**
+```java
+// Create moving average filter
+LinearDigitalFilter filter = LinearDigitalFilter.movingAverage(10);
+
+// Create single-pole IIR filter
+LinearDigitalFilter iir = LinearDigitalFilter.singlePoleIIR(0.1, 0.02);
+
+// Calculate filtered value
+double filtered = filter.calculate(rawValue);
+```
+
+---
+
+## Gamepad
+
+### AresGamepad
+
+```java
+// Create gamepad
+AresGamepad gamepad = new AresGamepad(hardwareMap.gamepad1);
+
+// Button bindings
+gamepad.button(Button.A).onTrue(command);
+gamepad.button(Button.B).whileTrue(command);
+gamepad.button(Button.X).onFalse(command);
+
+// Trigger bindings
+gamepad.rightTrigger().whileTrue(command);
+gamepad.leftTrigger().aboveThreshold(0.5).whileTrue(command);
+
+// POV bindings
+gamepad.povUp().onTrue(command);
+gamepad.povDown().whileTrue(command);
+
+// Stick bindings
+gamepad.leftStick().aboveThreshold(0.3).whileTrue(command);
+
+// Get raw values
+double leftY = gamepad.getLeftY();
+double rightX = gamepad.getRightX();
+boolean aPressed = gamepad.getButton(Button.A);
+```
+
+---
+
+## State Machine
+
+### State Machine Framework
+
+```java
+// Define states
+public enum MyState {
+    STATE_A,
+    STATE_B,
+    STATE_C
+}
+
+// Create state machine
+public class MyStateMachine extends StateMachine<MyState> {
+    public MyStateMachine(MySubsystem subsystem) {
+        super(MyState.STATE_A, subsystem);
+
+        // Add transitions
+        addTransition(MyState.STATE_A, MyState.STATE_B,
+            () -> condition());
+
+        addTimedTransition(MyState.STATE_B, MyState.STATE_C,
+            Seconds.seconds(2.0));
+    }
+
+    @Override
+    public void onStateTransition(MyState from, MyState to) {
+        // Handle state change
+    }
+}
+
+// Use state machine
+MyStateMachine sm = new MyStateMachine(subsystem);
+sm.update();  // Call in periodic()
+```
+
+---
+
+## Fault Management
+
+### AresFaultManager
+
+```java
+// Get fault manager
+AresFaultManager faultManager = AresFaultManager.getInstance();
+
+// Register fault
+AresFault fault = new AresFault(
+    "Motor stalled",
+    Severity.WARNING,
+    "intake_motor"
+);
+faultManager.registerFault(fault);
+
+// Check for faults
+boolean hasCriticalFaults = faultManager.hasCriticalFaults();
+List<AresFault> faults = faultManager.getFaults();
+
+// Clear faults
+faultManager.clearFaults();
+faultManager.clearFault("intake_motor");
+```
+
+---
+
+## Quick Reference
+
+### Common Imports
+
+```java
+// Core
+import org.areslib.core.AresCommandOpMode;
+import org.areslib.command.Command;
+import org.areslib.command.CommandScheduler;
+import org.areslib.subsystems.SubsystemBase;
+
+// Math
+import org.areslib.math.geometry.Pose2d;
+import org.areslib.math.geometry.Translation2d;
+import org.areslib.math.geometry.Rotation2d;
+import org.areslib.math.kinematics.MecanumDriveKinematics;
+import org.areslib.math.controller.PIDController;
+
+// Telemetry
+import org.areslib.telemetry.AresAutoLog;
+
+// Gamepad
+import org.areslib.hmi.AresGamepad;
+import org.areslib.hmi.Button;
+
+// State Machine
+import org.areslib.statemachine.StateMachine;
+```
+
+### Common Patterns
+
+**Initialize subsystem in OpMode:**
+```java
+@Override
+public void robotInit() {
+    MyIO io = isReal() ? new MyIOReal(hardwareMap) : new MyIOSim();
+    mySubsystem = new MySubsystem(io);
+}
+```
+
+**Read inputs in periodic:**
+```java
+@Override
+public void periodic() {
+    io.updateInputs(inputs);
+    // Use inputs.value
+}
+```
+
+**Set default command:**
+```java
+mySubsystem.setDefaultCommand(new MyDefaultCommand(mySubsystem));
+```
+
+## Additional Resources
+
+- [Complete Javadoc](https://ARES-23247.github.io/ARESLib/javadoc/index.html) - Detailed API documentation
+- [Code Examples](/guides/recipe-library/) - Copy-paste templates
+- [Architecture Diagrams](/guides/architecture-diagrams/) - Visual representations

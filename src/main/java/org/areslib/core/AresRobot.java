@@ -5,11 +5,6 @@ public class AresRobot {
   private static volatile boolean isSimulation = false;
 
   /**
-   * Standard loop execution period for the robot (20ms) used in controllers and simulation physics.
-   */
-  public static final double LOOP_PERIOD_SECS = 0.02;
-
-  /**
    * Gets whether the robot is running in a simulated environment.
    *
    * @return True if the robot is currently running in a simulated environment.

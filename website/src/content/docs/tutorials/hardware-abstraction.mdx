@@ -1,0 +1,120 @@
+---
+title: Hardware Abstraction (HAL)
+description: Decoupling logic from electronics for 100% simulation parity.
+---
+
+import { CardGrid, Card, Aside } from '@astrojs/starlight/components';
+import CodePlayground from '../../components/CodePlayground';
+
+One of the core tenets of ARESLib is that **Robot Logic should never know what motor it's talking to**. By using the Hardware Abstraction Layer (HAL) and the `IO` pattern, we can run the exact same subsystem code on a real Control Hub, a desktop simulator, or a unit test.
+
+## <span class="ares-num">01</span> The Blueprint: Logic -> Interface -> Impl
+
+Every subsystem in ARESLib is built using three distinct layers:
+
+<CardGrid>
+  <Card title="1. The Subsystem" icon="pencil">
+    Contains the "Brain." Calculates PID, State Machines, and Kinematics.
+  </Card>
+  <Card title="2. The IO Interface" icon="document">
+    The "Contract." Defines what data goes in (volts) and what comes out (position).
+  </Card>
+  <Card title="3. The Implementation" icon="setting">
+    The "Muscle." Either `IOReal` (REV/CANCoder) or `IOSim` (Physics).
+  </Card>
+</CardGrid>
+
+---
+
+## <span class="ares-num">02</span> Why No `DcMotor`?
+
+Directly using `DcMotor` or `Servo` classes in your subsystem makes it impossible to unit test. In ARESLib, we use standardized wrappers:
+
+```java
+// The Interface (IO Contract)
+public interface DriveIO {
+    @AutoLog // Automatically generates Telemetry/Replay fields
+    public static class DriveIOInputs {
+        public double leftPositionMeters = 0.0;
+        public double leftVelocityMetersPerSec = 0.0;
+        public double appliedVolts = 0.0;
+    }
+    
+    public default void updateInputs(DriveIOInputs inputs) {}
+    public default void setVoltage(double volts) {}
+}
+```
+
+---
+
+## <span class="ares-num">03</span> Implementing IOReal
+
+For actual competition, we implement the contract by wrapping the FTC SDK classes. This is the only place in the entire framework where `hardwareMap` should be touched.
+
+```java
+public class DriveIOReal implements DriveIO {
+    private final DcMotorEx leftMotor;
+
+    public DriveIOReal(HardwareMap hwMap) {
+        leftMotor = hwMap.get(DcMotorEx.class, "left_drive");
+    }
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        inputs.leftPositionMeters = leftMotor.getCurrentPosition() * GEAR_RATIO;
+        inputs.leftVelocityMetersPerSec = leftMotor.getVelocity() * GEAR_RATIO;
+    }
+}
+```
+
+---
+
+## <span class="ares-num">04</span> Implementing IOSim
+
+For simulation, we implement the same contract but use a **Physics Model** instead of a physical motor. This allows us to practice driving and test autonomous paths without a robot.
+
+<Aside title="1:1 Parity">
+Because the Subsystem only sees the `DriveIO` interface, it behaves identically whether it's getting data from a real encoder or a mathematical model. This is the key to **"Code in Sim, Save at Comp."**
+</Aside>
+
+---
+
+## <span class="ares-num">05</span> Interactive Comparison
+
+See the difference between traditional and IO pattern approaches yourself:
+
+<CodePlayground
+  title="Traditional vs IO Pattern"
+  initialCode={`// TRADITIONAL APPROACH (Bad)
+public class BadIntakeSubsystem {
+    private DcMotor motor; // Hard to test!
+
+    public BadIntakeSubsystem(HardwareMap hwMap) {
+        motor = hwMap.get(DcMotor.class, "intake");
+        // No simulation possible
+    }
+
+    public void setPower(double power) {
+        motor.setPower(power); // Direct hardware access
+    }
+}
+
+// IO PATTERN APPROACH (Good)
+public interface IntakeIO {
+    void setVoltage(double volts);
+    void updateInputs(IntakeIOInputs inputs);
+}
+
+public class GoodIntakeSubsystem {
+    private final IntakeIO io; // Hardware-agnostic!
+
+    public GoodIntakeSubsystem(IntakeIO io) {
+        this.io = io; // Works with real OR sim
+    }
+
+    public void setPower(double power) {
+        io.setVoltage(power * 12.0); // Clean abstraction
+    }
+}`}
+  output="✓ Traditional: Locked to hardware\n✗ IO Pattern: Testable, Sim-ready, Flexible\n\nKey Benefits:\n• Unit tests without hardware\n• Simulation for autonomous practice\n• Easy hardware swapping\n• Better code organization"
+/>

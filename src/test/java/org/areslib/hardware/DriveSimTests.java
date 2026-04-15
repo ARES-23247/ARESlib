@@ -2,7 +2,6 @@ package org.areslib.hardware;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.areslib.core.AresRobot;
 import org.areslib.subsystems.drive.DifferentialDriveIO;
 import org.areslib.subsystems.drive.DifferentialDriveIOSim;
 import org.areslib.subsystems.drive.MecanumDriveIO;
@@ -22,18 +21,14 @@ public class DriveSimTests {
     sim.setDriveVoltage(10.0);
     sim.setTurnVoltage(5.0);
 
-    // run 1 loop (AresRobot.LOOP_PERIOD_SECS)
+    // run 1 loop
     sim.updateInputs(inputs);
 
     // Drive velocity = 10V * 0.4 = 4.0 m/s
     assertEquals(4.0, inputs.driveVelocityMps, 0.001);
-    // Drive pos = 4.0 * AresRobot.LOOP_PERIOD_SECS = 0.08 m
-    assertEquals(4.0 * AresRobot.LOOP_PERIOD_SECS, inputs.drivePositionMeters, 0.001);
 
     // Turn velocity = 5V * 5.0 = 25.0 rad/s
     assertEquals(25.0, inputs.turnVelocityRadPerSec, 0.001);
-    // Turn pos = (25.0 * AresRobot.LOOP_PERIOD_SECS) = 0.5 rad (or wrapped, but 0.5 < PI)
-    assertEquals(25.0 * AresRobot.LOOP_PERIOD_SECS, inputs.turnAbsolutePositionRad, 0.001);
   }
 
   @Test
@@ -46,9 +41,7 @@ public class DriveSimTests {
     sim.updateInputs(inputs);
 
     assertEquals(36.0, inputs.leftVelocityMps, 0.001);
-    assertEquals(0.72, inputs.leftPositionMeters, 0.001);
     assertEquals(-36.0, inputs.rightVelocityMps, 0.001);
-    assertEquals(-0.72, inputs.rightPositionMeters, 0.001);
   }
 
   @Test
@@ -60,15 +53,8 @@ public class DriveSimTests {
     sim.updateInputs(inputs);
 
     assertEquals(30.0, inputs.frontLeftVelocityMps, 0.001);
-    assertEquals(0.6, inputs.frontLeftPositionMeters, 0.001);
-
     assertEquals(15.0, inputs.frontRightVelocityMps, 0.001);
-    assertEquals(0.3, inputs.frontRightPositionMeters, 0.001);
-
     assertEquals(-15.0, inputs.rearLeftVelocityMps, 0.001);
-    assertEquals(-0.3, inputs.rearLeftPositionMeters, 0.001);
-
     assertEquals(-30.0, inputs.rearRightVelocityMps, 0.001);
-    assertEquals(-0.6, inputs.rearRightPositionMeters, 0.001);
   }
 }

@@ -1,0 +1,268 @@
+---
+title: Live Feedforward Tuning
+description: Learn how to use OnlineFeedforwardEstimator to automatically tune your feedforward gains without running SysId routines.
+sidebar:
+  badge:
+    text: Advanced
+    variant: caution
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Advanced" variant="caution" />
+
+Traditional feedforward tuning requires running SysId routines and analyzing logs offline. **ARESLib's `OnlineFeedforwardEstimator`** automatically tunes your kV and kA gains during normal robot operation!
+
+## <span class="ares-num">01</span> What is Live Feedforward Tuning?
+
+The **`OnlineFeedforwardEstimator`** continuously monitors your mechanism's telemetry (voltage, velocity, acceleration) and uses Ordinary Least Squares (OLS) regression to calculate the optimal feedforward constants in real-time.
+
+### Why Use This?
+
+| Method | Time Required | Data Quality | Schedule Required |
+|:-------|:---------------|:--------------|:------------------|
+| **Traditional SysId** | 15-30 minutes | Excellent | Dedicated routine |
+| **Online Estimator** | Automatic during use | Very Good | Runs during teleop/auto |
+
+## <span class="ares-num">02</span> Quick Start
+
+### <span class="ares-num">2.1</span> Create the Estimator
+
+```java
+private OnlineFeedforwardEstimator estimator;
+
+public ElevatorSubsystem(ElevatorIO io) {
+    this.io = io;
+    
+    // Create estimator with 10-second sliding window
+    // kS = 0.1 is your estimated static friction voltage
+    estimator = new OnlineFeedforwardEstimator("Elevator", 500, 0.1);
+}
+```
+
+### <span class="ares-num">2.2</span> Feed Data in Your Loop
+
+```java
+@Override
+public void periodic() {
+    // Read hardware inputs
+    io.updateInputs(inputs);
+    
+    // Feed live data to the estimator
+    estimator.addMeasurement(
+        inputs.appliedVolts,    // Voltage you applied
+        inputs.velocityMetersPerSec,  // Current velocity
+        inputs.accelerationMetersPerSecondSq // Can be derived
+    );
+    
+    // Update your feedforward model with latest estimates
+    if (estimator.hasReliableEstimates()) {
+        double newKV = estimator.getEstimatedKV();
+        double newKA = estimator.getEstimatedKA();
+        
+        // Update your feedforward in real-time!
+        feedforward = new SimpleMotorFeedforward(0.1, newKV, newKA);
+    }
+}
+```
+
+### <span class="ares-num">2.3</span> Monitor Convergence
+
+The estimator publishes telemetry you can view in FTC Dashboard:
+
+```
+Elevator/AutoTune/Estimated_kV: 0.852
+Elevator/AutoTune/Estimated_kA: 0.234
+```
+
+When these values stabilize (stop changing significantly), your gains are tuned!
+
+## <span class="ares-num">03</span> How It Works
+
+### <span class="ares-num">3.1</span> Mathematical Foundation
+
+The estimator solves the voltage equation:
+
+```
+V_applied = kS·sign(v) + kV·v + kA·a
+```
+
+Using OLS regression over a sliding window of recent data points:
+
+1. **Filter**: Only uses data when velocity > 0.1 m/s (avoids static friction nonlinearity)
+2. **Buffer**: Maintains a circular buffer of recent measurements
+3. **Regress**: Continuously solves the 2×2 normal equations using Kramer's rule
+4. **Publish**: Outputs the latest kV and kA estimates
+
+### <span class="ares-num">3.2</span> Sliding Window Algorithm
+
+```java
+// Internal algorithm (simplified)
+public void addMeasurement(double voltage, double velocity, double acceleration) {
+    // Skip low-velocity data (static friction region)
+    if (Math.abs(velocity) < 0.1) return;
+    
+    // Add to sliding window
+    buffer[index] = new Measurement(voltage, velocity, acceleration);
+    index = (index + 1) % windowSize;
+    
+    // Solve OLS regression
+    solveOLS(); // Updates currentKV and currentKA
+}
+```
+
+## <span class="ares-num">04</span> Practical Usage Examples
+
+### Example 1: Flywheel Tuning
+
+```java
+public class ShooterSubsystem extends SubsystemBase {
+    private OnlineFeedforwardEstimator ffEstimator;
+    private SimpleMotorFeedforward feedforward;
+    
+    public ShooterSubsystem() {
+        // Initialize with estimated kS
+        ffEstimator = new OnlineFeedforwardEstimator("Shooter", 500, 0.05);
+        feedforward = new SimpleMotorFeedforward(0.05, 0.1, 0.01);
+    }
+    
+    @Override
+    public void periodic() {
+        // Read encoder data
+        double velocity = shooterEncoder.getVelocity();
+        double voltage = shooterMotor.getMotorVoltage();
+        
+        // Estimate acceleration (simple numerical derivative)
+        double acceleration = (velocity - lastVelocity) / LOOP_PERIOD_SECS;
+        lastVelocity = velocity;
+        
+        // Feed to estimator
+        ffEstimator.addMeasurement(voltage, velocity, acceleration);
+        
+        // Update if we have reliable data
+        if (ffEstimator.hasReliableEstimates()) {
+            double kV = ffEstimator.getEstimatedKV();
+            double kA = ffEstimator.getEstimatedKA();
+            feedforward = new SimpleMotorFeedforward(0.05, kV, kA);
+        }
+        
+        // Use updated feedforward
+        double targetVoltage = feedforward.calculate(1500); // 1500 RPM
+        shooterMotor.setVoltage(targetVoltage);
+    }
+}
+```
+
+### Example 2: Elevator Auto-Tuning
+
+```java
+public class ElevatorSubsystem extends SubsystemBase {
+    private OnlineFeedforwardEstimator estimator;
+    
+    public void runAutoTune() {
+        estimator.reset();
+        
+        // Move elevator up and down at varying speeds
+        Commands.sequence(
+            moveToPosition(0.5, 0.5),  // Move up at 0.5 m/s
+            moveToPosition(0.0, 1.0),  // Move down at 1.0 m/s
+            moveToPosition(1.0, 0.3),  // Move up at 0.3 m/s
+            moveToPosition(0.0, 0.7)   // Move down at 0.7 m/s
+        ).schedule();
+        
+        // Estimator continuously tunes during movements
+        // Check FTC Dashboard for converged values
+    }
+}
+```
+
+## <span class="ares-num">05</span> Advanced Configuration
+
+### <span class="ares-num">5.1</span> Window Size Selection
+
+| Window Size | Data Collection | Response Time | Use Case |
+|:------------|:-----------------|:---------------|:---------|
+| 100 (2 sec) | Fast | Quick tuning | Rapid testing |
+| 500 (10 sec) | Balanced | Medium tuning | **Default** |
+| 1000 (20 sec) | Extensive | Slow tuning | Precision tuning |
+
+### <span class="ares-num">5.2</span> Noise Filtering
+
+The estimator automatically filters:
+
+1. **Low Velocity**: Data with `|velocity| < 0.1` is rejected
+2. **Statistical Outliers**: OLS regression is robust to noise
+3. **Singular Matrices**: Protected against degenerate data
+
+```java
+// Adjust the velocity threshold if needed
+public class CustomEstimator extends OnlineFeedforwardEstimator {
+    @Override
+    public void addMeasurement(double voltage, double velocity, double acceleration) {
+        if (Math.abs(velocity) < 0.05) return; // More aggressive filtering
+        super.addMeasurement(voltage, velocity, acceleration);
+    }
+}
+```
+
+## <span class="ares-num">06</span> Troubleshooting
+
+### <span class="ares-num">6.1</span> Values Not Converging
+
+**Symptom**: kV and kA keep changing drastically
+
+**Solutions**:
+1. **More Data Variety**: Drive the mechanism at different speeds
+2. **Longer Window**: Increase window size to 1000
+3. **Check kS**: Verify your static friction estimate is reasonable
+
+### <span class="ares-num">6.2</span> Estimates Seem Wrong
+
+**Symptom**: kV is negative or unusually large
+
+**Solutions**:
+1. **Verify Units**: Ensure velocity is in m/s or rad/s, not raw encoder counts
+2. **Check Acceleration**: Numerical derivatives can be noisy
+3. **Increase Threshold**: Filter more low-velocity data
+
+### <span class="ares-num">6.3</span> Poor Performance During Tuning
+
+**Symptom**: Robot behaves erratically while estimator is learning
+
+**Solutions**:
+1. **Don't Update Live**: Monitor values but only update between matches
+2. **Validate Offline**: Check estimates make sense before deploying
+3. **Gradual Adoption**: Blend old and new gains: `newGain * 0.5 + oldGain * 0.5`
+
+## <span class="ares-num">07</span> Best Practices
+
+1. **Initialize with Good kS**: Estimate static friction from motor datasheet
+2. **Use During Practice**: Let estimator learn throughout driver practice
+3. **Log Values**: Save converged values to your constants file
+4. **Verify with SysId**: Run traditional SysId occasionally to validate
+5. **Monitor Telemetry**: Watch convergence in FTC Dashboard
+
+## <span class="ares-num">08</span> When to Use vs. Traditional SysId
+
+### <span class="ares-num">8.1</span> Use Online Estimator When:
+- ✅ Mechanism is difficult to access for SysId
+- ✅ You want continuous tuning as conditions change
+- ✅ Quick iteration during development
+- ✅ Combining data from multiple sessions
+
+### <span class="ares-num">8.2</span> Use Traditional SysId When:
+- ✅ You need extremely precise constants
+- ✅ Mechanism has unusual characteristics
+- ✅ You need to generate kS (static friction)
+- ✅ Validating online estimator results
+
+## Summary
+
+The **`OnlineFeedforwardEstimator`** provides automatic feedforward tuning:
+
+- **No Dedicated Routine**: Learns during normal operation
+- **Real-Time Updates**: Continuously improves estimates
+- **Mathematically Sound**: Uses OLS regression
+- **FTC Dashboard Integration**: Monitor convergence live
+
+This is a championship-tier feature that saves time and improves performance! 🚀

@@ -1,0 +1,337 @@
+---
+title: Migrating from FTCLib
+description: Guide for teams moving from FTCLib's command-based system to ARESLib.
+---
+
+# Migrating from FTCLib
+
+ARESLib shares many architectural concepts with FTCLib's command-based programming model, but offers enhanced performance, simulation support, and enterprise-grade features. This guide helps FTCLib teams transition smoothly.
+
+## Key Differences
+
+| Feature | FTCLib | ARESLib |
+|---------|--------|---------|
+| **Loop Timing** | Variable, ~50Hz | Deterministic 250Hz |
+| **Memory** | Standard Java heap | Zero-allocation hot path |
+| **Hardware Access** | Direct hardware access | IO abstraction layer |
+| **Simulation** | Limited support | Full physics simulation |
+| **Telemetry** | Basic telemetry | @AutoLog with replay |
+| **Testing** | Hardware-dependent | Headless unit tests |
+
+## Architecture Comparison
+
+### FTCLib Structure
+```java
+// FTCLib - Direct hardware access
+public class IntakeSubsystem extends SubsystemBase {
+    private DcMotor motor;
+
+    public IntakeSubsystem() {
+        motor = HardwareMap.get(DcMotor.class, "intake");
+    }
+
+    public void setPower(double power) {
+        motor.setPower(power); // Direct hardware access
+    }
+}
+```
+
+### ARESLib Structure
+```java
+// ARESLib - IO abstraction
+public interface IntakeIO {
+    @AutoLog
+    public static class IntakeIOInputs {
+        public double velocityRadiansPerSec = 0.0;
+        public double appliedVolts = 0.0;
+    }
+
+    void updateInputs(IntakeIOInputs inputs);
+    void setVoltage(double volts);
+}
+
+public class IntakeSubsystem extends SubsystemBase {
+    private final IntakeIO io;
+
+    public IntakeSubsystem(IntakeIO io) {
+        this.io = io; // Hardware-agnostic
+    }
+
+    public void setPower(double power) {
+        io.setVoltage(power * 12.0); // Clean abstraction
+    }
+}
+```
+
+## Step-by-Step Migration
+
+### 1. Create IO Interfaces
+
+Convert your hardware-specific subsystems to use IO interfaces:
+
+**Before (FTCLib):**
+```java
+public class DriveSubsystem extends SubsystemBase {
+    private DcMotorEx leftFront;
+    private DcMotorEx leftRear;
+    private DcMotorEx rightFront;
+    private DcMotorEx rightRear;
+
+    public DriveSubsystem() {
+        leftFront = HardwareMap.get(DcMotorEx.class, "left_front");
+        // ... more hardware initialization
+    }
+}
+```
+
+**After (ARESLib):**
+```java
+public interface DriveIO {
+    @AutoLog
+    public static class DriveIOInputs {
+        public double leftPositionMeters = 0.0;
+        public double leftVelocityMetersPerSec = 0.0;
+        public double rightPositionMeters = 0.0;
+        public double rightVelocityMetersPerSec = 0.0;
+        public double[] appliedVolts = new double[4];
+    }
+
+    void updateInputs(DriveIOInputs inputs);
+    void setVoltage(double[] volts);
+}
+```
+
+### 2. Create IOReal Implementation
+
+Move your hardware access code to `IOReal`:
+
+```java
+public class DriveIOReal implements DriveIO {
+    private final DcMotorEx[] motors = new DcMotorEx[4];
+
+    public DriveIOReal(HardwareMap hwMap) {
+        motors[0] = hwMap.get(DcMotorEx.class, "left_front");
+        motors[1] = hwMap.get(DcMotorEx.class, "left_rear");
+        motors[2] = hwMap.get(DcMotorEx.class, "right_front");
+        motors[3] = hwMap.get(DcMotorEx.class, "right_rear");
+    }
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        inputs.leftPositionMeters = motors[0].getCurrentPosition() * POS_CONVERSION;
+        inputs.leftVelocityMetersPerSec = motors[0].getVelocity() * VEL_CONVERSION;
+        // ... update other inputs
+    }
+
+    @Override
+    public void setVoltage(double[] volts) {
+        for (int i = 0; i < 4; i++) {
+            motors[i].setVoltage(volts[i]);
+        }
+    }
+}
+```
+
+### 3. Update Commands
+
+FTCLib commands translate directly to ARESLib:
+
+**FTCLib:**
+```java
+public class IntakeCommand extends CommandBase {
+    private final IntakeSubsystem intake;
+
+    public IntakeCommand(IntakeSubsystem intake) {
+        this.intake = intake;
+        addRequirements(intake);
+    }
+
+    @Override
+    public void execute() {
+        intake.setPower(1.0);
+    }
+}
+```
+
+**ARESLib:**
+```java
+public class IntakeCommand extends Command {
+    private final IntakeSubsystem intake;
+
+    public IntakeCommand(IntakeSubsystem intake) {
+        this.intake = intake;
+        addRequirements(intake);
+    }
+
+    @Override
+    public void execute() {
+        intake.setPower(1.0);
+    }
+}
+```
+
+### 4. Update OpMode Structure
+
+**FTCLib OpMode:**
+```java
+@TeleOp
+public class RobotTeleop extends OpMode {
+    private RobotContainer robot;
+
+    @Override
+    public void init() {
+        robot = new RobotContainer(hardwareMap);
+    }
+
+    @Override
+    public void loop() {
+        robot.run();
+        telemetry.update();
+    }
+}
+```
+
+**ARESLib OpMode:**
+```java
+@TeleOp
+public class RobotTeleop extends AresCommandOpMode {
+    private RobotContainer robot;
+
+    @Override
+    public void robotInit() {
+        robot = new RobotContainer();
+    }
+
+    @Override
+    public void robotPeriodic() {
+        robot.run();
+    }
+}
+```
+
+## Command Mapping
+
+| FTCLib Concept | ARESLib Equivalent |
+|----------------|-------------------|
+| `CommandBase` | `Command` |
+| `InstantCommand` | `InstantCommand` |
+| `SequentialCommandGroup` | `SequentialCommandGroup` |
+| `ParallelCommandGroup` | `ParallelCommandGroup` |
+| `ConditionalCommand` | `ConditionalCommand` |
+| `WaitCommand` | `WaitCommand` |
+| `PerpetualCommand` | `PerpetualCommand` |
+| `RunCommand` | `RunCommand` |
+
+## Gamepad Integration
+
+**FTCLib:**
+```java
+GamepadEx driver = new GamepadEx(gamepad1);
+driver.getGamepadButton(GamepadKeys.Button.A)
+      .whenPressed(new IntakeCommand(intake));
+```
+
+**ARESLib:**
+```java
+AresGamepad driver = new AresGamepad(gamepad1);
+driver.button(Button.A).onTrue(new IntakeCommand(intake));
+```
+
+## Advanced Features
+
+### Telemetry & Logging
+
+**FTCLib:**
+```java
+// Manual telemetry
+telemetry.addData("Position", drive::getPose);
+telemetry.update();
+```
+
+**ARESLib:**
+```java
+// Automatic logging with @AutoLog
+public interface DriveIO {
+    @AutoLog
+    public static class DriveIOInputs {
+        public Pose2d pose = new Pose2d();
+        // Automatically logged to AdvantageScope
+    }
+}
+```
+
+### Simulation
+
+**FTCLib:** Limited simulation support
+
+**ARESLib:**
+```java
+// Create IOSim implementation
+public class DriveIOSim implements DriveIO {
+    private final MecanumDriveSim sim = new MecanumDriveSim();
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        sim.update(0.020); // 20ms physics step
+        inputs.pose = sim.getPose();
+    }
+
+    @Override
+    public void setVoltage(double[] volts) {
+        sim.setVoltage(volts);
+    }
+}
+
+// Use same subsystem in simulation!
+DriveSubsystem drive = new DriveSubsystem(
+    isReal() ? new DriveIOReal(hwMap) : new DriveIOSim()
+);
+```
+
+## Migration Timeline
+
+### Week 1: Foundation
+- [ ] Set up ARESLib project structure
+- [ ] Create IO interfaces for existing subsystems
+- [ ] Implement IOReal classes
+- [ ] Test basic functionality
+
+### Week 2: Commands & Controls
+- [ ] Migrate command classes
+- [ ] Update gamepad bindings
+- [ ] Test teleop operations
+
+### Week 3: Advanced Features
+- [ ] Implement IOSim classes
+- [ ] Add @AutoLog telemetry
+- [ ] Set up AdvantageScope
+
+### Week 4: Testing & Optimization
+- [ ] Create unit tests
+- [ ] Performance profiling
+- [ ] Competition deployment
+
+## Common Pitfalls
+
+### 1. Direct Hardware Access
+**Don't:** Access hardware in subsystems
+**Do:** Use IO abstraction layer
+
+### 2. Allocation in Loop
+**Don't:** Create objects in periodic methods
+**Do:** Pre-allocate and reuse objects
+
+### 3. Blocking Calls
+**Don't:** Use Thread.sleep() or blocking I/O
+**Do:** Use async commands and state machines
+
+### 4. Hard-coded Constants
+**Don't:** Hard-code motor ratios and limits
+**Do:** Use @Config for tunable parameters
+
+## Resources
+
+- [Hardware Abstraction Tutorial](/tutorials/hardware-abstraction/)
+- [Command System](/.agents/skills/areslib-commands/)
+- [Physics Simulation](/tutorials/physics-sim/)
+- [Performance Optimization](/tutorials/zero-allocation/)

@@ -24,7 +24,6 @@ public class AresVisionSubsystem extends SubsystemBase {
   private final VisionIO io;
   private final VisionIO.VisionInputs inputs = new VisionIO.VisionInputs();
 
-  private final double minTargetAreaPercent;
   private final double maxTrustAreaPercent;
 
   private static final double CLOSE_DISTANCE = 2.0;
@@ -42,9 +41,13 @@ public class AresVisionSubsystem extends SubsystemBase {
         MIN_WEIGHT
             + (1.0 - MIN_WEIGHT)
                 * (1.0
-                    / (1.0
-                        + Math.exp(
-                            (distance - CLOSE_DISTANCE) / (FAR_DISTANCE - CLOSE_DISTANCE) * 4.0)));
+                    / (Math.max(
+                        1e-3,
+                        1.0
+                            + Math.exp(
+                                (distance - CLOSE_DISTANCE)
+                                    / (FAR_DISTANCE - CLOSE_DISTANCE)
+                                    * 4.0))));
 
     if (distance > FAR_DISTANCE) {
       double farDistancePenalty = Math.pow(0.5, (distance - FAR_DISTANCE) / 2.0);
@@ -61,9 +64,8 @@ public class AresVisionSubsystem extends SubsystemBase {
    * @param minTargetAreaPercent Absolute minimum target size (% of image) to be considered valid.
    * @param maxTrustAreaPercent Target size (% of image) corresponding to 100% confidence.
    */
-  public AresVisionSubsystem(VisionIO io, double minTargetAreaPercent, double maxTrustAreaPercent) {
+  public AresVisionSubsystem(VisionIO io, double maxTrustAreaPercent) {
     this.io = io;
-    this.minTargetAreaPercent = minTargetAreaPercent;
     this.maxTrustAreaPercent = maxTrustAreaPercent;
   }
 
@@ -158,18 +160,19 @@ public class AresVisionSubsystem extends SubsystemBase {
     // IMPORTANT: This assumes botPose3d layout is [x, y, z, w, qx, qy, qz] (Hamilton convention).
     // If your vision system outputs [x, y, z, qx, qy, qz, w] (JPL convention), swap indices:
     //   w = botPose3d[6], qX = botPose3d[3], qY = botPose3d[4], qZ = botPose3d[5]
-    double w = inputs.botPose3d[3];
+    double quaternionW = inputs.botPose3d[3];
     double qX = inputs.botPose3d[4];
     double qY = inputs.botPose3d[5];
     double qZ = inputs.botPose3d[6];
 
     // Validate quaternion is normalized — a non-unit quaternion indicates wrong index mapping
-    double qNormSq = w * w + qX * qX + qY * qY + qZ * qZ;
+    double qNormSq = quaternionW * quaternionW + qX * qX + qY * qY + qZ * qZ;
     if (qNormSq < 0.5 || qNormSq > 1.5) {
       return null; // Quaternion is wildly non-unit, reject this measurement
     }
 
-    double yawRadians = Math.atan2(2.0 * (w * qZ + qX * qY), 1.0 - 2.0 * (qY * qY + qZ * qZ));
+    double yawRadians =
+        Math.atan2(2.0 * (quaternionW * qZ + qX * qY), 1.0 - 2.0 * (qY * qY + qZ * qZ));
 
     return new org.areslib.math.geometry.Pose2d(
         xMeters, yMeters, new org.areslib.math.geometry.Rotation2d(yawRadians));
@@ -199,10 +202,16 @@ public class AresVisionSubsystem extends SubsystemBase {
     double distance = inputs.avgTagDistanceMeters;
     // If distance wasn't provided by the IO layer, approximate from Tag Area inversely
     if (distance <= 0.01) {
-      distance = inputs.ta > 0 ? 3.0 / Math.sqrt(inputs.ta) : 5.0; // Rough heuristic fallback
+      distance =
+          (inputs.ta > org.areslib.math.MathUtil.EPSILON)
+              ? 3.0 / Math.sqrt(inputs.ta)
+              : 5.0; // Rough heuristic fallback
     }
 
     double distanceWeight = calculateDistanceWeight(distance);
+    if (org.areslib.math.MathUtil.epsilonCheck(distanceWeight)) {
+      distanceWeight = org.areslib.math.MathUtil.EPSILON;
+    }
 
     if (inputs.fiducialCount >= 2) {
       // Highly trusted multi-tag
@@ -230,7 +239,8 @@ public class AresVisionSubsystem extends SubsystemBase {
     }
 
     // Fallback based on area (Old ARESLib heuristic) if fiducialCount isn't populated
-    if (inputs.ta < minTargetAreaPercent) return null;
+    if (inputs.ta < org.areslib.math.MathUtil.EPSILON) return null;
+    if (org.areslib.math.MathUtil.epsilonCheck(maxTrustAreaPercent)) return null;
     double confidence = Math.min(inputs.ta / maxTrustAreaPercent, 1.0);
     double fallbackStd = (1.0 - confidence) * 2.0 + 0.1;
     stdDevCache[0] = fallbackStd;

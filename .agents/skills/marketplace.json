@@ -121,6 +121,22 @@
     {
       "name": "areslib-web-accessibility",
       "source": "./areslib-web-accessibility"
+    },
+    {
+      "name": "areslib-control-theory",
+      "source": "./areslib-control-theory"
+    },
+    {
+      "name": "areslib-diagnostics",
+      "source": "./areslib-diagnostics"
+    },
+    {
+      "name": "areslib-network",
+      "source": "./areslib-network"
+    },
+    {
+      "name": "areslib-operator",
+      "source": "./areslib-operator"
     }
   ]
 }

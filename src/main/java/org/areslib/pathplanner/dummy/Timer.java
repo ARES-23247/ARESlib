@@ -12,14 +12,8 @@ public class Timer {
   private long accumulatedNanos;
   private boolean running;
 
-  /**
-   * Get the FPGA timestamp in seconds. In this dummy implementation, this is mathematically backed
-   * by System.nanoTime().
-   *
-   * @return the current time in seconds
-   */
   public static double getFPGATimestamp() {
-    return System.nanoTime() / 1e9;
+    return org.areslib.core.AresTimer.getFPGATimestamp();
   }
 
   /** Reset the timer to zero. */

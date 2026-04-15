@@ -1,6 +1,5 @@
 package org.areslib.subsystems;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.areslib.command.Command;
 import org.areslib.command.InstantCommand;
@@ -16,21 +15,12 @@ import org.areslib.telemetry.AresAutoLogger;
  * Arm, Shooter) into high-level logical states. It uses an internal {@link StateMachine} to ensure
  * transition safety and deterministic behavior.
  *
- * <p>Includes built-in "Beached" safety (automatic mechanism disable on high robot tilt).
- *
  * @param <S> The enum type representing superstructure states.
  */
 public abstract class AresSuperstructure<S extends Enum<S>> extends SubsystemBase {
 
   protected final StateMachine<S> stateMachine;
   protected final Supplier<Pose2d> poseSupplier;
-  protected final DoubleSupplier tiltDegreesSupplier;
-
-  private final S stowedState;
-  private final S beachedState;
-
-  private double beachThresholdDegrees = 25.0;
-  private double recoveryThresholdDegrees = 20.0;
 
   /**
    * Constructs the superstructure.
@@ -38,40 +28,13 @@ public abstract class AresSuperstructure<S extends Enum<S>> extends SubsystemBas
    * @param name Name for telemetry keys.
    * @param enumClass The state enum class.
    * @param initialState The state to start in.
-   * @param stowedState The state representing a "safe/compressed" configuration.
-   * @param beachedState The state representing "disabled/safe" on high tilt.
    * @param poseSupplier Supplier for robot field pose.
-   * @param tiltDegreesSupplier Supplier for robot tilt in degrees.
    */
   public AresSuperstructure(
-      String name,
-      Class<S> enumClass,
-      S initialState,
-      S stowedState,
-      S beachedState,
-      Supplier<Pose2d> poseSupplier,
-      DoubleSupplier tiltDegreesSupplier) {
+      String name, Class<S> enumClass, S initialState, Supplier<Pose2d> poseSupplier) {
 
     this.stateMachine = new StateMachine<>(name, enumClass, initialState);
-    this.stowedState = stowedState;
-    this.beachedState = beachedState;
     this.poseSupplier = poseSupplier;
-    this.tiltDegreesSupplier = tiltDegreesSupplier;
-
-    // Wildcard: Any state can go to BEACED or STOWED for safety
-    stateMachine.addWildcardTo(stowedState);
-    stateMachine.addWildcardTo(beachedState);
-  }
-
-  /**
-   * Configures the tilt thresholds for beached mode.
-   *
-   * @param beach Threshold to enter beached mode.
-   * @param recovery Threshold to exit beached mode back to stowed.
-   */
-  public void setBeachThresholds(double beach, double recovery) {
-    this.beachThresholdDegrees = beach;
-    this.recoveryThresholdDegrees = recovery;
   }
 
   /**
@@ -96,27 +59,16 @@ public abstract class AresSuperstructure<S extends Enum<S>> extends SubsystemBas
 
   @Override
   public void periodic() {
-    // 1. Tilt Safety (Beached Mode)
-    double currentTilt = Math.abs(tiltDegreesSupplier.getAsDouble());
-
-    if (currentTilt > beachThresholdDegrees && stateMachine.getState() != beachedState) {
-      forceState(beachedState);
-    } else if (currentTilt < recoveryThresholdDegrees && stateMachine.getState() == beachedState) {
-      forceState(stowedState);
-    }
-
-    // 2. Update State Machine
+    // 1. Update State Machine
     stateMachine.update();
 
-    // 3. User Logic
+    // 2. User Logic
     S currentState = stateMachine.getState();
     updateMechanisms(currentState);
 
-    // 4. Telemetry
+    // 3. Telemetry
     AresAutoLogger.recordOutput(
         "Superstructure/" + stateMachine.getName() + "/CurrentState", currentState.name());
-    AresAutoLogger.recordOutput(
-        "Superstructure/" + stateMachine.getName() + "/TiltDegrees", currentTilt);
   }
 
   /**

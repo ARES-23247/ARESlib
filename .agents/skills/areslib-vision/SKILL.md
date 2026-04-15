@@ -29,7 +29,10 @@ class VisionInputs implements AresLoggableInputs {
     public double latencyMs = 0.0;              // Pipeline latency in ms
     public int pipelineIndex = 0;               // Active pipeline index
     public int fiducialCount = 0;               // Number of visible AprilTags
-    public double[] rawCameraPoses = new double[0]; // Multi-camera packed poses (N*7)
+    public double minTagAmbiguity = 0.0;        // Lowest ambiguity (0.0 to 1.0)
+    public double avgTagDistanceMeters = 0.0;   // Average distance to tags
+    public boolean isMegatag2 = false;          // True if using MegaTag 2.0
+    public double[] rawCameraPoses = new double[0]; // Packed multi-camera poses
 }
 ```
 

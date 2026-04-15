@@ -70,6 +70,7 @@ public class MecanumDriveSubsystem extends SubsystemBase implements AresDrivetra
   private final ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
   private final ChassisSpeeds discreteChassisSpeeds = new ChassisSpeeds();
   private final MecanumDriveWheelSpeeds cachedWheelSpeeds = new MecanumDriveWheelSpeeds();
+  private double lastDriveTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   /**
    * Constructs the MecanumDriveSubsystem.
@@ -144,13 +145,14 @@ public class MecanumDriveSubsystem extends SubsystemBase implements AresDrivetra
   }
 
   public void drive(double forwardMetersPerSec, double strafeMetersPerSec, double turnRadPerSec) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastDriveTimeSeconds;
+    lastDriveTimeSeconds = currentTime;
+
     if (fwdLimiter != null) {
-      forwardMetersPerSec =
-          fwdLimiter.calculate(forwardMetersPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
-      strafeMetersPerSec =
-          strLimiter.calculate(strafeMetersPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
-      turnRadPerSec =
-          rotLimiter.calculate(turnRadPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+      forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
+      strafeMetersPerSec = strLimiter.calculate(strafeMetersPerSec);
+      turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
     }
 
     this.commandedVxMps = forwardMetersPerSec;
@@ -158,11 +160,7 @@ public class MecanumDriveSubsystem extends SubsystemBase implements AresDrivetra
     this.commandedOmegaRadPerSec = turnRadPerSec;
 
     ChassisSpeeds.discretize(
-        forwardMetersPerSec,
-        strafeMetersPerSec,
-        turnRadPerSec,
-        org.areslib.core.AresRobot.LOOP_PERIOD_SECS,
-        discreteChassisSpeeds);
+        forwardMetersPerSec, strafeMetersPerSec, turnRadPerSec, dt, discreteChassisSpeeds);
 
     kinematics.toWheelSpeeds(discreteChassisSpeeds, cachedWheelSpeeds);
 

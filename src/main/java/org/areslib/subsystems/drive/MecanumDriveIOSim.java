@@ -19,20 +19,26 @@ public class MecanumDriveIOSim implements MecanumDriveIO {
   private double rlPos = 0.0, rlVel = 0.0;
   private double rrPos = 0.0, rrVel = 0.0;
 
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
+
   @Override
   public void updateInputs(MecanumDriveInputs inputs) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
     // Integrate physics
     flVel = flAppliedVolts * DRIVE_KV;
-    flPos += flVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    flPos += flVel * dt;
 
     frVel = frAppliedVolts * DRIVE_KV;
-    frPos += frVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    frPos += frVel * dt;
 
     rlVel = rlAppliedVolts * DRIVE_KV;
-    rlPos += rlVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    rlPos += rlVel * dt;
 
     rrVel = rrAppliedVolts * DRIVE_KV;
-    rrPos += rrVel * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    rrPos += rrVel * dt;
 
     // Populate inputs
     inputs.frontLeftPositionMeters = flPos;

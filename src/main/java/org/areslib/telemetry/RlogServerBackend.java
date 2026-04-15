@@ -380,7 +380,6 @@ public class RlogServerBackend implements AresLoggerBackend {
 
       ensureCapacity(1 + 2 + 2 + totalPayloadSize);
 
-      int startPos = cycleBuffer.position();
       cycleBuffer.put((byte) 2); // Record type
       cycleBuffer.putShort((short) id);
       int lengthPlaceholderPos = cycleBuffer.position();

@@ -8,21 +8,24 @@ public class PIDController {
   private double integral;
   private boolean continuous;
   private double minimumInput, maximumInput;
-  private double period;
+  private double period = 0; // 0 = dynamic
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   private double iZone = Double.POSITIVE_INFINITY;
   private double maxIntegral = Double.POSITIVE_INFINITY;
   private double minOutput = Double.NEGATIVE_INFINITY;
   private double maxOutput = Double.POSITIVE_INFINITY;
 
   /**
-   * Constructs a PIDController with the given constants. Default period is 0.02s (20ms).
+   * Constructs a PIDController with the given constants. Tracks time dynamically.
    *
    * @param kP Proportional gain
    * @param kI Integral gain
    * @param kD Derivative gain
    */
   public PIDController(double kP, double kI, double kD) {
-    this(kP, kI, kD, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+    this.kP = kP;
+    this.kI = kI;
+    this.kD = kD;
   }
 
   /**
@@ -94,18 +97,22 @@ public class PIDController {
       }
     }
 
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = period > 0 ? period : (currentTime - lastTimeSeconds);
+    lastTimeSeconds = currentTime;
+
     // Apply integral zone — zero the accumulator if error is too large
     if (Math.abs(error) > iZone) {
       integral = 0;
     } else {
-      integral += error * period;
+      integral += error * dt;
       // Clamp integral to prevent unbounded windup during sustained error (e.g. stalls)
       integral = Math.max(-maxIntegral, Math.min(integral, maxIntegral));
     }
 
     double derivative = 0;
-    if (period > 0) {
-      derivative = (error - prevError) / period;
+    if (dt > 0) {
+      derivative = (error - prevError) / dt;
     }
 
     prevError = error;
@@ -159,5 +166,6 @@ public class PIDController {
   public void reset() {
     prevError = 0;
     integral = 0;
+    lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   }
 }

@@ -105,15 +105,15 @@ public class PathPlannerTrajectory {
       if (nextTarget.shouldRotateFast()) {
         state.targetHolonomicRotation = nextTarget.getTarget();
       } else {
-        double t =
+        double interpolationFactor =
             (path.getPoint(i).distanceAlongPath - prevRotationTargetDist) / distanceBetweenTargets;
-        t = Math.min(Math.max(0.0, t), 1.0);
-        if (!Double.isFinite(t)) {
-          t = 0.0;
+        interpolationFactor = Math.min(Math.max(0.0, interpolationFactor), 1.0);
+        if (!Double.isFinite(interpolationFactor)) {
+          interpolationFactor = 0.0;
         }
 
         state.targetHolonomicRotation =
-            prevRotationTargetRot.interpolate(nextTarget.getTarget(), t);
+            prevRotationTargetRot.interpolate(nextTarget.getTarget(), interpolationFactor);
       }
 
       state.positionMeters = path.getPoint(i).position;
@@ -169,13 +169,13 @@ public class PathPlannerTrajectory {
 
     for (int i = 1; i < states.size(); i++) {
       double v0 = states.get(i - 1).velocityMps;
-      double v = states.get(i).velocityMps;
-      double dt = (2 * states.get(i).deltaPos) / (v + v0);
+      double velocityMetersPerSecond = states.get(i).velocityMps;
+      double dt = (2 * states.get(i).deltaPos) / (velocityMetersPerSecond + v0);
 
       time += dt;
       states.get(i).timeSeconds = time;
 
-      double dv = v - v0;
+      double dv = velocityMetersPerSecond - v0;
       states.get(i).accelerationMpsSq = dv / dt;
 
       Rotation2d headingDelta = states.get(i).heading.minus(states.get(i - 1).heading);
@@ -186,14 +186,33 @@ public class PathPlannerTrajectory {
   }
 
   /**
-   * Get the target state at the given point in time along the trajectory
+   * Get the target state at the given point in time along the trajectory.
    *
    * @param time The time to sample the trajectory at in seconds
-   * @return The target state
+   * @return A NEW target state instance. Use the mutable sample() for zero-GC paths.
    */
   public State sample(double time) {
-    if (time <= getInitialState().timeSeconds) return getInitialState();
-    if (time >= getTotalTimeSeconds()) return getEndState();
+    State result = new State();
+    sample(time, result);
+    return result;
+  }
+
+  /**
+   * Get the target state at the given point in time along the trajectory in-place. Eliminates
+   * allocation overhead in the path-following loop.
+   *
+   * @param time The time to sample the trajectory at in seconds
+   * @param out The state object to populate with the sampled data.
+   */
+  public void sample(double time, State out) {
+    if (time <= getInitialState().timeSeconds) {
+      out.set(getInitialState());
+      return;
+    }
+    if (time >= getTotalTimeSeconds()) {
+      out.set(getEndState());
+      return;
+    }
 
     int low = 1;
     int high = getStates().size() - 1;
@@ -210,10 +229,15 @@ public class PathPlannerTrajectory {
     State sample = getState(low);
     State prevSample = getState(low - 1);
 
-    if (Math.abs(sample.timeSeconds - prevSample.timeSeconds) < 1E-3) return sample;
+    if (Math.abs(sample.timeSeconds - prevSample.timeSeconds) < 1E-3) {
+      out.set(sample);
+      return;
+    }
 
-    return prevSample.interpolate(
-        sample, (time - prevSample.timeSeconds) / (sample.timeSeconds - prevSample.timeSeconds));
+    prevSample.interpolate(
+        sample,
+        (time - prevSample.timeSeconds) / (sample.timeSeconds - prevSample.timeSeconds),
+        out);
   }
 
   /**
@@ -323,6 +347,21 @@ public class PathPlannerTrajectory {
     /** The constraints to apply at this state */
     public PathConstraints constraints;
 
+    /** Sets this state to match another state in-place. */
+    public void set(State other) {
+      this.timeSeconds = other.timeSeconds;
+      this.velocityMps = other.velocityMps;
+      this.accelerationMpsSq = other.accelerationMpsSq;
+      this.headingAngularVelocityRps = other.headingAngularVelocityRps;
+      this.positionMeters.set(other.positionMeters);
+      this.heading.set(other.heading);
+      this.targetHolonomicRotation.set(other.targetHolonomicRotation);
+      this.holonomicAngularVelocityRps = other.holonomicAngularVelocityRps;
+      this.curvatureRadPerMeter = other.curvatureRadPerMeter;
+      this.constraints = other.constraints;
+      this.deltaPos = other.deltaPos;
+    }
+
     // Values only used during generation
     private double deltaPos = 0;
 
@@ -331,49 +370,61 @@ public class PathPlannerTrajectory {
      *
      * @param endVal State to interpolate with
      * @param t Interpolation factor (0.0-1.0)
-     * @return Interpolated state
+     * @return A NEW target state instance.
      */
     public State interpolate(State endVal, double t) {
       State lerpedState = new State();
+      interpolate(endVal, t, lerpedState);
+      return lerpedState;
+    }
 
-      lerpedState.timeSeconds = GeometryUtil.doubleLerp(timeSeconds, endVal.timeSeconds, t);
-      double deltaT = lerpedState.timeSeconds - timeSeconds;
+    /**
+     * Interpolate between this state and the given state in-place.
+     *
+     * @param endVal State to interpolate with
+     * @param t Interpolation factor (0.0-1.0)
+     * @param out The state object to populate with the interpolated data.
+     */
+    public void interpolate(State endVal, double t, State out) {
+      out.timeSeconds = GeometryUtil.doubleLerp(timeSeconds, endVal.timeSeconds, t);
+      double deltaT = out.timeSeconds - timeSeconds;
 
       if (deltaT < 0) {
-        return endVal.interpolate(this, 1 - t);
+        endVal.interpolate(this, 1 - t, out);
+        return;
       }
 
-      lerpedState.velocityMps = GeometryUtil.doubleLerp(velocityMps, endVal.velocityMps, t);
-      lerpedState.accelerationMpsSq =
+      out.velocityMps = GeometryUtil.doubleLerp(velocityMps, endVal.velocityMps, t);
+      out.accelerationMpsSq =
           GeometryUtil.doubleLerp(accelerationMpsSq, endVal.accelerationMpsSq, t);
-      lerpedState.positionMeters = positionMeters.interpolate(endVal.positionMeters, t);
-      lerpedState.heading = heading.interpolate(endVal.heading, t);
-      lerpedState.headingAngularVelocityRps =
+      out.positionMeters.set(positionMeters.interpolate(endVal.positionMeters, t));
+      out.heading.set(heading.interpolate(endVal.heading, t));
+      out.headingAngularVelocityRps =
           GeometryUtil.doubleLerp(headingAngularVelocityRps, endVal.headingAngularVelocityRps, t);
-      lerpedState.curvatureRadPerMeter =
+      out.curvatureRadPerMeter =
           GeometryUtil.doubleLerp(curvatureRadPerMeter, endVal.curvatureRadPerMeter, t);
-      lerpedState.deltaPos = GeometryUtil.doubleLerp(deltaPos, endVal.deltaPos, t);
+      out.deltaPos = GeometryUtil.doubleLerp(deltaPos, endVal.deltaPos, t);
 
       if (holonomicAngularVelocityRps.isPresent()
           && endVal.holonomicAngularVelocityRps.isPresent()) {
-        lerpedState.holonomicAngularVelocityRps =
+        out.holonomicAngularVelocityRps =
             Optional.of(
                 GeometryUtil.doubleLerp(
                     holonomicAngularVelocityRps.get(),
                     endVal.holonomicAngularVelocityRps.get(),
                     t));
+      } else {
+        out.holonomicAngularVelocityRps = Optional.empty();
       }
 
-      lerpedState.targetHolonomicRotation =
-          targetHolonomicRotation.interpolate(endVal.targetHolonomicRotation, t);
+      out.targetHolonomicRotation.set(
+          targetHolonomicRotation.interpolate(endVal.targetHolonomicRotation, t));
 
       if (t < 0.5) {
-        lerpedState.constraints = constraints;
+        out.constraints = constraints;
       } else {
-        lerpedState.constraints = endVal.constraints;
+        out.constraints = endVal.constraints;
       }
-
-      return lerpedState;
     }
 
     /**

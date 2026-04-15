@@ -167,23 +167,24 @@ public class Trigger {
    * Creates a new trigger that only activates after the condition has been continuously true for
    * the specified duration. Resets if the condition becomes false.
    *
-   * <p>Uses deterministic loop counting based on {@link
-   * org.areslib.core.AresRobot#LOOP_PERIOD_SECS} rather than wall clock time to ensure consistent
-   * behavior.
+   * <p>Uses precise elapsed time measurement based on {@link org.areslib.core.AresTimer} rather
+   * than deterministic loop counting to ensure consistent behavior.
    *
    * @param seconds The duration the condition must be continuously true before activating.
    * @return The debounced trigger.
    */
   public Trigger debounce(double seconds) {
     final double[] elapsed = {0.0};
-    final double period = org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    final double[] lastTime = {org.areslib.core.AresTimer.getFPGATimestamp()};
     return new Trigger(
         () -> {
+          double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
           if (condition.getAsBoolean()) {
-            elapsed[0] += period;
+            elapsed[0] += (currentTime - lastTime[0]);
           } else {
             elapsed[0] = 0.0;
           }
+          lastTime[0] = currentTime;
           return elapsed[0] >= seconds;
         });
   }

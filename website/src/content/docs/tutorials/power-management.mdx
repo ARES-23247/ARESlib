@@ -1,0 +1,64 @@
+---
+title: Power Management
+description: Surviving the 2:30 mark with dynamic load shedding and sag compensation.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Robots don't just run on code; they run on **electricity**. In the final 30 seconds of a match, your battery voltage drops, mechanisms slow down, and aggressive maneuvers can cause a "brownout" (reboot). ARESLib's Power Management system ensures your robot remains stable even at low voltage.
+
+## <span class="ares-num">01</span> Voltage Compensation
+
+As the battery drops from 13.5V to 10.0V, your motor's `kV` (velocity per volt) remains the same, but the available "ceiling" decreases. ARESLib automatically scales your feedforward and PID outputs based on the instantaneous battery voltage.
+
+```java
+// Inside DriveIOReal.java
+double voltage = AresHardwareManager.getBatteryVoltage();
+m_leftMotor.setPower(commandedVolts / voltage);
+```
+
+---
+
+## <span class="ares-num">02</span> Dynamic Load Shedding
+
+If the battery drops below a safety threshold (e.g., 9.0V), ARESLib begins **Load Shedding**. It calculates a `masterPowerScale` that smoothly throttles non-essential actuators to ensure the Control Hub doesn't reboot.
+
+<Aside title="Voltage & Current Safety">
+The `AresHardwareManager` monitors both a **Voltage Sensor** and an optional **Floodgate Current Sensor** to compute the safest power multiplier.
+</Aside>
+
+```java
+// Scaling logic in AresHardwareManager
+if (batteryVoltage < 9.0) {
+    // Linearly scale from 100% to 0% power between 9V and 7V
+    voltageScale = (batteryVoltage - 7.0) / 2.0;
+}
+masterPowerScale = Math.min(voltageScale, currentScale);
+```
+
+---
+
+## <span class="ares-num">03</span> EMA Smoothing
+
+Motor startups cause massive, multi-millisecond current spikes that can jitter your sensors. ARESLib uses an **Exponential Moving Average (EMA)** filter on its current and voltage monitoring to ensure it reacts to trends, not noise.
+
+---
+
+## <span class="ares-num">04</span> Mechanism-Specific Limits
+
+You can use `calculateLoadSheddedLimit` to define custom behavior for mechanisms like intakes or scoring arms during low-power states.
+
+```java
+// Example: Limiting Arm Current when battery is low
+double currentLimit = AresHardwareManager.calculateLoadSheddedLimit(
+    40.0, // Max Amps (Nominal)
+    20.0, // Min Amps (Low Power)
+    12.0, // Nominal Voltage
+    9.0   // Critical Voltage
+);
+m_armMotor.setCurrentLimit(currentLimit);
+```
+
+<Aside type="caution" title="The 'Brownout' Cliff">
+The REV Control Hub reboots at ~6.5V. If your load shedding isn't aggressive enough, a simultaneous swerve sprint + arm deployment will reset your robot mid-match. **Always test with a partially discharged battery!**
+</Aside>

@@ -9,6 +9,19 @@ public final class MathUtil {
     throw new AssertionError("Utility class");
   }
 
+  /** Standard epsilon value for double comparisons and division-by-zero safety checks. */
+  public static final double EPSILON = 1e-6;
+
+  /**
+   * Checks if a value is within epsilon of zero.
+   *
+   * @param value The value to check.
+   * @return True if the value's absolute magnitude is less than EPSILON.
+   */
+  public static boolean epsilonCheck(double value) {
+    return Math.abs(value) < EPSILON;
+  }
+
   /**
    * Returns value clamped between low and high boundaries.
    *

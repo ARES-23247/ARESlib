@@ -447,3 +447,17 @@ h3 { font-size: 1.3rem; margin-top: 2rem; color: var(--primary-color); }
 p { margin-bottom: 1.5rem; font-size: 1.1rem; color: var(--text-dim); }
 ol, ul { margin-bottom: 2rem; padding-left: 1.5rem; color: var(--text-dim); }
 li { margin-bottom: 1rem; }
+
+/* Tutorial Header Number Styling */
+.ares-num, .mars-num {
+    display: inline-block;
+    background: var(--secondary-color); /* Red */
+    color: #ffffff;
+    padding: 0.1em 0.5em;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    margin-right: 0.4em;
+    box-shadow: 0 4px 10px var(--glow-secondary);
+    line-height: 1;
+}

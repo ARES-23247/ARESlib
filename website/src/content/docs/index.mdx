@@ -1,40 +1,52 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: ARESLib
+description: The Elite Hybrid FTC Framework for Championship-Grade Robotics.
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: Zero-Allocation. Multi-Threaded. Hardware-Agnostic.
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/ares-logo.png
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Foundation Track
+      link: /tutorials/hardware-abstraction/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+      variant: primary
+    - text: Precision Track
+      link: /tutorials/swerve-kinematics/
+      icon: right-arrow
+    - text: API Reference
+      link: https://ARES-23247.github.io/ARESLib/javadoc/index.html
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## The Standard of Excellence
+
+ARESLib is designed for teams that demand absolute reliability and precision. Born from the elite architectures of FRC, it brings industrial control standards to the FIRST Tech Challenge.
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Zero-Allocation Core" icon="cpu">
+		Deterministic 250Hz loops with zero heap allocations in the hot path. No GC hangs, just pure performance.
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Vision Fusion" icon="unlocked">
+		Advanced Kalman-style filtering and MegaTag 2.0 integration for drift-free localization.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Physics-First Sim" icon="rocket">
+		Develop 24/7 with our dyn4j desktop simulation engine. Game-piece physics, collisions, and path tuning included.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Automated Telemetry" icon="document">
+		AdvantageKit-style @AutoLog pattern for bit-perfect replay and remote diagnostics via AdvantageScope.
 	</Card>
 </CardGrid>
+
+---
+
+## Join the Elite
+
+ARESLib is more than a library; it's a methodology. Standardize your development with our CI/CD pipelines, headless testing, and the "Never Nester" code standard.
+
+- **[The ARESLib Standard](/standards/)**: Our manifesto for world-class coding.
+- **[Championship Testing](/tutorials/championship-testing/)**: 100% logic coverage with JUnit 5.
+- **[Power Management](/tutorials/power-management/)**: Dynamic current limiting and load shedding.

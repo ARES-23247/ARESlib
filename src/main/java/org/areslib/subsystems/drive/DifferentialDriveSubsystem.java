@@ -63,6 +63,7 @@ public class DifferentialDriveSubsystem extends SubsystemBase implements AresDri
   private final ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
   private final ChassisSpeeds discreteChassisSpeeds = new ChassisSpeeds();
   private final DifferentialDriveWheelSpeeds cachedWheelSpeeds = new DifferentialDriveWheelSpeeds();
+  private double lastDriveTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   /**
    * Constructs the DifferentialDriveSubsystem.
@@ -122,22 +123,19 @@ public class DifferentialDriveSubsystem extends SubsystemBase implements AresDri
   }
 
   public void drive(double forwardMetersPerSec, double turnRadPerSec) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastDriveTimeSeconds;
+    lastDriveTimeSeconds = currentTime;
+
     if (fwdLimiter != null) {
-      forwardMetersPerSec =
-          fwdLimiter.calculate(forwardMetersPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
-      turnRadPerSec =
-          rotLimiter.calculate(turnRadPerSec, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+      forwardMetersPerSec = fwdLimiter.calculate(forwardMetersPerSec);
+      turnRadPerSec = rotLimiter.calculate(turnRadPerSec);
     }
 
     this.commandedVxMps = forwardMetersPerSec;
     this.commandedOmegaRadPerSec = turnRadPerSec;
 
-    ChassisSpeeds.discretize(
-        forwardMetersPerSec,
-        0.0,
-        turnRadPerSec,
-        org.areslib.core.AresRobot.LOOP_PERIOD_SECS,
-        discreteChassisSpeeds);
+    ChassisSpeeds.discretize(forwardMetersPerSec, 0.0, turnRadPerSec, dt, discreteChassisSpeeds);
 
     kinematics.toWheelSpeeds(discreteChassisSpeeds, cachedWheelSpeeds);
 

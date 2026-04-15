@@ -1,0 +1,593 @@
+---
+title: Advanced Controller Integration
+description: Master TelemetryGamepad for button binding tracking, haptic feedback, and professional driver interface development.
+sidebar:
+  badge:
+    text: HMI
+    variant: note
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="HMI" variant="note" />
+
+**`TelemetryGamepad`** brings professional driver interface development to FTC, with automatic button binding tracking, haptic feedback integration, and championship-level control patterns.
+
+## <span class="ares-num">01</span> Why Advanced Controller Integration?
+
+Standard FTC controller code is hard to debug:
+- ❌ **Which button does what?** No documentation of live mappings
+- ❌ **Did that register?** No confirmation of button presses
+- ❌ **What went wrong?** No haptic feedback for important events
+- ❌ **How is this configured?** Binding logic scattered across files
+
+**`TelemetryGamepad`** solves all of these problems!
+
+## <span class="ares-num">02</span> Quick Start
+
+### Basic Usage
+
+```java
+// Create a telemetry-enabled gamepad
+TelemetryGamepad driverGamepad = new TelemetryGamepad("Driver");
+
+// Bind button with automatic logging
+driverGamepad.bindOnTrue(
+    gamepad.a(),                    // The button
+    "A_Button",                    // Human-readable name
+    "Slam Intake",                 // What it does
+    new SlamIntakeCommand(intake)  // The command
+);
+
+// Bind while-hold with logging
+driverGamepad.bindWhileTrue(
+    gamepad.rightTrigger(),
+    "RightTrigger", 
+    "Shoot On Move",
+    new ShootCommand(shooter)
+);
+```
+
+This automatically publishes to FTC Dashboard:
+```
+GamepadBindings/Driver/A_Button: "Slam Intake"
+GamepadBindings/Driver/RightTrigger: "Shoot On Move"
+```
+
+## 🔧 TelemetryGamepad Features
+
+### <span class="ares-num">2.1</span> Automatic Binding Documentation
+
+Every button binding is automatically logged:
+
+```java
+TelemetryGamepad operatorGamepad = new TelemetryGamepad("Operator");
+
+operatorGamepad.bindOnTrue(
+    gamepad.dpadUp(),
+    "DPad_Up",
+    "Elevator High",
+    elevator.highCommand()
+);
+
+operatorGamepad.bindWhileTrue(
+    gamepad.leftTrigger(),
+    "LeftTrigger", 
+    "Manual Feed",
+    intake.manualCommand()
+);
+
+operatorGamepad.bindOnFalse(
+    gamepad.rightTrigger(),
+    "RightTrigger", 
+    "Score (Release)",
+    new ScoreCommand().andThen(new StowCommand())
+);
+```
+
+**Dashboard Output**:
+```
+GamepadBindings/Operator/DPad_Up: "Elevator High"
+GamepadBindings/Operator/LeftTrigger: "Manual Feed"
+GamepadBindings/Operator/RightTrigger: "Score (Release)"
+```
+
+### <span class="ares-num">2.2</span> Haptic Feedback Integration
+
+```java
+public class AdvancedControllerInterface extends SubsystemBase {
+    private final AresGamepad controller;
+    
+    public AdvancedControllerInterface(AresGamepad controller) {
+        this.controller = controller;
+        
+        // Auto-rumble on important events
+        controller.registerRumbleTrigger(() -> intake.hasGamePiece());
+        controller.registerRumbleTrigger(() -> vision.isAligned());
+        controller.registerRumbleTrigger(() -> AresFaultManager.hasNewError());
+    }
+    
+    @Override
+    public void periodic() {
+        // Check rumble triggers
+        if (intake.hasGamePiece()) {
+            controller.rumble(0.5, 0.5, 100); // Short pulse
+        }
+        
+        // Log controller state
+        controller.logInputsToTelemetry();
+    }
+}
+```
+
+### <span class="ares-num">2.3</span> Deadband Configuration
+
+```java
+public class TunableControllerInterface {
+    private final GamepadEx driver;
+    
+    public TunableControllerInterface(Gamepad gamepad) {
+        this.driver = new GamepadEx(gamepad);
+        
+        // Configurable deadband for precision control
+        @Config public double translationDeadband = 0.1;
+        @Config public double rotationDeadband = 0.15;
+    }
+    
+    public ChassisSpeeds getDriverInput() {
+        // Get raw inputs
+        double forward = driver.leftStickY;
+        double strafe = driver.leftStickX;
+        double rotate = driver.rightStickX;
+        
+        // Apply deadband
+        forward = applyDeadband(forward, translationDeadband);
+        strafe = applyDeadband(strafe, translationDeadband);
+        rotate = applyDeadband(rotate, rotationDeadband);
+        
+        return new ChassisSpeeds(forward, strafe, rotate);
+    }
+    
+    private double applyDeadband(double value, double deadband) {
+        if (Math.abs(value) < deadband) return 0.0;
+        return Math.signum(value) * (Math.abs(value) - deadband) / (1.0 - deadband);
+    }
+}
+```
+
+## <span class="ares-num">03</span> Advanced Patterns
+
+### <span class="ares-num">3.1</span> State-Dependent Bindings
+
+```java
+public class StatefulControllerInterface {
+    private final TelemetryGamepad gamepad;
+    private RobotState currentState = RobotState.TELEOP;
+    
+    public void configureBindings() {
+        // Different bindings based on robot state
+        switch (currentState) {
+            case TELEOP:
+                configureTeleopBindings();
+                break;
+            case AUTONOMOUS:
+                configureAutoBindings();
+                break;
+            case TEST:
+                configureTestBindings();
+                break;
+        }
+    }
+    
+    private void configureTeleopBindings() {
+        gamepad.bindOnTrue(gamepad.a(), "A", "Intake", new IntakeCommand());
+        gamepad.bindWhileTrue(gamepad.rightTrigger(), "RT", "Shoot", new ShootCommand());
+    }
+    
+    private void configureAutoBindings() {
+        gamepad.bindOnTrue(gamepad.start(), "Start", "Abort Auto", new AbortCommand());
+    }
+    
+    private void configureTestBindings() {
+        gamepad.bindOnTrue(gamepad.dpadUp(), "Up", "Test Up", testUpCommand);
+        gamepad.bindOnTrue(gamepad.dpadDown(), "Down", "Test Down", testDownCommand);
+    }
+}
+```
+
+### <span class="ares-num">3.2</span> Chord Combinations
+
+```java
+public class AdvancedControllerCombinations {
+    private final TelemetryGamepad gamepad;
+    
+    public void setupAdvancedBindings() {
+        // Single button: Regular intake
+        gamepad.bindOnTrue(gamepad.a(), "A", "Normal Intake", new IntakeCommand());
+        
+        // Chord (A+B): Slam intake
+        new GamepadButtonCombo(gamepad, gamepad.a(), gamepad.b())
+            .whenPressed(new SlamIntakeCommand());
+        
+        // Chord (Start+Back): Emergency stop
+        new GamepadButtonCombo(gamepad, gamepad.start(), gamepad.back())
+            .whenPressed(new EmergencyStopCommand());
+        
+        // Chord (Left Bumper + Right Bumper): Slow mode
+        new GamepadButtonCombo(gamepad, gamepad.leftBumper(), gamepad.rightBumper())
+            .whileHeld(new SlowModeCommand(drive));
+    }
+}
+```
+
+### <span class="ares-num">3.3</span> Progressive Rumble Feedback
+
+```java
+public class RumbleFeedbackSystem {
+    private final AresGamepad controller;
+    
+    public enum RumblePattern {
+        GENTLE(0.3, 100),      // Gentle notification
+        NORMAL(0.6, 200),      // Normal event
+        STRONG(1.0, 300),      // Important event
+        CRITICAL(1.0, 500);    // Critical error
+        
+        final double intensity;
+        final int durationMs;
+        
+        RumblePattern(double intensity, int durationMs) {
+            this.intensity = intensity;
+            this.durationMs = durationMs;
+        }
+    }
+    
+    public void rumble(RumblePattern pattern) {
+        controller.rumble(pattern.intensity, pattern.intensity, pattern.durationMs);
+    }
+    
+    public void rumbleSequence(RumblePattern[] patterns) {
+        for (RumblePattern pattern : patterns) {
+            rumble(pattern);
+            Thread.sleep(pattern.durationMs + 50); // Small gap between pulses
+        }
+    }
+    
+    // Usage examples
+    public void onGamePieceDetected() {
+        rumble(RumblePattern.GENTLE);
+    }
+    
+    public void onAlignmentComplete() {
+        rumbleSequence(new RumblePattern[] {
+            RumblePattern.GENTLE, 
+            RumblePattern.GENTLE
+        }); // Double pulse
+    }
+    
+    public void onCriticalFault() {
+        rumble(RumblePattern.CRITICAL);
+    }
+}
+```
+
+## <span class="ares-num">04</span> Competition Setup
+
+### <span class="ares-num">4.1</span> Complete Driver Interface
+
+```java
+public class CompetitionDriverInterface extends SubsystemBase {
+    private final TelemetryGamepad driver;
+    private final AresGamepad controller;
+    
+    public CompetitionDriverInterface(AresGamepad gamepad) {
+        this.controller = gamepad;
+        this.driver = new TelemetryGamepad("Driver");
+        
+        setupBindings();
+    }
+    
+    private void setupBindings() {
+        // Intake controls
+        driver.bindWhileTrue(controller.leftTrigger(), "LT", "Run Intake", 
+            new IntakeCommand().andThen(new LEDCommand(LEDState.INTAKING)));
+        driver.bindOnFalse(controller.leftTrigger(), "LT (Release)", "Stow Intake",
+            new StowCommand());
+        
+        // Scoring controls
+        driver.bindOnTrue(controller.rightTrigger(), "RT", "Shoot High",
+            new ShootCommand(ScoringLevel.HIGH).andThen(new LEDCommand(LEDState.HAS_GAME_PIECE)));
+        driver.bindOnTrue(controller.b(), "B", "Shoot Mid",
+            new ShootCommand(ScoringLevel.MID));
+        driver.bindOnTrue(controller.a(), "A", "Slam Intake",
+            new SlamIntakeCommand());
+        
+        // Drive controls
+        driver.bindWhileTrue(controller.leftBumper(), "LB", "Slow Mode",
+            new SlowModeCommand(drive));
+        driver.bindOnTrue(controller.rightBumper(), "RB", "Toggle Field-Relative",
+            new ToggleFieldRelativeCommand(drive));
+        
+        // Alignment
+        driver.bindWhileTrue(controller.x(), "X", "Align to AprilTag",
+            new AlignToTagCommand(vision, drive));
+        
+        // Utility
+        driver.bindOnTrue(controller.dpadUp(), "D-Up", "Extend Elevator",
+            new ManualElevatorCommand(0.5));
+        driver.bindOnTrue(controller.dpadDown(), "D-Down", "Retract Elevator",
+            new ManualElevatorCommand(0.0));
+        driver.bindOnTrue(controller.start(), "Start", "Reset Gyro",
+            new ResetGyroCommand(gyro));
+        driver.bindOnTrue(controller.back(), "Back", "Reset Odometry",
+            new ResetOdometryCommand(poseEstimator));
+    }
+    
+    @Override
+    public void periodic() {
+        // Automatic rumble on events
+        if (intake.hasGamePiece()) {
+            controller.rumble(0.4, 0.4, 150); // Short pulse
+        }
+        
+        if (vision.isAlignedToTarget()) {
+            controller.rumble(0.6, 0.6, 250); // Double confirmation
+        }
+        
+        if (AresFaultManager.hasNewError()) {
+            controller.rumble(1.0, 1.0, 500); // Strong error pulse
+        }
+        
+        // Continuous telemetry
+        controller.logInputsToTelemetry();
+    }
+}
+```
+
+### <span class="ares-num">4.2</span> Operator Interface
+
+```java
+public class CompetitionOperatorInterface {
+    private final TelemetryGamepad operator;
+    
+    public CompetitionOperatorInterface(AresGamepad gamepad) {
+        this.operator = new TelemetryGamepad("Operator");
+        setupOperatorBindings();
+    }
+    
+    private void setupOperatorBindings() {
+        // Preset positions
+        operator.bindOnTrue(operator.dpadUp(), "D-Up", "Elevator High",
+            elevator.gotoHighCommand());
+        operator.bindOnTrue(operator.dpadDown(), "D-Down", "Elevator Low",
+            elevator.gotoLowCommand());
+        
+        // Manual adjustments
+        operator.bindWhileTrue(operator.leftTrigger(), "LT", "Manual Feed",
+            new ManualFeedCommand(feeder));
+        operator.bindWhileTrue(operator.rightTrigger(), "RT", "Adjust Position Up",
+            new AdjustElevatorCommand(0.01));
+        
+        // Emergency controls
+        operator.bindOnTrue(operator.x(), "X", "Emergency Stop",
+            new EmergencyStopCommand());
+        
+        // Mode changes
+        operator.bindOnTrue(operator.leftBumper(), "LB", "Climb Mode",
+            new SetRobotModeCommand(RobotMode.CLIMB));
+        operator.bindOnTrue(operator.rightBumper(), "RB", "Score Mode",
+            new SetRobotModeCommand(RobotMode.SCORING));
+    }
+}
+```
+
+## <span class="ares-num">05</span> Telemetry Integration
+
+### <span class="ares-num">5.1</span> Dashboard Visualization
+
+```java
+public class ControllerTelemetry {
+    private final TelemetryGamepad driver;
+    private final TelemetryGamepad operator;
+    
+    public void publishTelemetry() {
+        // Publish binding maps for dashboard
+        Map<String, String> driverBindings = driver.getBindingsMap();
+        Map<String, String> operatorBindings = operator.getBindingsMap();
+        
+        // Individual bindings
+        for (Map.Entry<String, String> entry : driverBindings.entrySet()) {
+            String key = "ControllerBindings/Driver/" + entry.getKey();
+            AresTelemetry.putString(key, entry.getValue());
+        }
+        
+        for (Map.Entry<String, String> entry : operatorBindings.entrySet()) {
+            String key = "ControllerBindings/Operator/" + entry.getKey();
+            AresTelemetry.putString(key, entry.getValue());
+        }
+        
+        // Summary
+        AresTelemetry.putNumber("ControllerBindings/Driver/Count", driverBindings.size());
+        AresTelemetry.putNumber("ControllerBindings/Operator/Count", operatorBindings.size());
+    }
+}
+```
+
+### <span class="ares-num">5.2</span> AdvantageScope Integration
+
+```java
+public class AdvScopeControllerDisplay {
+    public void setupControllerDisplay() {
+        // Create string array for binding display
+        String[] driverActions = {
+            "LT: Run Intake",
+            "RT: Shoot High", 
+            "A: Slam Intake",
+            "B: Shoot Mid",
+            "X: Align to Tag",
+            "LB: Slow Mode",
+            "RB: Toggle Field-Relative"
+        };
+        
+        // Publish to AdvantageScope
+        AresTelemetry.putStringArray("ControllerBindings/Driver/Actions", driverActions);
+        AresTelemetry.putStringArray("ControllerBindings/Operator/Actions", operatorActions);
+    }
+}
+```
+
+## <span class="ares-num">06</span> Best Practices
+
+### 1. Consistent Naming
+
+```java
+// Good: Clear, descriptive names
+driver.bindOnTrue(controller.a(), "A", "Slam Intake", new SlamIntakeCommand());
+
+// Bad: Vague, confusing names
+driver.bindOnTrue(controller.a(), "A", "Action 1", new SomeCommand());
+```
+
+### 2. Group Related Functions
+
+```java
+// Intake subsystem bindings
+setupIntakeBindings();
+
+// Scoring subsystem bindings  
+setupScoringBindings();
+
+// Utility bindings
+setupUtilityBindings();
+```
+
+### 3. Document Changes
+
+```java
+// When changing bindings, update CONTROLLER_MAPPINGS.md
+/*
+ * ## Controller Mappings
+ * 
+ * | Button | Action |
+ * |:-------|:--------|
+ * | A | Slam Intake |
+ * | RT | Shoot High |
+ */
+```
+
+### 4. Test Thoroughly
+
+```java
+@Test
+public void testControllerBindings() {
+    // Verify each binding works as expected
+    assertTrue(testCommand.scheduled);
+    assertEquals("Slam Intake", telemetryValue("ControllerBindings/Driver/A"));
+}
+```
+
+## <span class="ares-num">07</span> Troubleshooting
+
+### Bindings Not Working
+
+**Symptom**: Button press doesn't trigger command
+
+**Diagnosis**:
+```java
+// Add logging
+driver.bindOnTrue(controller.a(), "A", "Debug Intake", new IntakeCommand() {
+    @Override
+    public void initialize() {
+        AresTelemetry.putString("Debug/Intake", "INITIALIZED");
+        super.initialize();
+    }
+    
+    @Override
+    public void execute() {
+        AresTelemetry.putString("Debug/Intake", "RUNNING");
+        super.execute();
+    }
+});
+```
+
+**Solutions**:
+1. **Check Button**: Verify correct button method (`a()`, `b()`, etc.)
+2. **Check Command**: Verify command is properly constructed
+3. **Check Requirements**: Ensure subsystem requirements are met
+4. **Check Schedule**: Verify command is being scheduled
+
+### Rumble Not Working
+
+**Symptom**: No haptic feedback
+
+**Solutions**:
+1. **Check Controller**: Verify gamepad supports rumble
+2. **Check Duration**: Ensure duration is >50ms for most controllers
+3. **Check Intensity**: Try higher intensity values
+4. **Check Frequency**: Don't call rumble too frequently (50ms minimum)
+
+### Telemetry Not Appearing
+
+**Symptom**: Bindings don't show in FTC Dashboard
+
+**Diagnosis**:
+```java
+// Verify telemetry is being published
+AresTelemetry.putString("Test/Bindings", "Working");
+```
+
+**Solutions**:
+1. **Check Connection**: Ensure connected to robot/dashboard
+2. **Check Timing**: Verify telemetry is being called in `periodic()`
+3. **Check Names**: Ensure telemetry keys match dashboard configuration
+
+## <span class="ares-num">08</span> Competition Tips
+
+### Pre-Match Controller Check
+
+```java
+public void preMatchCheck() {
+    // Test all critical buttons
+    int workingBindings = 0;
+    
+    workingBindings += testBinding("A", gamepad.a());
+    workingBindings += testBinding("B", gamepad.b());
+    workingBindings += testBinding("X", gamepad.x());
+    workingBindings += testBinding("Y", gamepad.y());
+    
+    AresTelemetry.putNumber("ControllerCheck/WorkingBindings", workingBindings);
+    
+    if (workingBindings < 8) {
+        new AresAlert("Controller may have issues!", AresAlert.AlertType.WARNING).set(true);
+    }
+}
+```
+
+### Between Matches
+
+```java
+// Quick controller swap test
+public void testNewController(AresGamepad controller) {
+    // Test all buttons
+    for (GamepadKeys.Button button : GamepadKeys.Button.values()) {
+        boolean pressed = controller.getButton(button);
+        AresTelemetry.putBoolean("ControllerTest/" + button.name(), pressed);
+    }
+    
+    // Test all sticks
+    AresTelemetry.putNumber("ControllerTest/LeftY", controller.leftStickY);
+    AresTelemetry.putNumber("ControllerTest/RightX", controller.rightStickX);
+    // ... etc
+}
+```
+
+## Summary
+
+**`TelemetryGamepad`** provides professional controller integration:
+
+- **Automatic Documentation**: Live binding tracking
+- **Haptic Feedback**: Professional rumble integration  
+- **Debugging Support**: Easy troubleshooting with telemetry
+- **Competition Ready**: Proven patterns from championship teams
+- **FTC Optimized**: Adapted from MARSLib's FRC expertise
+
+This brings championship-level driver interface development to FTC! 🎮✨

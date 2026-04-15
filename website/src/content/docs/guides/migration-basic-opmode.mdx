@@ -1,0 +1,519 @@
+---
+title: Migrating from Basic OpMode
+description: Guide for teams moving from basic linear OpMode development to ARESLib's command-based architecture.
+---
+
+# Migrating from Basic OpMode
+
+Transitioning from basic OpMode development to ARESLib's command-based architecture might seem intimidating, but the benefits in code organization, reusability, and maintainability are enormous. This guide helps you make the leap.
+
+## Why Command-Based Programming?
+
+### Basic OpMode Challenges
+```java
+@TeleOp
+public class BasicRobot extends LinearOpMode {
+    private DcMotor leftMotor, rightMotor;
+    private Servo armServo;
+
+    @Override
+    public void runOpMode() {
+        // Everything in one place
+        leftMotor = hardwareMap.get(DcMotor.class, "left");
+        rightMotor = hardwareMap.get(DcMotor.class, "right");
+        armServo = hardwareMap.get(Servo.class, "arm");
+
+        waitForStart();
+
+        // Hard to maintain
+        while (opModeIsActive()) {
+            double drive = gamepad1.left_stick_y;
+            double turn = gamepad1.right_stick_x;
+            leftMotor.setPower(drive + turn);
+            rightMotor.setPower(drive - turn);
+
+            if (gamepad1.a) {
+                armServo.setPosition(1.0);
+            } else if (gamepad1.b) {
+                armServo.setPosition(0.0);
+            }
+        }
+    }
+}
+```
+
+**Problems:**
+- Hard to reuse code
+- Difficult to test
+- No autonomous reuse
+- Mixed concerns (hardware + logic + controls)
+- Hard to maintain complexity
+
+### Command-Based Solutions
+```java
+// Separate concerns into clean, reusable components
+public class DriveSubsystem extends SubsystemBase { /* Logic */ }
+public class ArmSubsystem extends SubsystemBase { /* Logic */ }
+public class DriveCommand extends Command { /* Control */ }
+public class RobotContainer { /* Organization */ }
+```
+
+**Benefits:**
+- Reusable components
+- Easy to test
+- Shared teleop/auto code
+- Clear separation of concerns
+- Handles complexity well
+
+## Step-by-Step Migration
+
+### Step 1: Create Your First Subsystem
+
+Convert your robot parts into subsystems:
+
+**Before (Basic OpMode):**
+```java
+@TeleOp
+public class BasicRobot extends LinearOpMode {
+    private DcMotor intakeMotor;
+    private CRServo intakeServo;
+
+    @Override
+    public void runOpMode() {
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
+        intakeServo = hardwareMap.get(CRServo.class, "intake_servo");
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            if (gamepad1.right_bumper) {
+                intakeMotor.setPower(1.0);
+                intakeServo.setPower(1.0);
+            } else if (gamepad1.left_bumper) {
+                intakeMotor.setPower(-1.0);
+                intakeServo.setPower(-1.0);
+            } else {
+                intakeMotor.setPower(0);
+                intakeServo.setPower(0);
+            }
+        }
+    }
+}
+```
+
+**After (ARESLib):**
+
+```java
+// 1. Create IO interface
+public interface IntakeIO {
+    @AutoLog
+    public static class IntakeIOInputs {
+        public double motorVelocity = 0.0;
+        public double motorVolts = 0.0;
+        public double servoPower = 0.0;
+    }
+
+    void setMotorVolts(double volts);
+    void setServoPower(double power);
+    void updateInputs(IntakeIOInputs inputs);
+}
+
+// 2. Create IOReal implementation
+public class IntakeIOReal implements IntakeIO {
+    private final DcMotorEx motor;
+    private final CRServo servo;
+
+    public IntakeIOReal(HardwareMap hwMap) {
+        motor = hwMap.get(DcMotorEx.class, "intake");
+        servo = hwMap.get(CRServo.class, "intake_servo");
+    }
+
+    @Override
+    public void setMotorVolts(double volts) {
+        motor.setVoltage(volts);
+    }
+
+    @Override
+    public void setServoPower(double power) {
+        servo.setPower(power);
+    }
+
+    @Override
+    public void updateInputs(IntakeIOInputs inputs) {
+        inputs.motorVelocity = motor.getVelocity();
+        inputs.motorVolts = motor.getVoltage();
+        inputs.servoPower = servo.getPower();
+    }
+}
+
+// 3. Create subsystem
+public class IntakeSubsystem extends SubsystemBase {
+    private final IntakeIO io;
+    private final IntakeIOInputs inputs = new IntakeIOInputs();
+
+    public IntakeSubsystem(IntakeIO io) {
+        this.io = io;
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+    }
+
+    public void intake() {
+        io.setMotorVolts(12.0);
+        io.setServoPower(1.0);
+    }
+
+    public void outtake() {
+        io.setMotorVolts(-12.0);
+        io.setServoPower(-1.0);
+    }
+
+    public void stop() {
+        io.setMotorVolts(0);
+        io.setServoPower(0);
+    }
+}
+```
+
+### Step 2: Create Commands
+
+Convert your actions into commands:
+
+**Before:**
+```java
+if (gamepad1.right_bumper) {
+    intakeMotor.setPower(1.0);
+    intakeServo.setPower(1.0);
+}
+```
+
+**After:**
+```java
+public class IntakeCommand extends Command {
+    private final IntakeSubsystem intake;
+
+    public IntakeCommand(IntakeSubsystem intake) {
+        this.intake = intake;
+        addRequirements(intake);
+    }
+
+    @Override
+    public void initialize() {
+        intake.intake();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false; // Run until interrupted
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        intake.stop();
+    }
+}
+```
+
+### Step 3: Organize with RobotContainer
+
+Create your robot's "brain":
+
+```java
+public class RobotContainer {
+    private final AresGamepad driver = new AresGamepad(null);
+    private final IntakeSubsystem intake;
+    private final DriveSubsystem drive;
+
+    public RobotContainer() {
+        // Initialize subsystems
+        intake = new IntakeSubsystem(new IntakeIOReal(hardwareMap));
+        drive = new DriveSubsystem(new DriveIOReal(hardwareMap));
+
+        // Configure controls
+        configureBindings();
+    }
+
+    private void configureBindings() {
+        // Simple button bindings
+        driver.button(Button.RIGHT_BUMPER)
+            .whileTrue(new IntakeCommand(intake));
+
+        driver.button(Button.LEFT_BUMPER)
+            .whileTrue(new OuttakeCommand(intake));
+
+        // Default commands
+        drive.setDefaultCommand(new DefaultDriveCommand(drive,
+            () -> driver.getLeftY(),
+            () -> driver.getLeftX(),
+            () -> driver.getRightX()
+        ));
+    }
+
+    public Command getAutonomousCommand() {
+        return new SequentialCommandGroup(
+            new IntakeCommand(intake).withTimeout(2.0),
+            new WaitCommand(1.0),
+            new OuttakeCommand(intake).withTimeout(1.0)
+        );
+    }
+}
+```
+
+### Step 4: Update OpMode
+
+Create your new OpMode:
+
+```java
+@TeleOp
+@Config
+public class RobotTeleop extends AresCommandOpMode {
+    private RobotContainer robot;
+
+    @Override
+    public void robotInit() {
+        robot = new RobotContainer();
+        // Get gamepad from OpMode
+        robot.setDriver(gamepad1);
+    }
+
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+}
+
+@Autonomous
+@Config
+public class RobotAuto extends AresCommandOpMode {
+    private RobotContainer robot;
+
+    @Override
+    public void robotInit() {
+        robot = new RobotContainer();
+    }
+
+    @Override
+    public void autonomousInit() {
+        robot.getAutonomousCommand().schedule();
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+}
+```
+
+## Common Patterns
+
+### If-Else Logic
+
+**Before:**
+```java
+if (gamepad1.a) {
+    motor.setPower(1.0);
+} else if (gamepad1.b) {
+    motor.setPower(0.5);
+} else {
+    motor.setPower(0);
+}
+```
+
+**After:**
+```java
+// Option 1: Multiple commands
+driver.button(Button.A).whileTrue(new FastMotorCommand(motor));
+driver.button(Button.B).whileTrue(new SlowMotorCommand(motor));
+
+// Option 2: Conditional command
+driver.button(Button.A).whileTrue(
+    new ConditionalCommand(
+        new FastMotorCommand(motor),
+        new SlowMotorCommand(motor),
+        () -> someCondition
+    )
+);
+```
+
+### Timed Actions
+
+**Before:**
+```java
+motor.setPower(1.0);
+sleep(1000);
+motor.setPower(0);
+```
+
+**After:**
+```java
+new SequentialCommandGroup(
+    new InstantCommand(() -> motor.setPower(1.0)),
+    new WaitCommand(1.0),
+    new InstantCommand(() -> motor.setPower(0))
+);
+```
+
+### Complex Sequences
+
+**Before:**
+```java
+// Intake for 2 seconds
+intake.setPower(1.0);
+sleep(2000);
+intake.setPower(0);
+
+// Drive forward
+driveForward(0.5, 1000);
+sleep(1000);
+
+// Score
+arm.setPosition(1.0);
+sleep(500);
+shooter.setPower(1.0);
+sleep(2000);
+shooter.setPower(0);
+```
+
+**After:**
+```java
+new SequentialCommandGroup(
+    new IntakeCommand(intake).withTimeout(2.0),
+    new DriveDistanceCommand(drive, 24), // 24 inches
+    new ParallelCommandGroup(
+        new MoveArmCommand(arm, 1.0),
+        new WaitCommand(0.5)
+    ),
+    new ShootCommand(shooter).withTimeout(2.0)
+);
+```
+
+## Testing Your Migration
+
+### Unit Testing (Without Robot!)
+
+```java
+@Test
+public void testIntakeCommand() {
+    // Create mock IO
+    MockIntakeIO mockIO = new MockIntakeIO();
+    IntakeSubsystem intake = new IntakeSubsystem(mockIO);
+    IntakeCommand command = new IntakeCommand(intake);
+
+    // Test command behavior
+    command.initialize();
+    command.execute();
+
+    assertEquals(12.0, mockIO.getMotorVolts(), 0.01);
+    assertEquals(1.0, mockIO.getServoPower(), 0.01);
+
+    command.end(true);
+    assertEquals(0, mockIO.getMotorVolts(), 0.01);
+}
+```
+
+## Migration Tips
+
+### Start Small
+1. **Pick one subsystem** (e.g., intake)
+2. **Convert it to ARESLib**
+3. **Test thoroughly**
+4. **Move to next subsystem**
+
+### Keep Old Code
+- Keep your old OpModes as backup
+- Test new code in teleop first
+- Migrate autonomous after teleop works
+
+### Use Templates
+- Start with ARESLib templates
+- Adapt to your robot
+- Learn by example
+
+### Leverage Community
+- Ask questions in GitHub discussions
+- Read example code
+- Watch tutorial videos
+
+## Common Mistakes
+
+### 1. Forgetting Requirements
+```java
+// Bad - no requirements
+public class MyCommand extends Command { }
+
+// Good - specify requirements
+public class MyCommand extends Command {
+    public MyCommand(MySubsystem subsystem) {
+        addRequirements(subsystem);
+    }
+}
+```
+
+### 2. Blocking in Commands
+```java
+// Bad - blocks the scheduler
+@Override
+public void execute() {
+    Thread.sleep(1000); // NEVER DO THIS!
+}
+
+// Good - use state or timing
+@Override
+public void execute() {
+    if (timer.hasElapsed(1.0)) {
+        // Do something
+    }
+}
+```
+
+### 3. Direct Hardware Access
+```java
+// Bad - direct hardware in command
+public class MyCommand extends Command {
+    private DcMotor motor; // Don't do this!
+}
+
+// Good - use subsystem
+public class MyCommand extends Command {
+    private MySubsystem subsystem;
+}
+```
+
+## Benefits You'll See
+
+### Code Reusability
+- Same code for teleop and autonomous
+- Share commands across different OpModes
+- Mix and match behaviors
+
+### Easier Testing
+- Test without hardware
+- Verify logic automatically
+- Catch bugs early
+
+### Better Organization
+- Clear structure
+- Easy to find code
+- Simple to modify
+
+### Team Collaboration
+- Work on different parts simultaneously
+- Easy code reviews
+- Clear interfaces
+
+## Next Steps
+
+1. **Read the tutorials** - Start with [Hardware Abstraction](/tutorials/hardware-abstraction/)
+2. **Try the examples** - Copy templates and modify
+3. **Join the community** - Ask questions, share code
+4. **Attend events** - Learn from other teams
+
+## Resources
+
+- [Getting Started Guide](/guides/robot-setup/) - Create your first subsystem
+- [Hardware Abstraction](/tutorials/hardware-abstraction/) - IO pattern explained
+- [Command System](/.agents/skills/areslib-commands/) - Commands and scheduler
+- [State Machines](/tutorials/state-machines/) - Complex behaviors
+- [Templates](/templates/) - Copy-paste examples

@@ -1,6 +1,6 @@
 ---
 name: areslib-superstructure
-description: Documents the AresSuperstructure base class for global robot state coordination. Use when coordinating multiple subsystems (intake, arm, slider) with built-in tilt-safety (Beached mode).
+description: Documents the AresSuperstructure base class for global robot state coordination. Use when coordinating multiple subsystems (intake, arm, slider) into logical states.
 ---
 
 # ARESLib Superstructure Framework
@@ -26,8 +26,8 @@ public class RobotSuperstructure extends AresSuperstructure<RobotState> {
     private final IntakeSubsystem intake;
     private final ElevatorSubsystem elevator;
 
-    public RobotSuperstructure(IntakeSubsystem intake, ElevatorSubsystem elevator, Supplier<Pose2d> poseSupplier, DoubleSupplier tiltSupplier) {
-        super("Superstructure", RobotState.class, RobotState.STOWED, RobotState.STOWED, RobotState.BEACHED, poseSupplier, tiltSupplier);
+    public RobotSuperstructure(IntakeSubsystem intake, ElevatorSubsystem elevator, java.util.function.Supplier<org.areslib.math.geometry.Pose2d> poseSupplier) {
+        super("Superstructure", RobotState.class, RobotState.STOWED, poseSupplier);
 
         this.intake = intake;
         this.elevator = elevator;
@@ -50,8 +50,9 @@ public class RobotSuperstructure extends AresSuperstructure<RobotState> {
                 intake.retract();
                 elevator.goToHeight(1.2);
                 break;
-            case BEACHED:
-                intake.stop();
+                break;
+            case UNJAM:
+                intake.reverse();
                 elevator.stop();
                 break;
             case STOWED:
@@ -64,12 +65,9 @@ public class RobotSuperstructure extends AresSuperstructure<RobotState> {
 }
 ```
 
-## 3. Built-in Safety: Beached Mode
+## 3. Implementation Logic
 
-The base class automatically monitors robot tilt. If tilt exceeds 25°, it forces the state to `BEACHED`. Once it drops below 20°, it recovers to `STOWED`.
-
-- **Control**: Use `setBeachThresholds(double beach, double recovery)` to adjust sensitivities.
-- **Priority**: Beached mode overrides all manual requests.
+The base class manages the state machine and prevents invalid transitions. It provides a `requestState` command that can be easily bound to controller buttons.
 
 ## 4. Commands & Controls
 
@@ -83,4 +81,3 @@ operatorGamepad.y().onTrue(superstructure.requestState(RobotState.SCORE_HIGH));
 
 Outputs are automatically logged to:
 - `Superstructure/<Name>/CurrentState` (String)
-- `Superstructure/<Name>/TiltDegrees` (Double)

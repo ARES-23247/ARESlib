@@ -112,6 +112,7 @@ public class DesktopSimLauncher {
     boolean wasAutoEnabled = false;
 
     // 3. Application Math Core
+    double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
     try {
       while (true) {
         long startTime = System.currentTimeMillis();
@@ -197,7 +198,9 @@ public class DesktopSimLauncher {
         // Scheduler Tick
         CommandScheduler.getInstance().run();
 
-        double loopSecs = org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+        double currentTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
+        double loopSecs = currentTimeSeconds - lastTimeSeconds;
+        lastTimeSeconds = currentTimeSeconds;
         double vx = driveSubsystem.getCommandedVx(); // Robot-centric forward (m/s)
         double vy = driveSubsystem.getCommandedVy(); // Robot-centric left (m/s)
         double omega = driveSubsystem.getCommandedOmega(); // rad/s

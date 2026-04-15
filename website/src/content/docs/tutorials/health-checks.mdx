@@ -1,0 +1,510 @@
+---
+title: Pre-Match Health Checks
+description: Implement comprehensive automated diagnostics to catch hardware failures before they cost you matches.
+sidebar:
+  badge:
+    text: Reliability
+    variant: success
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Reliability" variant="success" />
+
+**`SystemCheckCommand`** automates hardware validation before matches, catching issues like disconnected motors, faulty encoders, and battery problems while you still have time to fix them!
+
+## <span class="ares-num">01</span> What Are Health Checks?
+
+Pre-match health checks automatically verify every subsystem is functioning correctly by:
+
+1. **Battery Voltage Gate**: Ensures sufficient power for testing
+2. **Sequential Testing**: Tests each mechanism in isolation
+3. **Physical Validation**: Commands movement and verifies actual response
+4. **Alert System**: Reports failures immediately
+
+## <span class="ares-num">02</span> Quick Start
+
+### <span class="ares-num">2.1</span> Implement the Interface
+
+```java
+public class ElevatorSubsystem extends SubsystemBase implements SystemTestable {
+    private final ElevatorIO io;
+    
+    @Override
+    public Command getSystemCheckCommand() {
+        return Commands.sequence(
+            // Move to known position
+            Commands.runOnce(() -> io.setVoltage(6.0)),  // Low voltage for safety
+            Commands.waitSeconds(1.0),
+            // Verify we moved
+            Commands.runOnce(() -> {
+                ElevatorIO.ElevatorInputs inputs = new ElevatorIO.ElevatorInputs();
+                io.updateInputs(inputs);
+                
+                // Check position changed
+                assertTrue(inputs.positionMeters > 0.05, 
+                          "Elevator not moving - motor or encoder failure!");
+            })
+        );
+    }
+}
+```
+
+### <span class="ares-num">2.2</span> Create the System Check
+
+```java
+// In your OpMode or RobotContainer
+SystemCheckCommand preMatchCheck = new SystemCheckCommand(
+    drivetrain,      // Must implement SystemTestable
+    elevator,        // Must implement SystemTestable
+    intake,           // Must implement SystemTestable
+    shooter           // Must implement SystemTestable
+);
+
+// Run in init or via button press
+preMatchCheck.schedule();
+```
+
+## <span class="ares-num">03</span> How It Works
+
+### <span class="ares-num">3.1</span> Architecture
+
+```
+SystemCheckCommand
+├── Battery Voltage Check (≥12.0V)
+├── Subsystem 1: Drivetrain Test
+├── Subsystem 2: Elevator Test  
+├── Subsystem 3: Intake Test
+└── Subsystem 4: Shooter Test
+    └── Success Alert
+```
+
+### <span class="ares-num">3.2</span> Battery Gate
+
+```java
+// From SystemCheckCommand
+if (voltage < MINIMUM_BATTERY_VOLTAGE) {
+    batteryAlert.set(true);
+    throw new IllegalStateException("Battery below 12.0V, aborting physical tests.");
+}
+```
+
+**Why?** Running hardware tests on a weak battery gives false failures. Ensure sufficient power first.
+
+## <span class="ares-num">04</span> Comprehensive Examples
+
+### <span class="ares-num">4.1</span> Drivetrain Health Check
+
+```java
+public class DrivetrainSubsystem extends SubsystemBase implements SystemTestable {
+    private final DrivetrainIO io;
+    
+    @Override
+    public Command getSystemCheckCommand() {
+        return Commands.sequence(
+            // Test: Drive wheels forward
+            Commands.runOnce(() -> {
+                io.drive(new ChassisSpeeds(0.2, 0, 0));  // 0.2 m/s forward
+            }),
+            Commands.waitSeconds(1.0),
+            
+            // Verify: Encoders changed
+            Commands.runOnce(() -> {
+                DrivetrainIO.DrivetrainInputs inputs = new DrivetrainIO.DrivetrainInputs();
+                io.updateInputs(inputs);
+                
+                boolean leftMoving = Math.abs(inputs.leftVelocityMetersPerSec) > 0.1;
+                boolean rightMoving = Math.abs(inputs.rightVelocityMetersPerSec) > 0.1;
+                
+                if (!leftMoving) {
+                    throw new IllegalStateException("Left drivetrain not responding - check motor/encoder!");
+                }
+                if (!rightMoving) {
+                    throw new IllegalStateException("Right drivetrain not responding - check motor/encoder!");
+                }
+            }),
+            
+            // Test: Drive wheels in reverse
+            Commands.runOnce(() -> {
+                io.drive(new ChassisSpeeds(-0.2, 0, 0));
+            }),
+            Commands.waitSeconds(1.0),
+            
+            // Verify: Encoders reversed direction
+            Commands.runOnce(() -> {
+                DrivetrainIO.DrivetrainInputs inputs = new DrivetrainIO.DrivetrainInputs();
+                io.updateInputs(inputs);
+                
+                boolean leftReversed = inputs.leftVelocityMetersPerSec < -0.1;
+                boolean rightReversed = inputs.rightVelocityMetersPerSec < -0.1;
+                
+                if (!leftReversed || !rightReversed) {
+                    throw new IllegalStateException("Drivetrain not reversing correctly - check encoder phasing!");
+                }
+            },
+            
+            // Stop drivetrain
+            Commands.runOnce(() -> io.drive(new ChassisSpeeds(0, 0, 0)))
+        );
+    }
+}
+```
+
+### <span class="ares-num">4.2</span> Elevator with Position Verification
+
+```java
+public class ElevatorSubsystem extends SubsystemBase implements SystemTestable {
+    private final ElevatorIO io;
+    
+    @Override
+    public Command getSystemCheckCommand() {
+        return Commands.sequence(
+            // Reset to bottom
+            Commands.runOnce(() -> io.setVoltage(-3.0)),
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> io.setVoltage(0)),
+            
+            // Move to test position (0.3m)
+            Commands.runOnce(() -> io.setVoltage(6.0)),
+            Commands.waitSeconds(2.0),
+            Commands.runOnce(() -> io.setVoltage(0)),
+            
+            // Verify position
+            Commands.runOnce(() -> {
+                ElevatorIO.ElevatorInputs inputs = new ElevatorIO.ElevatorInputs();
+                io.updateInputs(inputs);
+                
+                double position = inputs.positionMeters;
+                if (position < 0.25 || position > 0.35) {
+                    throw new IllegalStateException(
+                        String.format("Elevator position error: %.3f (expected ~0.30m). " +
+                                    "Check for mechanical binding or encoder slip!", position)
+                    );
+                }
+            }),
+            
+            // Return to bottom
+            Commands.runOnce(() -> io.setVoltage(-3.0)),
+            Commands.waitSeconds(1.0),
+            Commands.runOnce(() -> io.setVoltage(0))
+        );
+    }
+}
+```
+
+### <span class="ares-num">4.3</span> Intake with Current Monitoring
+
+```java
+public class IntakeSubsystem extends SubsystemBase implements SystemTestable {
+    private final IntakeIO io;
+    
+    @Override
+    public Command getSystemCheckCommand() {
+        return Commands.sequence(
+            // Test: Run intake at safe voltage
+            Commands.runOnce(() -> io.setVoltage(6.0)),
+            Commands.waitSeconds(1.0),
+            
+            // Verify: Motor is drawing current
+            Commands.runOnce(() -> {
+                IntakeIO.IntakeInputs inputs = new IntakeIO.IntakeInputs();
+                io.updateInputs(inputs);
+                
+                double currentAmps = inputs.currentAmps;
+                if (currentAmps < 0.5) {
+                    throw new IllegalStateException(
+                        "Intake not drawing current - check motor connection!"
+                    );
+                }
+                
+                // Also check for stalled motor (too much current)
+                if (currentAmps > 10.0) {
+                    throw new IllegalStateException(
+                        String.format("Intake stalled - %.1fA! Check for mechanical jam.", currentAmps)
+                    );
+                }
+            }),
+            
+            // Stop intake
+            Commands.runOnce(() -> io.setVoltage(0))
+        );
+    }
+}
+```
+
+## <span class="ares-num">05</span> Advanced Features
+
+### <span class="ares-num">5.1</span> Parallel Testing
+
+```java
+// Test independent mechanisms in parallel
+Command parallelTests = Commands.parallel(
+    drivetrain.getSystemCheckCommand(),
+    intake.getSystemCheckCommand()
+).withTimeout(5.0);
+
+// Test dependent mechanisms sequentially
+Command sequentialTests = Commands.sequence(
+    elevator.getSystemCheckCommand(),
+    shooter.getSystemCheckCommand()
+);
+
+// Combine them
+Commands.sequence(
+    parallelTests,
+    sequentialTests
+).schedule();
+```
+
+### <span class="ares-num">5.2</span> Custom Voltage Thresholds
+
+```java
+// Override battery check for specific conditions
+public class CustomSystemCheck extends SystemCheckCommand {
+    @Override
+    protected double getBatteryVoltage() {
+        // Use AresHardwareManager for real voltage
+        return AresHardwareManager.getBatteryVoltage();
+    }
+}
+```
+
+### <span class="ares-num">5.3</span> Telemetry Integration
+
+```java
+public class EnhancedSystemCheck extends SystemCheckCommand {
+    @Override
+    public void initialize() {
+        AresTelemetry.putString("SystemCheck/Status", "Running");
+        AresTelemetry.putNumber("SystemCheck/TestCount", getTestCount());
+        super.initialize();
+    }
+    
+    @Override
+    public void execute() {
+        AresTelemetry.putNumber("SystemCheck/CurrentTest", getCurrentTestIndex() + 1);
+        super.execute();
+    }
+    
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        
+        if (interrupted) {
+            AresTelemetry.putString("SystemCheck/Status", "INTERRUPTED");
+            new AresAlert("System check interrupted at test " + (getCurrentTestIndex() + 1), 
+                          AresAlert.AlertType.WARNING).set(true);
+        } else {
+            AresTelemetry.putString("SystemCheck/Status", "PASSED");
+            successAlert.set(true);
+        }
+    }
+}
+```
+
+## <span class="ares-num">06</span> Driver Integration
+
+### <span class="ares-num">6.1</span> Bind to Gamepad Button
+
+```java
+// In RobotContainer
+gamepad.start()
+    .whenPressed(new SystemCheckCommand(
+        drivetrain, elevator, intake, shooter
+    ));
+```
+
+### <span class="ares-num">6.2</span> Auto-Run in Init Mode
+
+```java
+@Override
+public void init_loop() {
+    // Run health check every time robot initializes
+    if (!hasRunCheck) {
+        SystemCheckCommand check = new SystemCheckCommand(
+            drivetrain, elevator, intake, shooter
+        );
+        check.schedule();
+        hasRunCheck = true;
+    }
+}
+```
+
+### <span class="ares-num">6.3</span> Pit Mode Testing
+
+```java
+// Create a dedicated OpMode for pit testing
+@Autonomous(name = "Health Check")
+public class HealthCheckOpMode extends LinearOpMode {
+    @Override
+    public void runOpMode() {
+        SystemCheckCommand check = new SystemCheckCommand(
+            drivetrain, elevator, intake, shooter
+        );
+        
+        check.schedule();
+        
+        while (!check.isFinished() && opModeIsActive()) {
+            check.execute();
+            telemetry.addData("Status", "Running test " + (check.getCurrentTestIndex() + 1) + 
+                             " of " + check.getTestCount());
+            telemetry.update();
+        }
+        
+        telemetry.addData("Result", check.isFinished() ? "PASSED" : "FAILED");
+        telemetry.update();
+        
+        while (opModeIsActive()) {
+            idle();
+        }
+    }
+}
+```
+
+## <span class="ares-num">07</span> Troubleshooting
+
+### <span class="ares-num">7.1</span> Check Passes But Hardware Fails
+
+**Symptom**: Health check passes but mechanism doesn't work in matches
+
+**Diagnosis**:
+```java
+// Add more thorough testing
+Commands.runOnce(() -> {
+    // Test at multiple speeds
+    for (double voltage : Arrays.asList(3.0, 6.0, 9.0, 12.0)) {
+        io.setVoltage(voltage);
+        Commands.waitSeconds(0.5);
+        
+        io.updateInputs(inputs);
+        double expectedSpeed = voltage * motorKV;
+        double actualSpeed = inputs.velocity;
+        
+        if (Math.abs(expectedSpeed - actualSpeed) > expectedSpeed * 0.2) {
+            throw new IllegalStateException(
+                String.format("Motor response error at %.1fV: expected %.2f m/s, got %.2f m/s",
+                            voltage, expectedSpeed, actualSpeed)
+            );
+        }
+    }
+})
+```
+
+### <span class="ares-num">7.2</span> Check Fails Intermittently
+
+**Symptom**: Sometimes passes, sometimes fails
+
+**Solutions**:
+1. **Add Timeouts**: Mechanisms need time to complete tests
+2. **Check Voltage**: Battery sag causes inconsistent behavior
+3. **Verify Sensor Connections**: Loose wires cause intermittent failures
+
+```java
+@Override
+public Command getSystemCheckCommand() {
+    return Commands.sequence(
+        Commands.runOnce(() -> io.setVoltage(6.0)),
+        Commands.waitSeconds(2.0),  // Give time for movement
+        Commands.runOnce(() -> {
+            io.updateInputs(inputs);
+            // More lenient check
+            assertTrue(inputs.positionMeters > 0.01, "Minimal movement detected");
+        })
+    );
+}
+```
+
+### <span class="ares-num">7.3</span> Too Many False Failures
+
+**Symptom**: Check passes in pit but fails on field
+
+**Solutions**:
+1. **Lower Tolerances**: Accept more variation
+2. **Test Multiple Times**: Run check 3 times, require 2/3 passes
+3. **Check Environment**: Field conditions differ from pit
+
+## <span class="ares-num">08</span> Competition Best Practices
+
+### <span class="ares-num">8.1</span> Pre-Match Routine
+
+```java
+// Standard pre-match sequence
+public class PreMatchRoutine {
+    public void run() {
+        // 1. Health check
+        SystemCheckCommand healthCheck = new SystemCheckCommand(
+            drivetrain, elevator, intake, shooter
+        );
+        healthCheck.schedule();
+        
+        // 2. Sensor zeroing
+        drivetrain.zeroEncoders();
+        elevator.resetEncoder();
+        gyro.zeroYaw();
+        
+        // 3. Vision verification
+        if (!vision.hasTargets()) {
+            new AresAlert("No vision targets detected!", AresAlert.AlertType.WARNING).set(true);
+        }
+        
+        // 4. Ready indicator
+        LEDManager.getInstance().setState(LEDState.READY);
+    }
+}
+```
+
+### <span class="ares-num">8.2</span> Between Matches
+
+```java
+// Quick version between matches (less thorough)
+public class QuickSystemCheck extends SystemCheckCommand {
+    public QuickSystemCheck() {
+        super(drivetrain);  // Only test critical systems
+    }
+}
+```
+
+### <span class="ares-num">8.3</span> Post-Match Analysis
+
+```java
+// Check if any faults occurred during match
+public void postMatchAnalysis() {
+    if (AresFaultManager.hasActiveFaults()) {
+        // Run full health check
+        SystemCheckCommand fullCheck = new SystemCheckCommand(allSubsystems);
+        fullCheck.schedule();
+    }
+}
+```
+
+## <span class="ares-num">09</span> Checklist Templates
+
+### <span class="ares-num">9.1</span> Drivetrain Health Checklist
+
+- [ ] Both wheels respond to voltage commands
+- [ ] Encoders count in correct direction
+- [ ] Gyro returns expected heading
+- [ ] Odometry drift is minimal
+- [ ] No unusual current spikes
+- [ ] Battery voltage >12.5V under load
+
+### <span class="ares-num">9.2</span> Scoring Mechanism Checklist
+
+- [ ] Motor responds to voltage commands
+- [ ] Encoder reads position correctly
+- [ ] Limit switches function (if equipped)
+- [ ] Current draw is within expected range
+- [ ] No mechanical binding or unusual noise
+- [ ] Returns to home position reliably
+
+## Summary
+
+**`SystemCheckCommand`** provides championship-level reliability:
+
+- **Automated Testing**: No manual checking required
+- **Early Detection**: Catch issues before they cost matches
+- **Comprehensive Coverage**: Test all critical systems
+- **Driver-Friendly**: Single button press for full health check
+- **Proven Architecture**: Adapted from championship FRC code
+
+Implementing pre-match health checks is the difference between "hoping it works" and **knowing** it works! 🏆

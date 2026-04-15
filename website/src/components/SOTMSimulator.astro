@@ -1,0 +1,149 @@
+---
+---
+<div class="simulator-container" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(205,127,50,0.2); margin: 30px 0;">
+    <canvas id="sotmCanvas" width="800" height="400" style="width:100%; height:400px; background:#0a0a0a; border-radius:12px; border: 1px solid rgba(255,255,255,0.1); cursor: crosshair;"></canvas>
+    
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-top:25px;">
+        <div>
+            <label for="botVelocity" style="color:var(--sl-color-gray-3); font-size:0.9rem; display:block; margin-bottom:8px;">Robot Velocity: <span id="velDisplay" style="color:var(--sl-color-accent-high);">2.0 m/s</span></label>
+            <input type="range" id="botVelocity" min="0" max="5" value="2" step="0.1" style="width:100%;">
+        </div>
+        <div>
+            <label for="botHeading" style="color:var(--sl-color-gray-3); font-size:0.9rem; display:block; margin-bottom:8px;">Robot Heading: <span id="headDisplay" style="color:var(--sl-color-accent-high);">45&deg;</span></label>
+            <input type="range" id="botHeading" min="-180" max="180" value="45" step="1" style="width:100%;">
+        </div>
+        <div>
+            <label for="shotSpeed" style="color:var(--sl-color-gray-3); font-size:0.9rem; display:block; margin-bottom:8px;">Muzzle Velocity: <span id="shotDisplay" style="color:var(--sl-color-accent-high);">10.0 m/s</span></label>
+            <input type="range" id="shotSpeed" min="3" max="20" value="10" step="0.5" style="width:100%;">
+        </div>
+    </div>
+    
+    <div id="solverLog" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; font-family: var(--sl-font-mono); font-size: 0.85rem; color: var(--sl-color-gray-3); border: 1px solid rgba(255,255,255,0.05);">
+        Click and drag inside the canvas to reposition the robot.
+    </div>
+</div>
+
+<script is:inline>
+(function() {
+    const init = () => {
+        const canvas = document.getElementById("sotmCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const botVelocityInput = document.getElementById("botVelocity");
+        const botHeadingInput = document.getElementById("botHeading");
+        const shotSpeedInput = document.getElementById("shotSpeed");
+        const velDisplay = document.getElementById("velDisplay");
+        const headDisplay = document.getElementById("headDisplay");
+        const shotDisplay = document.getElementById("shotDisplay");
+        const solverLog = document.getElementById("solverLog");
+        
+        const SCALE = 40;
+        const HUB = { x: 400, y: 100 };
+        let ROBOT = { x: 500, y: 300 };
+        let isDragging = false;
+
+        function updateRobotPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            ROBOT.x = (e.clientX - rect.left) * scaleX;
+            ROBOT.y = (e.clientY - rect.top) * scaleY;
+            render();
+        }
+
+        canvas.addEventListener("mousedown", (e) => { isDragging = true; updateRobotPos(e); });
+        window.addEventListener("mousemove", (e) => { if (isDragging) updateRobotPos(e); });
+        window.addEventListener("mouseup", () => { isDragging = false; });
+
+        function drawArrow(fromX, fromY, toX, toY, color, width=2) {
+            const headlen = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+        }
+
+        function render() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (velDisplay) velDisplay.innerHTML = botVelocityInput.value + " m/s";
+            if (headDisplay) headDisplay.innerHTML = botHeadingInput.value + "&deg;";
+            if (shotDisplay) shotDisplay.innerHTML = shotSpeedInput.value + " m/s";
+            
+            ctx.strokeStyle = "rgba(255,255,255,0.03)";
+            for(let i=0; i<canvas.width; i+=SCALE) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
+            for(let i=0; i<canvas.height; i+=SCALE) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke(); }
+
+            ctx.fillStyle = "#B32416";
+            ctx.beginPath(); ctx.arc(HUB.x, HUB.y, 15, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "white"; ctx.stroke();
+            ctx.fillStyle = "white"; ctx.fillText("TARGET GOAL", HUB.x - 45, HUB.y - 25);
+
+            ctx.fillStyle = "#CD7F32";
+            ctx.save();
+            ctx.translate(ROBOT.x, ROBOT.y);
+            ctx.rotate(parseFloat(botHeadingInput.value) * Math.PI / 180);
+            ctx.fillRect(-15, -15, 30, 30);
+            ctx.fillStyle = "white"; ctx.fillRect(-2, -18, 4, 10);
+            ctx.restore();
+
+            const vRobotX = parseFloat(botVelocityInput.value) * Math.sin(parseFloat(botHeadingInput.value) * Math.PI / 180);
+            const vRobotY = -parseFloat(botVelocityInput.value) * Math.cos(parseFloat(botHeadingInput.value) * Math.PI / 180);
+            
+            const dx = (HUB.x - ROBOT.x) / SCALE;
+            const dy = (HUB.y - ROBOT.y) / SCALE;
+            const vs = parseFloat(shotSpeedInput.value);
+
+            const a = vRobotX*vRobotX + vRobotY*vRobotY - vs*vs;
+            const b = -2 * (dx*vRobotX + dy*vRobotY);
+            const c = dx*dx + dy*dy;
+
+            const disc = b*b - 4*a*c;
+            let logs = [];
+
+            if (disc >= 0 && a != 0) {
+                let tof = (-b - Math.sqrt(disc)) / (2*a);
+                if (tof < 0) tof = (-b + Math.sqrt(disc)) / (2*a);
+                
+                if (tof > 0) {
+                    const aimX = HUB.x - vRobotX * tof * SCALE;
+                    const aimY = HUB.y - vRobotY * tof * SCALE;
+                    
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+                    ctx.beginPath(); ctx.moveTo(HUB.x, HUB.y); ctx.lineTo(aimX, aimY); ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.beginPath(); ctx.arc(aimX, aimY, 5, 0, Math.PI*2); ctx.fill();
+                    ctx.fillText("VIRTUAL TARGET", aimX + 10, aimY + 5);
+
+                    drawArrow(ROBOT.x, ROBOT.y, ROBOT.x + vRobotX * SCALE, ROBOT.y + vRobotY * SCALE, "#4169E1");
+                    drawArrow(ROBOT.x, ROBOT.y, HUB.x, HUB.y, "#B32416", 3);
+                    drawArrow(ROBOT.x, ROBOT.y, aimX, aimY, "#CD7F32");
+                    
+                    logs.push("TOF: " + tof.toFixed(3) + "s");
+                    logs.push("Aim: " + ((Math.atan2(aimY - ROBOT.y, aimX - ROBOT.x) * 180 / Math.PI) + 90).toFixed(1) + "°");
+                } else logs.push("Unreachable velocity.");
+            } else logs.push("No solution.");
+            
+            if (solverLog) solverLog.innerHTML = logs.join(" &nbsp; | &nbsp; ");
+        }
+
+        if (botVelocityInput) botVelocityInput.addEventListener("input", render);
+        if (botHeadingInput) botHeadingInput.addEventListener("input", render);
+        if (shotSpeedInput) shotSpeedInput.addEventListener("input", render);
+        render();
+    };
+    init();
+    document.addEventListener('astro:page-load', init);
+})();
+</script>

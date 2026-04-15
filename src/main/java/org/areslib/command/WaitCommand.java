@@ -3,7 +3,7 @@ package org.areslib.command;
 /** A command that does nothing but takes a specified amount of time to finish. */
 public class WaitCommand extends Command {
   private final double durationSeconds;
-  private double elapsedSeconds;
+  private double startTimeSeconds;
 
   /**
    * Creates a new WaitCommand.
@@ -16,17 +16,16 @@ public class WaitCommand extends Command {
 
   @Override
   public void initialize() {
-    elapsedSeconds = 0.0;
+    startTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   }
 
   @Override
   public void execute() {
-    elapsedSeconds +=
-        org.areslib.core.AresRobot.LOOP_PERIOD_SECS; // deterministic 50Hz base loop period
+    // No operation required since we use absolute time difference
   }
 
   @Override
   public boolean isFinished() {
-    return elapsedSeconds >= durationSeconds;
+    return org.areslib.core.AresTimer.getFPGATimestamp() - startTimeSeconds >= durationSeconds;
   }
 }

@@ -1,0 +1,42 @@
+---
+title: Robot Configuration Generator
+description: Interactive tool to generate your ARESLib robot structure.
+---
+
+import ConfigVisualizer from '../../../components/ConfigVisualizer';
+
+# Robot Configuration Generator
+
+Use this interactive tool to generate your team's robot structure. Configure your drivetrain, add subsystems, and get ready-to-use code that follows ARESLib best practices.
+
+## How to Use
+
+1. **Enter your team name** - This will be used in code comments
+2. **Choose your drive type** - Select the drivetrain that matches your robot
+3. **Add subsystems** - Add mechanisms like intakes, shooters, elevators, etc.
+4. **Generate code** - Click the button to get your configuration code
+
+## Configuration Tool
+
+<ConfigVisualizer />
+
+## Next Steps
+
+After generating your configuration:
+
+1. **Copy the generated code** into your teamcode package
+2. **Implement the IO interfaces** - Create `IOReal` and `IOSim` classes for each subsystem
+3. **Test in simulation** - Use `./gradlew runSim` to verify everything works
+4. **Deploy to robot** - Use `./gradlew installDebug` when ready
+
+## Customization Tips
+
+- **Motor Configuration**: Adjust the number of motors based on your robot's design
+- **Sensor Integration**: Add encoders, limit switches, and other sensors in the IO implementation
+- **State Machines**: Use the generated subsystem classes as foundations for state machine logic
+
+## Related Documentation
+
+- [Hardware Abstraction Tutorial](/tutorials/hardware-abstraction/) - Learn about the IO pattern
+- [State Machines](/tutorials/state-machines/) - Building complex robot behaviors
+- [Physics Simulation](/tutorials/physics-sim/) - Testing your code without hardware

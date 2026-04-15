@@ -1,0 +1,75 @@
+---
+title: SysId & Continuous Tuning
+description: Achieving perfect feedforward through system identification.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+PID controllers are powerful, but they are reactive. To achieve truly championship-grade motion, you need **Feedforward**—the ability to predict the voltage required to achieve a target velocity. ARESLib provides a specialized `SysId` suite to calculate these constants automatically.
+
+## <span class="ares-num">01</span> Understanding kS, kV, and kA
+
+ARESLib uses the standard WPILib-style Feedforward model:
+
+- **kS (Static)**: The voltage required to overcome static friction and just start the motor moving.
+- **kV (Velocity)**: The voltage required to maintain a steady state velocity (proportional to speed).
+- **kA (Acceleration)**: The voltage required to change velocity (proportional to acceleration).
+
+<Aside title={import.meta.env.PROD ? "Voltage = (kS * sgn(v)) + (kV * v) + (kA * a)" : "Feedforward Equation"}>
+By calculating these values, your robot can hit its targets instantly without waiting for the PID loop to "catch up" to the error.
+</Aside>
+
+---
+
+## <span class="ares-num">02</span> Continuous SysId Tuning
+
+FTC batteries are notorious for "voltage sag," and mechanical friction changes as bearings wear down. ARESLib features a **Continuous Tuner** that runs in the background during practice to refine these constants.
+
+```java
+// Example: Initializing a Continuous Tuner for a Flywheel
+private final ContinuousSysIdTuner m_tuner = new ContinuousSysIdTuner(
+    "ShooterFlywheel",
+    (volts) -> m_io.setVoltage(volts),
+    () -> m_io.getVelocityMetersPerSec()
+);
+
+@Override
+public void periodic() {
+    if (m_isTuning) {
+        m_tuner.update(); // Records data points automatically
+    }
+}
+```
+
+---
+
+## <span class="ares-num">03</span> Running a SysId Routine
+
+For one-time characterization, use the `SysIdRoutine` command. This will execute the "Quasistatic" and "Dynamic" ramps required for the SysId analysis tool.
+
+1.  **Quasistatic**: The motor voltage slowly ramps up linearly. This isolates the **kV** and **kS** values.
+2.  **Dynamic**: The motor is blasted with full voltage. This isolates the **kA** (inertia) value.
+
+```java
+// Command-based SysId implementation
+public Command getSysIdCommand() {
+    return new SysIdRoutine(
+        new Config(),
+        new Mechanism(
+            (volts) -> m_drive.setVoltage(volts),
+            null, // No logging needed, handled by @AutoLog
+            this
+        )
+    ).quasistatic(Direction.kForward);
+}
+```
+
+---
+
+## <span class="ares-num">04</span> Exporting to Desktop
+
+Once raw data is collected, ARESLib can export it as a **SysId JSON** file. This file can be imported directly into the FRC/FTC SysId GUI tool to generate the optimal gains.
+
+<Aside type="caution" title="Safety First">
+Always run SysId routines with the robot on blocks before testing on the ground. A failed characterization can result in sudden, full-speed uncontrolled movement.
+</Aside>

@@ -1,0 +1,355 @@
+---
+title: Architecture Diagrams
+description: Visual representations of ARESLib's software architecture and data flow.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+# Architecture Diagrams
+
+These diagrams help you understand how ARESLib's components interact and how data flows through the system.
+
+## Core Architecture Overview
+
+```mermaid
+flowchart TB
+    subgraph "ARESLib Core Architecture"
+        User[User Code] -->|Commands| CommandScheduler[CommandScheduler]
+        CommandScheduler -->|250Hz Loop| Subsystems[Subsystem Layer]
+        Subsystems -->|IO Interface| HAL[Hardware Abstraction Layer]
+
+        subgraph "Hardware Abstraction"
+            HAL -->|Real Robot| IOReal[IOReal Implementation]
+            HAL -->|Simulation| IOSim[IOSim Implementation]
+        end
+
+        IOReal -->|CAN/I2C| Hardware[Control Hub]
+        IOSim -->|Physics| Physics[Physics Engine]
+
+        CommandScheduler -->|Telemetry| Logging[AresAutoLogger]
+        Logging -->|WPILog| AdvantageScope[AdvantageScope]
+    end
+
+    style User fill:#CD7F32
+    style CommandScheduler fill:#B32416
+    style Physics fill:#CD7F32
+    style AdvantageScope fill:#CD7F32
+```
+
+## IO Pattern Data Flow
+
+```mermaid
+sequenceDiagram
+    participant SC as CommandScheduler
+    participant SS as Subsystem
+    participant IO as IO Interface
+    participant Real as IOReal
+    participant Sim as IOSim
+    participant HW as Hardware
+    participant Phys as Physics
+
+    SC->>SS: execute()
+    SS->>IO: setVoltage(12.0)
+
+    alt Real Robot Mode
+        IO->>Real: setVoltage(12.0)
+        Real->>HW: CAN send
+        HW-->>Real: encoder reading
+        Real-->>IO: updateInputs()
+    else Simulation Mode
+        IO->>Sim: setVoltage(12.0)
+        Sim->>Phys: applyForce()
+        Phys-->>Sim: position/velocity
+        Sim-->>IO: updateInputs()
+    end
+
+    IO-->>SS: inputs data
+    SS-->>SC: periodic()
+```
+
+## Command System Hierarchy
+
+```mermaid
+classDiagram
+    class Command {
+        <<interface>>
+        +initialize()
+        +execute()
+        +isFinished()
+        +end()
+    }
+
+    class CommandScheduler {
+        -List~Command~ scheduledCommands
+        -Map~Subsystem,Command~ defaults
+        +schedule(Command)
+        +run()
+        +cancel(Command)
+    }
+
+    class SubsystemBase {
+        +register()
+        +setDefaultCommand(Command)
+        +periodic()
+    }
+
+    class InstantCommand {
+        +execute()
+    }
+
+    class SequentialCommandGroup {
+        -List~Command~ commands
+        +addCommands(Command...)
+    }
+
+    class ParallelCommandGroup {
+        -List~Command~ commands
+        +addCommands(Command...)
+    }
+
+    Command <|.. InstantCommand
+    Command <|.. SequentialCommandGroup
+    Command <|.. ParallelCommandGroup
+    CommandScheduler --> Command : schedules
+    SubsystemBase --> CommandScheduler : registers with
+```
+
+## Fault Management System
+
+```mermaid
+flowchart TB
+    subgraph "Fault Detection"
+        Hardware[Hardware Layer]
+        Monitor[Health Monitor]
+        Threshold[Threshold Checker]
+    end
+
+    subgraph "Fault Processing"
+        Manager[AresFaultManager]
+        Severity[Severity Analyzer]
+        Handler[Fault Handler]
+    end
+
+    subgraph "Response System"
+        LED[Controller LED]
+        Haptic[Haptic Feedback]
+        Telemetry[Telemetry Log]
+        Fallback[Fallback Mode]
+    end
+
+    Hardware --> Monitor
+    Monitor --> Threshold
+    Threshold -->|Alert Detected| Manager
+    Manager --> Severity
+    Severity --> Handler
+
+    Handler --> LED
+    Handler --> Haptic
+    Handler --> Telemetry
+    Handler --> Fallback
+
+    style Manager fill:#B32416
+    style Handler fill:#CD7F32
+```
+
+## State Machine Framework
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle: initialize()
+
+    Idle --> Intaking: button press
+    Idle --> Outtaking: button press
+    Idle --> Stowed: auto request
+
+    Intaking --> Stowed: timeout/gamepiece
+    Outtaking --> Stowed: timeout/empty
+    Stowed --> Idle: ready
+
+    Intaking --> Faulted: hardware error
+    Outtaking --> Faulted: hardware error
+    Stowed --> Faulted: hardware error
+
+    Faulted --> Idle: clear fault
+
+    note right of Intaking
+        Entry: start motors
+        Exit: stop motors
+        Timeout: 3.0s
+    end note
+
+    note right of Faulted
+        Entry: log fault
+        Exit: reset hardware
+    end note
+```
+
+## Vision Fusion Pipeline
+
+```mermaid
+flowchart LR
+    subgraph "Multi-Camera System"
+        Cam1[Camera 1]
+        Cam2[Camera 2]
+        Cam3[Camera 3]
+    end
+
+    subgraph "Vision Processing"
+        Apr[AprilTag Detection]
+        Conf[Confidence Scoring]
+        Ghost[Ghost Rejection]
+    end
+
+    subgraph "Sensor Fusion"
+        Odometry[Odometry]
+        Vision[Vision Pose]
+        Kalman[Kalman Filter]
+        Mega[MegaTag 2.0]
+    end
+
+    subgraph "Output"
+        Fused[Fused Pose]
+        Telemetry[Telemetry Output]
+    end
+
+    Cam1 --> Apr
+    Cam2 --> Apr
+    Cam3 --> Apr
+
+    Apr --> Conf
+    Conf --> Ghost
+    Ghost --> Vision
+
+    Odometry --> Kalman
+    Vision --> Kalman
+    Mega --> Kalman
+
+    Kalman --> Fused
+    Fused --> Telemetry
+
+    style Kalman fill:#CD7F32
+    style Fused fill:#B32416
+```
+
+## Physics Simulation Integration
+
+```mermaid
+flowchart TB
+    subgraph "Simulation Loop"
+        Scheduler[CommandScheduler<br/>20ms period]
+        Subsystems[Subsystem Updates]
+        IOSim[IOSim Implementations]
+        Physics[dyn4j Physics World]
+    end
+
+    subgraph "Physics Models"
+        Drive[Drive Train Model]
+        Mechanism[Mechanism Models]
+        Field[Field Boundaries]
+        GamePieces[Game Piece Objects]
+    end
+
+    subgraph "Visualization"
+        Scope[AdvantageScope<br/>localhost:3300]
+        Fields[Field Drawing]
+        Objects[Object Rendering]
+    end
+
+    Scheduler --> Subsystems
+    Subsystems --> IOSim
+    IOSim --> Physics
+    Physics --> Drive
+    Physics --> Mechanism
+    Physics --> Field
+    Physics --> GamePieces
+
+    Drive --> IOSim
+    Mechanism --> IOSim
+
+    IOSim --> Scope
+    Physics --> Scope
+    Scope --> Fields
+    Scope --> Objects
+
+    style Scheduler fill:#B32416
+    style Physics fill:#CD7F32
+```
+
+## Telemetry & Logging System
+
+```mermaid
+flowchart LR
+    subgraph "Data Sources"
+        Sub[Subsystems]
+        IO[IO Implementations]
+        Commands[Commands]
+        State[State Machines]
+    end
+
+    subgraph "Logging Layer"
+        AutoLog[@AutoLog Processor]
+        Buffer[Zero-Alloc Buffer]
+        WPILog[WPILog Backend]
+    end
+
+    subgraph "Data Flow"
+        Real[Real-time]
+        Replay[Replay Mode]
+        Remote[Remote Access]
+    end
+
+    subgraph "Consumers"
+        AS[AdvantageScope]
+        Dashboard[FTC Dashboard]
+        Analysis[Post-Match Analysis]
+    end
+
+    Sub --> AutoLog
+    IO --> AutoLog
+    Commands --> AutoLog
+    State --> AutoLog
+
+    AutoLog --> Buffer
+    Buffer --> WPILog
+
+    WPILog --> Real
+    WPILog --> Replay
+    WPILog --> Remote
+
+    Real --> AS
+    Real --> Dashboard
+    Replay --> Analysis
+
+    style AutoLog fill:#CD7F32
+    style WPILog fill:#B32416
+```
+
+## How to Use These Diagrams
+
+<CardGrid>
+    <Card title="System Integration" icon="layers">
+        Use the Core Architecture diagram to understand how all ARESLib components connect.
+    </Card>
+    <Card title="IO Pattern Implementation" icon="code">
+        Reference the IO Pattern diagram when implementing new subsystems with hardware abstraction.
+    </Card>
+    <Card title="Command Creation" icon="pencil">
+        Use the Command System diagram when creating complex command groups for autonomous routines.
+    </Card>
+    <Card title="Fault Debugging" icon="alert">
+        Consult the Fault Management diagram when troubleshooting hardware issues and alert responses.
+    </Card>
+    <Card title="State Machine Design" icon="workflow">
+        Reference the State Machine diagram when designing complex robot behaviors with timeouts.
+    </Card>
+    <Card title="Vision Integration" icon="eye">
+        Use the Vision Fusion diagram when setting up multi-camera systems and pose estimation.
+    </Card>
+</CardGrid>
+
+## Additional Resources
+
+- [Hardware Abstraction Tutorial](/tutorials/hardware-abstraction/) - Deep dive into IO pattern
+- [Fault Resilience](/tutorials/fault-resilience/) - Implementing robust fault handling
+- [Vision Fusion](/tutorials/vision-fusion/) - Multi-camera setup and tuning
+- [Physics Simulation](/tutorials/physics-sim/) - Desktop simulation setup

@@ -1,0 +1,117 @@
+---
+---
+<div class="simulator-container" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(205,127,50,0.2); margin: 30px 0;">
+    <canvas id="kinCanvas" width="800" height="400" style="width:100%; height:400px; background:#0a0a0a; border-radius:12px; border: 1px solid rgba(255,255,255,0.1);" role="img" aria-label="Interactive simulation showing swerve module vector addition. Blue represents translation, red represents rotation, and bronze represents the resulting module state."></canvas>
+    
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-top:25px;">
+        <div>
+            <label for="transX" style="color:var(--sl-color-gray-3); font-size:0.9rem; display:block; margin-bottom:8px;">Translation X: <span id="txDisplay" style="color:var(--sl-color-accent-high);">1.0 m/s</span></label>
+            <input type="range" id="transX" min="-5" max="5" value="1" step="0.1" style="width:100%;">
+        </div>
+        <div>
+            <label for="transY" style="color:var(--sl-color-gray-3); font-size:0.9rem; display:block; margin-bottom:8px;">Translation Y: <span id="tyDisplay" style="color:var(--sl-color-accent-high);">0.0 m/s</span></label>
+            <input type="range" id="transY" min="-5" max="5" value="0" step="0.1" style="width:100%;">
+        </div>
+        <div>
+            <label for="rotVel" style="color:var(--sl-color-gray-3); font-size:0.9rem; display:block; margin-bottom:8px;">Rotation: <span id="rotDisplay" style="color:var(--sl-color-accent-high);">2.0 rad/s</span></label>
+            <input type="range" id="rotVel" min="-10" max="10" value="2" step="0.1" style="width:100%;">
+        </div>
+    </div>
+</div>
+
+<script is:inline>
+(function() {
+    const init = () => {
+        const canvas = document.getElementById("kinCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const txInput = document.getElementById("transX");
+        const tyInput = document.getElementById("transY");
+        const rotInput = document.getElementById("rotVel");
+        const txDisplay = document.getElementById("txDisplay");
+        const tyDisplay = document.getElementById("tyDisplay");
+        const rotDisplay = document.getElementById("rotDisplay");
+        
+        const SCALE = 30; 
+        const BOT_SIZE = 120;
+        const CENTER = { x: 400, y: 200 };
+        
+        const MODULES = [
+            { name: "FL", x: -BOT_SIZE/2, y: -BOT_SIZE/2 },
+            { name: "FR", x: BOT_SIZE/2, y: -BOT_SIZE/2 },
+            { name: "BL", x: -BOT_SIZE/2, y: BOT_SIZE/2 },
+            { name: "BR", x: BOT_SIZE/2, y: BOT_SIZE/2 }
+        ];
+
+        function drawArrow(fromX, fromY, toX, toY, color, width=2, headSize=8) {
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headSize * Math.cos(angle - Math.PI/6), toY - headSize * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(toX - headSize * Math.cos(angle + Math.PI/6), toY - headSize * Math.sin(angle + Math.PI/6));
+            ctx.fill();
+        }
+
+        function render() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (txDisplay) txDisplay.innerHTML = txInput.value + " m/s";
+            if (tyDisplay) tyDisplay.innerHTML = tyInput.value + " m/s";
+            if (rotDisplay) rotDisplay.innerHTML = rotInput.value + " rad/s";
+
+            const vx = parseFloat(txInput.value);
+            const vy = parseFloat(tyInput.value);
+            const omega = parseFloat(rotInput.value);
+
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.strokeRect(CENTER.x - BOT_SIZE/2, CENTER.y - BOT_SIZE/2, BOT_SIZE, BOT_SIZE);
+            
+            MODULES.forEach(mod => {
+                const mX = CENTER.x + mod.x;
+                const mY = CENTER.y + mod.y;
+                
+                ctx.fillStyle = "#1e1e1e";
+                ctx.fillRect(mX - 10, mY - 10, 20, 20);
+                ctx.strokeStyle = "rgba(255,255,255,0.2)";
+                ctx.strokeRect(mX - 10, mY - 10, 20, 20);
+
+                const tVecX = vx * SCALE;
+                const tVecY = vy * SCALE;
+                drawArrow(mX, mY, mX + tVecX, mY + tVecY, "#4169E1", 1, 5);
+
+                const rx = mod.x;
+                const ry = mod.y;
+                const rVecX = -ry * omega * (SCALE/50);
+                const rVecY = rx * omega * (SCALE/50);
+                drawArrow(mX, mY, mX + rVecX, mY + rVecY, "#B32416", 1, 5);
+
+                const resX = tVecX + rVecX;
+                const resY = tVecY + rVecY;
+                drawArrow(mX, mY, mX + resX, mY + resY, "#CD7F32", 3, 10);
+            });
+
+            ctx.font = "12px Inter";
+            ctx.fillStyle = "#4169E1"; ctx.fillText("Translation Component", 20, 340);
+            ctx.fillStyle = "#B32416"; ctx.fillText("Rotation Component", 20, 360);
+            ctx.fillStyle = "#CD7F32"; ctx.fillText("Final Module State", 20, 380);
+        }
+
+        if (txInput) txInput.addEventListener("input", render);
+        if (tyInput) tyInput.addEventListener("input", render);
+        if (rotInput) rotInput.addEventListener("input", render);
+        render();
+    };
+    init();
+    document.addEventListener('astro:page-load', init);
+})();
+</script>

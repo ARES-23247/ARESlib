@@ -1,51 +1,70 @@
 ---
 title: Zero-Allocation Standard
-description: Deterministic performance requires avoiding the heap in the hot path.
+description: Deterministic performance requires avoiding the heap. This tutorial covers object pooling and static memory management.
 ---
 
-Deterministic performance requires avoiding the heap in the "hot path" (code that runs every loop). This tutorial covers object pooling and static memory management in ARESLib.
+import { Aside } from '@astrojs/starlight/components';
 
-## The Problem with `new`
+Deterministic performance requires avoiding the heap. In FTC, the Java Garbage Collector (GC) can trigger at any time. If it triggers during a tight control loop, your 20ms loop might balloon to 50ms or more, causing "jitter" in your odometry and PID controllers.
 
-In FTC, the Java Garbage Collector (GC) can trigger at any time. If it triggers during a tight control loop, your 20ms loop might balloon to 50ms or more, causing "jitter" in your odometry and PID controllers.
-
-:::tip[The ARESLib Rule]
+<Aside type="danger" title="The ARESLib Rule">
 No objects may be instantiated (using `new`) inside any method called by `OpMode.loop()` or `Command.execute()`.
-:::
+</Aside>
 
-## How to achieve zero-allocation?
+## <span class="ares-num">01</span> Why achieve zero-allocation?
 
-### 1. Use Pre-allocated Static Constants
+When you create a new object, the JVM allocates memory on the **Heap**. When that object is no longer used, the **Garbage Collector** must reclaim that memory. This process is non-deterministic and can pause your program's execution (a "GC Hang"). For a robot moving at 4 m/s, a 50ms pause means moving 20cm without any control input.
+
+---
+
+## <span class="ares-num">02</span> How to achieve zero-allocation?
+
+### <span class="ares-num">2.1</span> Use Pre-allocated Static Constants
+
 Instead of creating new `Pose2d` or `Rotation2d` objects every tick, use static constants or pre-allocated buffers.
 
 ```java
-// ❌ DO NOT: Creates a new object every 20ms
+// BAD: Creates a new object every 20ms
 Rotation2d angle = new Rotation2d(Math.toRadians(90));
 
-// ✅ PREFERRED: Reusable constant
+// GOOD: Reusable constant
 private static final Rotation2d NINETY_DEGREES = Rotation2d.fromDegrees(90);
 ```
 
-### 2. Object Pooling & Static Buffers
-For mathematical operations, use "Copy" or "Set" methods instead of creating new results.
+### <span class="ares-num">2.2</span> Object Pooling & Static Buffers
+
+For mathematical operations, use "Copy" or "Set" methods instead of creating new results. Most geometry classes in ARESLib provide a `set()` or `interpolation()` method that modifies an existing instance.
 
 ```java
-// ❌ DO NOT
+// BAD: Creates a new Pose2d object
 Pose2d current = odometry.getPose();
-Pose2d next = current.plus(transform); // Creates new Pose2d
+Pose2d next = current.plus(transform); 
 
-// ✅ PREFERRED (ARESLib Pattern)
+// GOOD: Update a pre-allocated buffer
 private final Pose2d poseBuffer = new Pose2d();
 
 public void periodic() {
     Pose2d current = odometry.getPose();
+    // Update the buffer instead of creating new ones
     poseBuffer.set(current.getX(), current.getY(), current.getRotation());
 }
 ```
 
-### 3. Avoid List Allocations
-Don't use `Stream`, `ArrayList.addAll()`, or any lambda that captures variables inside the hot path.
+### <span class="ares-num">2.3</span> Avoid List Allocations
 
-## Verification
+Don't use `Stream`, `ArrayList.addAll()`, or any lambda that captures variables inside the hot path. These frequently trigger hidden allocations.
 
-To verify your code is zero-allocation, run the **Android Studio Profiler** and look for a flat "Memory Allocation" graph during your run. Our **ProjectDoctor** extension will also highlight violations in your IDE.
+---
+
+## <span class="ares-num">03</span> Verification
+
+To verify your code is zero-allocation, use the **Android Studio Profiler**:
+
+1.  Connect to your robot via ADB.
+2.  Open the **Profiler** tab in Android Studio.
+3.  Click on the **Memory** timeline.
+4.  Look for "Allocation Count." It should remain flat at **0** during your OpMode's execution.
+
+<Aside title="Exception: Startup">
+Allocating objects during `init()` or `robotInit()` is perfectly fine (and required). The Zero-Allocation rule only applies to the "Hot Path" (code that runs repeatedly during the match).
+</Aside>

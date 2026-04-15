@@ -1,0 +1,341 @@
+---
+title: Smart Assist Align
+description: Master semi-autonomous scoring with driver-controlled forward speed and automatic lateral/rotational alignment.
+sidebar:
+  badge:
+    text: Advanced
+    variant: tip
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Advanced" variant="tip" />
+
+**`SmartAssistAlign`** enables semi-autonomous scoring where the driver maintains forward control while the robot automatically handles lateral positioning and rotational alignment. This is the secret to consistent scoring during high-pressure matches!
+
+## <span class="ares-num">01</span> What is Smart Assist Align?
+
+Traditional autonomous scoring requires the driver to stop and let the robot take over. **SmartAssistAlign** allows continuous movement:
+
+- **Driver controls**: Forward/backward speed only
+- **Robot handles**: Lateral (Y) alignment + rotational alignment
+- **Result**: Smooth, continuous scoring while driving
+
+## <span class="ares-num">02</span> Quick Start
+
+### <span class="ares-num">2.1</span> Basic Usage
+
+```java
+// In your OpMode or RobotContainer
+SmartAssistAlign assistAlign = new SmartAssistAlign(
+    speeds -> drivetrain.drive(speeds),           // Drive output
+    () -> gamepad.left_stick_y,                   // Driver forward control
+    () -> poseEstimator.getEstimatedPosition(),   // Current robot pose
+    targetPose,                                   // Where to align
+    2.0,                                          // kP for lateral alignment
+    1.5,                                          // kP for rotational alignment
+    0.02,                                         // Y tolerance (meters)
+    Math.toRadians(2.0)                          // Rotation tolerance (radians)
+);
+
+// Schedule the command
+schedule(assistAlign);
+```
+
+### <span class="ares-num">2.2</span> When It's Useful
+
+| Scenario | Traditional | SmartAssistAlign |
+|:---------|:-------------|:------------------|
+| **Scoring while moving** | Must stop | Keep driving! |
+| **Approach from angle** | Must turn first | Drive straight |
+| **Close positioning** | Driver micro-adjusts | Automatic precision |
+| **High-pressure teleop** | Stressful | Smooth, consistent |
+
+## <span class="ares-num">03</span> How It Works
+
+### <span class="ares-num">3.1</span> Control Architecture
+
+```
+Driver Input → [Forward Speed] ──────────────────────┐
+                                                   │
+Target Pose → [PID Y] → [Lateral Correction] ──────┤
+                                                   ├─→ ChassisSpeeds → Drivetrain
+Current Pose → [PID θ] → [Rotational Correction] ─┘
+```
+
+### <span class="ares-num">3.2</span> PID Controllers
+
+**Lateral (Y-Axis) Controller**:
+```java
+yAlignController = new PIDController(alignKp, 0, 0);
+double fieldVy = yAlignController.calculate(currentPose.getY(), targetPose.getY());
+```
+
+**Rotational (θ-Axis) Controller**:
+```java
+thetaAlignController = new PIDController(alignThetaKp, 0, 0);
+thetaAlignController.enableContinuousInput(-Math.PI, Math.PI); // Handle -180° to +180°
+double omega = thetaAlignController.calculate(currentPose.getRotation().getRadians(), 
+                                          targetPose.getRotation().getRadians());
+```
+
+## <span class="ares-num">04</span> Implementation Examples
+
+### Example 1: Scoring on Backdrop
+
+```java
+public class BackdropAlignCommand extends Command {
+    private final SmartAssistAlign align;
+    private final Pose2d backdropPose;
+    
+    public BackdropAlignCommand(Drivetrain drivetrain, Gamepad gamepad) {
+        // Target pose: 2 meters from wall, facing it
+        this.backdropPose = new Pose2d(2.0, 0.0, Rotation2d.fromDegrees(0));
+        
+        this.align = new SmartAssistAlign(
+            speeds -> drivetrain.drive(speeds),
+            () -> gamepad.left_stick_y,           // Driver controls approach speed
+            () -> drivetrain.getPose(),           // Current odometry
+            backdropPose,                         // Align here
+            3.0,                                  // Aggressive lateral correction
+            2.0,                                  // Aggressive rotational correction
+            0.03,                                 // 3cm tolerance
+            Math.toRadians(1.5)                   // 1.5° tolerance
+        );
+        
+        addRequirements(drivetrain);
+    }
+    
+    @Override
+    public void execute() {
+        align.execute();
+    }
+    
+    @Override
+    public boolean isFinished() {
+        return align.isFinished();
+    }
+    
+    @Override
+    public void end(boolean interrupted) {
+        align.end(interrupted);
+    }
+}
+```
+
+### Example 2: Pixel Stack Alignment
+
+```java
+public class PixelAlignCommand extends Command {
+    private final SmartAssistAlign align;
+    
+    public PixelAlignCommand(Drivetrain drivetrain, VisionSubsystem vision) {
+        // Get target pose from vision
+        Supplier<Pose2d> targetPose = () -> {
+            Optional<AprilTag> tag = vision.getClosestTag();
+            return tag.map(t -> t.pose).orElse(new Pose2d());
+        };
+        
+        this.align = new SmartAssistAlign(
+            speeds -> drivetrain.drive(speeds),
+            () -> gamepad.left_trigger,            // Driver uses trigger for precision
+            () -> drivetrain.getPose(),
+            targetPose,                            // Vision target
+            4.0,                                  // Very aggressive correction
+            3.0,                                  // Very aggressive rotation
+            0.01,                                 // 1cm tolerance (tight!)
+            Math.toRadians(0.5)                   // 0.5° tolerance (very tight!)
+        );
+    }
+}
+```
+
+### Example 3: Multi-Stage Alignment
+
+```java
+// Coarse alignment from far away
+SmartAssistAlign coarseAlign = new SmartAssistAlign(
+    driveOutput, forwardInput, poseSupplier,
+    farPose, 1.0, 0.8, 0.1, Math.toRadians(5.0)
+);
+
+// Fine alignment when close
+SmartAssistAlign fineAlign = new SmartAssistAlign(
+    driveOutput, forwardInput, poseSupplier,
+    nearPose, 5.0, 4.0, 0.01, Math.toRadians(0.5)
+);
+
+// Use them in sequence
+Commands.sequence(
+    coarseAlign.withTimeout(3.0),
+    fineAlign.withTimeout(2.0)
+).schedule();
+```
+
+## <span class="ares-num">05</span> Tuning Guidelines
+
+### <span class="ares-num">5.1</span> Choosing PID Gains
+
+**Lateral (kP) Selection**:
+```java
+// Too low: Slow alignment, may not converge
+kP = 0.5;  
+
+// Too high: Oscillates, overshoots
+kP = 8.0;  
+
+// Just right: Fast convergence, minimal overshoot
+kP = 2.0;  // Start here for FTC robots
+```
+
+**Rotational (kPθ) Selection**:
+```java
+// More aggressive for rotation (robots turn faster than they strafe)
+kPθ = kP * 1.2;  // Typically 20% higher than lateral kP
+```
+
+### <span class="ares-num">5.2</span> Tolerance Selection
+
+| Tolerance | Y (meters) | θ (degrees) | Use Case |
+|:----------|:-----------|:-------------|:---------|
+| **Coarse** | 0.10 | 5.0 | Far approach, rough positioning |
+| **Medium** | 0.03 | 2.0 | **Default** scoring |
+| **Fine** | 0.01 | 0.5 | Pixel-perfect placement |
+
+## <span class="ares-num">06</span> Advanced Topics
+
+### <span class="ares-num">6.1</span> Feedforward Enhancement
+
+Add feedforward to improve performance:
+
+```java
+@Override
+public void execute() {
+    Pose2d current = poseSupplier.get();
+    double forwardVx = forwardInput.getAsDouble();
+    
+    // Automatic lateral and rotational correction
+    double fieldVy = yAlignController.calculate(current.getY(), targetPose.getY());
+    double omega = thetaAlignController.calculate(
+        current.getRotation().getRadians(), 
+        targetPose.getRotation().getRadians()
+    );
+    
+    // Add feedforward for faster convergence
+    fieldVy += feedforward.calculate(fieldVy);  // Predict voltage needed
+    
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+        forwardVx, fieldVy, omega, current.getRotation()
+    );
+    
+    driveOutput.accept(speeds);
+}
+```
+
+### <span class="ares-num">6.2</span> Path Following Integration
+
+Combine with PathPlanner for ultimate scoring:
+
+```java
+// Path to get close
+PathPlannerPath approachPath = PathPlannerPath.fromPathFile("ApproachBackdrop");
+
+// SmartAssistAlign for final precision
+SmartAssistAlign finalAlign = new SmartAssistAlign(/* ... */);
+
+// Execute in sequence
+Commands.sequence(
+    AutoBuilder.followPath(approachPath),
+    finalAlign.withTimeout(3.0),
+    new ScoreCommand()
+).schedule();
+```
+
+## <span class="ares-num">07</span> Troubleshooting
+
+### <span class="ares-num">7.1</span> Robot Won't Converge
+
+**Symptom**: Robot oscillates or never reaches target
+
+**Diagnosis**:
+```java
+// Add telemetry to debug
+AresTelemetry.putNumber("Align/YError", currentPose.getY() - targetPose.getY());
+AresTelemetry.putNumber("Align/ThetaError", currentPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
+AresTelemetry.putNumber("Align/ForwardInput", forwardInput.getAsDouble());
+```
+
+**Solutions**:
+1. **Reduce kP**: Lower gains if oscillating
+2. **Check Odometry**: Verify pose estimation is accurate
+3. **Verify Tolerances**: Make tolerances realistic
+4. **Add Deadband**: Ignore small errors
+
+### <span class="ares-num">7.2</span> Driver Loses Control
+
+**Symptom**: Robot moves unexpectedly when driver isn't touching controls
+
+**Diagnosis**:
+- Check `forwardInput` source isn't returning garbage values
+- Verify command is properly cancelled when button released
+
+**Solution**:
+```java
+@Override
+public void end(boolean interrupted) {
+    // Always stop when command ends
+    driveOutput.accept(new ChassisSpeeds(0, 0, 0));
+}
+```
+
+### <span class="ares-num">7.3</span> Alignment Too Slow
+
+**Symptom**: Takes too long to converge
+
+**Solutions**:
+1. **Increase kP**: More aggressive correction
+2. **Loosen Tolerances**: Accept less precise alignment
+3. **Increase Max Speed**: Allow faster lateral movement
+4. **Use Two-Stage**: Coarse then fine alignment
+
+## <span class="ares-num">08</span> Competition Best Practices
+
+### <span class="ares-num">8.1</span> Driver Training
+
+1. **Start Slow**: Begin with conservative kP values
+2. **Practice**: Get comfortable with semi-autonomous behavior
+3. **Trust the System**: Let the robot handle lateral/rotational alignment
+4. **Monitor Feedback**: Watch FTC Dashboard for alignment status
+
+### <span class="ares-num">8.2</span> Integration with Game Flow
+
+```java
+// In RobotContainer
+gamepad.rightBumper()
+    .whileTrue(new SmartAssistAlignBackdrop(drive, gamepad))
+    .whenReleased(new StowIntakeCommand());  // Always stow when done
+```
+
+### <span class="ares-num">8.3</span> Pit Safety
+
+```java
+// In pit testing mode
+if (isPitMode()) {
+    // Use very conservative gains
+    SmartAssistAlign safeAlign = new SmartAssistAlign(
+        driveOutput, forwardInput, poseSupplier,
+        targetPose, 0.5, 0.4, 0.05, Math.toRadians(5.0)
+    );
+}
+```
+
+## Summary
+
+**`SmartAssistAlign`** provides the best of both worlds:
+
+- **Driver Control**: Maintain forward speed and situational awareness
+- **Automatic Precision**: Perfect lateral and rotational alignment
+- **Continuous Scoring**: No need to stop and wait
+- **Proven Performance**: Adapted from championship FRC code
+
+This feature is a game-changer for consistent scoring under pressure! 🚀

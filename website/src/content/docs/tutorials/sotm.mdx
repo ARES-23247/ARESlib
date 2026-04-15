@@ -1,0 +1,77 @@
+---
+title: Elite Shooting (SOTM)
+description: Mastering Shoot-On-The-Move kinematics with physics-based compensation.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import SOTMSimulator from '../../../components/SOTMSimulator.astro';
+
+<SOTMSimulator />
+
+In high-level FTC and FRC competition, stopping to score is a bottleneck. **Shot-On-The-Move** (SOTM) allows your robot to maintain full-speed swerve maneuvers while accurately launching game pieces into the transition or scoring hub. ARESLib provides a championship-grade exact quadratic solver for this purpose.
+
+## <span class="ares-num">01</span> The Physics of Motion
+
+When a robot shoots while moving, the projectile inherits the robot's horizontal velocity vector. Without compensation, the game piece will drift in the direction of the robot's travel, missing the target.
+
+<Aside title="Vector Interception">
+To hit the target, we must find a release vector *V*<sub>shot</sub> such that *V*<sub>shot</sub> + *V*<sub>robot</sub> points exactly where the game piece needs to be when it reaches the target's position. This requires solving for the **Time of Flight (TOF)**.
+</Aside>
+
+---
+
+## <span class="ares-num">02</span> The Quadratic Solver
+
+Unlike simple lookup tables, `EliteShooterMath.java` solves the underlying physics equation. It solves for *t* in the following magnitude constraint:
+
+**||P<sub>target</sub> - (P<sub>robot</sub> + V<sub>robot</sub> · t)|| = V<sub>shot</sub> · t**
+
+This expands into a quadratic equation *at*<sup>2</sup> + *bt* + *c* = 0, where we solve for the positive real root of *t*.
+
+### Interactive SOTM Solver
+Visualizing Vector Interception & Drift Compensation
+
+---
+
+## <span class="ares-num">02</span> The Quadratic Solver
+
+Unlike simple lookup tables, `EliteShooterMath.java` solves the underlying physics equation. It solves for *t* in the following magnitude constraint:
+
+**||P<sub>target</sub> - (P<sub>robot</sub> + V<sub>robot</sub> · t)|| = V<sub>shot</sub> · t**
+
+This expands into a quadratic equation *at*<sup>2</sup> + *bt* + *c* = 0, where we solve for the positive real root of *t*.
+
+---
+
+
+## <span class="ares-num">03</span> Integration with Odometry
+
+For SOTM to work, the robot must know its exact velocity and position on the field. This is why ARESLib uses high-frequency **250Hz Odometry**. Any latency in velocity reporting will result in a miss.
+
+```java
+// Example implementation in a Subsystem
+public void updateSOTM() {
+    Pose2d currentPose = m_poseEstimator.getLatestPose();
+    ChassisSpeeds speeds = m_driveSubsystem.getFieldRelativeSpeeds();
+    
+    EliteShooterMath.calculateShotOnTheMove(
+        currentPose,
+        speeds,
+        TARGET_X, TARGET_Y, TARGET_Z,
+        RELEASE_HEIGHT,
+        NOMINAL_SPEED,
+        9.81, // Gravity
+        0.0,  // Lift
+        m_setpoint // Result object
+    );
+    
+    if (m_setpoint.isValid) {
+        m_hood.setAngle(m_setpoint.hoodRadians);
+        m_flywheel.setVelocity(m_setpoint.launchSpeedMetersPerSec);
+    }
+}
+```
+
+<Aside type="info" title="Latency Matters">
+The calculation assumes the piece is released *instantly*. In reality, there is "launch latency" (time for the motor to rev and for the belt to carry the ball). ARESLib compensates for this by using a historical pose buffer to look "forward" into the future.
+</Aside>

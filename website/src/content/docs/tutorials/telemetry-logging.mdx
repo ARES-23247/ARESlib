@@ -1,0 +1,48 @@
+---
+title: Automated Telemetry
+description: Visualizing robot state is critical for debugging. Learn the @AutoLog pattern and AdvantageScope integration.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Visualizing robot state is critical for debugging. Instead of messy print statements or slow dashboard updates, ARESLib uses a high-performance, structured telemetry pipeline based on the **AdvantageKit** pattern.
+
+## <span class="ares-num">01</span> AdvantageKit Pattern
+
+ARESLib implements its own version of the FRC AdvantageKit `@AutoLog` pattern. Instead of manual `telemetry.addData()` calls, you define your inputs in a structured way.
+
+### <span class="ares-num">1.1</span> Define Inputs
+
+Create a static inner class with the `@AutoLog` annotation. This tells the ARESLib processor to generate logging hooks for these specific fields.
+
+```java
+@AutoLog
+public static class DriveIOInputs {
+    public double leftPositionRad = 0.0;
+    public double rightPositionRad = 0.0;
+    public double gyroYawDeg = 0.0;
+}
+```
+
+### <span class="ares-num">1.2</span> Automated Logging
+
+The `AresAutoLogger` automatically picks up any field in your `Inputs` objects and sends it to the configured backend:
+- **USB Log**: High-speed binary logging to a flash drive.
+- **Dashboard**: Real-time telemetry for the driver station.
+- **Rlog Server**: Wireless telemetry for desktop visualization.
+
+---
+
+## <span class="ares-num">02</span> Visualizing in 3D
+
+Using **AdvantageScope**, you can drag your `Odometry` data directly into a 3D field view. ARESLib provides built-in 3D model support for standard FTC game pieces and common robot chassis.
+
+---
+
+## <span class="ares-num">03</span> Log Replay
+
+Because input is decoupled from logic in ARESLib, you can feed a log file back into the robot code (even on your laptop) to reproduce bugs that happened during a real match. This is the ultimate "time travel" debugging tool.
+
+<Aside title="Zero-Allocation Logging">
+ARESLib's telemetry pipeline is designed to be **Zero-Allocation**. It pre-allocates buffers at startup to ensure that logging doesn't trigger Garbage Collection (GC) pauses during a match.
+</Aside>

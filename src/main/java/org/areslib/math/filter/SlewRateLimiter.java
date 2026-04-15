@@ -10,6 +10,7 @@ public class SlewRateLimiter {
   private final double positiveRateLimit;
   private final double negativeRateLimit;
   private double prevVal;
+  private double lastTimeSeconds;
 
   /**
    * Creates a new SlewRateLimiter with the given positive and negative rate limits and initial
@@ -25,6 +26,7 @@ public class SlewRateLimiter {
     this.positiveRateLimit = positiveRateLimit;
     this.negativeRateLimit = negativeRateLimit;
     this.prevVal = initialValue;
+    this.lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   }
 
   /**
@@ -69,11 +71,25 @@ public class SlewRateLimiter {
   }
 
   /**
+   * Filters the input to limit its slew rate using explicitly measured dynamic Delta-Time.
+   *
+   * @param input The input value whose slew rate is to be limited.
+   * @return The filtered value, which will not change faster than the slew rate.
+   */
+  public double calculate(double input) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double periodSeconds = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+    return calculate(input, periodSeconds);
+  }
+
+  /**
    * Resets the slew rate limiter to the specified value; ignores the rate limit when doing so.
    *
    * @param value The value to reset to.
    */
   public void reset(double value) {
     prevVal = value;
+    lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   }
 }

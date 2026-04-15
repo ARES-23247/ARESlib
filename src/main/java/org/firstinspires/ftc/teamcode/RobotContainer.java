@@ -130,13 +130,11 @@ public class RobotContainer {
       vision =
           new AresVisionSubsystem(
               new LimelightVisionWrapper(hardwareMap, "limelightFront", "limelightRear"),
-              MIN_TARGET_AREA_PERCENTAGE,
               MAX_TRUST_AREA_PERCENTAGE);
     } else {
       vision =
           new AresVisionSubsystem(
               new org.areslib.hardware.wrappers.ArrayVisionIOSim(() -> getOdometryInputs()),
-              MIN_TARGET_AREA_PERCENTAGE,
               MAX_TRUST_AREA_PERCENTAGE);
     }
     CommandScheduler.getInstance().registerSubsystem(vision);

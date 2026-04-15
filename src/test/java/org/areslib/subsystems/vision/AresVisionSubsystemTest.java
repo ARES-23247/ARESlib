@@ -34,8 +34,8 @@ class AresVisionSubsystemTest {
   @BeforeEach
   void setUp() {
     mockIO = new MockVisionIO();
-    // Configure min area 1.0%, max trust 10.0%
-    vision = new AresVisionSubsystem(mockIO, 1.0, 10.0);
+    // Configure max trust 10.0% (min area logic now defaults to EPSILON)
+    vision = new AresVisionSubsystem(mockIO, 10.0);
   }
 
   private double getExpectedDistanceWeight(double distance) {

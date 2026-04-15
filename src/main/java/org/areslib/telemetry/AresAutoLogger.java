@@ -15,6 +15,16 @@ import org.areslib.math.kinematics.SwerveModuleState;
  */
 public class AresAutoLogger {
 
+  /**
+   * Annotation used to mark IO Input classes for automatic telemetry logging.
+   *
+   * <p>When an object implementing {@link AresLoggableInputs} is passed to {@link #processInputs},
+   * all declared fields will be flattened into the telemetry stream.
+   */
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+  @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE)
+  public @interface AutoLog {}
+
   /** Unified entry for a single field being logged. */
   private static class LogEntry {
     final Field field;

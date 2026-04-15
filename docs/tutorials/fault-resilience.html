@@ -28,7 +28,7 @@
         <section>
             <p>On Einstein or at the Championship level, a single wire coming loose can lose a match. ARESLib features a military-grade <strong>Two-Layer Fault System</strong> designed to detect failures, protect the hardware, and immediately notify the driver before the match is compromised.</p>
 
-            <h2>1. The Two-Layer Architecture</h2>
+            <h2><span class="ares-num">1</span> The Two-Layer Architecture</h2>
             <p>Fault monitoring is split into two distinct responsibilities to ensure zero-latency detection:</p>
             
             <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 12px; border: 1px solid rgba(205,127,50,0.2); margin: 30px 0;">
@@ -44,7 +44,7 @@
                 <p>This layer propagates errors to the human team. Active faults are registered with the <code>AresFaultManager</code> and broadcast to the Driver Station and AdvantageScope.</p>
             </div>
 
-            <h2>2. The AresAlert System</h2>
+            <h2><span class="ares-num">2</span> The AresAlert System</h2>
             <p>Instead of logging strings, ARESLib uses **AresAlert** objects. These objects maintain state and can be triggered by logic or hardware monitors.</p>
             
             <pre><code class="language-java">// Persistent alert declared in a Subsystem
@@ -57,7 +57,7 @@ public void periodic() {
     m_stallAlert.set(isStalled);
 }</code></pre>
 
-            <h2>3. Driver Haptic Feedback</h2>
+            <h2><span class="ares-num">3</span> Driver Haptic Feedback</h2>
             <p>In the heat of a match, drivers aren't looking at the telemetry screen. ARESLib bridges the gap using **Gamepad rumble and LED feedback**.</p>
             <ul>
                 <li><strong style="color: #ff4d4d;">Red LED + Heavy Rumble</strong>: Critical Hardware Failure (Motor disconnected, IMU lost).</li>
@@ -72,7 +72,7 @@ if (hasError) {
     driverGamepad.rumble(0.5);
 }</code></pre>
 
-            <h2>4. Pre-Match Diagnostics</h2>
+            <h2><span class="ares-num">4</span> Pre-Match Diagnostics</h2>
             <p>ARESLib includes <code>AresDiagnostics</code>, which runs a "sweep" of all registered mechanisms in the pits. It stresses the arm, drives the chassis 10cm, and spins the intake at 10% power to verify that no cables were loosened during transport.</p>
             
             <div class="callout-warning">

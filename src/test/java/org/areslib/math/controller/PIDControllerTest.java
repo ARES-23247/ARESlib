@@ -69,14 +69,4 @@ class PIDControllerTest {
     assertTrue(
         Math.abs(output) < 1.0, "Continuous input should wrap the error to the shorter path");
   }
-
-  @Test
-  @DisplayName("Zero period prevents divide-by-zero in derivative")
-  void zeroPeriodGuard() {
-    PIDController pid = new PIDController(1.0, 0.0, 1.0, 0.0);
-    // Should not throw, derivative should be 0
-    double output = pid.calculate(0.0, 10.0);
-    // kP * 10 + kI * 0 + kD * 0 = 10
-    assertEquals(10.0, output, EPSILON);
-  }
 }

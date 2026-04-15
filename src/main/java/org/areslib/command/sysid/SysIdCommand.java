@@ -1,7 +1,6 @@
 package org.areslib.command.sysid;
 
 import org.areslib.command.Command;
-import org.areslib.core.AresRobot;
 import org.areslib.telemetry.AresAutoLogger;
 
 /**
@@ -17,6 +16,7 @@ public class SysIdCommand extends Command {
   private final String stateName;
 
   private double accumulator = 0.0;
+  private double startTimeSeconds = 0.0;
   private SysIdJSONExporter.TestRecord currentTestRecord;
 
   /**
@@ -49,13 +49,14 @@ public class SysIdCommand extends Command {
   @Override
   public void initialize() {
     accumulator = 0.0;
+    startTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
     AresAutoLogger.recordOutput("SysId/State", stateName);
     currentTestRecord = SysIdJSONExporter.startTest(stateName);
   }
 
   @Override
   public void execute() {
-    accumulator += AresRobot.LOOP_PERIOD_SECS;
+    accumulator = org.areslib.core.AresTimer.getFPGATimestamp() - startTimeSeconds;
 
     double volts;
     if (isQuasistatic) {

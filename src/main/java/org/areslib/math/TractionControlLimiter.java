@@ -17,6 +17,7 @@ public class TractionControlLimiter {
   private final double maxAccelMetersPerSecSq;
   private double lastVx = 0.0;
   private double lastVy = 0.0;
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   /** Pre-allocated result buffer for {@link #calculate}. */
   private final double[] resultCache = new double[2];
@@ -39,11 +40,11 @@ public class TractionControlLimiter {
    * @return A double array [safeVx, safeVy] to apply to ChassisSpeeds.
    */
   public double[] calculate(double targetVx, double targetVy) {
-    return calculate(targetVx, targetVy, 0.0, 0.0, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+    return calculate(targetVx, targetVy, 0.0, 0.0);
   }
 
   /**
-   * Heading-aware variant using the default loop period.
+   * Heading-aware variant using dynamic delta-time natively.
    *
    * @param targetVx Target X velocity (m/s).
    * @param targetVy Target Y velocity (m/s).
@@ -53,12 +54,11 @@ public class TractionControlLimiter {
    */
   public double[] calculate(
       double targetVx, double targetVy, double omegaRadPerSec, double wheelbaseRadiusMeters) {
-    return calculate(
-        targetVx,
-        targetVy,
-        omegaRadPerSec,
-        wheelbaseRadiusMeters,
-        org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
+    return calculate(targetVx, targetVy, omegaRadPerSec, wheelbaseRadiusMeters, dt);
   }
 
   /**
@@ -130,5 +130,6 @@ public class TractionControlLimiter {
   public void reset() {
     lastVx = 0.0;
     lastVy = 0.0;
+    lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   }
 }

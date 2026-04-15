@@ -10,7 +10,7 @@ Please make sure all of the following are completed before submitting your PR!
 
 - [ ] I have ran `./gradlew build` locally and it succeeds.
 - [ ] If applicable, I ran this code headlessly or on the physical robot to verify it functions.
-- [ ] I checked the logs to ensure telemetry output is correct.
+- [ ] I checked the AdvantageScope/FTC Dashboard logs to ensure telemetry output is correct.
 - [ ] My code logic meets the standards listed in ARESLib architecture documentation.
 
 ## Any other notes for the reviewers?

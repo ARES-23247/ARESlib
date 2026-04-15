@@ -12,6 +12,7 @@ public interface VisionIO {
    * Loggable data object containing vision processing state, including target offsets and 3D pose
    * estimates.
    */
+  @org.areslib.telemetry.AresAutoLogger.AutoLog
   class VisionInputs implements AresLoggableInputs {
     /** True if the vision processor currently sees a valid target. */
     public boolean hasTarget = false;

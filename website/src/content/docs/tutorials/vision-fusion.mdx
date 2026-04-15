@@ -1,0 +1,82 @@
+---
+title: Vision Fusion
+description: High-fidelity localization using MegaTag 2.0 and Kalman-style filtering.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Odometry is fast but drifts over time. Vision is global but slow and noisy. **Vision Fusion** is the process of combining both to achieve a "source of truth" pose that is both high-frequency and drift-free. ARESLib uses a latency-compensating rollback algorithm to ensure bit-perfect accuracy.
+
+## <span class="ares-num">01</span> The Fusion Pipeline
+
+Fusion happens in three distinct layers to ensure reliability under competition stress:
+
+```mermaid
+graph TD
+    A[Hardware Sensors<br/><i>Encoders + IMU</i>] -->|250Hz| B(Odometry Thread)
+    C[AprilTag Cameras<br/><i>PhotonVision / Limelight</i>] -->|20Hz| D(Vision Subsystem)
+    B --> E{AresPoseEstimator}
+    D -->|Pose + Timestamp| E
+    E --> F[Final Field Pose<br/><i>AdvantageScope 3D</i>]
+
+    style A fill:#1a1a1a,stroke:#CD7F32,stroke-width:2px,color:#fff
+    style B fill:#1a1a1a,stroke:#CD7F32,stroke-width:2px,color:#fff
+    style C fill:#1a1a1a,stroke:#B32416,stroke-width:2px,color:#fff
+    style D fill:#1a1a1a,stroke:#B32416,stroke-width:2px,color:#fff
+    style E fill:#CD7F32,stroke:#fff,stroke-width:2px,color:#000
+    style F fill:#0d0d0d,stroke:#fff,stroke-width:2px,color:#fff
+```
+
+---
+
+## <span class="ares-num">02</span> MegaTag 2.0 & Pose Seeding
+
+Traditional vision pose estimation (PnP) creates large "jumps" when tags are at awkward angles. ARESLib supports **MegaTag 2.0**, which uses the robot's IMU heading to seed the vision solve.
+
+<Aside title="6-DOF Localization">
+By using the IMU to define the "Down" vector, the vision system only needs to solve for 2D translation and 1D rotation. This significantly reduces "pose ambiguity" and prevents the robot from teleporting into the floor or ceiling in the 3D visualizer.
+</Aside>
+
+---
+
+## <span class="ares-num">03</span> Lag Compensation (Rollback)
+
+Vision measurements are always "old" (e.g., 50ms ago) by the time the code receives them. The `VisionFusionHelper` handles this by:
+
+### <span class="ares-num">3.1</span> Maintaining Buffers
+Maintaining a timestamped buffer of all previous odometry poses.
+
+### <span class="ares-num">3.2</span> Replaying Movement
+When a vision sample arrives, "rolling back" to that exact timestamp, computing correction, and "replaying" all movement forward.
+
+```java
+// VisionFusionHelper.java snippet
+public static Pose2d applyVisionMeasurement(...) {
+    Pose2d sample = poseBuffer.getSample(timestampSeconds);
+    if (sample == null) return currentEstimate;
+
+    // Compute correction AT the measurement timestamp
+    double kX = 1.0 / (1.0 + visionStdDevs[0]);
+    double kY = 1.0 / (1.0 + visionStdDevs[1]);
+    
+    Pose2d correctedRetroPose = new Pose2d(
+        sample.getX() + xError * kX,
+        sample.getY() + yError * kY,
+        ...
+    );
+
+    // Replay movement forward to 'Now'
+    Twist2d replayTwist = sample.log(currentEstimate);
+    return correctedRetroPose.exp(replayTwist);
+}
+```
+
+---
+
+## <span class="ares-num">04</span> Tuning Trust (StdDevs)
+
+You can tell the estimator how much to "trust" a vision measurement by adjusting the Standard Deviations. Large values = less trust; small values = strong correction.
+
+<Aside type="info" title="Dynamic Trust">
+ARESLib automatically scales trust based on distance. If a tag is 5 meters away, we increase the StdDev (trust it less). If the robot is moving at 4 m/s, we increase it further to prevent motion blur artifacts from corrupting the pose.
+</Aside>

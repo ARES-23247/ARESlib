@@ -2,7 +2,6 @@ package org.areslib.math.kinematics;
 
 import org.areslib.math.geometry.Pose2d;
 import org.areslib.math.geometry.Rotation2d;
-import org.areslib.math.geometry.Translation2d;
 
 /**
  * Universal Odometry class that integrates ChassisSpeeds and Gyro angles to estimate the robot's
@@ -16,8 +15,8 @@ public class AresOdometry {
   private Rotation2d previousAngle;
 
   public AresOdometry(Pose2d initialPose) {
-    pose = initialPose;
-    previousAngle = initialPose.getRotation();
+    this.pose = initialPose.copy();
+    this.previousAngle = initialPose.getRotation().copy();
   }
 
   public AresOdometry() {
@@ -30,8 +29,8 @@ public class AresOdometry {
    * @param pose The new pose to reset to.
    */
   public void resetPosition(Pose2d pose) {
-    this.pose = pose;
-    previousAngle = pose.getRotation();
+    this.pose.set(pose);
+    this.previousAngle.set(pose.getRotation());
   }
 
   /**
@@ -44,7 +43,8 @@ public class AresOdometry {
    */
   public Pose2d update(Rotation2d gyroAngle, ChassisSpeeds speeds, double dtSeconds) {
     // Delta angle from gyro (more accurate than integrating wheel odometry omega)
-    double dtheta = gyroAngle.minus(previousAngle).getRadians();
+    double dtheta =
+        org.areslib.math.MathUtil.angleModulus(gyroAngle.getRadians() - previousAngle.getRadians());
 
     // Standard Pose Exponential Integration (dx, dy over an arc)
     double dx = speeds.vxMetersPerSecond * dtSeconds;
@@ -52,7 +52,7 @@ public class AresOdometry {
 
     double deltaX;
     double deltaY;
-    if (Math.abs(dtheta) < 1E-9) {
+    if (Math.abs(dtheta) < org.areslib.math.MathUtil.EPSILON) {
       // Straight line
       deltaX = dx;
       deltaY = dy;
@@ -61,11 +61,11 @@ public class AresOdometry {
       double sinTheta = Math.sin(dtheta);
       double cosTheta = Math.cos(dtheta);
 
-      double s = sinTheta / dtheta;
-      double c = (1.0 - cosTheta) / dtheta;
+      double sinCoefficient = sinTheta / dtheta;
+      double cosCoefficient = (1.0 - cosTheta) / dtheta;
 
-      deltaX = dx * s - dy * c;
-      deltaY = dx * c + dy * s;
+      deltaX = dx * sinCoefficient - dy * cosCoefficient;
+      deltaY = dx * cosCoefficient + dy * sinCoefficient;
     }
 
     // Rotate the delta according to the previous heading to get field-centric changes
@@ -74,12 +74,9 @@ public class AresOdometry {
     double fieldDeltaX = deltaX * pCos - deltaY * pSin;
     double fieldDeltaY = deltaX * pSin + deltaY * pCos;
 
-    // Update global pose (we still allocate one new Pose2d so callers don't get aliased references)
-    pose =
-        new Pose2d(
-            new Translation2d(pose.getX() + fieldDeltaX, pose.getY() + fieldDeltaY), gyroAngle);
-    previousAngle = gyroAngle;
-
+    // Update global pose in-place
+    pose.set(pose.getX() + fieldDeltaX, pose.getY() + fieldDeltaY, gyroAngle.getRadians());
+    previousAngle.set(gyroAngle);
     return pose;
   }
 

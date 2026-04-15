@@ -1,0 +1,75 @@
+---
+title: Championship Testing
+description: Validating robot logic with 100% headless JUnit 5 coverage.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Wait times for robot charging and Field Management Systems are the enemies of progress. **Championship-grade teams** don't wait for hardware to verify their code. They use **Headless JUnit 5** tests to validate math, state machines, and physics models in milliseconds.
+
+## <span class="ares-num">01</span> Why Headless Testing?
+
+Traditional "OpMode testing" requires a physical Control Hub, a charged battery, and minutes of deployment time. Headless testing runs directly on your development machine's CPU.
+
+- **Speed**: Run 500+ tests in under 2 seconds.
+- **Reliability**: Tests are deterministic. No mechanical failures or battery drops.
+- **Safe to Fail**: Test edge cases (like motor stalls or sensor disconnects) that would break a real robot.
+
+---
+
+## <span class="ares-num">02</span> The IO Mocking Pattern
+
+ARESLib enforces a strict **IO Abstraction**. Your subsystem doesn't talk to a `DcMotor`; it talks to an `AresMotorIO` interface. This allows us to "swap" the motor for a simulator during testing.
+
+<Aside title="Interface Injection">
+During a match, we inject `DriveIOReal`. During a test, we inject `DriveIOSim`. The subsystem logic never knows the difference, allowing us to verify its behavior with bit-level precision.
+</Aside>
+
+```java
+// Example: Testing a Swerve Module
+@Test
+void testModuleAngleTarget() {
+    // 1. Setup Mock IO
+    var io = new SwerveModuleIOSim();
+    var module = new SwerveModule(io);
+
+    // 2. Execute Logic
+    module.setTargetState(new SwerveModuleState(1.0, Rotation2d.fromDegrees(90)));
+    module.periodic();
+
+    // 3. Verify Result
+    // The PID controller should have commanded a voltage
+    assertTrue(io.lastVoltage > 0);
+}
+```
+
+---
+
+## <span class="ares-num">03</span> Testing State Machines
+
+State machines are prone to "soft locks." We use tests to verify every possible transition in our `Intake` or `Scoring` logic.
+
+```java
+@Test
+void testIntakeAutoRetract() {
+    m_intake.requestState(IntakeState.INTAKING);
+    m_intake.periodic();
+    
+    // Simulate a sensor detecting a game piece
+    m_io.setTargetDetected(true);
+    m_intake.periodic();
+    
+    // Verify it automatically moved to RETRACTED
+    assertEquals(IntakeState.RETRACTED, m_intake.getCurrentState());
+}
+```
+
+---
+
+## <span class="ares-num">04</span> Coverage Goals
+
+In ARESLib, we aim for **>80% Coverage** on all `math` and `kinematics` packages. Use the Gradle `jacocoTestReport` task to view your coverage map in the browser.
+
+<Aside type="caution" title="Testing ≠ Simulation">
+While testing verifies **logic**, simulation verifies **behavior**. Use JUnit for code correctness and the [Physics Simulation](/tutorials/physics-sim) desktop simulator for driver practice and path tuning.
+</Aside>

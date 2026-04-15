@@ -8,7 +8,8 @@ public class ProfiledPIDController {
   private final PIDController controller;
   private double maxVelocity;
   private double maxAcceleration;
-  private double period;
+  private double period = 0; // 0 = dynamic
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   private double goalPosition;
   private double setpointPosition;
@@ -23,7 +24,9 @@ public class ProfiledPIDController {
    */
   public ProfiledPIDController(
       double kp, double ki, double kd, double maxVelocity, double maxAcceleration) {
-    this(kp, ki, kd, maxVelocity, maxAcceleration, org.areslib.core.AresRobot.LOOP_PERIOD_SECS);
+    controller = new PIDController(kp, ki, kd);
+    this.maxVelocity = maxVelocity;
+    this.maxAcceleration = maxAcceleration;
   }
 
   /**
@@ -92,6 +95,7 @@ public class ProfiledPIDController {
     setpointPosition = currentPosition;
     setpointVelocity = currentVelocity;
     controller.reset();
+    lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
   }
 
   /**
@@ -101,7 +105,9 @@ public class ProfiledPIDController {
    * @return The control effort to apply.
    */
   public double calculate(double currentMeasurement) {
-    double dt = period;
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = period > 0 ? period : (currentTime - lastTimeSeconds);
+    lastTimeSeconds = currentTime;
 
     if (dt <= 0.0) return 0.0; // Prevent divide by zero
 

@@ -1,0 +1,509 @@
+---
+title: Migrating from Road Runner
+description: Guide for teams moving from Road Runner 1.0 path planning to ARESLib's PathPlanner integration.
+---
+
+# Migrating from Road Runner
+
+ARESLib uses PathPlanner for trajectory generation instead of Road Runner, offering easier path creation, better odometry support, and seamless simulation integration. This guide helps Road Runner teams transition smoothly.
+
+## Why PathPlanner?
+
+| Feature | Road Runner | PathPlanner (ARESLib) |
+|---------|-------------|----------------------|
+| **Path Creation** | Code-based | GUI-based + Code |
+| **Odometry** | Custom impl | Multi-sensor fusion |
+| **Trajectory Types** | Splines | Bezier + Hermite |
+| **Tuning** | Manual constants | Auto-tuning support |
+| **Simulation** | Basic | Full physics integration |
+| **Community** | FRC-focused | FRC + FTC |
+
+## Concept Mapping
+
+### Path Creation
+
+**Road Runner (Code-based):**
+```java
+// Road Runner - Manually define trajectories
+Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
+    .splineTo(new Vector2d(30, 30), 0)
+    .splineTo(new Vector2d(60, 0), Math.PI)
+    .build();
+
+drive.followTrajectoryAsync(trajectory);
+```
+
+**PathPlanner (GUI + Code):**
+```java
+// PathPlanner - Create visually in GUI, then load
+PathPlannerTrajectory trajectory = PathPlanner.loadPath("ScoreHigh", 3.0, 2.0);
+
+// Or create programmatically
+List<Translation2d> waypoints = Arrays.asList(
+    new Translation2d(0, 0),
+    new Translation2d(1.0, 1.0),
+    new Translation2d(2.0, 0)
+);
+
+PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+    new PathConstraints(3.0, 2.0, Math.PI, Math.PI),
+    new Pose2d(0, 0, 0),
+    waypoints
+);
+```
+
+## Odometry Systems
+
+### Road Runner Localizer
+
+**Road Runner:**
+```java
+public class TwoWheelLocalizer extends Localizer {
+    private final Encoder leftEncoder, rightEncoder;
+    private final IMU imu;
+
+    @Override
+    public Pose2d getPoseEstimate() {
+        // Custom pose calculation
+        double deltaLeft = leftEncoder.getCurrentPosition() - prevLeft;
+        double deltaRight = rightEncoder.getCurrentPosition() - prevRight;
+        // ... complex math
+        return new Pose2d(x, y, new Rotation2d(theta));
+    }
+
+    @Override
+    public void update() {
+        // Manual update loop
+        Pose2d pose = getPoseEstimate();
+        drive.setPoseEstimate(pose);
+    }
+}
+```
+
+### ARESLib Odometry
+
+**ARESLib:**
+```java
+// ARESOdometry with automatic sensor fusion
+public class DriveSubsystem extends SubsystemBase {
+    private final DriveIO io;
+    private final DriveIOInputs inputs = new DriveIOInputs();
+    private final AresOdometry odometry;
+    private final AresFollower follower;
+
+    public DriveSubsystem(DriveIO io) {
+        this.io = io;
+        this.odometry = new AresOdometry();
+        this.follower = new AresFollower();
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        // Automatic odometry update
+        odometry.update(
+            inputs.gyroYaw,
+            inputs.leftWheelPositions,
+            inputs.rightWheelPositions
+        );
+        // Automatic vision fusion
+        if (inputs.visionPose != null) {
+            odometry.addVisionMeasurement(
+                inputs.visionPose,
+                inputs.visionTimestamp
+            );
+        }
+    }
+}
+```
+
+## Path Following Commands
+
+### Road Runner Trajectory Following
+
+**Road Runner:**
+```java
+public class FollowTrajectory extends Command {
+    private final MecanumDrive drive;
+    private final Trajectory trajectory;
+
+    public FollowTrajectory(MecanumDrive drive, Trajectory trajectory) {
+        this.drive = drive;
+        this.trajectory = trajectory;
+    }
+
+    @Override
+    public void execute() {
+        drive.updatePoseEstimate();
+        drive.followTrajectory(trajectory);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return !drive.isBusy();
+    }
+}
+```
+
+### PathPlanner Following
+
+**ARESLib:**
+```java
+public class FollowPathCommand extends Command {
+    private final DriveSubsystem drive;
+    private final PathPlannerTrajectory trajectory;
+    private final Timer timer = new Timer();
+    private final PIDController xController = new PIDController(5, 0, 0);
+    private final PIDController yController = new PIDController(5, 0, 0);
+    private final ProfiledPIDController thetaController =
+        new ProfiledPIDController(3, 0, 0,
+            new TrapezoidProfile.Constraints(Math.PI, Math.PI));
+
+    public FollowPathCommand(DriveSubsystem drive, String pathName) {
+        this.drive = drive;
+        this.trajectory = PathPlanner.loadPath(pathName, 3.0, 2.0);
+        addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+        timer.reset();
+        timer.start();
+        PathPlannerState initialState = trajectory.getInitialPose();
+        drive.resetOdometry(initialState);
+    }
+
+    @Override
+    public void execute() {
+        double elapsedTime = timer.get();
+        PathPlannerState desiredState = trajectory.sample(elapsedTime);
+
+        // Transform to field-relative
+        Pose2d currentPose = drive.getPose();
+        ChassisSpeeds targetSpeeds = PPHolonomicDriveController.calculate(
+            currentPose,
+            desiredState,
+            desiredState.velocityMetersPerSecond,
+            desiredState.velocityMetersPerSecond * desiredState.headingCos
+        );
+
+        drive.driveFieldRelative(targetSpeeds);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return timer.hasElapsed(trajectory.getTotalTimeSeconds());
+    }
+}
+```
+
+## Drive Train Conversion
+
+### Road Runner Mecanum Drive
+
+**Road Runner:**
+```java
+public class MecanumDrive extends MecanumDriveBase {
+    private final MotorEx leftFront, leftRear, rightFront, rightRear;
+
+    public MecanumDrive(HardwareMap hwMap) {
+        leftFront = hwMap.get(MotorEx.class, "left_front");
+        // ... initialize motors
+        setLocalizer(new TwoWheelLocalizer());
+    }
+
+    @Override
+    public List<Double> getWheelVelocities() {
+        return Arrays.asList(
+            leftFront.getVelocity(),
+            leftRear.getVelocity(),
+            rightFront.getVelocity(),
+            rightRear.getVelocity()
+        );
+    }
+
+    public void setDrivePower(Pose2d drivePower) {
+        leftFront.setPower(drivePower.x + drivePower.y + drivePower.heading);
+        // ... complex power distribution
+    }
+}
+```
+
+### ARESLib Mecanum Drive
+
+**ARESLib:**
+```java
+public interface DriveIO {
+    @AutoLog
+    public static class DriveIOInputs {
+        public double[] wheelPositionsRad = new double[4];
+        public double[] wheelVelocitiesRadPerSec = new double[4];
+        public double gyroYaw = 0.0;
+        public Pose2d odometryPose = new Pose2d();
+        public Pose2d visionPose = null;
+    }
+
+    void setVoltage(double[] volts);
+    void updateInputs(DriveIOInputs inputs);
+}
+
+public class DriveIOReal implements DriveIO {
+    private final DcMotorEx[] motors;
+
+    public DriveIOReal(HardwareMap hwMap) {
+        motors = new DcMotorEx[]{
+            hwMap.get(DcMotorEx.class, "left_front"),
+            hwMap.get(DcMotorEx.class, "left_rear"),
+            hwMap.get(DcMotorEx.class, "right_front"),
+            hwMap.get(DcMotorEx.class, "right_rear")
+        };
+    }
+
+    @Override
+    public void setVoltage(double[] volts) {
+        for (int i = 0; i < 4; i++) {
+            motors[i].setVoltage(volts[i]);
+        }
+    }
+
+    @Override
+    public void updateInputs(DriveIOInputs inputs) {
+        for (int i = 0; i < 4; i++) {
+            inputs.wheelPositionsRad[i] = motors[i].getCurrentPosition();
+            inputs.wheelVelocitiesRadPerSec[i] = motors[i].getVelocity();
+        }
+    }
+}
+```
+
+## Path Planning Features
+
+### Road Runner Path Builder
+
+**Road Runner:**
+```java
+// Complex path construction
+Trajectory complexPath = drive.trajectoryBuilder(startPose)
+    .forward(30)
+    .strafeLeft(20)
+    .lineToConstantHeading(new Vector2d(60, 20))
+    .splineToConstantHeading(new Vector2d(90, 40), Math.PI/2)
+    .splineTo(new Vector2d(90, 60), Math.PI)
+    .build();
+```
+
+### PathPlanner GUI
+
+**PathPlanner:**
+1. Open PathPlanner GUI
+2. Add waypoints visually
+3. Adjust headings and constraints
+4. Save as "complex_path"
+5. Load in code:
+
+```java
+PathPlannerTrajectory complexPath = PathPlanner.loadPath("complex_path", 3.0, 2.0);
+```
+
+## Autonomous Sequences
+
+### Road Runner Auto
+
+**Road Runner:**
+```java
+public class Autonomous extends LinearOpMode {
+    @Override
+    public void runOpMode() {
+        MecanumDrive drive = new MecanumDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
+
+        waitForStart();
+
+        // Manual sequencing
+        Trajectory path1 = drive.trajectoryBuilder(new Pose2d())
+            .splineTo(new Vector2d(30, 30), 0)
+            .build();
+        drive.followTrajectoryAsync(path1);
+
+        while (!isStopRequested() && drive.isBusy()) {
+            drive.update();
+            drive.updatePoseEstimate();
+        }
+
+        // Manual action
+        intake.setPower(1.0);
+        sleep(1000);
+        intake.setPower(0);
+
+        // Another path
+        Trajectory path2 = drive.trajectoryBuilder(drive.getPoseEstimate())
+            .lineTo(new Vector2d(60, 0))
+            .build();
+        drive.followTrajectoryAsync(path2);
+        // ... more manual sequencing
+    }
+}
+```
+
+### ARESLib Auto
+
+**ARESLib:**
+```java
+public class Autonomous extends AresCommandOpMode {
+    private RobotContainer robot;
+
+    @Override
+    public void robotInit() {
+        robot = new RobotContainer();
+    }
+
+    @Override
+    public void autonomousInit() {
+        robot.setAutoRoutine();
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+}
+
+// Clean command-based sequencing
+public Command getAutoRoutine() {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> drive.resetOdometry(startPose)),
+
+        // Path following
+        new FollowPathCommand(drive, "ToIntake"),
+        new InstantCommand(() -> intake.setPower(1.0)),
+        new WaitCommand(1.0),
+        new InstantCommand(() -> intake.setPower(0)),
+
+        // More paths
+        new FollowPathCommand(drive, "ToScore"),
+        new ShootCommand(shooter),
+
+        // Complex sequences
+        new ParallelCommandGroup(
+            new FollowPathCommand(drive, "ToIntake2"),
+            new SpinUpCommand(shooter)
+        )
+    );
+}
+```
+
+## Tuning & Constants
+
+### Road Runner Tuning
+
+**Road Runner:**
+```java
+// Manual tuning in DriveConstants
+public class DriveConstants {
+    public static final double TICKS_PER_REV = 537.7;
+    public static final double MAX_RPM = 312;
+
+    // Manually calculated
+    public static final double kV = 0.017;
+    public static final double kA = 0.0;
+    public static final double kStatic = 0.0;
+}
+```
+
+### ARESLib Auto-Tuning
+
+**ARESLib:**
+```java
+// Automated SysId + tuning
+public class AutoTuner {
+    public void tuneDrivetrain() {
+        // Run SysId routine
+        runQuasistatic(Direction.FORWARD);
+        runDynamic(Direction.FORWARD);
+
+        // Auto-calculate constants
+        DriveFeedforward feedforward = calculateFeedforward();
+        PIDController controller = tunePID(feedforward);
+
+        // Save for PathPlanner
+        PathPlannerServer.sendPathData(feedforward, controller);
+    }
+}
+```
+
+## Vision Integration
+
+### Road Runner Vision
+
+**Road Runner:**
+```java
+// Manual vision pose estimation
+public class VisionLocalizer {
+    public void updateWithAprilTag(AprilTagDetection tag) {
+        Pose2d tagPose = getTagPose(tag.id);
+        Pose2d robotPose = transform(tagPose, tag.pose);
+
+        // Manual Kalman filter
+        double confidence = calculateConfidence(tag);
+        drive.getLocalizer().updateWithVision(robotPose, confidence);
+    }
+}
+```
+
+### ARESLib Vision Fusion
+
+**ARESLib:**
+```java
+// Automatic vision fusion
+public class DriveSubsystem extends SubsystemBase {
+    private final AresOdometry odometry;
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+
+        // Automatic vision integration
+        if (inputs.visionPose != null) {
+            odometry.addVisionMeasurement(
+                inputs.visionPose,
+                inputs.visionTimestamp,
+                inputs.visionConfidence
+            );
+        }
+    }
+}
+```
+
+## Migration Benefits
+
+### Performance
+- **Better odometry**: Multi-sensor fusion with confidence weighting
+- **Smoother paths**: Advanced trajectory generation
+- **Faster tuning**: Automated SysId integration
+
+### Developer Experience
+- **Easier path creation**: Visual GUI + programmatic
+- **Better simulation**: Full physics integration
+- **Cleaner code**: Command-based architecture
+
+### Competition Features
+- **Real-time tuning**: FTC Dashboard integration
+- **Better replay**: @AutoLog for path analysis
+- **Fault tolerance**: Robust error handling
+
+## Quick Reference
+
+| Road Runner Concept | PathPlanner Equivalent |
+|---------------------|----------------------|
+| `trajectoryBuilder()` | `PathPlanner.loadPath()` |
+| `Localizer` | `AresOdometry` |
+| `followTrajectoryAsync()` | `FollowPathCommand` |
+| `MecanumDrive` | `DriveSubsystem` + `DriveIO` |
+| Manual constants | `@Config` + SysId |
+
+## Resources
+
+- [Smart Assist Align](/tutorials/smart-assist-align/) - Path following implementation
+- [Vision Fusion](/tutorials/vision-fusion/) - Multi-sensor odometry
+- [SysId & Tuning](/tutorials/sysid-tuning/) - Automated characterization
+- [Physics Simulation](/tutorials/physics-sim/) - Test paths without robot

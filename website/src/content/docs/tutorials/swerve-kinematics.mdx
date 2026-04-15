@@ -1,0 +1,62 @@
+---
+title: Swerve Kinematics
+description: The vector math behind independent wheel steering and translation.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Swerve drive is the gold standard for high-performance robotics. Unlike tank drive, swerve allows for **holonomic motion**—the ability to translate in any direction while rotating simultaneously. This tutorial breaks down the vector addition required to control individual modules.
+
+## <span class="ares-num">01</span> Vector Summation
+
+Each swerve module's state (velocity and angle) is the result of two distinct components:
+
+import SwerveSimulator from '../../../components/SwerveSimulator.astro';
+
+- **Translation Component**: The desired linear movement of the chassis (identical for all modules).
+- **Rotation Component**: The tangential velocity required to rotate the chassis around its center. This vector is always perpendicular to the module's position relative to the center.
+
+<Aside title="V_module = V_translation + V_rotation">
+The final state for each module is the vector sum of these two components. This is why modules "swirl" when you rotate in place and "tilt" when you strafe while turning.
+</Aside>
+
+### <span class="ares-num">1.1</span> Interactive Kinematics Solver
+Visualizing Translation + Rotation Vector Addition
+
+<SwerveSimulator />
+
+---
+
+## <span class="ares-num">02</span> Second-Order Kinematics (Discretization)
+
+At high speeds, simply commanding velocity causes the robot to "skew" or drift during rotations. This happens because the robot's heading changes *during* the loop cycle.
+
+```java
+// AresKinematics.discretize() implementation
+public static ChassisSpeeds discretize(ChassisSpeeds speeds, double dt) {
+    double velocityMagnitude = Math.sqrt(speeds.vx * speeds.vx + speeds.vy * speeds.vy);
+    if (velocityMagnitude < 1e-6 || Math.abs(speeds.omega) < 1e-6) {
+        return speeds;
+    }
+
+    double angleDisplacement = speeds.omega * dt;
+    double sin = Math.sin(angleDisplacement) / angleDisplacement;
+    double cos = (1.0 - Math.cos(angleDisplacement)) / angleDisplacement;
+
+    return new ChassisSpeeds(
+        speeds.vx * sin - speeds.vy * cos,
+        speeds.vx * cos + speeds.vy * sin,
+        speeds.omega
+    );
+}
+```
+
+<Aside type="caution" title="Driving 'on an Arc'">
+Discretization treats the robot's movement as a circular arc rather than a straight line between frames. This eliminates the "skew" effect when strafing while turning full-tilt.
+</Aside>
+
+---
+
+## <span class="ares-num">03</span> Cosine Compensation
+
+When a swerve module is commanded to change its angle by 90 degrees, it has no traction until it reaches the target. ARESLib applies **Cosine Compensation** to scale module velocity by the `cosine` of the angle error, ensuring we don't spin wheels that aren't facing the right way yet.

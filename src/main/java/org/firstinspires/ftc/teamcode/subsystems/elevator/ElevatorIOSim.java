@@ -25,13 +25,18 @@ public class ElevatorIOSim implements ElevatorIO {
   private double appliedVolts = 0.0;
   private double positionMeters = 0.0;
   private double velocityMps = 0.0;
+  private double lastTimeSeconds = org.areslib.core.AresTimer.getFPGATimestamp();
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
+    double currentTime = org.areslib.core.AresTimer.getFPGATimestamp();
+    double dt = currentTime - lastTimeSeconds;
+    lastTimeSeconds = currentTime;
+
     // Subtract gravity load from applied voltage before computing velocity
     double effectiveVolts = appliedVolts - GRAVITY_VOLTS;
     velocityMps = effectiveVolts * KV;
-    positionMeters += velocityMps * org.areslib.core.AresRobot.LOOP_PERIOD_SECS;
+    positionMeters += velocityMps * dt;
 
     // Ensure floor bounds
     if (positionMeters < 0) {
