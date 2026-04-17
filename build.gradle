@@ -289,7 +289,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.google.android:android:4.1.1.4'
     implementation 'org.dyn4j:dyn4j:5.0.2'
-    errorprone "com.google.errorprone:error_prone_core:2.24.1"
+    errorprone "com.google.errorprone:error_prone_core:2.49.0"
     ftcAars 'com.acmerobotics.dashboard:dashboard:0.5.1@aar'
     ftcAars 'org.firstinspires.ftc:RobotCore:11.1.0@aar'
     ftcAars 'org.firstinspires.ftc:Hardware:11.1.0@aar'
