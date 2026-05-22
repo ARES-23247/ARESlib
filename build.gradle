@@ -291,9 +291,9 @@ dependencies {
     ftcAars 'org.firstinspires.ftc:Hardware:11.1.0@aar'
     ftcAars 'org.firstinspires.ftc:FtcCommon:11.1.0@aar'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.1.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:6.1.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.1.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.3'
     testImplementation 'org.ejml:ejml-simple:0.44.0'
     testImplementation 'org.ejml:ejml-core:0.44.0'
